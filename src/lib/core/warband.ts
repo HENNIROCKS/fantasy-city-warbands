@@ -34,9 +34,14 @@ export function fighterCost(instance: FighterInstance, faction: Faction): number
 	return instance.wargear.reduce((sum, id) => sum + (faction.wargear.find((w) => w.id === id)?.cost ?? 0), base);
 }
 
-/** A fighter's role as the game names it, capitalised: `Leader`, `Brute`. Null where no keyword names one. */
+/** A fighter's role keyword, the first of the game's roles it carries, else the game's default: `leader`. */
+export function roleKeyOf(fighter: Fighter, game: GameSystem): string | null {
+	return game.roles.find((r) => fighter.keywords.includes(r)) ?? game.defaultRole ?? null;
+}
+
+/** A fighter's role as the game names it, capitalised: `Leader`, `Brute`. Null where it has none. */
 export function roleOf(fighter: Fighter, game: GameSystem): string | null {
-	const role = game.roles.find((r) => fighter.keywords.includes(r));
+	const role = roleKeyOf(fighter, game);
 	return role ? role[0].toUpperCase() + role.slice(1) : null;
 }
 

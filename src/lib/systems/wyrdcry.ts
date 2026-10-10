@@ -13,7 +13,9 @@ export const game: GameSystem = {
 	id: 'wyrdcry',
 	name: 'Wyrdcry',
 	edition: 'v0.9',
+	author: 'Johan Markström',
 	currency: 'gc',
+	currencyName: 'gold coins',
 	budget: 1000,
 	stats: [
 		{ key: 'move', label: 'Move', format: 'inches' },
@@ -24,6 +26,8 @@ export const game: GameSystem = {
 		{ key: 'bravery', label: 'Bravery', format: 'target' }
 	],
 	roles: ['leader', 'hero', 'henchman'],
+	defaultRole: 'henchman',
+	roleLabels: { leader: 'Leader', hero: 'Heroes', henchman: 'Henchmen' },
 	groups: []
 };
 

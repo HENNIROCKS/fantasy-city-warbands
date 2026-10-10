@@ -10,6 +10,7 @@ export const game: GameSystem = {
 	id: 'black-death-city',
 	name: 'Black Death City',
 	edition: 'Playtest v1.01',
+	author: 'Sam Pearson',
 	currency: 'silver',
 	budget: 1000,
 	stats: [

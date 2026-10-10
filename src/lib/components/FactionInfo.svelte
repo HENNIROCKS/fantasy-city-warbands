@@ -1,5 +1,6 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
+	import { roleKeyOf } from '$lib/core/warband';
 	import type { Faction, GameSystem, Span } from '$lib/core/types';
 
 	let { faction, game }: { faction: Faction; game: GameSystem } = $props();
@@ -7,17 +8,30 @@
 	/*
 	 * Where the game counts fighters in groups, as Black Death City does, the
 	 * list follows them like the rulebook's Fighters List: "Leaders (1)" and so
-	 * on, with a fighter's own limit only where it is tighter. Without groups it
-	 * is one list, and each fighter's limit is the whole story.
+	 * on, with a fighter's own limit only where it is tighter. A game without
+	 * groups but with role headings, as Wyrdcry, lists the fighters under their
+	 * role as roleKeyOf finds it; the heading sets no limit there, so each
+	 * fighter's limit stays the whole story. Without either it is one list.
 	 */
 	const sections = $derived.by(() => {
-		if (!game.groups.length) return [{ label: null as string | null, fighters: faction.fighters }];
-		const grouped = game.groups.map((g) => ({
-			label: `${g.label} (${span(g.limit)})`,
-			fighters: faction.fighters.filter((f) => f.keywords.includes(g.keyword))
-		}));
-		const rest = faction.fighters.filter((f) => !game.groups.some((g) => f.keywords.includes(g.keyword)));
-		return [...grouped, ...(rest.length ? [{ label: 'Other', fighters: rest }] : [])].filter((s) => s.fighters.length);
+		const labels = game.roleLabels;
+		if (!game.groups.length && !labels) return [{ label: null as string | null, limited: false, fighters: faction.fighters }];
+		const grouped = game.groups.length
+			? game.groups.map((g) => ({
+					label: `${g.label} (${span(g.limit)})`,
+					limited: true,
+					fighters: faction.fighters.filter((f) => f.keywords.includes(g.keyword))
+				}))
+			: game.roles
+					.filter((r) => labels?.[r])
+					.map((r) => ({
+						label: labels![r],
+						limited: false,
+						fighters: faction.fighters.filter((f) => roleKeyOf(f, game) === r)
+					}));
+		const placed = new Set(grouped.flatMap((s) => s.fighters));
+		const rest = faction.fighters.filter((f) => !placed.has(f));
+		return [...grouped, ...(rest.length ? [{ label: 'Other', limited: false, fighters: rest }] : [])].filter((s) => s.fighters.length);
 	});
 
 	function span(limit: Span): string {
@@ -44,7 +58,7 @@
 						</tr>
 					{/if}
 					{#each section.fighters as f (f.id)}
-						{@const limit = section.label && f.limit.max === null && !f.limit.min ? '' : span(f.limit)}
+						{@const limit = section.limited && f.limit.max === null && !f.limit.min ? '' : span(f.limit)}
 						<tr class="border-t border-zinc-700">
 							<td class="py-1.5 pr-2 text-zinc-200">{f.name}</td>
 							<td class="py-1.5 pr-2 text-right whitespace-nowrap text-zinc-300">{f.cost}&nbsp;{game.currency}</td>

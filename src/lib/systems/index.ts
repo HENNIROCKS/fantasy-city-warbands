@@ -15,4 +15,6 @@ export const systems: Record<string, System> = {
 };
 
 /** Games that are meant to come but have no data yet: shown, but not selectable. */
-export const planned: { id: string; name: string }[] = [{ id: 'mordheim', name: 'Mordheim' }];
+export const planned: { id: string; name: string; author: string }[] = [
+	{ id: 'mordheim', name: 'Mordheim', author: 'Tuomas Pirinen' }
+];

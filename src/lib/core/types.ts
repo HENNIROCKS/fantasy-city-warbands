@@ -41,8 +41,12 @@ export interface GameSystem {
 	name: string;
 	/** Which version of the rules the data follows, as the game names it. */
 	edition: string;
+	/** Who wrote the game, as its preview names them. */
+	author: string;
 	/** As printed after a cost: `gc`, `silver`. */
 	currency: string;
+	/** Spelled out where there is room, such as the game's preview: `gold coins`. Without it, `currency`. */
+	currencyName?: string;
 	/** What a new warband has to spend. */
 	budget: number;
 	/** In the order the profile prints them. */
@@ -52,6 +56,13 @@ export interface GameSystem {
 	 * Captain is both `leader` and `hero` and reads as a leader.
 	 */
 	roles: string[];
+	/** The role of a fighter whose keywords name none: Wyrdcry's beasts and thralls are henchmen. */
+	defaultRole?: string;
+	/**
+	 * Headings for a faction's fighters by role, for a game without groups:
+	 * `hero` → `Heroes`. A role without a heading falls under Other.
+	 */
+	roleLabels?: Record<string, string>;
 	groups: GroupLimit[];
 }
 

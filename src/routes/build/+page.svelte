@@ -67,14 +67,15 @@
 		...Object.values(systems).map((s) => ({
 			id: s.game.id,
 			name: s.game.name,
+			author: s.game.author,
 			details: [
 				s.game.edition,
 				`${s.factions.length} faction${s.factions.length === 1 ? '' : 's'}`,
-				`${s.game.budget} ${s.game.currency}`
+				`${s.game.budget} ${s.game.currencyName ?? s.game.currency}`
 			],
 			available: true
 		})),
-		...planned.map((p) => ({ id: p.id, name: p.name, details: ['Coming later'], available: false }))
+		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['Coming later'], available: false }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	function url(params: Record<string, string>): string {
@@ -115,7 +116,7 @@
 				: f.size.min
 					? `${f.size.min}–${f.size.max} fighters`
 					: `up to ${f.size.max} fighters`;
-		return [size, `${f.fighters.length} fighter types`, ...f.choices.map((c) => c.name)].join(' · ');
+		return `${size} · ${f.fighters.length} fighter types`;
 	}
 
 	function pickGame(game: string) {
@@ -260,6 +261,7 @@
 				{#each tiles as tile (tile.id)}
 					<button type="button" class="choice px-4 py-5" disabled={!tile.available} onclick={() => pickGame(tile.id)}>
 						<span class="block text-base font-semibold">{tile.name}</span>
+						<span class="block text-zinc-400">by {tile.author}</span>
 						<span class="block text-zinc-400">{tile.details.join(' · ')}</span>
 					</button>
 				{/each}
