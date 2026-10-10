@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { APP_TITLE } from '$lib/app';
 	import FactionInfo from '$lib/components/FactionInfo.svelte';
 	import FighterEditor from '$lib/components/FighterEditor.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -242,7 +243,7 @@
 </script>
 
 <svelte:head>
-	<title>{warband?.name ?? 'New warband'} · Fantasy City Warbands</title>
+	<title>{warband?.name || 'New warband'} · {APP_TITLE}</title>
 </svelte:head>
 
 <PageHeader title={warband?.name || 'New warband'} back={resolve('/')} />

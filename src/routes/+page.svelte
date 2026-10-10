@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { deleteWarband, loadWarbands } from '$lib/core/storage';
@@ -30,10 +31,10 @@
 </script>
 
 <svelte:head>
-	<title>Fantasy City Warbands</title>
+	<title>{APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title="Fantasy City Warbands">
+<PageHeader title={APP_NAME} badge={STAGE}>
 	{#snippet actions()}
 		<ThemeToggle />
 	{/snippet}

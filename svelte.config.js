@@ -9,7 +9,13 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}),
+		paths: {
+			/* GitHub Pages serves the app from /<repo>/, so every link between routes
+			   carries that prefix. The deploy workflow sets it; locally it is empty
+			   and the dev server stays at the root. */
+			base: process.env.BASE_PATH ?? ''
+		}
 	}
 };
 
