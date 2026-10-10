@@ -1,44 +1,11 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { roleKeyOf } from '$lib/core/warband';
-	import type { Faction, GameSystem, Span } from '$lib/core/types';
+	import { fighterSections, formatSpan } from '$lib/core/warband';
+	import type { Faction, GameSystem } from '$lib/core/types';
 
 	let { faction, game }: { faction: Faction; game: GameSystem } = $props();
 
-	/*
-	 * Where the game counts fighters in groups, as Black Death City does, the
-	 * list follows them like the rulebook's Fighters List: "Leaders (1)" and so
-	 * on, with a fighter's own limit only where it is tighter. A game without
-	 * groups but with role headings, as Wyrdcry, lists the fighters under their
-	 * role as roleKeyOf finds it; the heading sets no limit there, so each
-	 * fighter's limit stays the whole story. Without either it is one list.
-	 */
-	const sections = $derived.by(() => {
-		const labels = game.roleLabels;
-		if (!game.groups.length && !labels) return [{ label: null as string | null, limited: false, fighters: faction.fighters }];
-		const grouped = game.groups.length
-			? game.groups.map((g) => ({
-					label: `${g.label} (${span(g.limit)})`,
-					limited: true,
-					fighters: faction.fighters.filter((f) => f.keywords.includes(g.keyword))
-				}))
-			: game.roles
-					.filter((r) => labels?.[r])
-					.map((r) => ({
-						label: labels![r],
-						limited: false,
-						fighters: faction.fighters.filter((f) => roleKeyOf(f, game) === r)
-					}));
-		const placed = new Set(grouped.flatMap((s) => s.fighters));
-		const rest = faction.fighters.filter((f) => !placed.has(f));
-		return [...grouped, ...(rest.length ? [{ label: 'Other', limited: false, fighters: rest }] : [])].filter((s) => s.fighters.length);
-	});
-
-	function span(limit: Span): string {
-		if (limit.max === null) return limit.min ? `${limit.min}+` : 'any';
-		if (limit.min === limit.max) return `${limit.min}`;
-		return `${limit.min}–${limit.max}`;
-	}
+	const sections = $derived(fighterSections(faction, game));
 </script>
 
 <div class="space-y-4">
@@ -58,7 +25,7 @@
 						</tr>
 					{/if}
 					{#each section.fighters as f (f.id)}
-						{@const limit = section.limited && f.limit.max === null && !f.limit.min ? '' : span(f.limit)}
+						{@const limit = section.limited && f.limit.max === null && !f.limit.min ? '' : formatSpan(f.limit)}
 						<tr class="border-t border-zinc-700">
 							<td class="py-1.5 pr-2 text-zinc-200">{f.name}</td>
 							<td class="py-1.5 pr-2 text-right whitespace-nowrap text-zinc-300">{f.cost}&nbsp;{game.currency}</td>

@@ -15,6 +15,7 @@
 	import {
 		createWarband,
 		fighterCost,
+		fighterSections,
 		roleOf,
 		withFighter,
 		withInstance,
@@ -386,24 +387,34 @@
 					>· {Math.max(0, system.game.budget - cost)}&nbsp;{system.game.currency} left</span
 				>
 			</p>
-			<div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-				{#each faction.fighters as f (f.id)}
-					{@const added = withFighter(warband, f.id)}
-					{@const block = blockedBy(added)}
-					<button
-						type="button"
-						class="choice"
-						disabled={!!block}
-						onclick={() => {
-							if (warband) warband.fighters = added.fighters;
-						}}
-					>
-						<span class="block font-semibold">{f.name}</span>
-						<span class="block text-zinc-400">{recruitLine(f)}</span>
-						{#if block}
-							<span class="block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
+			<!-- Under the same headings as the faction's preview, two to a row at any width. -->
+			<div class="space-y-4">
+				{#each fighterSections(faction, system.game) as section (section.label)}
+					<div>
+						{#if section.label}
+							<p class="pb-1 text-xs font-semibold tracking-wider text-zinc-400 uppercase">{section.label}</p>
 						{/if}
-					</button>
+						<div class="grid grid-cols-2 gap-2">
+							{#each section.fighters as f (f.id)}
+								{@const added = withFighter(warband, f.id)}
+								{@const block = blockedBy(added)}
+								<button
+									type="button"
+									class="choice"
+									disabled={!!block}
+									onclick={() => {
+										if (warband) warband.fighters = added.fighters;
+									}}
+								>
+									<span class="block font-semibold">{f.name}</span>
+									<span class="block text-zinc-400">{recruitLine(f)}</span>
+									{#if block}
+										<span class="block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					</div>
 				{/each}
 			</div>
 		</section>
@@ -542,7 +553,7 @@
 					<a
 						href="#recruit"
 						class="flex min-h-11 items-center rounded border border-zinc-700 px-4 font-semibold text-zinc-200 transition hover:bg-zinc-800 focus-visible:bg-zinc-800"
-						>+ Fighter</a
+						>Recruit ↓</a
 					>
 				{/if}
 				<button
