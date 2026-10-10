@@ -81,7 +81,7 @@
 	<title>About · {APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title="About" back={resolve('/')} />
+<PageHeader title="About" />
 
 <main class="mx-auto max-w-2xl space-y-10 p-5 pb-16 text-sm text-zinc-300">
 	<section class="space-y-3">

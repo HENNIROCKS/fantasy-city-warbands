@@ -179,7 +179,10 @@
 		border-color: var(--ui-text-subtle);
 	}
 
-	/* A round button carrying only an icon, such as the header's menu. */
+	/*
+	 * A button carrying only an icon, such as the header's about link: a 26 px
+	 * face in the theme switch's colours, inside a 44 px high touch area.
+	 */
 	.icon-button {
 		display: inline-flex;
 		align-items: center;
@@ -187,23 +190,113 @@
 		flex-shrink: 0;
 		width: 44px;
 		height: 44px;
-		border-radius: 9999px;
-		color: var(--ui-text-muted);
 		cursor: pointer;
-		transition:
-			color 0.15s,
-			background-color 0.15s;
 	}
 
-	.icon-button:hover,
-	.icon-button:focus-visible {
-		color: var(--ui-text);
-		background: var(--ui-surface);
+	.icon-button-face {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 26px;
+		height: 26px;
+		border-radius: 9999px;
+		background: var(--ui-border);
+		color: var(--ui-text-muted);
+		transition: box-shadow 0.15s;
+	}
+
+	.icon-button:hover .icon-button-face {
+		box-shadow: 0 0 0 1px var(--ui-text-subtle);
 	}
 
 	.icon-button:focus-visible {
+		outline: none;
+	}
+
+	.icon-button:focus-visible .icon-button-face {
 		outline: 2px solid #16754a;
 		outline-offset: 2px;
+	}
+
+	/*
+	 * The theme switch: a 52 × 26 track in a 44 px high touch area. The 12 px on
+	 * the right match the header menu's -mr-3, so the track ends at the page's edge.
+	 */
+	.theme-switch {
+		display: inline-flex;
+		align-items: center;
+		justify-content: flex-end;
+		flex-shrink: 0;
+		width: 64px;
+		height: 44px;
+		padding-right: 12px;
+		cursor: pointer;
+	}
+
+	.theme-switch-track {
+		position: relative;
+		width: 52px;
+		height: 26px;
+		border-radius: 9999px;
+		background: var(--ui-border);
+		transition: box-shadow 0.15s;
+	}
+
+	.theme-switch:hover .theme-switch-track {
+		box-shadow: 0 0 0 1px var(--ui-text-subtle);
+	}
+
+	.theme-switch:focus-visible {
+		outline: none;
+	}
+
+	.theme-switch:focus-visible .theme-switch-track {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.theme-switch-knob {
+		position: absolute;
+		top: 4px;
+		left: 4px;
+		width: 18px;
+		height: 18px;
+		border-radius: 9999px;
+		background: var(--ui-text);
+		transition: transform 0.15s ease-out;
+	}
+
+	.theme-switch[aria-checked='true'] .theme-switch-knob {
+		transform: translateX(26px);
+	}
+
+	/* Each icon sits centred in the space the knob leaves on its side. */
+	.theme-switch-icon {
+		position: absolute;
+		top: 6px;
+		color: var(--ui-text-muted);
+		opacity: 0;
+		transition: opacity 0.15s;
+	}
+
+	.theme-switch-moon {
+		left: 8px;
+	}
+
+	.theme-switch-sun {
+		right: 8px;
+	}
+
+	.theme-switch[aria-checked='true'] .theme-switch-moon,
+	.theme-switch[aria-checked='false'] .theme-switch-sun {
+		opacity: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.theme-switch-knob,
+		.theme-switch-icon {
+			transition: none;
+		}
 	}
 
 	/* A pill that only shows something, such as gear a fighter cannot put down. */
