@@ -69,7 +69,7 @@
 			name: s.game.name,
 			details: [
 				s.game.edition,
-				`${s.factions.length} warband${s.factions.length === 1 ? '' : 's'}`,
+				`${s.factions.length} faction${s.factions.length === 1 ? '' : 's'}`,
 				`${s.game.budget} ${s.game.currency}`
 			],
 			available: true

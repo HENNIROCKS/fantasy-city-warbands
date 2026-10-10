@@ -15,7 +15,7 @@ campaign: no experience, no injuries, no income.
 
 ## What it does
 
-- Build a warband in five steps: game, warband, the choice the whole warband
+- Build a warband in five steps: game, faction, the choice the whole warband
   makes (State Pride in Wyrdcry, Origin in Black Death City), fighters, finish
 - See a faction before picking it: its fighters with their costs and limits,
   its choice and its rules
@@ -30,10 +30,12 @@ campaign: no experience, no injuries, no income.
 - Come back to any step later, including the faction; switching faction asks
   first when fighters or a choice would be lost
 - Dark and light mode
+- An about page with the games, where their rules come from, and answers to
+  the first questions
 
-## Games and warbands
+## Games and factions
 
-| Game | Rules the data follows | Warbands |
+| Game | Rules the data follows | Factions |
 | --- | --- | --- |
 | Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
 | Wyrdcry | 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
@@ -45,6 +47,10 @@ roster. Wyrdcry's abilities and faction rules are shown as text. Not there
 yet: State Pride's effects on the profiles, the special rules of Black Death
 City's fighters, the skills and spells picked on recruitment, and the cost of
 a Misbegotten's bloodline mutation.
+
+## Roadmap
+
+What is built and what comes next is a checklist in [`ROADMAP.md`](ROADMAP.md).
 
 ## Data
 

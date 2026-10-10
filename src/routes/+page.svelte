@@ -75,4 +75,9 @@
 			</ul>
 		{/if}
 	</section>
+
+	<a
+		class="flex min-h-11 items-center justify-center rounded border border-zinc-700 px-4 font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white focus-visible:bg-zinc-800 focus-visible:text-white"
+		href={resolve('/info')}>About this app</a
+	>
 </main>
