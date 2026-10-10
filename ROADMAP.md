@@ -16,6 +16,7 @@
 - [x] 🛠️ Wargear as a button matrix instead of a select
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
+- [ ] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
