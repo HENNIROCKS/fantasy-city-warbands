@@ -179,6 +179,33 @@
 		border-color: var(--ui-text-subtle);
 	}
 
+	/* A round button carrying only an icon, such as the header's menu. */
+	.icon-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 44px;
+		height: 44px;
+		border-radius: 9999px;
+		color: var(--ui-text-muted);
+		cursor: pointer;
+		transition:
+			color 0.15s,
+			background-color 0.15s;
+	}
+
+	.icon-button:hover,
+	.icon-button:focus-visible {
+		color: var(--ui-text);
+		background: var(--ui-surface);
+	}
+
+	.icon-button:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
 	/* A pill that only shows something, such as gear a fighter cannot put down. */
 	.pill-static {
 		cursor: default;

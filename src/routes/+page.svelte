@@ -2,7 +2,6 @@
 	import { resolve } from '$app/paths';
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { deleteWarband, loadWarbands } from '$lib/core/storage';
 	import { warbandCost, validate } from '$lib/core/validate';
 	import { systems } from '$lib/systems';
@@ -34,11 +33,7 @@
 	<title>{APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title={APP_NAME} badge={STAGE}>
-	{#snippet actions()}
-		<ThemeToggle />
-	{/snippet}
-</PageHeader>
+<PageHeader title={APP_NAME} badge={STAGE} />
 
 <main class="mx-auto max-w-2xl space-y-6 p-5 text-sm">
 	<a
@@ -75,9 +70,4 @@
 			</ul>
 		{/if}
 	</section>
-
-	<a
-		class="flex min-h-11 items-center justify-center rounded border border-zinc-700 px-4 font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white focus-visible:bg-zinc-800 focus-visible:text-white"
-		href={resolve('/info')}>About this app</a
-	>
 </main>

@@ -2,12 +2,13 @@
 
 Build a warband for a skirmish game set in a fantasy city, step by step, with
 the budget and the roster limits checked as you go. Two games so far:
-[Wyrdcry](https://wyrdcry.net) and Black Death City. Mordheim is planned.
+[Wyrdcry](https://wyrdcry.net) and [Black Death City](https://www.blackdeathcity.com/).
+Mordheim is planned.
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
-Unofficial fan project. No connection to Games Workshop, the Wyrdcry project or
-the author of Black Death City.
+Unofficial fan project. No connection to Games Workshop, Johan Markström and
+the Wyrdcry project, or Sam Pearson and Black Death City.
 
 **Status: early.** The app builds a warband and lets you change it later. It
 does not yet export or print one, show fighter cards, or know anything about a
@@ -93,8 +94,8 @@ first and publishes it to GitHub Pages.
 
 - **Wyrdcry** – copied unchanged from the hand-kept ruleset of the
   [Wyrdcry Warband Deck](https://github.com/HENNIROCKS/wyrdcry-warband-deck),
-  which follows the rules at [wyrdcry.net](https://wyrdcry.net). The rules
-  belong to the Wyrdcry project.
+  which follows the rules at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is
+  by Johan Markström; the rules belong to the Wyrdcry project.
 - **Black Death City** – transcribed by hand from the Black Death City
   Playtest v1.01 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.

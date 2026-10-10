@@ -2,7 +2,6 @@
 	import { version as build } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import { planned, systems } from '$lib/systems';
 
@@ -20,10 +19,15 @@
 		? null
 		: `${built.getDate()} ${MONTHS[built.getMonth()]} ${built.getFullYear()}`;
 
-	/** Where each game's rules come from, by game id. */
+	/** Each game's own site and where its rules come from, by game id. */
+	const SITES: Record<string, string> = {
+		wyrdcry: 'https://wyrdcry.net',
+		'black-death-city': 'https://www.blackdeathcity.com/'
+	};
+
 	const SOURCES: Record<string, string> = {
 		wyrdcry:
-			'Copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net. The official factions only.',
+			'Wyrdcry is by Johan Markström. The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net. The official factions only.',
 		'black-death-city':
 			'Transcribed by hand from the Black Death City Playtest v1.01 by Sam Pearson. Where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.'
 	};
@@ -77,11 +81,7 @@
 	<title>About · {APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title="About" back={resolve('/')}>
-	{#snippet actions()}
-		<ThemeToggle />
-	{/snippet}
-</PageHeader>
+<PageHeader title="About" back={resolve('/')} />
 
 <main class="mx-auto max-w-2xl space-y-10 p-5 pb-16 text-sm text-zinc-300">
 	<section class="space-y-3">
@@ -103,7 +103,7 @@
 		</p>
 		<p class="text-zinc-400">
 			An unofficial fan project, not commercial, with no affiliation with or endorsement from Games
-			Workshop, the Wyrdcry project or the author of Black Death City.
+			Workshop, Johan Markström and the Wyrdcry project, or Sam Pearson and Black Death City.
 		</p>
 	</section>
 
@@ -127,7 +127,16 @@
 		<ul class="space-y-3">
 			{#each games as game (game.id)}
 				<li class="rounded-md border border-zinc-700 bg-zinc-800 p-3">
-					<p class="font-semibold text-zinc-200">{game.name} <span class="font-normal text-zinc-400">· {game.edition}</span></p>
+					<p class="font-semibold text-zinc-200">
+						{#if SITES[game.id]}
+							<a class="underline decoration-zinc-500 underline-offset-2 hover:decoration-current" href={SITES[game.id]}
+								>{game.name}</a
+							>
+						{:else}
+							{game.name}
+						{/if}
+						<span class="font-normal text-zinc-400">· {game.edition}</span>
+					</p>
 					<p class="text-zinc-400">{game.factions.join(', ')}</p>
 					{#if SOURCES[game.id]}
 						<p class="mt-2">{SOURCES[game.id]}</p>
@@ -164,9 +173,6 @@
 			<li><a class={linkClass} href="{REPO}/issues">{@render github()}Feedback and bug reports</a></li>
 			<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md">{@render github()}What is planned</a></li>
 			<li><a class={linkClass} href={REPO}>{@render github()}Source code</a></li>
-			<li>
-				<a class={linkClass} href="https://hennirocks.github.io/wyrdcry-warband-deck/">Wyrdcry Warband Deck</a>
-			</li>
 		</ul>
 	</section>
 
