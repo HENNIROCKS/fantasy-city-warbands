@@ -136,8 +136,7 @@
 		border-color: var(--ui-text-subtle);
 	}
 
-	.choice:focus-visible,
-	.pill:focus-visible {
+	.choice:focus-visible {
 		outline: 2px solid #16754a;
 		outline-offset: 2px;
 	}
@@ -153,30 +152,99 @@
 		cursor: not-allowed;
 	}
 
-	/* The small round pill the Card Creator uses for its theme and language switches. */
-	.pill {
-		display: inline-flex;
+	/*
+	 * A fighter's wargear, one row each as the Card Creator lists weapons: name,
+	 * cost and a round remove button in a 44 px touch area. Gear the fighter
+	 * always carries has a dashed outline and no remove button.
+	 */
+	.wargear-row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 5.5rem 44px;
+		gap: 8px;
 		align-items: center;
-		gap: 6px;
-		background: var(--ui-surface);
-		border: 1px solid var(--ui-border);
-		border-radius: 22px;
-		/* A finger's width, as Apple and Material both ask of a touch target. */
-		min-height: 44px;
-		padding: 6px 14px;
-		color: var(--ui-text-muted);
-		font-size: 0.8rem;
-		line-height: 1;
-		cursor: pointer;
-		transition:
-			color 0.15s,
-			border-color 0.15s;
 	}
 
-	.pill:hover,
-	.pill:focus-visible {
+	.wargear-cell {
+		display: block;
+		min-height: 44px;
+		padding: 10px 12px;
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		background: var(--ui-surface);
 		color: var(--ui-text);
-		border-color: var(--ui-text-subtle);
+		overflow-wrap: anywhere;
+	}
+
+	.wargear-cost {
+		text-align: center;
+		white-space: nowrap;
+		color: var(--ui-text-muted);
+	}
+
+	.wargear-fixed {
+		border-style: dashed;
+		color: var(--ui-text-muted);
+	}
+
+	.wargear-remove {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		cursor: pointer;
+	}
+
+	.wargear-remove span {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border: 1px solid var(--ui-border);
+		border-radius: 9999px;
+		background: var(--ui-surface);
+		color: var(--ui-text);
+		font-size: 1rem;
+		line-height: 1;
+		transition: border-color 0.15s;
+	}
+
+	.wargear-remove:hover span,
+	.wargear-remove:focus-visible span {
+		border-color: #16754a;
+	}
+
+	.wargear-remove:focus-visible {
+		outline: none;
+	}
+
+	.wargear-remove:focus-visible span {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.wargear-add {
+		min-height: 44px;
+		padding: 0 14px;
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		background: var(--ui-surface);
+		color: var(--ui-text);
+		font-size: 0.8rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: border-color 0.15s;
+	}
+
+	.wargear-add:hover,
+	.wargear-add:focus-visible {
+		border-color: #16754a;
+	}
+
+	.wargear-add:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
 	}
 
 	/*
@@ -297,16 +365,5 @@
 		.theme-switch-icon {
 			transition: none;
 		}
-	}
-
-	/* A pill that only shows something, such as gear a fighter cannot put down. */
-	.pill-static {
-		cursor: default;
-		border-style: dashed;
-	}
-
-	.pill-static:hover {
-		color: var(--ui-text-muted);
-		border-color: var(--ui-border);
 	}
 }

@@ -35,11 +35,12 @@
 		return faction.wargear.find((w) => w.id === id)?.name ?? id;
 	}
 
-	function add(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement;
-		if (select.value) instance.wargear.push(select.value);
-		select.value = '';
+	function costOf(id: string): number {
+		return faction.wargear.find((w) => w.id === id)?.cost ?? 0;
 	}
+
+	/* The wargear to pick from opens below the list, as a matrix rather than a select. */
+	let adding = $state(false);
 </script>
 
 <article class="space-y-3 rounded-md border border-zinc-700 bg-zinc-800 p-3">
@@ -98,38 +99,70 @@
 			</details>
 		{/if}
 
-		<div class="flex flex-wrap gap-2">
-			{#each fighter.gear as id (id)}
-				<span class="pill pill-static" title="Always carried">{nameOf(id)}</span>
-			{/each}
-			{#each instance.wargear as id, index (index)}
-				{@const item = faction.wargear.find((w) => w.id === id)}
+		<div>
+			{#if fighter.gear.length || instance.wargear.length}
+				<ul class="space-y-2">
+					{#each fighter.gear as id (id)}
+						<li class="wargear-row">
+							<span class="wargear-cell wargear-fixed">{nameOf(id)}</span>
+							<span class="wargear-cell wargear-fixed wargear-cost">always</span>
+							<span></span>
+						</li>
+					{/each}
+					{#each instance.wargear as id, index (index)}
+						<li class="wargear-row">
+							<span class="wargear-cell">{nameOf(id)}</span>
+							<span class="wargear-cell wargear-cost">{costOf(id)}&nbsp;{game.currency}</span>
+							<button
+								type="button"
+								class="wargear-remove"
+								aria-label="Remove {nameOf(id)} from {label}"
+								onclick={() => instance.wargear.splice(index, 1)}><span aria-hidden="true">×</span></button
+							>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			{#if fighter.wargear.length}
 				<button
 					type="button"
-					class="pill"
-					aria-label="Remove {nameOf(id)} from {label}"
-					onclick={() => instance.wargear.splice(index, 1)}
+					class="wargear-add {fighter.gear.length || instance.wargear.length ? 'mt-2' : ''}"
+					aria-expanded={adding}
+					aria-controls="wargear-{instance.instanceId}"
+					onclick={() => (adding = !adding)}>{adding ? 'Close' : '+ Add wargear'}</button
 				>
-					{nameOf(id)} · {item?.cost ?? 0} <span aria-hidden="true">✕</span>
-				</button>
-			{/each}
-			{#if fighter.wargear.length}
-				<select class="pill" aria-label="Add wargear to {label}" onchange={add}>
-					<option value="">+ Wargear</option>
-					{#each KINDS as { kind, label: group } (kind)}
-						{@const options = faction.wargear.filter((w) => w.kind === kind && fighter.wargear.includes(w.id))}
-						{#if options.length}
-							<optgroup label={group}>
-								{#each options as w (w.id)}
-									{@const block = blocked(w.id)}
-									<option value={w.id} disabled={!!block}>
-										{w.name} · {w.cost}{block ? ` – ${block.short}` : ''}
-									</option>
-								{/each}
-							</optgroup>
-						{/if}
-					{/each}
-				</select>
+				{#if adding}
+					<div id="wargear-{instance.instanceId}" class="mt-3 space-y-3">
+						{#each KINDS as { kind, label: group } (kind)}
+							{@const options = faction.wargear.filter((w) => w.kind === kind && fighter.wargear.includes(w.id))}
+							{#if options.length}
+								<div>
+									<p class="sublabel">{group}</p>
+									<div class="grid grid-cols-2 gap-2">
+										{#each options as w (w.id)}
+											{@const block = blocked(w.id)}
+											<button
+												type="button"
+												class="choice"
+												disabled={!!block}
+												onclick={() => {
+													instance.wargear.push(w.id);
+													adding = false;
+												}}
+											>
+												<span class="block font-semibold">{w.name}</span>
+												<span class="block text-zinc-400">{w.cost}&nbsp;{game.currency}</span>
+												{#if block}
+													<span class="block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
+												{/if}
+											</button>
+										{/each}
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				{/if}
 			{/if}
 		</div>
 	{/if}
