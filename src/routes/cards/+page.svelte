@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
@@ -23,6 +24,20 @@
 			: []
 	);
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
+
+	/*
+	 * Reached from within the app – the warband list or the builder's last step –
+	 * back returns to where the cards were opened. Opened directly, it goes to
+	 * the start.
+	 */
+	let cameFromApp = $state(false);
+	afterNavigate(({ type }) => (cameFromApp = type !== 'enter'));
+
+	function back(event: MouseEvent) {
+		if (!cameFromApp) return;
+		event.preventDefault();
+		history.back();
+	}
 </script>
 
 <svelte:head>
@@ -30,7 +45,7 @@
 </svelte:head>
 
 <div class="flex h-dvh flex-col">
-	<PageHeader {title} back={warband ? resolve('/build') + `?id=${warband.id}&step=finish` : resolve('/')} />
+	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if !warband}
 		<p class="p-5 text-sm text-zinc-400">This warband does not exist (any more).</p>

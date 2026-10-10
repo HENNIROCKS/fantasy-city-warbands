@@ -4,12 +4,15 @@
 	let {
 		title,
 		badge,
-		back
+		back,
+		onback
 	}: {
 		title: string;
 		/** A word beside the title, such as the app's stage. It stays whole while the title truncates. */
 		badge?: string | null;
 		back?: string;
+		/** Runs before the back link is followed, and may take its place, such as by going back in the history. */
+		onback?: (event: MouseEvent) => void;
 	} = $props();
 </script>
 
@@ -21,7 +24,7 @@
 >
 	<div class="flex min-w-0 items-center gap-2 sm:gap-3">
 		{#if back}
-			<a href={back} class="-my-2 flex h-11 w-11 shrink-0 items-center justify-center rounded text-zinc-300 transition hover:bg-zinc-800 hover:text-white focus-visible:bg-zinc-800 focus-visible:text-white" aria-label="Back">←</a>
+			<a href={back} onclick={onback} class="-my-2 flex h-11 w-11 shrink-0 items-center justify-center rounded text-zinc-300 transition hover:bg-zinc-800 hover:text-white focus-visible:bg-zinc-800 focus-visible:text-white" aria-label="Back">←</a>
 		{/if}
 		<h1 class="truncate text-sm font-semibold tracking-normal text-zinc-200 uppercase sm:tracking-widest">{title}</h1>
 		{#if badge}

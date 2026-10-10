@@ -59,18 +59,20 @@
 								{s.cost} · {s.ok ? 'legal' : 'not legal yet'}
 							</span>
 						</a>
-						<!-- Stacked, so the summary keeps the width it has beside one action. -->
-						<div class="-my-1 flex shrink-0 flex-col items-stretch">
+						<!-- Stacked, so the summary keeps the width it has beside one action. The
+						     column reaches to the row's edges, so the rule on its left runs from top
+						     to bottom and each action fills its half. -->
+						<div class="-my-3 -mr-3 flex shrink-0 flex-col self-stretch overflow-hidden rounded-r-md border-l border-zinc-700">
 							{#if w.fighters.length}
 								<a
 									href={resolve('/cards') + `?id=${w.id}`}
-									class="flex min-h-11 items-center justify-center rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+									class="flex min-h-11 flex-1 items-center justify-center border-b border-zinc-700 px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
 									aria-label="Cards of {s.title}">Cards</a
 								>
 							{/if}
 							<button
 								type="button"
-								class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+								class="flex min-h-11 flex-1 items-center justify-center px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
 								aria-label="Delete {s.title}"
 								onclick={() => remove(w.id, s.title)}>Delete</button
 							>
