@@ -12,6 +12,7 @@
 - [x] 🛠️ Come back to any step later, the faction included
 - [x] 🎨 Light and dark mode in the Card Creator's design
 - [x] ⚙️ Deploy to GitHub Pages on every push to main
+- [x] ⚙️ Offer a new version as soon as it is deployed
 - [x] 🎨 An about page with the games, their sources and a few questions
 - [x] 🛠️ Wargear as a button matrix instead of a select
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included

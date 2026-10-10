@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
+	import UpdateBar from '$lib/components/UpdateBar.svelte';
 	import { theme } from '$lib/theme.svelte';
 
 	let { children } = $props();
@@ -11,3 +12,5 @@
 <div class="min-h-dvh bg-zinc-900 text-white">
 	{@render children()}
 </div>
+
+<UpdateBar />
