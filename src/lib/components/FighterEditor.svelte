@@ -43,24 +43,25 @@
 </script>
 
 <article class="space-y-3 rounded-md border border-zinc-700 bg-zinc-800 p-3">
-	<div class="flex items-start gap-2">
-		<div class="min-w-0 flex-1">
-			<input
-				class="field-input font-semibold"
-				bind:value={instance.name}
-				placeholder={fighter?.name ?? instance.fighterId}
-				aria-label="Fighter name"
-			/>
-			<p class="mt-1 text-zinc-400">
+	<!-- The name takes the full width, so the placeholder fits a long fighter type. -->
+	<div>
+		<input
+			class="field-input h-11 font-semibold placeholder:font-normal"
+			bind:value={instance.name}
+			placeholder="Name your {fighter?.name ?? instance.fighterId}"
+			aria-label="Fighter name"
+		/>
+		<div class="mt-1 flex items-center justify-between gap-2">
+			<p class="min-w-0 text-zinc-400">
 				{fighter?.name ?? instance.fighterId} · {fighterCost(instance, faction)}&nbsp;{game.currency}
 			</p>
+			<button
+				type="button"
+				class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+				aria-label="Remove {label}"
+				onclick={onremove}>Remove</button
+			>
 		</div>
-		<button
-			type="button"
-			class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
-			aria-label="Remove {label}"
-			onclick={onremove}>Remove</button
-		>
 	</div>
 
 	{#if fighter}
