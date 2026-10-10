@@ -1,0 +1,38 @@
+[
+	{
+		"id": "condemn",
+		"name": "Condemn",
+		"type": "triple",
+		"text": "Select up to (X/2) visible enemy fighters. Those fighters are condemned. For each selected fighter, increase Zeal by 1. If the selected fighter is a `WIZARD`, `DAEMON` or `VAMPIRE`, increase Zeal by 3 instead."
+	},
+	{
+		"id": "incite-rabble",
+		"name": "Incite Rabble",
+		"type": "double",
+		"text": "Select a friendly `HENCHMAN` within 6\" of this fighter. That `HENCHMAN` makes a free move action. Then, increase Zeal by 1."
+	},
+	{
+		"id": "self-flagellation",
+		"name": "Self-Flagellation",
+		"type": "double",
+		"text": "Allocate (X/2) damage points to this fighter and increase Zeal by 1. Add 1 to the Attacks characteristic of melee attack actions made by this fighter until the end of their activation."
+	},
+	{
+		"id": "unshakeable",
+		"name": "Unshakeable",
+		"type": "trait",
+		"text": "This fighter automatically passes any Panic tests it is required to take."
+	},
+	{
+		"id": "penitent",
+		"name": "Penitent",
+		"type": "trait",
+		"text": "This fighter cannot be equipped with ranged weapons or wear any armour."
+	},
+	{
+		"id": "death-grip",
+		"name": "Death Grip",
+		"type": "double",
+		"text": "After this fighter's next melee attack action in this activation, if at least 1 hit roll from that attack action results in a hit or a critical hit, the target forfeits 1 of their actions in this battle round. If the target has already activated or if they have no more actions to forfeit, allocate 3 damage points to the target instead."
+	}
+]

@@ -1,0 +1,8 @@
+{
+  "id": "undead",
+  "name": "Undead",
+  "keyword": "UNDEAD",
+  "warband_size": { "min": 3, "max": 15 },
+  "origin": "official",
+  "author": "Johan Markström"
+}

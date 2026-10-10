@@ -1,0 +1,142 @@
+[
+	{
+		"id": "knight-abbot",
+		"name": "Knight-Abbot",
+		"cost": 190,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "cloister", "human"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 7 },
+		"wargear_lists": ["main", "champion"],
+		"gear": ["full-plate"]
+	},
+	{
+		"id": "high-sorcerer",
+		"name": "High Sorcerer",
+		"cost": 175,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "cloister", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 6 },
+		"wargear_lists": ["practitioner", "practitioner-items"],
+		"gear": []
+	},
+	{
+		"id": "cloister-sorcerer",
+		"name": "Cloister Sorcerer",
+		"cost": 140,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "cloister", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
+		"wargear_lists": ["practitioner", "practitioner-items"],
+		"gear": []
+	},
+	{
+		"id": "cloister-champion",
+		"name": "Cloister Champion",
+		"cost": 145,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "cloister", "human"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": ["full-plate"]
+	},
+	{
+		"id": "darkcloven-shaman",
+		"name": "Darkcloven Shaman",
+		"cost": 145,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "cloister", "beastman", "wizard"],
+		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 5 },
+		"wargear_lists": ["practitioner", "practitioner-items"],
+		"gear": []
+	},
+	{
+		"id": "demonic-rot-herald",
+		"name": "Demonic Rot-Herald",
+		"cost": 175,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "cloister", "demon", "wizard"],
+		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 6 },
+		"wargear_lists": ["practitioner-items"],
+		"gear": ["demonic-rot-blade"]
+	},
+	{
+		"id": "cloister-knight",
+		"name": "Cloister Knight",
+		"cost": 95,
+		"limit": { "min": 0, "max": 3 },
+		"keywords": ["henchman", "cloister", "human"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 4, "initiative": 3, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main"],
+		"gear": ["full-plate"]
+	},
+	{
+		"id": "dreg-cultist",
+		"name": "Dreg Cultist",
+		"cost": 30,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "cloister", "human"],
+		"profile": { "move": 5, "blade": 5, "bow": 5, "armour": 6, "initiative": 2, "willpower": 2, "life": 3 },
+		"wargear_lists": ["main", "dreg"],
+		"gear": []
+	},
+	{
+		"id": "darkcloven-beastman",
+		"name": "Darkcloven Beastman",
+		"cost": 55,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "cloister", "beastman"],
+		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
+		"id": "rot-demon",
+		"name": "Rot Demon",
+		"cost": 120,
+		"limit": { "min": 0, "max": 3 },
+		"keywords": ["henchman", "cloister", "demon"],
+		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 5 },
+		"wargear_lists": [],
+		"gear": ["demonic-rot-blade"]
+	},
+	{
+		"id": "demonic-rotspawn",
+		"name": "Demonic Rotspawn",
+		"cost": 130,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "cloister", "demon"],
+		"profile": { "move": 5, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 8 },
+		"wargear_lists": [],
+		"gear": ["demonic-rot-maw"]
+	},
+	{
+		"id": "demonic-rot-colossal",
+		"name": "Demonic Rot-Colossal",
+		"cost": 200,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "cloister", "demon"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 10 },
+		"wargear_lists": [],
+		"gear": ["great-demonic-rot-blade"]
+	},
+	{
+		"id": "bloat-fly",
+		"name": "Bloat Fly",
+		"cost": 50,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "cloister", "fly"],
+		"profile": { "move": 10, "blade": 5, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 2 },
+		"wargear_lists": [],
+		"gear": ["proboscis"]
+	},
+	{
+		"id": "rotling",
+		"name": "Rotling",
+		"cost": 20,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "cloister", "demon"],
+		"profile": { "move": 4, "blade": 4, "bow": null, "armour": 5, "initiative": 3, "willpower": 2, "life": 3 },
+		"wargear_lists": [],
+		"gear": ["demonic-rot-strike"]
+	}
+]

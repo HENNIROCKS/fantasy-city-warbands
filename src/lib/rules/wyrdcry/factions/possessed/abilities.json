@@ -1,0 +1,38 @@
+[
+	{
+		"id": "ascended",
+		"name": "Ascended",
+		"type": "trait",
+		"text": "In the aftermath sequence, this fighter is always considered to be Marked for Greatness. The Daemon within refuses to be equipped with any equipment, weapons or armour."
+	},
+	{
+		"id": "hollowed",
+		"name": "Hollowed",
+		"type": "trait",
+		"text": "This fighter automatically passes any Bravery tests it is required to take."
+	},
+	{
+		"id": "baleful-challenge",
+		"name": "Baleful Challenge",
+		"type": "double",
+		"text": "Select a visible enemy fighter within 1\" of this fighter. That enemy fighter makes a free melee attack action targeting this fighter. Then, add 2 to the Attacks and Fight characteristic of melee attack actions made by this fighter that target that enemy fighter until the end of the activation."
+	},
+	{
+		"id": "puppet-master",
+		"name": "Puppet Master",
+		"type": "triple",
+		"text": "*Magical ability*. Select a visible fighter within 6\" of this fighter. That fighter must pass a Bravery test or immediately make a free Move, Retreat, or Attack action of your choice (a friendly fighter can choose to automatically fail the Bravery test)."
+	},
+	{
+		"id": "curse-of-agony",
+		"name": "Curse of Agony",
+		"type": "double",
+		"text": "*Magical ability*. Select a visible fighter within 12\" of this fighter and roll (X) dice. For each result of 2+, allocate 1 damage point to that fighter."
+	},
+	{
+		"id": "touch-of-chaos",
+		"name": "Touch of Chaos",
+		"type": "quad",
+		"text": "*Magical ability*. Select a visible fighter within 1\" of this fighter. That fighter must take a Bravery test. If the test fails, the fighter is immediately removed from the battlefield. The fighter does not count as taken out of action, but gains the `MUTANT` keyword."
+	}
+]

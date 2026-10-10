@@ -1,0 +1,20 @@
+[
+  {
+    "id": "sigmars-blessing",
+    "name": "Sigmar's Blessing",
+    "phase": "battle",
+    "text": "All `SISTERS OF SIGMAR` fighters may call for one of Sigmar's Blessings by spending saved Wyrd Dice:\n\n- **Hearts of Steel:** When a fighter is asked to take a Bravery test, you may discard one saved Wyrd Dice to automatically pass the test.\n- **Righteous Fury:** During a fighter's activation, after making a hit roll, you may discard one saved Wyrd Dice to turn a hit into a critical hit.\n- **Sigmar Protects:** During an enemy fighter's activation, you may discard one saved Wyrd Dice to perform a reaction with a fighter without needing or spending an action to do so.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "fervent-prayer",
+    "name": "Fervent Prayer",
+    "phase": "battle",
+    "text": "[Trait] All `SISTERS OF SIGMAR` fighters have this trait. Whenever this fighter makes the Wait action they may pray to Sigmar by taking a Bravery test. If it passes, add 1 Wyrd Dice to your saved Wyrd Dice.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  }
+]

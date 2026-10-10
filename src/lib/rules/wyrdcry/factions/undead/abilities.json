@@ -1,0 +1,44 @@
+[
+  {
+    "id": "undying-loyalty",
+    "name": "Undying Loyalty",
+    "type": "reaction",
+    "text": "A fighter can make this reaction when a `VAMPIRE` within 3\" of them is targeted by an attack action, after the damage is totalled but before it is allocated, if it is enough for that `VAMPIRE` to be taken out of action. Allocate those damage points, one at a time, to this fighter instead. If this fighter is taken out of action, allocate any remaining damage points to that friendly `VAMPIRE`."
+  },
+  {
+    "id": "unholy-celerity",
+    "name": "Unholy Celerity",
+    "type": "trait",
+    "text": "Once per battle round, this fighter can make a free move action."
+  },
+  {
+    "id": "the-hunger",
+    "name": "The Hunger",
+    "type": "double",
+    "text": "A fighter can use this ability after taking an enemy fighter out of action with a melee attack action. Remove (X) damage points from this fighter, and add a Wyrd Dice to your saved Wyrd Dice."
+  },
+  {
+    "id": "unbending-will",
+    "name": "Unbending Will",
+    "type": "trait",
+    "text": "Do not make injury rolls for this fighter. In addition, when this fighter is taken out of action, the warband starts wavering."
+  },
+  {
+    "id": "chilling-howl",
+    "name": "Chilling Howl",
+    "type": "double",
+    "text": "Select each enemy fighter within 6\" of this fighter. Until the end of the battle round, those fighters cannot make reactions."
+  },
+  {
+    "id": "unfeeling-flesh",
+    "name": "Unfeeling Flesh",
+    "type": "trait",
+    "text": "When resolving an attack action against this fighter, if none of the hit rolls score a critical hit, this fighter's Armour characteristic is 1 for that attack action."
+  },
+  {
+    "id": "shambling-horde",
+    "name": "Shambling Horde",
+    "type": "double",
+    "text": "Select up to 3 visible friendly fighters with the `ZOMBIE` keyword. Those fighters can each immediately make a bonus move action of up to 3\", as long as they end that move action closer to this fighter."
+  }
+]

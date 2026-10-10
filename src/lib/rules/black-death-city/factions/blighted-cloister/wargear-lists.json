@@ -1,0 +1,7 @@
+{
+	"main": ["axe", "club-mace-hammer", "dagger", "flail", "halberd", "spear", "sword", "great-club", "heavy-axe", "shield", "cloister-icon"],
+	"champion": ["demonic-rot-blade", "great-demonic-rot-blade", "full-plate"],
+	"dreg": ["blowpipe", "sling"],
+	"practitioner": ["arcane-staff", "ensorcelled-weapon", "sword", "warded-robes"],
+	"practitioner-items": ["grimoire", "cauldron", "demonic-familiar", "ensorcelled-bell"]
+}

@@ -1,0 +1,36 @@
+[
+	{
+		"id": "knights-militant",
+		"name": "Knights-Militant",
+		"text": "You must recruit a Knight-Abbot to lead your warband. You begin the campaign with the Fortified Keep stronghold. Your warband can recruit any number of Cloister Knights.",
+		"leader": "knight-abbot",
+		"stronghold": "Fortified Keep",
+		"limits": [
+			{ "fighter": "cloister-knight", "limit": { "min": 0, "max": null } }
+		]
+	},
+	{
+		"id": "priesthood-of-sorcerers",
+		"name": "Priesthood of Sorcerers",
+		"text": "You must recruit a High Sorcerer to lead your warband. You begin the campaign with the Fortified Keep stronghold. Your warband can recruit 0-2 Cloister Sorcerers.",
+		"leader": "high-sorcerer",
+		"stronghold": "Fortified Keep",
+		"limits": [
+			{ "fighter": "cloister-sorcerer", "limit": { "min": 0, "max": 2 } }
+		]
+	},
+	{
+		"id": "the-anointed-one",
+		"name": "The Anointed One",
+		"text": "You must recruit a Knight-Abbot Noble to lead your warband. You begin the campaign with the Unholy Altar stronghold. Your warband can recruit any number of Rot Walkers.",
+		"leader": "knight-abbot",
+		"stronghold": "Unholy Altar"
+	},
+	{
+		"id": "blessed-rabble",
+		"name": "Blessed Rabble",
+		"text": "You must recruit a High Sorcerer to lead your warband. You begin the campaign with the Street Pulpit stronghold.",
+		"leader": "high-sorcerer",
+		"stronghold": "Street Pulpit"
+	}
+]

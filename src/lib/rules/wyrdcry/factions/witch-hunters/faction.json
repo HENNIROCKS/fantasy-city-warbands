@@ -1,0 +1,8 @@
+{
+  "id": "witch-hunters",
+  "name": "Witch Hunters",
+  "keyword": "WITCH HUNTERS",
+  "warband_size": { "min": 3, "max": 15 },
+  "origin": "official",
+  "author": "Johan Markström"
+}

@@ -1,0 +1,30 @@
+[
+	{
+		"id": "swords-for-hire",
+		"name": "Swords for Hire",
+		"text": "You must hire a Guild Captain to lead your warband. You begin the campaign with the Guild Barracks stronghold.",
+		"leader": "guild-captain",
+		"stronghold": "Guild Barracks"
+	},
+	{
+		"id": "disgraced-noble",
+		"name": "Disgraced Noble",
+		"text": "You must hire a Noble to lead your warband. You begin the campaign with the Dilapidated Manor stronghold.",
+		"leader": "noble",
+		"stronghold": "Dilapidated Manor"
+	},
+	{
+		"id": "witch-hunters-guild",
+		"name": "Witch Hunters Guild",
+		"text": "You must hire a Witch Hunter to lead your warband. You begin the campaign with the Chapter House stronghold.",
+		"leader": "witch-hunter",
+		"stronghold": "Chapter House"
+	},
+	{
+		"id": "wizards-retinue",
+		"name": "Wizard's Retinue",
+		"text": "You must hire a High Wizard of the Guild to lead your warband. You begin the campaign with the Hidden Library stronghold.",
+		"leader": "high-wizard",
+		"stronghold": "Hidden Library"
+	}
+]

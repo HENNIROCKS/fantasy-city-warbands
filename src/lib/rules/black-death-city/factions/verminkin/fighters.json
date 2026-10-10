@@ -1,0 +1,132 @@
+[
+	{
+		"id": "pox-priest",
+		"name": "Pox Priest",
+		"cost": 170,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "verminkin", "priest"],
+		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 5, "life": 5 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "nightfang-assassin",
+		"name": "Nightfang Assassin",
+		"cost": 140,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "verminkin", "assassin"],
+		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "ironfang-warlord",
+		"name": "Ironfang Warlord",
+		"cost": 135,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "verminkin"],
+		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "sparkseer",
+		"name": "Sparkseer",
+		"cost": 130,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "verminkin"],
+		"profile": { "move": 6, "blade": 4, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main", "champion", "sparkseer"],
+		"gear": []
+	},
+	{
+		"id": "verminkin-warlock",
+		"name": "Verminkin Warlock",
+		"cost": 125,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "verminkin", "wizard"],
+		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "pox-priests-apprentice",
+		"name": "Pox Priest's Apprentice",
+		"cost": 125,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "verminkin", "priest"],
+		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "verminkin-champion",
+		"name": "Verminkin Champion",
+		"cost": 95,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "verminkin"],
+		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "assassins-apprentice",
+		"name": "Assassin's Apprentice",
+		"cost": 90,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "verminkin", "assassin"],
+		"profile": { "move": 6, "blade": 4, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "sparkseers-apprentice",
+		"name": "Sparkseer's Apprentice",
+		"cost": 85,
+		"limit": { "min": 0, "max": 2 },
+		"keywords": ["champion", "verminkin"],
+		"profile": { "move": 6, "blade": 4, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 4 },
+		"wargear_lists": ["main", "champion", "sparkseer"],
+		"gear": []
+	},
+	{
+		"id": "verminkin-warrior",
+		"name": "Verminkin Warrior",
+		"cost": 40,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "verminkin"],
+		"profile": { "move": 6, "blade": 5, "bow": 5, "armour": 6, "initiative": 4, "willpower": 2, "life": 4 },
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
+		"id": "rat-mutant",
+		"name": "Rat-Mutant",
+		"cost": 105,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "ogre"],
+		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 2, "willpower": 2, "life": 8 },
+		"wargear_lists": ["rat-mutant"],
+		"gear": ["oversized-claw"]
+	},
+	{
+		"id": "rolling-contraption",
+		"name": "Rolling-Contraption",
+		"cost": 150,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["brute", "verminkin", "contraption"],
+		"profile": { "move": "2d6\"", "blade": 4, "bow": 4, "armour": 4, "initiative": 1, "willpower": 3, "life": 8 },
+		"wargear_lists": ["contraption"],
+		"gear": ["crushing-bulk"]
+	},
+	{
+		"id": "giant-rat",
+		"name": "Giant Rat",
+		"cost": 20,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "verminkin", "rat"],
+		"profile": { "move": 8, "blade": 5, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 2 },
+		"wargear_lists": [],
+		"gear": ["nasty-bite"]
+	}
+]

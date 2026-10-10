@@ -1,0 +1,29 @@
+[
+  {
+    "id": "black-clad-killers",
+    "name": "Black-clad Killers",
+    "phase": "battle",
+    "text": "When setting up a battle, you may decide to split your warband into four search parties instead of three. The fighters in the fourth search party are **hidden** and kept in reserve – even if the deployment map doesn't feature reserve search parties.\n\nIn the second or third battle round, when it is your turn to activate a fighter, you may **reveal** and activate a hidden fighter instead. Set up the fighter on the battlefield more than 6\" from enemy fighters and more than 3\" from objective markers and wyrdstone tokens. During that fighter's activation, enemy fighters cannot make reactions.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "murder-stab",
+    "name": "Murder-Stab",
+    "phase": "battle",
+    "text": "[Double] All `CLAN ESHIN` fighters have this ability. For this fighter’s next melee attack action, add (X/2) to the damage points allocated to the target by each critical hit. In addition, if this fighter was revealed this battle round, you may reduce the target’s Fight characteristic by 3 for that attack action (to a minimum of 1).",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "slink-away",
+    "name": "Slink Away",
+    "phase": "battle",
+    "text": "[Double] All `CLAN ESHIN` fighters have this ability. A fighter can only use this ability if they are within 1\" of an enemy fighter. This fighter makes a free Retreat action.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  }
+]

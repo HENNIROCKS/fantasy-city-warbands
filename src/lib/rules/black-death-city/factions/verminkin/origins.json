@@ -1,0 +1,36 @@
+[
+	{
+		"id": "acolytes-of-plague",
+		"name": "Acolytes of Plague",
+		"text": "You must recruit a Pox Priest to lead your warband. You begin the campaign with the Desecrated Chapel stronghold. Your warband can include 0-2 Pox Priest Apprentices.",
+		"leader": "pox-priest",
+		"stronghold": "Desecrated Chapel",
+		"limits": [
+			{ "fighter": "pox-priests-apprentice", "limit": { "min": 0, "max": 2 } }
+		]
+	},
+	{
+		"id": "rooftop-runners",
+		"name": "Rooftop Runners",
+		"text": "You must recruit a Nightfang Assassin to lead your warband. You begin the campaign with the Hidden Vantage stronghold.",
+		"leader": "nightfang-assassin",
+		"stronghold": "Hidden Vantage"
+	},
+	{
+		"id": "sparkseer-coven",
+		"name": "Sparkseer Coven",
+		"text": "You must hire a Sparkseer to lead your warband. You begin the campaign with the Rickety Workshop stronghold. Your warband can include 0-2 Rolling Contraptions.",
+		"leader": "sparkseer",
+		"stronghold": "Rickety Workshop",
+		"limits": [
+			{ "fighter": "rolling-contraption", "limit": { "min": 0, "max": 2 } }
+		]
+	},
+	{
+		"id": "merciless-tyrant",
+		"name": "Merciless Tyrant",
+		"text": "You must recruit an Ironfang Warlord to lead your warband. You begin the campaign with the Fortified Warren stronghold.",
+		"leader": "ironfang-warlord",
+		"stronghold": "Fortified Warren"
+	}
+]

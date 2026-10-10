@@ -1,0 +1,152 @@
+[
+	{
+		"id": "bloodcursed-noble",
+		"name": "Bloodcursed Noble",
+		"cost": 185,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "undead", "wizard", "vampyre", "aristocrat"],
+		"profile": { "move": 5, "blade": 3, "bow": 5, "armour": 6, "initiative": 5, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "necromancer",
+		"name": "Necromancer",
+		"cost": 165,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "human"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "lycanfell-noble",
+		"name": "Lycanfell Noble",
+		"cost": 170,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "undead", "werwulf", "aristocrat"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "barrow-lord",
+		"name": "Barrow Lord",
+		"cost": 130,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "undead", "skeleton"],
+		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "necromancers-apprentice",
+		"name": "Necromancer's Apprentice",
+		"cost": 120,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "barrow-champion",
+		"name": "Barrow Champion",
+		"cost": 85,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "undead", "skeleton"],
+		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "bloodcursed-courtesan",
+		"name": "Bloodcursed Courtesan",
+		"cost": 125,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "undead", "wizard", "vampyre", "aristocrat"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 5, "willpower": 4, "life": 4 },
+		"wargear_lists": ["practitioner"],
+		"gear": []
+	},
+	{
+		"id": "bloodcursed-knight",
+		"name": "Bloodcursed Knight",
+		"cost": 95,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "undead", "vampyre", "aristocrat"],
+		"profile": { "move": 5, "blade": 3, "bow": 5, "armour": 6, "initiative": 5, "willpower": 4, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "misbegotten",
+		"name": "Misbegotten",
+		"cost": 65,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "undead", "vampyre"],
+		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 5, "willpower": 2, "life": 4 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "skeleton-warrior",
+		"name": "Skeleton Warrior",
+		"cost": 40,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "undead", "skeleton", "thrall"],
+		"profile": { "move": 4, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 2, "life": 4 },
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
+		"id": "zombie",
+		"name": "Zombie",
+		"cost": 30,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "undead", "zombie", "thrall"],
+		"profile": { "move": 4, "blade": 5, "bow": 6, "armour": 6, "initiative": 1, "willpower": 2, "life": 4 },
+		"wargear_lists": [],
+		"gear": ["zombie-bite"]
+	},
+	{
+		"id": "zombie-ogre",
+		"name": "Zombie Ogre",
+		"cost": 100,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "undead", "zombie", "thrall"],
+		"profile": { "move": 4, "blade": 4, "bow": 6, "armour": 6, "initiative": 1, "willpower": 2, "life": 8 },
+		"wargear_lists": ["zombie-ogre"],
+		"gear": []
+	},
+	{
+		"id": "gargoyle",
+		"name": "Gargoyle",
+		"cost": 150,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "undead", "gargoyle", "thrall", "fly"],
+		"profile": { "move": 6, "blade": 3, "bow": 6, "armour": 6, "initiative": 3, "willpower": 3, "life": 8 },
+		"wargear_lists": [],
+		"gear": ["stone-talons"]
+	},
+	{
+		"id": "dire-bat",
+		"name": "Dire Bat",
+		"cost": 60,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "undead", "bat", "fly"],
+		"profile": { "move": 10, "blade": 5, "bow": null, "armour": 6, "initiative": 3, "willpower": 1, "life": 3 },
+		"wargear_lists": [],
+		"gear": ["biting-fangs"]
+	},
+	{
+		"id": "dire-wolf",
+		"name": "Dire Wolf",
+		"cost": 50,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "undead", "dog"],
+		"profile": { "move": 7, "blade": 3, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 5 },
+		"wargear_lists": [],
+		"gear": ["necrotic-bite"]
+	}
+]

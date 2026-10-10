@@ -1,0 +1,8 @@
+{
+  "id": "clan-eshin",
+  "name": "Clan Eshin",
+  "keyword": "CLAN ESHIN",
+  "warband_size": { "min": 3, "max": 15 },
+  "origin": "official",
+  "author": "Johan Markström"
+}

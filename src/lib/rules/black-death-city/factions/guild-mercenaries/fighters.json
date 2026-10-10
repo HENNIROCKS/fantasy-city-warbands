@@ -1,0 +1,132 @@
+[
+	{
+		"id": "guild-captain",
+		"name": "Guild Captain",
+		"cost": 140,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "mercenary", "human"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "noble",
+		"name": "Noble",
+		"cost": 120,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "mercenary", "human", "aristocrat"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "witch-hunter",
+		"name": "Witch Hunter",
+		"cost": 140,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "mercenary", "human", "witch-hunter"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
+		"wargear_lists": ["main", "champion", "witch-hunters"],
+		"gear": []
+	},
+	{
+		"id": "high-wizard",
+		"name": "High Wizard of the Guild",
+		"cost": 165,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["leader", "mercenary", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
+		"wargear_lists": ["wizard"],
+		"gear": []
+	},
+	{
+		"id": "guild-wizard",
+		"name": "Guild Wizard",
+		"cost": 120,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "mercenary", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
+		"wargear_lists": ["wizard"],
+		"gear": []
+	},
+	{
+		"id": "guild-cleric",
+		"name": "Guild Cleric",
+		"cost": 120,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["champion", "mercenary", "human", "priest"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
+		"wargear_lists": ["cleric"],
+		"gear": []
+	},
+	{
+		"id": "guild-champion",
+		"name": "Guild Champion",
+		"cost": 90,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "mercenary", "human"],
+		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 5 },
+		"wargear_lists": ["main", "champion"],
+		"gear": []
+	},
+	{
+		"id": "plague-doctor",
+		"name": "Plague Doctor",
+		"cost": 65,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "mercenary", "human"],
+		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
+		"id": "witch-hunters-apprentice",
+		"name": "Witch Hunter's Apprentice",
+		"cost": 80,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["champion", "human", "mercenary", "witch-hunter"],
+		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
+		"wargear_lists": ["main", "champion", "witch-hunters"],
+		"gear": []
+	},
+	{
+		"id": "guild-mercenary",
+		"name": "Guild Mercenary",
+		"cost": 50,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "mercenary", "human"],
+		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"wargear_lists": ["main", "munitions"],
+		"gear": []
+	},
+	{
+		"id": "guild-recruit",
+		"name": "Guild Recruit",
+		"cost": 30,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["henchman", "mercenary", "human"],
+		"profile": { "move": 5, "blade": 5, "bow": 5, "armour": 6, "initiative": 2, "willpower": 2, "life": 3 },
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
+		"id": "mercenary-ogre",
+		"name": "Mercenary Ogre",
+		"cost": 100,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["brute", "mercenary", "ogre"],
+		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"wargear_lists": ["ogre"],
+		"gear": []
+	},
+	{
+		"id": "hunting-dog",
+		"name": "Hunting Dog",
+		"cost": 30,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["beast", "mercenary", "dog"],
+		"profile": { "move": 7, "blade": 3, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 3 },
+		"wargear_lists": [],
+		"gear": ["vicious-bite"]
+	}
+]

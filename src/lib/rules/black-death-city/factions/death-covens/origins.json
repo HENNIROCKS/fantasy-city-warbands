@@ -1,0 +1,37 @@
+[
+	{
+		"id": "aristocrats-of-blood",
+		"name": "Aristocrats of Blood",
+		"text": "You must recruit a Bloodcursed Noble to lead your warband. You begin the campaign with the Opulent Manor stronghold. Your warband can include 0-3 Bloodcursed Knights.",
+		"leader": "bloodcursed-noble",
+		"stronghold": "Opulent Manor",
+		"limits": [
+			{ "fighter": "bloodcursed-knight", "limit": { "min": 0, "max": 3 } }
+		]
+	},
+	{
+		"id": "rogue-necromancer",
+		"name": "Rogue Necromancer",
+		"text": "You must recruit a Necromancer to lead your warband. You begin the campaign with the Embalmer's Hall stronghold.",
+		"leader": "necromancer",
+		"stronghold": "Embalmer's Hall"
+	},
+	{
+		"id": "the-hunt-descends",
+		"name": "The Hunt Descends",
+		"text": "You must recruit a Lycanfell Noble to lead your warband. You begin the campaign with the Grand Pavilion stronghold. Your warband can include any number of Dire Wolves (they do not count towards your Beasts limit).",
+		"leader": "lycanfell-noble",
+		"stronghold": "Grand Pavilion",
+		"limits": [
+			{ "fighter": "dire-wolf", "limit": { "min": 0, "max": null } }
+		],
+		"ungrouped": ["dire-wolf"]
+	},
+	{
+		"id": "awakened-lord",
+		"name": "Awakened Lord",
+		"text": "You must recruit a Barrow Lord to lead your warband. You begin the campaign with the Ancient Barrows stronghold.",
+		"leader": "barrow-lord",
+		"stronghold": "Ancient Barrows"
+	}
+]

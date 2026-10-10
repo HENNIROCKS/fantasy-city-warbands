@@ -1,0 +1,192 @@
+@import 'tailwindcss';
+
+/*
+ * Colours and form elements follow the Wyrdcry Card Creator, so the apps look
+ * alike. Dark or light comes from `data-theme` on the root, set before the
+ * first render by the script in app.html and switched by ThemeToggle.
+ *
+ * Light mode works by translating the zinc utilities below. A zinc shade that
+ * is not translated stays dark in light mode, so the markup keeps to these.
+ */
+
+/* ── Theme variables ──────────────────────────────────────────────────────── */
+
+:root {
+	color-scheme: dark;
+	--ui-text: #e4e4e7;
+	--ui-text-muted: #a1a1aa;
+	--ui-text-subtle: #71717a;
+	--ui-surface: #27272a;
+	--ui-border: #3f3f46;
+	--ui-field-label: #9ca3af;
+	--ui-sel-bg: rgba(22, 117, 74, 0.2);
+	--ui-sel-border: rgba(22, 117, 74, 0.4);
+	--ui-sel-text: #87e8bc;
+	--ui-warn-bg: rgba(217, 119, 6, 0.15);
+	--ui-warn-border: rgba(217, 119, 6, 0.4);
+	--ui-warn-text: #fcd34d;
+	--ui-danger-text: #fca5a5;
+}
+
+[data-theme='light'] {
+	color-scheme: light;
+	--ui-text: #2e2620;
+	--ui-text-muted: #6a5e52;
+	--ui-text-subtle: #5a5048;
+	--ui-surface: #ede8e2;
+	--ui-border: #c4bdb1;
+	--ui-field-label: #62574c;
+	--ui-sel-bg: rgba(22, 117, 74, 0.1);
+	--ui-sel-border: rgba(22, 117, 74, 0.3);
+	--ui-sel-text: #0f5c3a;
+	--ui-warn-bg: rgba(217, 119, 6, 0.12);
+	--ui-warn-border: rgba(180, 83, 9, 0.35);
+	--ui-warn-text: #7c3d06;
+	--ui-danger-text: #a3271b;
+}
+
+/* ── Tailwind class overrides for light theme ─────────────────────────────── */
+
+[data-theme='light'] .bg-zinc-900 { background-color: #e4ddd3; }
+[data-theme='light'] .bg-zinc-950 { background-color: #d8d0c5; }
+[data-theme='light'] .bg-zinc-800 { background-color: #ede8e2; }
+[data-theme='light'] .bg-zinc-700 { background-color: #c8c0b5; }
+[data-theme='light'] .bg-zinc-600 { background-color: #b0a89c; }
+
+[data-theme='light'] .border-zinc-800 { border-color: #c4bdb1; }
+[data-theme='light'] .border-zinc-700 { border-color: #b4ada1; }
+[data-theme='light'] .border-zinc-600 { border-color: #a8a094; }
+
+[data-theme='light'] .text-white { color: #1c1810; }
+[data-theme='light'] .text-zinc-200 { color: #2e2620; }
+[data-theme='light'] .text-zinc-300 { color: #4a3e32; }
+[data-theme='light'] .text-zinc-400 { color: #6a5e52; }
+[data-theme='light'] .text-zinc-500 { color: #5a5048; }
+
+[data-theme='light'] .hover\:text-white:hover { color: #1c1810; }
+[data-theme='light'] .hover\:bg-zinc-800:hover { background-color: #ede8e2; }
+[data-theme='light'] .hover\:bg-zinc-700:hover { background-color: #c8c0b5; }
+[data-theme='light'] .hover\:border-zinc-500:hover { border-color: #8a7e72; }
+
+/* Keyboard focus gets the same feedback as the pointer, in both themes. */
+[data-theme='light'] .focus-visible\:text-white:focus-visible { color: #1c1810; }
+[data-theme='light'] .focus-visible\:bg-zinc-800:focus-visible { background-color: #ede8e2; }
+[data-theme='light'] .focus-visible\:bg-zinc-700:focus-visible { background-color: #c8c0b5; }
+
+/* Keep white text on the green buttons regardless of the text-white override. */
+[data-theme='light'] .bg-\[\#125E3C\].text-white,
+[data-theme='light'] .bg-\[\#16754A\].text-white { color: #ffffff; }
+
+/* ── Form elements ────────────────────────────────────────────────────────── */
+
+@layer components {
+	.field-label {
+		display: block;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		color: var(--ui-field-label);
+		margin-bottom: 0.375rem;
+		text-transform: uppercase;
+	}
+
+	.sublabel {
+		display: block;
+		font-size: 0.65rem;
+		color: var(--ui-field-label);
+		margin-bottom: 2px;
+	}
+
+	.field-input {
+		width: 100%;
+		box-sizing: border-box;
+		appearance: none;
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		padding: 6px 10px;
+		color: var(--ui-text);
+		font-size: 1rem;
+		outline: none;
+		transition: border-color 0.15s;
+	}
+
+	.field-input:focus {
+		border-color: #16754a;
+	}
+
+	/* A button that is one of several to pick from: a game, an option, a fighter. */
+	.choice {
+		display: block;
+		width: 100%;
+		text-align: left;
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		padding: 10px 12px;
+		color: var(--ui-text);
+		cursor: pointer;
+		transition:
+			border-color 0.15s,
+			background-color 0.15s;
+	}
+
+	.choice:hover:not(:disabled),
+	.choice:focus-visible {
+		border-color: var(--ui-text-subtle);
+	}
+
+	.choice:focus-visible,
+	.pill:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.choice[aria-pressed='true'] {
+		background: var(--ui-sel-bg);
+		border-color: var(--ui-sel-border);
+		color: var(--ui-sel-text);
+	}
+
+	.choice:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	/* The small round pill the Card Creator uses for its theme and language switches. */
+	.pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 22px;
+		/* A finger's width, as Apple and Material both ask of a touch target. */
+		min-height: 44px;
+		padding: 6px 14px;
+		color: var(--ui-text-muted);
+		font-size: 0.8rem;
+		line-height: 1;
+		cursor: pointer;
+		transition:
+			color 0.15s,
+			border-color 0.15s;
+	}
+
+	.pill:hover,
+	.pill:focus-visible {
+		color: var(--ui-text);
+		border-color: var(--ui-text-subtle);
+	}
+
+	/* A pill that only shows something, such as gear a fighter cannot put down. */
+	.pill-static {
+		cursor: default;
+		border-style: dashed;
+	}
+
+	.pill-static:hover {
+		color: var(--ui-text-muted);
+		border-color: var(--ui-border);
+	}
+}

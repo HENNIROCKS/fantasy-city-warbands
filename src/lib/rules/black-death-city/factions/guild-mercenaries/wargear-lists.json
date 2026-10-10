@@ -1,0 +1,23 @@
+{
+	"main": [
+		"axe", "club-mace-hammer", "dagger", "flail", "halberd", "heavy-axe", "spear", "sword", "warhammer", "zweihander",
+		"blackpowder-pistol", "blackpowder-rifle", "blunderbuss", "crossbow", "hand-crossbow", "long-bow", "short-bow",
+		"cuirass",
+		"grappling-hook", "shield"
+	],
+	"champion": ["brace-of-pistols", "long-rifle", "repeater-pistol", "full-plate", "guild-banner", "loyal-companion"],
+	"cleric": [
+		"arcane-staff", "club-mace-hammer", "warhammer",
+		"cuirass", "full-plate", "warded-robes",
+		"grimoire", "shield", "wooden-stakes"
+	],
+	"ogre": [
+		"ogre-blade", "ogre-great-weapon", "ogre-mace",
+		"arablast", "ogre-cannon", "ogre-pistol",
+		"ogre-armour",
+		"shield"
+	],
+	"munitions": ["arablast", "flamethrower", "fire-bombs", "volley-rifle", "bomb-bolt"],
+	"witch-hunters": ["lantern-torch", "wooden-stakes"],
+	"wizard": ["arcane-staff", "ensorcelled-weapon", "sword", "warded-robes", "grimoire"]
+}
