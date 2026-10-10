@@ -41,6 +41,14 @@
 
 	/* The wargear to pick from opens below the list, as a matrix rather than a select. */
 	let adding = $state(false);
+	let addButton: HTMLButtonElement | undefined = $state();
+
+	/* Picking closes the matrix, and the picked button with it; focus goes back to where it opened. */
+	function pick(id: string) {
+		instance.wargear.push(id);
+		adding = false;
+		addButton?.focus();
+	}
 </script>
 
 <article class="space-y-3 rounded-md border border-zinc-700 bg-zinc-800 p-3">
@@ -128,7 +136,8 @@
 					type="button"
 					class="wargear-add {fighter.gear.length || instance.wargear.length ? 'mt-2' : ''}"
 					aria-expanded={adding}
-					aria-controls="wargear-{instance.instanceId}"
+					aria-controls={adding ? `wargear-${instance.instanceId}` : undefined}
+					bind:this={addButton}
 					onclick={() => (adding = !adding)}>{adding ? 'Close' : '+ Add wargear'}</button
 				>
 				{#if adding}
@@ -145,10 +154,7 @@
 												type="button"
 												class="choice"
 												disabled={!!block}
-												onclick={() => {
-													instance.wargear.push(w.id);
-													adding = false;
-												}}
+												onclick={() => pick(w.id)}
 											>
 												<span class="block font-semibold">{w.name}</span>
 												<span class="block text-zinc-400">{w.cost}&nbsp;{game.currency}</span>

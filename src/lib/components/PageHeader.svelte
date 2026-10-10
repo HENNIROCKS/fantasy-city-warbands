@@ -13,8 +13,9 @@
 	} = $props();
 </script>
 
-<!-- Tighter on a phone, where the app's name, its badge, the about icon and the theme switch
-     only just fit 375 px; from sm on the Card Creator's spacing. -->
+<!-- Tighter on a phone, where the app's name, its badge, the about icon and
+     the theme switch only just fit 375 px; from sm on the Card Creator's
+     spacing. -->
 <header
 	class="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-zinc-800 bg-zinc-900 px-5 py-4 sm:gap-3"
 >

@@ -13,7 +13,7 @@
 - [x] 🎨 Light and dark mode in the Card Creator's design
 - [x] ⚙️ Deploy to GitHub Pages on every push to main
 - [x] 🎨 An about page with the games, their sources and a few questions
-- [ ] 🛠️ Wargear as a button matrix instead of a select
+- [x] 🛠️ Wargear as a button matrix instead of a select
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
 - [ ] 📚 Black Death City: the fighters' special rules as text

@@ -27,9 +27,9 @@
 
 	const SOURCES: Record<string, string> = {
 		wyrdcry:
-			'Wyrdcry is by Johan Markström. The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net. The official factions only.',
+			`Wyrdcry is by ${systems.wyrdcry.game.author}. The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net. The official factions only.`,
 		'black-death-city':
-			'Transcribed by hand from the Black Death City Playtest v1.01 by Sam Pearson. Where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.'
+			`Transcribed by hand from the Black Death City Playtest v1.01 by ${systems['black-death-city'].game.author}. Where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
 	};
 
 	const games = Object.values(systems)

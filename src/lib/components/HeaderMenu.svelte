@@ -29,7 +29,7 @@
      the switch. -->
 <nav class="-mr-3 flex shrink-0 items-center" aria-label="App">
 	{#if onInfo}
-		<a href={resolve('/')} onclick={close} class="icon-button -ml-2 w-9" aria-label="Close" title="Close">
+		<a href={resolve('/')} onclick={close} class="icon-button -ml-2 w-9" aria-label="Close the about page" title="Close">
 			<span class="icon-button-face -translate-x-0.5">
 				<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">
 					<line x1="3.5" y1="3.5" x2="12.5" y2="12.5" />

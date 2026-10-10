@@ -209,13 +209,19 @@
 	const excess = $derived(issues.filter((i) => i.kind === 'excess'));
 	const effects = $derived(warband && faction ? activeEffects(warband, faction) : []);
 
-	/** The second line of a recruit tile: role, cost, the limit where there is one, and how many there are. */
-	function recruitLine(f: Faction['fighters'][number]): string {
+	/** The recruit tiles under the same headings as the faction's preview. */
+	const recruitSections = $derived(system && faction ? fighterSections(faction, system.game) : []);
+
+	/**
+	 * The second line of a recruit tile: the role where no heading names it,
+	 * cost, the limit where there is one, and how many there are.
+	 */
+	function recruitLine(f: Faction['fighters'][number], headed: boolean): string {
 		if (!system) return '';
 		const n = count(f.id);
 		const max = limitOf(f, effects).limit.max;
 		return [
-			roleOf(f, system.game),
+			headed ? null : roleOf(f, system.game),
 			`${f.cost}\u00a0${system.game.currency}`,
 			/* A limit of 0 is a fighter the picks rule out; the tile says why instead. */
 			max ? `${n} / ${max}` : n > 0 ? `${n} recruited` : null
@@ -389,7 +395,7 @@
 			</p>
 			<!-- Under the same headings as the faction's preview, two to a row at any width. -->
 			<div class="space-y-4">
-				{#each fighterSections(faction, system.game) as section (section.label)}
+				{#each recruitSections as section (section.label)}
 					<div>
 						{#if section.label}
 							<p class="pb-1 text-xs font-semibold tracking-wider text-zinc-400 uppercase">{section.label}</p>
@@ -407,7 +413,7 @@
 									}}
 								>
 									<span class="block font-semibold">{f.name}</span>
-									<span class="block text-zinc-400">{recruitLine(f)}</span>
+									<span class="block text-zinc-400">{recruitLine(f, !!section.label)}</span>
 									{#if block}
 										<span class="block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
 									{/if}
