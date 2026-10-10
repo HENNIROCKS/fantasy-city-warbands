@@ -160,6 +160,7 @@
 		<p class="field-label">Links</p>
 		<ul class="space-y-2">
 			<li><a class={linkClass} href="https://wyrdcry.net/docs/rules/introduction/">Wyrdcry rules</a></li>
+			<li><a class={linkClass} href="https://www.blackdeathcity.com/">Black Death City</a></li>
 			<li><a class={linkClass} href="{REPO}/issues">{@render github()}Feedback and bug reports</a></li>
 			<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md">{@render github()}What is planned</a></li>
 			<li><a class={linkClass} href={REPO}>{@render github()}Source code</a></li>
