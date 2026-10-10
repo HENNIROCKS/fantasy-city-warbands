@@ -45,6 +45,148 @@
 	--ui-danger-text: #a3271b;
 }
 
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+
+/*
+ * The card surface and type follow the Wyrdcry Card Creator, as the Warband
+ * Deck prints them. A card is paper in both themes, so these do not change
+ * with it. The files sit under src/ rather than static/, so the build gives
+ * them the deploy's base path.
+ */
+
+@font-face {
+	font-family: 'Grenze Gotisch';
+	src: url('./lib/assets/card/GrenzeGotisch-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Alegreya';
+	src: url('./lib/assets/card/Alegreya-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Alegreya';
+	src: url('./lib/assets/card/Alegreya-Italic.ttf') format('truetype');
+	font-weight: 400;
+	font-style: italic;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Alegreya';
+	src: url('./lib/assets/card/Alegreya-Bold.ttf') format('truetype');
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+:root {
+	--card-texture: url('./lib/assets/card/background.jpg');
+	--card-green: #16754a;
+	--card-paper: #faf6f3;
+	--card-ink: #000;
+	--card-ink-muted: rgba(0, 0, 0, 0.6);
+	--card-wash: rgba(255, 255, 255, 0.25);
+	--card-wash-strong: rgba(255, 255, 255, 0.55);
+	--card-wash-2: color-mix(in srgb, var(--card-green) 12%, transparent);
+	/* A weapon whose name opens its rules. The one signal colour on a green and
+	   paper card. */
+	--card-link: #9c2b14;
+
+	/* Design width of the printed card. Sizes inside a card are written as
+	   multiples of --u so the whole thing scales with the container, down to
+	   the floor. */
+	--card-design-width: 588;
+	--card-unit-floor: 0.72px;
+
+	/*
+	 * The widest the stack gets. Wider than the printed card – a tablet still
+	 * shows a large card – but narrow enough that a rules text keeps a readable
+	 * line length. The gutter is the strip of background beside the card; the
+	 * inset, in card units, is how far the sheet that explains a weapon stays
+	 * clear of the card's edge.
+	 */
+	--deck-max-width: 768px;
+	--deck-gutter: 10px;
+	--deck-inset: 39.1837;
+
+	/* The card's own --u, worked out from the viewport instead of the container,
+	   for everything that sits outside a card and still has to match its
+	   spacing. */
+	--deck-unit: max(
+		var(--card-unit-floor),
+		calc(min(100vw - 2 * var(--deck-gutter), var(--deck-max-width)) / var(--card-design-width))
+	);
+}
+
+/*
+ * The card surface.
+ *
+ * Sizes inside a card are written as multiples of --u, one pixel of the printed
+ * card, so the whole thing keeps the Card Creator's proportions at any width.
+ *
+ * Type runs on --t instead, which carries a higher floor. Held at the printed
+ * card's physical width, a phone shows the body copy at an x-height of 8px,
+ * where the reading size of the system is 10px – paper gets away with 5pt, a
+ * display does not. --t buys those two pixels back below 529px card width;
+ * above it both units are the same and the card reads exactly as it prints.
+ *
+ * Below that width the cells of the tables keep shrinking while the type does
+ * not, and a row of labels no longer fits side by side. The fitText action
+ * scales back the texts that would run over, see src/lib/fit-text.ts.
+ */
+.card {
+	container-type: inline-size;
+	--u: max(var(--card-unit-floor), calc(100cqw / var(--card-design-width)));
+	--t: max(0.9px, calc(100cqw / var(--card-design-width)));
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	background: var(--card-texture) center center / cover no-repeat;
+	color: var(--card-ink);
+	border-radius: calc(14 * var(--u));
+	overflow: hidden;
+}
+
+/*
+ * A keyword the rules text names, which the game data marks with backticks.
+ * Sized in em so the one rule serves the card, where the text scales with the
+ * container, and the explanation overlay, which is set in pixels.
+ */
+.keyword {
+	display: inline-block;
+	font-size: 0.78em;
+	line-height: 1;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 0.15em 0.45em;
+	border: 1px solid var(--card-green);
+	border-radius: 999px;
+	background: var(--card-wash);
+}
+
+/*
+ * A list inside a rules text. `RuleText` writes it as spans, so the list shape
+ * comes from here: a bullet hanging left of the text, the lines it wraps onto
+ * aligned under the first.
+ */
+.rule-list {
+	display: block;
+	margin: 0.3em 0;
+	padding-left: 1.1em;
+}
+
+.rule-item {
+	display: list-item;
+	list-style: disc outside;
+}
+
 /* ── Tailwind class overrides for light theme ─────────────────────────────── */
 
 [data-theme='light'] .bg-zinc-900 { background-color: #e4ddd3; }

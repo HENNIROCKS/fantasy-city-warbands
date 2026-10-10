@@ -8,6 +8,8 @@ import type { Faction, GameSystem, Wargear } from '$lib/core/types';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
+import weaponRules from '$lib/rules/wyrdcry/weapon-rules.json';
+import universal from '$lib/rules/wyrdcry/universal-abilities.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -28,7 +30,22 @@ export const game: GameSystem = {
 	roles: ['leader', 'hero', 'henchman'],
 	defaultRole: 'henchman',
 	roleLabels: { leader: 'Leader', hero: 'Heroes', henchman: 'Henchmen' },
-	groups: []
+	groups: [],
+	costLabel: 'Gold Crowns',
+	weaponStats: [
+		{ key: 'range', label: 'Range' },
+		{ key: 'attacks', label: 'Attacks' },
+		{ key: 'damage', label: 'Damage' }
+	],
+	universal: universal.map((u) => ({ name: u.name, text: u.text, type: u.type, keyword: u.keyword })),
+	/* The rulebook's wording, as the Warband Deck carries it. */
+	dualWielding: {
+		stat: 'attacks',
+		rule: {
+			name: 'Dual Wielding',
+			text: 'If a fighter is equipped with two melee weapons of the same type (for example, two swords), they are considered to be dual wielding. While a fighter is dual wielding, improve the Attack characteristic of the weapon they are using by 1.'
+		}
+	}
 };
 
 interface RawFaction {
@@ -69,7 +86,16 @@ interface RawRule {
 interface RawAbility {
 	id: string;
 	name: string;
+	/** What using it costs: `double`, `triple`, `reaction`; `trait` for one that is always on. */
+	type: string;
 	text: string;
+}
+
+const weaponRule = new Map(weaponRules.map((r) => [r.id, { name: r.name, text: r.text }]));
+
+/** A reach of `{ min: 0, max: 1 }` as the card prints it: `1"`, or `4–18"` where it starts further out. */
+function range({ min, max }: { min: number; max: number }): string {
+	return min ? `${min}–${max}"` : `${max}"`;
 }
 
 /**
@@ -80,7 +106,14 @@ interface RawAbility {
 const catalogue = new Map<string, Wargear>([
 	...weapons.map((w): [string, Wargear] => [
 		`weapon:${w.id}`,
-		{ id: `weapon:${w.id}`, name: w.name, kind: w.type === 'ranged' ? 'ranged' : 'melee', cost: w.cost }
+		{
+			id: `weapon:${w.id}`,
+			name: w.name,
+			kind: w.type === 'ranged' ? 'ranged' : 'melee',
+			cost: w.cost,
+			profile: { range: range(w.range), attacks: String(w.attacks), damage: `${w.hit}/${w.crit}` },
+			rules: w.rules.flatMap((id) => weaponRule.get(id) ?? [])
+		}
 	]),
 	...items.flatMap((i): [string, Wargear][] =>
 		typeof i.cost === 'number'
@@ -119,7 +152,7 @@ function build(
 			profile: f.profile,
 			rules: f.abilities.flatMap((id) => {
 				const a = ability.get(id);
-				return a ? [{ name: a.name, text: a.text }] : [];
+				return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
 			}),
 			wargear: equipment
 				.filter((e) => e.allow === 'all' || f.keywords.includes(e.allow))

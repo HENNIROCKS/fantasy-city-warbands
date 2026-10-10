@@ -491,6 +491,13 @@
 					<li class="p-3 text-zinc-400">No fighters.</li>
 				{/each}
 			</ul>
+			{#if warband.fighters.length}
+				<a
+					href={resolve('/cards') + `?id=${warband.id}`}
+					class="mt-3 flex min-h-11 items-center justify-center rounded border border-zinc-700 px-4 font-semibold text-zinc-200 transition hover:bg-zinc-800 focus-visible:bg-zinc-800"
+					>Show cards</a
+				>
+			{/if}
 		</section>
 	{/if}
 </main>

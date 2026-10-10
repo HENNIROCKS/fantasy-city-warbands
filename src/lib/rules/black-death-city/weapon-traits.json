@@ -1,0 +1,97 @@
+[
+	{
+		"id": "arcane",
+		"name": "Arcane",
+		"text": "Attack rolls made with this weapon score critical hits on a natural roll of 5 or 6."
+	},
+	{
+		"id": "blast",
+		"name": "Blast",
+		"text": "This weapon uses the Blast template."
+	},
+	{
+		"id": "bludgeon",
+		"name": "Bludgeon",
+		"text": "Each time an armour roll successfully saves a critical hit scored by this weapon, the target suffers 1 damage."
+	},
+	{
+		"id": "brace",
+		"name": "Brace",
+		"text": "If the defending fighter uses this weapon while they are the defending fighter, they automatically have the initiative if the attacking fighter charged this activation."
+	},
+	{
+		"id": "flame",
+		"name": "Flame",
+		"text": "This weapon uses the Flame template."
+	},
+	{
+		"id": "guard",
+		"name": "Guard",
+		"text": "When a fighter makes a parry, instead of using a hit they can use a missed attack roll from this weapon. They can do this once each melee attack."
+	},
+	{
+		"id": "heavy",
+		"name": "Heavy",
+		"text": "This weapon cannot be used to make an attack if the fighter has made a move during their activation. In addition, if this weapon has been used to make an attack, the fighter cannot make a move during their activation.\n\n**Reloading:** The weapon can be used to attack if the fighter spent their move to reload it. Likewise, after the weapon has been used to attack, if they have not yet spent their Move, they can do so to reload it (see the *Reload* weapon trait)."
+	},
+	{
+		"id": "misfire",
+		"name": "Misfire",
+		"text": "If any attack rolls for a ranged attack made with this weapon are a natural 1, the weapon misfires. After any other attack rolls have been resolved, make a **misfire roll** (d6):\n- 1 – **Backfire:** *The weapon explodes in the firer’s hands.* The fighter suffers d3 damage. This weapon cannot be used again during this battle.\n- 2 – **Clogged:** *Blackpowder residue fouls the ignition channel.* This weapon cannot be used again during this battle.\n- 3–6 – **Flash-in-the-Pan:** *The priming powder ignites, but the main charge fails to fire.* The attack misses as normal."
+	},
+	{
+		"id": "natural-weapon",
+		"name": "Natural Weapon",
+		"text": "Attacks made with this weapon cannot be used to parry."
+	},
+	{
+		"id": "off-hand",
+		"name": "Off-hand",
+		"text": "When making a melee attack action, this weapon can be used to make an off-hand attack."
+	},
+	{
+		"id": "one-use",
+		"name": "One-use",
+		"text": "This weapon can only be used once each battle."
+	},
+	{
+		"id": "poison",
+		"name": "Poison",
+		"text": "If a fighter suffers damage from a critical hit made with this weapon they become *poisoned*. While a fighter is *poisoned*, each time they are activated they suffer 1 damage. If a fighter is healed, or has 1 life remaining, they are no longer poisoned.\n\n*Demons* and *Undead* fighters cannot become poisoned."
+	},
+	{
+		"id": "rare",
+		"name": "Rare",
+		"text": "This trait limits the number of fighters in a warband that can be equipped with this type of weapon at the same time. For example, if a weapon has the Rare 0-1 trait, only 1 fighter in a warband can be equipped with a weapon of this type at any one time."
+	},
+	{
+		"id": "reload",
+		"name": "Reload",
+		"text": "Each time this weapon is used to make an attack, before it can be used again, the fighter must **reload** it. To reload a weapon, the fighter must spend either their Move or their Action during their activation. When a fighter spends either a Move or Action, they forfeit it."
+	},
+	{
+		"id": "scare",
+		"name": "Scare",
+		"text": "After an attack by this weapon has been resolved, each fighter hit by the attack that is not engaged in melee takes a Willpower test. If they fail, they scatter d6\"."
+	},
+	{
+		"id": "two-handed",
+		"name": "Two-handed",
+		"text": "A fighter can only be equipped with 1 two-handed weapon.\n\nA fighter cannot make off-hand attacks if they are equipped with a two-handed weapon."
+	},
+	{
+		"id": "unwieldy",
+		"name": "Unwieldy",
+		"text": "Subtract 1 from attack rolls made with this weapon."
+	},
+	{
+		"id": "volley",
+		"name": "Volley",
+		"text": "Each time this weapon is used for a ranged attack, it can target a number of enemy fighters equal to its Attacks value. Before resolving any Attack rolls, assign each attack to a target. The first target must be picked as normal, each additional attack can be assigned to that target, or to a different visible enemy fighter within 3\" of the target that is not engaged in melee.\n\nThen resolve all the attacks."
+	},
+	{
+		"id": "wrap",
+		"name": "Wrap",
+		"text": "Attacks made by this weapon cannot be parried, and they cannot be used to parry another attack."
+	}
+]

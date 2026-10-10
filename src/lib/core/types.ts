@@ -64,6 +64,33 @@ export interface GameSystem {
 	 */
 	roleLabels?: Record<string, string>;
 	groups: GroupLimit[];
+	/** The fighter card's heading over the cost: `Gold Crowns`, `Silver`. */
+	costLabel: string;
+	/** The columns of the fighter card's weapon table after the name, in order; keys of `Wargear.profile`. */
+	weaponStats: { key: string; label: string }[];
+	/** Abilities every fighter carrying `keyword` has, `any` for all of them. */
+	universal: UniversalRule[];
+	/**
+	 * Where the game lets two of the same melee weapon add an attack, as
+	 * Wyrdcry does: the weapon column it adds to, and the rule that says so.
+	 */
+	dualWielding?: { stat: string; rule: Rule };
+}
+
+/** A rule a game gives every fighter with a keyword, such as Wyrdcry's Rush. */
+export interface UniversalRule {
+	name: string;
+	text: string;
+	/** As the rules name what using it costs: `double`, `reaction`. */
+	type: string;
+	keyword: string;
+}
+
+/** A rule as the card prints it: `[Triple] Running Death`, the type only where the game names one. */
+export interface Rule {
+	name: string;
+	text: string;
+	type?: string;
 }
 
 /** What picking an option changes about which fighters the warband may have. */
@@ -104,6 +131,10 @@ export interface Wargear {
 	kind: WargearKind;
 	cost: number;
 	text?: string;
+	/** A weapon's profile as printed, keyed by the game's `weaponStats`: `1"`, `2/4`. */
+	profile?: Record<string, string>;
+	/** A weapon's rules, shown when its name on the card is tapped. */
+	rules?: Rule[];
 }
 
 export interface Fighter {
@@ -119,7 +150,7 @@ export interface Fighter {
 	 */
 	profile: Record<string, number | string | null>;
 	/** Shown as text, not applied. */
-	rules: { name: string; text: string }[];
+	rules: Rule[];
 	/** The wargear ids this fighter may be given, already resolved from the game's own allowance rules. */
 	wargear: string[];
 	/**

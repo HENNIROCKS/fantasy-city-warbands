@@ -20,11 +20,11 @@
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
-- [ ] 📚 Black Death City: settle the playtest's contradictions – Zombie and Zombie Ogre costs, the Blighted Cloister's Origins, Rot Walkers
+- [ ] 📚 Black Death City: settle the playtest's contradictions – Zombie and Zombie Ogre costs, the Blighted Cloister's Origins, Rot Walkers, wargear prices that differ between list and table, the Vermin's Ensorcelled Weapon
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
 - [ ] 📚 Mordheim
 - [ ] 📄 Export and import a warband as a file
-- [ ] 🃏 Fighters as cards
+- [x] 🃏 Fighters as cards
 - [ ] 📄 Print a roster
 - [ ] 📈 Campaign: experience, injuries, income
 - [ ] ⚙️ Installable app with an icon, working offline
