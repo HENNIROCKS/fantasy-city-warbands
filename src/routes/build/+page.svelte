@@ -358,7 +358,7 @@
 				</div>
 			</section>
 		{:else}
-			<p class="text-zinc-400">{faction.name} have nothing to choose here.</p>
+			<p class="text-center text-zinc-400">{faction.name} have nothing to choose here.</p>
 		{/each}
 	{:else if step === 'fighters'}
 		<section>
