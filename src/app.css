@@ -310,6 +310,93 @@
 	}
 
 	/*
+	 * Wargear on offer as a checklist, one piece to a row as the Warband Deck's
+	 * sheet has it, the rows divided by rules rather than boxed apart. A full
+	 * hand is a state rather than a warning and stands on many rows at once, so
+	 * the reason a piece is refused is muted, not in the signal colour.
+	 */
+	.checklist {
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+	}
+
+	.checklist > li + li {
+		border-top: 1px solid var(--ui-border);
+	}
+
+	.check-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	.check-label {
+		display: flex;
+		flex: 1;
+		min-width: 0;
+		align-items: center;
+		gap: 10px;
+		min-height: 44px;
+		padding: 0 12px;
+		color: var(--ui-text);
+		cursor: pointer;
+	}
+
+	.check-label:has(input:disabled) {
+		color: var(--ui-text-muted);
+		cursor: not-allowed;
+	}
+
+	/* A name without a space, such as Club/Mace/Hammer, breaks only where it has to. */
+	.check-name {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: break-word;
+	}
+
+	.check-cost {
+		flex: none;
+		font-variant-numeric: tabular-nums;
+		color: var(--ui-text-muted);
+	}
+
+	.check-pair {
+		flex: none;
+		width: 44px;
+		min-height: 44px;
+		border-left: 1px solid var(--ui-border);
+		color: var(--ui-text-muted);
+	}
+
+	.check-pair[aria-pressed='true'] {
+		background: var(--ui-sel-bg);
+		color: var(--ui-sel-text);
+	}
+
+	.check-pair:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: -2px;
+	}
+
+	/* What the fighter could never take, in a line under the list rather than a row each. */
+	.check-hint {
+		margin-top: 4px;
+		color: var(--ui-text-muted);
+	}
+
+	/* Under the name, level with it past the checkbox: 12px padding, 16px box, 10px gap. */
+	.check-why {
+		flex-basis: 100%;
+		margin-top: -8px;
+		padding: 0 12px 10px 38px;
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--ui-text-muted);
+	}
+
+	/*
 	 * A question raised from the foot of the screen, over the page it belongs
 	 * to, as the Warband Deck asks it: a heading, a line of detail, a notice and
 	 * the answers side by side.

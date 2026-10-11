@@ -24,7 +24,8 @@ anything about a campaign: no experience, no injuries, no income.
   with the fighter's profile in the game's own notation – `5"`, `3+`, `–`
 - Keep a Wyrdcry fighter within what it may carry: two hands and one ranged
   slot, one body armour, no armour for a WIZARD, nothing at all for a BEAST.
-  What it may not take stays in the list, disabled with the reason
+  Wargear is a checklist: what a fighter could never take is named in a hint
+  under it, what its current gear rules out stays, disabled with the reason
 - Keep a Black Death City fighter within its carrying limit: two melee
   weapons with Held Items among them, one ranged, one set of armour, two
   items, one two-handed weapon, Full-Plate and Held Items not with a

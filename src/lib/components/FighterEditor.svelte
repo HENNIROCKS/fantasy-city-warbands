@@ -1,7 +1,7 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import type { Faction, FighterInstance, GameSystem, Issue, WargearKind } from '$lib/core/types';
-	import { fighterCost, fighterName, formatStat, profileOf } from '$lib/core/warband';
+	import { fighterCost, fighterName, formatStat, neverCarried, profileOf } from '$lib/core/warband';
 	import { tick } from 'svelte';
 
 	let {
@@ -43,15 +43,33 @@
 		return faction.wargear.find((w) => w.id === id)?.cost ?? 0;
 	}
 
-	/* The wargear to pick from opens below the list, as a matrix rather than a select. */
+	/* The wargear on offer opens below the list as a checklist, each piece ticked where the fighter carries it. */
 	let adding = $state(false);
-	let addButton: HTMLButtonElement | undefined = $state();
 
-	/* Picking closes the matrix, and the picked button with it; focus goes back to where it opened. */
-	function pick(id: string) {
-		instance.wargear.push(id);
-		adding = false;
-		addButton?.focus();
+	const countOf = (id: string) => instance.wargear.filter((w) => w === id).length;
+
+	/* What the fighter could never take is no choice and stays out of the list,
+	   unless an older warband carries it and it has to be put down. */
+	const never = $derived(fighter ? neverCarried(fighter, faction, game) : new Map<string, string>());
+
+	/** `HERO only: Handgun, Blunderbuss` per reason, or the count where the names would run long. */
+	function hints(ids: string[]): string[] {
+		const byReason = new Map<string, string[]>();
+		for (const id of ids) byReason.set(never.get(id)!, [...(byReason.get(never.get(id)!) ?? []), nameOf(id)]);
+		return [...byReason].map(([reason, names]) => `${reason}: ${names.length > 3 ? `${names.length} more` : names.join(', ')}`);
+	}
+
+	/* Ticking takes one; unticking puts down every copy. */
+	function toggle(id: string) {
+		if (countOf(id)) instance.wargear = instance.wargear.filter((w) => w !== id);
+		else instance.wargear.push(id);
+	}
+
+	/* A second of the same piece, where the game's carrying rules allow one: two
+	   swords to dual wield, a pair of pistols. */
+	function pair(id: string) {
+		if (countOf(id) > 1) instance.wargear.splice(instance.wargear.lastIndexOf(id), 1);
+		else instance.wargear.push(id);
 	}
 
 	/* A rolled option is rolled at the table, so the first tap asks whether it
@@ -226,34 +244,53 @@
 					class="wargear-add {fighter.gear.length || instance.wargear.length ? 'mt-2' : ''}"
 					aria-expanded={adding}
 					aria-controls={adding ? `wargear-${instance.instanceId}` : undefined}
-					bind:this={addButton}
-					onclick={() => (adding = !adding)}>{adding ? 'Close' : '+ Add wargear'}</button
+					onclick={() => (adding = !adding)}>{adding ? 'Done' : instance.wargear.length ? 'Change wargear' : '+ Add wargear'}</button
 				>
 				{#if adding}
 					<div id="wargear-{instance.instanceId}" class="mt-3 space-y-3">
 						{#each KINDS as { kind, label: group } (kind)}
-							{@const options = faction.wargear.filter((w) => w.kind === kind && fighter.wargear.includes(w.id))}
-							{#if options.length}
-								<div>
-									<p class="sublabel">{group}</p>
-									<div class="grid grid-cols-2 gap-2">
+							{@const sold = faction.wargear.filter((w) => w.kind === kind && fighter.wargear.includes(w.id))}
+							{@const options = sold.filter((w) => !never.has(w.id) || countOf(w.id))}
+							{@const left = sold.filter((w) => !options.includes(w)).map((w) => w.id)}
+							{#if sold.length}
+								<fieldset>
+									<legend class="sublabel">{group}</legend>
+									<!-- One to a row, as the Warband Deck offers wargear, with the reason a
+									     piece cannot be taken under its name. A ticked piece can always be
+									     put down, so only an unticked one is ever refused. -->
+									{#if options.length}<ul class="checklist">
 										{#each options as w (w.id)}
-											{@const block = blocked(w.id)}
-											<button
-												type="button"
-												class="choice"
-												disabled={!!block}
-												onclick={() => pick(w.id)}
-											>
-												<span class="block font-semibold">{w.name}</span>
-												<span class="block text-zinc-400">{w.cost}&nbsp;{game.currency}</span>
-												{#if block}
-													<span class="block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
+											{@const count = countOf(w.id)}
+											{@const block = count ? null : blocked(w.id)}
+											<li class="check-row">
+												<label class="check-label">
+													<input
+														type="checkbox"
+														class="h-4 w-4 shrink-0 rounded accent-[#16754A]"
+														checked={count > 0}
+														disabled={!!block}
+														onchange={() => toggle(w.id)}
+													/>
+													<span class="check-name">{w.name}</span>
+													<span class="check-cost">{w.cost}&nbsp;{game.currency}</span>
+												</label>
+												{#if count > 1 || (count === 1 && !blocked(w.id))}
+													<button
+														type="button"
+														class="check-pair"
+														aria-pressed={count > 1}
+														aria-label="Carry two {w.name}"
+														onclick={() => pair(w.id)}>×2</button
+													>
 												{/if}
-											</button>
+												{#if block}<span class="check-why">{block.short}</span>{/if}
+											</li>
 										{/each}
-									</div>
-								</div>
+									</ul>{/if}
+									{#each hints(left) as hint (hint)}
+										<p class="check-hint">{hint}</p>
+									{/each}
+								</fieldset>
 							{/if}
 						{/each}
 					</div>

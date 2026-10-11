@@ -14,7 +14,7 @@
 - [x] ⚙️ Deploy to GitHub Pages on every push to main
 - [x] ⚙️ Offer a new version as soon as it is deployed
 - [x] 🎨 An about page with the games, their sources and a few questions
-- [x] 🛠️ Wargear as a button matrix instead of a select
+- [x] 🛠️ Wargear as a checklist instead of a select, with the reason a piece is refused and ×2 where two may be carried
 - [x] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
 - [x] 🃏 Fighters as cards
 - [x] 🃏 A colour per warband for its cards

@@ -139,6 +139,20 @@ export function formatStat(def: StatDef, value: number | string | null | undefin
  */
 
 /**
+ * The wargear on offer that this fighter could never take, whatever else it
+ * carries – a HEROes' weapon for a henchman, armour for a WIZARD – by id, with
+ * the game's short reason. The game's carrying rules refuse it on its own.
+ */
+export function neverCarried(fighter: Fighter, faction: Faction, game: GameSystem): Map<string, string> {
+	const never = new Map<string, string>();
+	for (const id of fighter.wargear) {
+		const refused = game.carry?.(fighter, faction, [id])[0];
+		if (refused) never.set(id, refused.short);
+	}
+	return never;
+}
+
+/**
  * The fighters in the order of the game's roles – for Wyrdcry the leader, the
  * heroes, the henchmen – and whoever carries none of them last, as a BEAST or a
  * THRALL; not by the default role, which would put them among the henchmen.
