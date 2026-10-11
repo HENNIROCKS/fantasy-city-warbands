@@ -11,8 +11,9 @@ export PATH := /opt/homebrew/bin:$(PATH)
 install:
 	npm install
 
+# Serves on the network and opens the QR page, so the phone is one scan away.
 dev:
-	npm run dev
+	npm run dev:lan -- --open /dev
 
 build:
 	npm run build

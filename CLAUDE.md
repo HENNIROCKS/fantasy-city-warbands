@@ -31,7 +31,7 @@ Architektur, Entscheidungen und offene Punkte im Vault unter
 | Befehl | Zweck |
 | --- | --- |
 | `make install` | Abhängigkeiten installieren |
-| `make dev` | Dev-Server auf `localhost:5173` |
+| `make dev` | Dev-Server im Netz, öffnet `/dev` mit dem QR-Code fürs Telefon |
 | `make build` | statische Seite nach `build/` |
 | `make check` | Typprüfung |
 

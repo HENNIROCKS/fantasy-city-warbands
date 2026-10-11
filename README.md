@@ -102,7 +102,7 @@ make dev
 | Command | Purpose |
 | --- | --- |
 | `make install` | install the dependencies |
-| `make dev` | development server |
+| `make dev` | development server on the local network; opens `/dev`, a QR code to open it on a phone |
 | `make build` | static site into `build/` |
 | `make check` | type check |
 
