@@ -428,7 +428,7 @@
 						{/if}
 						<div class="grid grid-cols-2 gap-2">
 							{#each section.fighters as f (f.id)}
-								{@const added = withFighter(warband, f.id)}
+								{@const added = withFighter(warband, f.id, faction, system.game)}
 								{@const block = blockedBy(added)}
 								<button
 									type="button"

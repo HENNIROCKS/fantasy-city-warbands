@@ -138,8 +138,25 @@ export function formatStat(def: StatDef, value: number | string | null | undefin
  * change touches is copied.
  */
 
-export function withFighter(warband: Warband, fighterId: string): Warband {
-	return { ...warband, fighters: [...warband.fighters, createFighter(fighterId)] };
+/**
+ * The fighters in the order of the game's roles – for Wyrdcry the leader, the
+ * heroes, the henchmen – and whoever carries none of them last, as a BEAST or a
+ * THRALL; not by the default role, which would put them among the henchmen.
+ * Stable, so within a role they stay in the order they were recruited. As the
+ * Warband Deck orders its roster.
+ */
+export function inRankOrder(fighters: FighterInstance[], faction: Faction, game: GameSystem): FighterInstance[] {
+	const rankOf = (instance: FighterInstance) => {
+		const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+		const at = fighter ? game.roles.findIndex((r) => fighter.keywords.includes(r)) : -1;
+		return at < 0 ? game.roles.length : at;
+	};
+	return [...fighters].sort((a, b) => rankOf(a) - rankOf(b));
+}
+
+/** The recruit takes its place by role, and the warband falls into that order with it. */
+export function withFighter(warband: Warband, fighterId: string, faction: Faction, game: GameSystem): Warband {
+	return { ...warband, fighters: inRankOrder([...warband.fighters, createFighter(fighterId)], faction, game) };
 }
 
 export function withInstance(warband: Warband, instance: FighterInstance, index: number): Warband {
