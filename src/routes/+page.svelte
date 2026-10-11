@@ -49,7 +49,7 @@
 		return {
 			/* A warband saved without a name goes by its faction's. */
 			title: w.name.trim() || f.name,
-			label: `${s.game.name} · ${f.name}`,
+			label: `${s.game.name} • ${f.name}`,
 			fighters,
 			cost: `${warbandCost(w, f)} / ${s.game.budget} ${s.game.currency}`,
 			ok: validate(w, s.game, f).length === 0

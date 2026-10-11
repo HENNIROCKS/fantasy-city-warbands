@@ -31,7 +31,7 @@
 			<div class="banderole-bg" style="mask-image: {mask}; -webkit-mask-image: {mask};"></div>
 			<div class="banderole-text">
 				<h2 class="name">{card.name}</h2>
-				{#if !card.unnamed}<p class="faction">{card.faction}</p>{/if}
+				<p class="faction">{card.subtitle}</p>
 			</div>
 		</div>
 	</div>

@@ -195,8 +195,8 @@ export interface RosterEntry {
 }
 
 /**
- * The warband itself as a card, laid out as the Warband Deck's: the name and
- * faction in the banderole, the player's fluff, what the warband has and is
+ * The warband itself as a card, laid out as the Warband Deck's: the name, game
+ * and faction in the banderole, the player's fluff, what the warband has and is
  * worth, what it picked under its faction's choices, its fighters under the
  * headings of the recruit list, and the notes.
  */
@@ -208,7 +208,8 @@ export interface WarbandCardData {
 	name: string;
 	/** Set where the warband has no name of its own; the card then asks for one. */
 	unnamed: boolean;
-	faction: string;
+	/** `Wyrdcry • Clan Eshin` under the name; the game alone where the name is the faction's. */
+	subtitle: string;
 	/** Two boxes side by side, each a column of label and value. */
 	tables: CardValue[][];
 	/** `(Origin) The Hunt Descends`, with the option's text. */
@@ -260,7 +261,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 		instanceId: warband.id,
 		name: unnamed ? faction.name : own,
 		unnamed,
-		faction: faction.name,
+		subtitle: unnamed ? game.name : `${game.name} • ${faction.name}`,
 		tables: [
 			[
 				/* As on the Warband Deck's card: how many there are of how many the warband may have. */
