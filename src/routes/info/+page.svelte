@@ -22,24 +22,31 @@
 	/** Each game's own site and where its rules come from, by game id. */
 	const SITES: Record<string, string> = {
 		wyrdcry: 'https://wyrdcry.net',
-		'black-death-city': 'https://www.blackdeathcity.com/'
+		'black-death-city': 'https://www.blackdeathcity.com/',
+		mordheim: 'https://mordheimer.net/'
 	};
 
 	const SOURCES: Record<string, string> = {
 		wyrdcry:
-			`Wyrdcry is by ${systems.wyrdcry.game.author}. The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net. The official factions only.`,
-		'black-death-city':
-			`Transcribed by hand from the Black Death City Playtest v1.01 by ${systems['black-death-city'].game.author}. Where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
+			'The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net.',
+		'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.01.'
 	};
 
-	const games = Object.values(systems)
-		.map((s) => ({
+	/** Playable and planned games in one list, by name. */
+	const games = [
+		...Object.values(systems).map((s) => ({
 			id: s.game.id,
 			name: s.game.name,
-			edition: s.game.edition,
-			factions: s.factions.map((f) => f.name).sort((a, b) => a.localeCompare(b))
-		}))
-		.sort((a, b) => a.name.localeCompare(b.name));
+			author: s.game.author,
+			edition: s.game.edition
+		})),
+		...planned.map((g) => ({ ...g, edition: 'planned' }))
+	].sort((a, b) => a.name.localeCompare(b.name));
+
+	/** The domain alone, as the label of a game's link. */
+	const domain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+
+	const playable = Object.values(systems).sort((a, b) => a.game.name.localeCompare(b.game.name));
 
 	/* Answered here rather than only in the README: whoever builds a warband on
 	   a phone is not the one browsing the repository. */
@@ -58,6 +65,16 @@
 			question: 'Does the app apply every rule?',
 			answer:
 				'Not yet. It knows the profiles, costs, limits and what each fighter may carry, and what an Origin changes about the roster. State Pride’s effects on the profiles, the skills and spells picked on recruitment, and anything that happens in a campaign are still to come.'
+		},
+		{
+			question: 'Which rules does the app follow?',
+			answer: `Wyrdcry ${systems.wyrdcry.game.edition}, as kept in the Wyrdcry Warband Deck. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
+		},
+		{
+			question: 'Which factions can I build?',
+			answer: playable
+				.map((s) => `${s.game.name}: ${s.factions.map((f) => f.name).sort((a, b) => a.localeCompare(b)).join(', ')}.`)
+				.join(' ')
 		},
 		{
 			question: 'Where is Mordheim?',
@@ -95,7 +112,7 @@
 			{/if}
 		</h2>
 		<p class="text-zinc-400">
-			{[`Version ${__APP_VERSION__}`, buildDate ? `Build ${buildDate}` : null].filter(Boolean).join(' · ')}
+			{['by Hendrik Berends', `Version ${__APP_VERSION__}`, buildDate ? `Build ${buildDate}` : null].filter(Boolean).join(' · ')}
 		</p>
 		<p>
 			Build a warband for a skirmish game set in a fantasy city, step by step, with the budget and
@@ -103,7 +120,7 @@
 		</p>
 		<p class="text-zinc-400">
 			An unofficial fan project, not commercial, with no affiliation with or endorsement from Games
-			Workshop, Johan Markström and the Wyrdcry project, or Sam Pearson and Black Death City.
+			Workshop.
 		</p>
 	</section>
 
@@ -117,8 +134,9 @@
 			class="rounded-md border p-3"
 			style="background: var(--ui-warn-bg); border-color: var(--ui-warn-border); color: var(--ui-warn-text)"
 		>
-			<strong>There is no export yet.</strong> Clearing the site's data removes your warbands, and Safari
-			can remove them by itself after seven days in which the site was not opened.
+			<strong>There is no export yet.</strong> Clearing this browser's data removes your warbands, and
+			so does a private window once it closes. Safari can also remove them by itself after seven days
+			in which the site was not opened; other browsers may do so when the device runs low on storage.
 		</p>
 	</section>
 
@@ -127,25 +145,19 @@
 		<ul class="space-y-3">
 			{#each games as game (game.id)}
 				<li class="rounded-md border border-zinc-700 bg-zinc-800 p-3">
-					<p class="font-semibold text-zinc-200">
-						{#if SITES[game.id]}
-							<a class="underline decoration-zinc-500 underline-offset-2 hover:decoration-current" href={SITES[game.id]}
-								>{game.name}</a
-							>
-						{:else}
-							{game.name}
-						{/if}
-						<span class="font-normal text-zinc-400">· {game.edition}</span>
-					</p>
-					<p class="text-zinc-400">{game.factions.join(', ')}</p>
+					<p class="font-semibold text-zinc-200">{game.name}</p>
+					<p class="text-zinc-400">by {game.author} · {game.edition}</p>
+					{#if SITES[game.id]}
+						<a
+							class="mt-2 inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-1 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
+							href={SITES[game.id]}
+							target="_blank"
+							rel="noopener">{domain(SITES[game.id])} <span aria-hidden="true">↗</span></a
+						>
+					{/if}
 					{#if SOURCES[game.id]}
 						<p class="mt-2">{SOURCES[game.id]}</p>
 					{/if}
-				</li>
-			{/each}
-			{#each planned as game (game.id)}
-				<li class="rounded-md border border-zinc-700 p-3">
-					<p class="font-semibold text-zinc-200">{game.name} <span class="font-normal text-zinc-400">· planned</span></p>
 				</li>
 			{/each}
 		</ul>
@@ -153,13 +165,17 @@
 
 	<section class="space-y-3">
 		<p class="field-label">Questions</p>
-		<div class="space-y-1">
+		<!-- Rules, not boxes: the links below are the buttons on this page, and two
+		     stacks of the same shape read as one list of the same kind of thing. -->
+		<div class="border-t border-zinc-700">
 			{#each faq as entry (entry.question)}
-				<details class="rounded-md border border-zinc-700 bg-zinc-800">
-					<summary class="flex min-h-11 cursor-pointer items-center px-3 font-semibold text-zinc-200">
+				<details class="border-b border-zinc-700">
+					<summary
+						class="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-px py-2 font-semibold text-zinc-200"
+					>
 						{entry.question}
 					</summary>
-					<p class="px-3 pb-3">{entry.answer}</p>
+					<p class="px-px pb-3 text-zinc-400">{entry.answer}</p>
 				</details>
 			{/each}
 		</div>
@@ -168,8 +184,6 @@
 	<section class="space-y-3">
 		<p class="field-label">Links</p>
 		<ul class="space-y-2">
-			<li><a class={linkClass} href="https://wyrdcry.net/docs/rules/introduction/">Wyrdcry rules</a></li>
-			<li><a class={linkClass} href="https://www.blackdeathcity.com/">Black Death City</a></li>
 			<li><a class={linkClass} href="{REPO}/issues">{@render github()}Feedback and bug reports</a></li>
 			<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md">{@render github()}What is planned</a></li>
 			<li><a class={linkClass} href={REPO}>{@render github()}Source code</a></li>
@@ -181,3 +195,37 @@
 		href={resolve('/')}>Back to your warbands</a
 	>
 </main>
+
+<style>
+	/* The chevron below stands in for the marker. */
+	summary {
+		list-style: none;
+	}
+
+	summary::-webkit-details-marker {
+		display: none;
+	}
+
+	/* Closed points down, open points up. Nothing animates, so there is nothing
+	   a reduced-motion setting would have to switch off. */
+	summary::after {
+		content: '';
+		flex: none;
+		width: 7px;
+		height: 7px;
+		margin-bottom: 3px;
+		border-right: 1.5px solid var(--ui-text-subtle);
+		border-bottom: 1.5px solid var(--ui-text-subtle);
+		transform: rotate(45deg);
+	}
+
+	details[open] summary::after {
+		margin: 3px 0 0;
+		transform: rotate(-135deg);
+	}
+
+	summary:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 1px;
+	}
+</style>
