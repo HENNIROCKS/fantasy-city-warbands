@@ -102,7 +102,7 @@
 			],
 			available: true
 		})),
-		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['Coming later'], available: false }))
+		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['planned'], available: false }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	function url(params: Record<string, string>): string {
