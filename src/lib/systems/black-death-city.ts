@@ -25,6 +25,12 @@ export const game: GameSystem = {
 		{ key: 'life', label: 'Life', format: 'plain' }
 	],
 	health: 'life',
+	/* The playtest names a blank roster but does not print one yet. */
+	roster: {
+		title: 'Black Death City Warband Roster',
+		stats: ['Mv', 'Bl', 'Bw', 'Ar', 'In', 'Wp', 'Lf'],
+		weapons: ['Rng', 'Att', 'Rend', 'Dmg']
+	},
 	roles: ['leader', 'champion', 'henchman', 'brute', 'beast'],
 	groups: [
 		{ keyword: 'leader', label: 'Leaders', limit: { min: 1, max: 1 } },

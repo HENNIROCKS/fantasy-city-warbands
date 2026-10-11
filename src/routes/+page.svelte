@@ -4,8 +4,13 @@
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { toRoster } from '$lib/core/roster';
 	import { deleteWarband, loadWarbands } from '$lib/core/storage';
+	import { fileName, toFile } from '$lib/core/transfer';
+	import type { Warband } from '$lib/core/types';
 	import { warbandCost, validate } from '$lib/core/validate';
+	import { rosterPdf } from '$lib/pdf/roster';
+	import { safeName, shareFile, type ShareResult } from '$lib/share';
 	import { systems } from '$lib/systems';
 
 	let warbands = $state(loadWarbands());
@@ -40,19 +45,63 @@
 		node.focus();
 	}
 
+	/* What an export or a roster came to. A notice goes by itself, an error
+	   stays until it is tapped away or the next one comes. */
+	let message = $state<{ text: string; error: boolean } | null>(null);
+	let messageTimer: ReturnType<typeof setTimeout> | undefined;
+
+	function notify(text: string | null, error = false) {
+		clearTimeout(messageTimer);
+		message = text ? { text, error } : null;
+		if (text && !error) messageTimer = setTimeout(() => (message = null), 4000);
+	}
+
+	function report(result: ShareResult) {
+		if (result === 'downloaded') notify('Downloaded as a file.');
+		else if (result === 'shared') notify('Shared.');
+		else notify(null);
+	}
+
+	async function exportWarband(w: Warband) {
+		const name = safeName(summary(w.id).title);
+		const payload = JSON.stringify(toFile(w), null, 2);
+		report(await shareFile(new File([payload], fileName(name), { type: 'application/json' })));
+	}
+
+	/* Building takes a moment on a phone, loading pdfmake and the fonts on the
+	   first run. A second tap meanwhile would build it twice. */
+	let buildingRoster = false;
+
+	async function exportRoster(w: Warband) {
+		const s = systems[w.game];
+		const f = s?.factions.find((x) => x.id === w.factionId);
+		if (!s || !f || buildingRoster) return;
+		buildingRoster = true;
+		notify('Building the roster…');
+		try {
+			report(await shareFile(await rosterPdf(toRoster(w, f, s.game))));
+		} catch (error) {
+			notify(`The roster could not be built: ${error instanceof Error ? error.message : error}`, true);
+		} finally {
+			buildingRoster = false;
+		}
+	}
+
 	function summary(id: string) {
 		const w = warbands.find((x) => x.id === id)!;
 		const s = systems[w.game];
 		const f = s?.factions.find((x) => x.id === w.factionId);
 		const fighters = `${w.fighters.length} ${w.fighters.length === 1 ? 'fighter' : 'fighters'}`;
-		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', fighters, cost: '', ok: false };
+		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', fighters, cost: '', ok: false, known: false };
 		return {
 			/* A warband saved without a name goes by its faction's. */
 			title: w.name.trim() || f.name,
 			label: `${s.game.name} • ${f.name}`,
 			fighters,
 			cost: `${warbandCost(w, f)} / ${s.game.budget} ${s.game.currency}`,
-			ok: validate(w, s.game, f).length === 0
+			ok: validate(w, s.game, f).length === 0,
+			/* A roster reads the faction; without it there is nothing to print. */
+			known: true
 		};
 	}
 </script>
@@ -131,10 +180,11 @@
 								</a>
 								<button
 									type="button"
-									class="flex min-h-11 w-11 items-center justify-center border-b border-zinc-700 text-zinc-400 disabled:*:opacity-40"
+									class="flex min-h-11 w-11 items-center justify-center border-b border-zinc-700 text-zinc-400 transition enabled:hover:bg-zinc-700 enabled:hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white disabled:*:opacity-40"
 									aria-label="Roster PDF of {s.title}"
 									title="Roster PDF"
-									disabled
+									disabled={!s.known}
+									onclick={() => exportRoster(w)}
 								>
 									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M3.5 1.5h6l3 3v10h-9z" />
@@ -145,10 +195,10 @@
 								</button>
 								<button
 									type="button"
-									class="flex min-h-11 w-11 items-center justify-center border-r border-zinc-700 text-zinc-400 disabled:*:opacity-40"
+									class="flex min-h-11 w-11 items-center justify-center border-r border-zinc-700 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
 									aria-label="Export {s.title} as JSON"
 									title="Export as JSON"
-									disabled
+									onclick={() => exportWarband(w)}
 								>
 									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<line x1="8" y1="2" x2="8" y2="10" />
@@ -191,12 +241,32 @@
 			<h2 id="delete-title">Delete {s.title}?</h2>
 			<p class="count">{s.label} · {s.fighters}</p>
 			<p class="notice danger">
-				<strong>This cannot be undone.</strong> The warband is stored on this device only.
+				<strong>This cannot be undone.</strong> The warband is stored on this device only. Export it
+				first to keep a copy; the battle it is in is not part of the export.
 			</p>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={cancel} use:focusOnMount>Cancel</button>
+				<button type="button" class="btn" onclick={() => exportWarband(warbands.find((w) => w.id === condemned)!)}>Export</button>
 				<button type="button" class="btn danger" onclick={confirmDelete}>Delete</button>
 			</div>
 		</div>
 	</div>
 {/if}
+
+<!-- At the head of the screen and above the sheet, so an export made from it
+     reports there too without covering its answers. Tapped, it goes. -->
+{#if message}
+	<div class="pointer-events-none fixed inset-x-0 top-0 z-30 flex justify-center p-3" style="padding-top: calc(12px + env(safe-area-inset-top))">
+		<button
+			type="button"
+			class="pointer-events-auto max-w-md rounded-md border border-zinc-700 bg-zinc-800 px-4 py-3 text-left text-sm text-zinc-200 shadow-lg"
+			style={message.error ? 'border-color: var(--ui-danger); color: var(--ui-danger-text)' : ''}
+			onclick={() => notify(null)}
+		>
+			{message.text}
+		</button>
+	</div>
+{/if}
+
+<!-- Outside the toast's block, so it is in the page before anything is said. -->
+<p class="sr-only" role="status">{message?.text ?? ''}</p>

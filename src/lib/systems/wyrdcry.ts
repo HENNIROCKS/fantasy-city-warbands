@@ -28,6 +28,12 @@ export const game: GameSystem = {
 		{ key: 'bravery', label: 'Bravery', format: 'target' }
 	],
 	health: 'health',
+	/* The Warband Deck's roster. */
+	roster: {
+		title: 'Wyrdcry Warband Roster',
+		stats: ['M', 'F', 'S', 'A', 'H', 'B'],
+		weapons: ['Rng', 'Att', 'Dmg']
+	},
 	roles: ['leader', 'hero', 'henchman'],
 	defaultRole: 'henchman',
 	roleLabels: { leader: 'Leader', hero: 'Heroes', henchman: 'Henchmen' },

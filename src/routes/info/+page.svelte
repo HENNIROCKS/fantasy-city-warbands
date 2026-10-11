@@ -72,6 +72,11 @@
 				'The damage, so far. On a fighter’s card, the bar at the foot takes Health down a point at a time, and a fighter at none is out of action – with the Wilhelm scream, which the speaker on the warband card turns off. End battle, also on the warband card, drops every wound. The battle stays on this device and never changes the warband. The scream comes from Wikimedia Commons, where it is released under CC0.'
 		},
 		{
+			question: 'Can I print a warband?',
+			answer:
+				'Yes, as a roster in PDF, from the page icon beside the warband on the start page: the warband, a row for each fighter with its profile, abilities and weapons, then every rule once with the fighters that carry it. It is a first version and will change; each game is to get the sheet it prints itself, and Black Death City’s playtest has none yet.'
+		},
+		{
 			question: 'Which rules does the app follow?',
 			answer: `Wyrdcry ${systems.wyrdcry.game.edition}, as kept in the Wyrdcry Warband Deck. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
 		},
@@ -149,8 +154,9 @@
 			class="rounded-md border p-3"
 			style="background: var(--ui-warn-bg); border-color: var(--ui-warn-border); color: var(--ui-warn-text)"
 		>
-			<strong>There is no export yet.</strong> Clearing this browser's data removes your warbands, and
-			so does a private window once it closes. Safari can also remove them by itself after seven days
+			<strong>Export what you want to keep.</strong> The arrow beside a warband on the start page saves
+			it as a file. Clearing this browser's data removes your warbands, and so does a private window
+			once it closes. Safari can also remove them by itself after seven days
 			in which the site was not opened; other browsers may do so when the device runs low on storage.
 		</p>
 	</section>

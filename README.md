@@ -11,8 +11,9 @@ Unofficial fan project. No connection to Games Workshop, Johan Markström and
 the Wyrdcry project, or Sam Pearson and Black Death City.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
-it as a deck of cards that counts damage in a battle. It does not yet export, import or print one, or know
-anything about a campaign: no experience, no injuries, no income.
+it as a deck of cards that counts damage in a battle. It exports a warband as
+a file and its roster as a PDF, both in a first version. It does not yet import
+one, or know anything about a campaign: no experience, no injuries, no income.
 
 ## What it does
 
@@ -49,7 +50,13 @@ anything about a campaign: no experience, no injuries, no income.
   a point at a time, the card fills with blood, and a fighter at none is out
   of action – with the Wilhelm scream, which can be switched off. End battle
   on the warband card drops every wound
-- Delete a warband after a question that says what is lost
+- Export a warband as a JSON file, to keep a copy outside the browser – through
+  the share sheet on a phone, as a download on a desktop
+- Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
+  warband, a row per fighter with profile, abilities and weapons in the game's
+  own columns, then every rule once with the fighters that carry it
+- Delete a warband after a question that says what is lost and offers the
+  export first
 - Dark and light mode
 - An about page with the games, where their rules come from, and answers to
   the first questions
