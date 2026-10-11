@@ -84,9 +84,12 @@
 							<span class="block truncate text-base font-semibold text-zinc-200">{s.title}</span>
 							<span class="block truncate text-zinc-400">{s.label}</span>
 							<span class="block text-zinc-400">{[s.fighters, s.cost].filter(Boolean).join(' · ')}</span>
-							<span class="block" style="color: {s.ok ? 'var(--ui-sel-text)' : 'var(--ui-warn-text)'}">
-								{s.ok ? 'valid' : 'not valid yet'}
-							</span>
+							<!-- Only what still needs doing takes a colour; the row's own is its deck's. -->
+							{#if s.ok}
+								<span class="block text-zinc-400">valid</span>
+							{:else}
+								<span class="block" style="color: var(--ui-warn-text)">not valid yet</span>
+							{/if}
 						</a>
 						<!-- Stacked, so the summary keeps the width it has beside one action. The
 						     column reaches to the row's edges, so the rule on its left runs from top

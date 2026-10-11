@@ -26,6 +26,7 @@
 - [ ] 📚 Mordheim
 - [ ] 📄 Export and import a warband as a file
 - [x] 🃏 Fighters as cards
+- [x] 🃏 A colour per warband for its cards
 - [ ] 📄 Print a roster
 - [ ] 📈 Campaign: experience, injuries, income
 - [ ] ⚙️ Installable app with an icon, working offline
