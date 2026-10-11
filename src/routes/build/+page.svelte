@@ -11,8 +11,9 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
+	import StorageWarning from '$lib/components/StorageWarning.svelte';
 	import { activeEffects, limitOf } from '$lib/core/effects';
-	import { loadWarband, saveWarband } from '$lib/core/storage';
+	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, validate, warbandCost } from '$lib/core/validate';
 	import {
@@ -43,20 +44,34 @@
 	const id = $derived(page.url.searchParams.get('id'));
 
 	let warband = $state<Warband | null>(null);
+	/* The id whose read has come back, so a warband still being read never shows as missing. */
+	let loadedId = $state<string | null>(null);
 
 	/* Fluff or notes asked for while still empty; written in, a field stays open anyway. */
 	let writing = $state({ fluff: false, notes: false });
 
-	/* Before the DOM updates, so an existing warband never flashes as missing. */
+	/* Before the DOM updates, so the warband of the id before is never shown under this one. */
 	$effect.pre(() => {
-		const loaded = id ? loadWarband(id) : null;
-		/* A name that is only the faction's is no name of the warband's: the field
-		   shows it as the placeholder, and the warband card asks for one. */
-		if (loaded && loaded.name === systems[loaded.game]?.factions.find((f) => f.id === loaded.factionId)?.name) {
-			loaded.name = '';
-		}
-		warband = loaded;
+		const current = id;
+		warband = null;
+		loadedId = null;
 		writing = { fluff: false, notes: false };
+		if (!current) return;
+		/* A read for an id left meanwhile comes back to nothing. */
+		let left = false;
+		loadWarband(current).then((loaded) => {
+			if (left) return;
+			/* A name that is only the faction's is no name of the warband's: the field
+			   shows it as the placeholder, and the warband card asks for one. */
+			if (loaded && loaded.name === systems[loaded.game]?.factions.find((f) => f.id === loaded.factionId)?.name) {
+				loaded.name = '';
+			}
+			warband = loaded;
+			loadedId = current;
+		});
+		return () => {
+			left = true;
+		};
 	});
 
 	$effect(() => {
@@ -88,6 +103,8 @@
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	const issues = $derived(warband && system && faction ? validate(warband, system.game, faction) : []);
 	const cost = $derived(warband && faction ? warbandCost(warband, faction) : 0);
+	/* Empty while a warband is read, so it does not show as a new one first. */
+	const heading = $derived(id && loadedId !== id ? '' : warband?.name.trim() || faction?.name || 'New warband');
 
 	/** Every game for step 1, the planned ones among them, A to Z. */
 	const tiles = [
@@ -175,7 +192,10 @@
 		}
 
 		const created = createWarband(system.game.id, f, '');
-		saveWarband(created);
+		/* Stored before the builder opens it, which reads it back. */
+		/* Refused, it stays on this step, under the warning that says why. */
+		if (!(await saveWarband(created))) return;
+		await requestPersistence();
 		/*
 		 * Step 2 without a warband becomes step 2 of this one in the history, so
 		 * going back from step 3 returns to its faction instead of creating a
@@ -277,15 +297,19 @@
 </script>
 
 <svelte:head>
-	<title>{warband?.name.trim() || faction?.name || 'New warband'} · {APP_TITLE}</title>
+	<title>{heading ? `${heading} · ${APP_TITLE}` : APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title={warband?.name.trim() || faction?.name || 'New warband'} back={resolve('/')} />
+<PageHeader title={heading} back={resolve('/')} />
 
 <main class="mx-auto max-w-2xl space-y-8 p-5 pb-40 text-sm">
 	<Stepper {steps} current={STEPS.indexOf(step)} />
 
-	{#if id && !warband}
+	<StorageWarning />
+
+	{#if id && loadedId !== id}
+		<!-- Read in a moment; nothing to show until then. -->
+	{:else if id && !warband}
 		<p class="text-zinc-400">This warband does not exist (any more).</p>
 	{:else if step === 'game'}
 		<section>

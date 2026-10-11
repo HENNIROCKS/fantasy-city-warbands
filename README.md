@@ -90,7 +90,7 @@ with ideas nothing is promised for at its end.
 
 ## Data
 
-Every warband lives in the browser's local storage, on this one device and in
+Every warband lives in the browser's IndexedDB, on this one device and in
 this one browser. No account, no server, no sync. Clearing the site's data
 removes them. Export a warband to keep a copy; Import warband brings it back,
 here or on another device. A battle in progress stays on the device and is not
@@ -126,7 +126,8 @@ The code is split into what every game shares and what each game brings:
 - `src/routes/dev/` – the page `make dev` opens: the dev server's address on
   the network as a QR code. Empty in a build
 - `src/lib/fixtures/` – warbands to test with, as the app stores them: put one
-  into localStorage under `fantasy-city-warbands:warbands`. Taken from the
+  into localStorage under `fantasy-city-warbands:warbands` as an array, and
+  the next visit carries it over into IndexedDB. Taken from the
   Wyrdcry Warband Deck's fixtures; `maximum.json` breaks the budget and the
   limits on purpose, and Crixxit's Pack leaves its sorcerer's spell open
 

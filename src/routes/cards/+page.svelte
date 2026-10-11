@@ -8,7 +8,8 @@
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { allocate, stateOf, type BattleState } from '$lib/core/battle';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
-	import { loadBattle, loadSound, loadWarband, saveBattle, saveSound } from '$lib/core/storage';
+	import { loadBattle, loadSound, loadWarband, saveBattle, saveSound } from '$lib/core/storage.svelte';
+	import type { Warband } from '$lib/core/types';
 	import { systems } from '$lib/systems';
 
 	/*
@@ -17,28 +18,42 @@
 	 * here only the battle does.
 	 */
 	const id = $derived(page.url.searchParams.get('id'));
-	const warband = $derived(id ? loadWarband(id) : null);
-	const system = $derived(warband ? systems[warband.game] : null);
-	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
-	/* The warband's own card first, then its fighters. */
-	const cards = $derived<DeckCard[]>(
-		warband && system && faction
-			? [
-					warbandCard(warband, faction, system.game),
-					...warband.fighters.map((f) => fighterCard(f, faction, system.game, warband.picks))
-				]
-			: []
-	);
-	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
-
+	let warband = $state<Warband | null>(null);
 	/* The battle is the deck's only state: it lives on this device, beside the
 	   warband rather than in it. */
 	let battle = $state<BattleState | null>(null);
+	/* The id whose warband and battle have been read, so neither shows as missing before. */
+	let loadedId = $state<string | null>(null);
 	$effect.pre(() => {
-		battle = id ? loadBattle(id) : null;
+		const current = id;
+		warband = null;
+		battle = null;
+		loadedId = null;
+		if (!current) return;
+		/* A read for an id left meanwhile comes back to nothing. */
+		let left = false;
+		Promise.all([loadWarband(current), loadBattle(current)]).then(([w, b]) => {
+			if (left) return;
+			warband = w;
+			battle = b;
+			loadedId = current;
+		});
+		return () => {
+			left = true;
+		};
 	});
+	const system = $derived(warband ? systems[warband.game] : null);
+	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
+	/* The warband's own card first, then its fighters. */
+	const cards = $derived.by<DeckCard[]>(() => {
+		const w = warband;
+		if (!w || !system || !faction) return [];
+		return [warbandCard(w, faction, system.game), ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks))];
+	});
+	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
-	let sound = $state(loadSound());
+	let sound = $state(true);
+	loadSound().then((on) => (sound = on));
 	let audio: HTMLAudioElement | undefined;
 
 	function wound(instanceId: string, delta: number, health: number) {
@@ -97,7 +112,9 @@
 <div class="flex h-dvh flex-col">
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
-	{#if !warband}
+	{#if id && loadedId !== id}
+		<!-- Read in a moment; nothing to show until then. -->
+	{:else if !warband}
 		<p class="p-5 text-sm text-zinc-400">This warband does not exist (any more).</p>
 	{:else if !system || !faction}
 		<p class="p-5 text-sm text-zinc-400">This warband's faction is unknown.</p>

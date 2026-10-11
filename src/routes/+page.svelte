@@ -4,8 +4,9 @@
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import StorageWarning from '$lib/components/StorageWarning.svelte';
 	import { toRoster } from '$lib/core/roster';
-	import { deleteWarband, loadWarbands, saveWarband } from '$lib/core/storage';
+	import { deleteWarband, loadWarbands, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
 	import type { Warband } from '$lib/core/types';
 	import { warbandCost, validate } from '$lib/core/validate';
@@ -13,7 +14,18 @@
 	import { safeName, shareFile, type ShareResult } from '$lib/share';
 	import { systems } from '$lib/systems';
 
-	let warbands = $state(loadWarbands());
+	let warbands = $state<Warband[]>([]);
+	/* Until the first read, so an empty list does not flash as "No warbands yet". */
+	let loaded = $state(false);
+
+	/* A to Z by the name the list shows, as the Warband Deck has it. */
+	async function refresh() {
+		const all = await loadWarbands();
+		const title = (w: Warband) => w.name.trim() || systems[w.game]?.factions.find((f) => f.id === w.factionId)?.name || '';
+		warbands = all.sort((a, b) => title(a).localeCompare(title(b), 'en'));
+		loaded = true;
+	}
+	refresh();
 
 	/* The warband a delete has been asked for, held until it is confirmed. */
 	let condemned = $state<string | null>(null);
@@ -42,11 +54,15 @@
 	}
 
 	/* The warband lives on this device only, so this loses it for good. */
-	function remove(id: string, exported: boolean) {
+	async function remove(id: string, exported: boolean) {
 		const name = summary(id).title;
-		deleteWarband(id);
+		if (!(await deleteWarband(id))) {
+			/* The sheet stays: closed, it would leave the warband in the list under a "deleted". */
+			sheetNote = { text: `${exported ? 'Exported, but this' : 'This'} browser refused to delete it.`, error: true };
+			return;
+		}
 		condemned = null;
-		warbands = loadWarbands();
+		await refresh();
 		notify(exported ? `${name} exported and deleted.` : `${name} deleted.`);
 	}
 
@@ -176,13 +192,15 @@
 
 	/* The file's state as it is, its date included: it is not a new change. A
 	   battle running on this device stays, as the Warband Deck keeps it. */
-	function confirmImport() {
+	async function confirmImport() {
 		if (!candidate) return;
 		const title = candidate.title;
-		saveWarband($state.snapshot(candidate.warband) as Warband, false);
+		const saved = await saveWarband($state.snapshot(candidate.warband) as Warband, false);
+		if (saved) await requestPersistence();
 		candidate = null;
-		warbands = loadWarbands();
-		notify(`${title} imported.`);
+		await refresh();
+		if (saved) notify(`${title} imported.`);
+		else notify(`${title} could not be stored – this browser refused it.`, true);
 	}
 
 	/* Spelled out rather than left to toLocaleString, whose output differs between engines. */
@@ -241,9 +259,13 @@
 			<input bind:this={fileInput} type="file" accept="application/json,.json" class="hidden" onchange={onPick} />
 		</div>
 
+		<StorageWarning />
+
 		<section>
 			<p class="field-label">Your warbands</p>
-			{#if warbands.length === 0}
+			{#if !loaded}
+				<!-- Read in a moment; nothing to say until then. -->
+			{:else if warbands.length === 0}
 				<p class="text-zinc-400">No warbands yet.</p>
 			{:else}
 				<ul class="space-y-2">

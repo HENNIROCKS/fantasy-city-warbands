@@ -158,6 +158,7 @@
 			it as a file, and Import warband brings it back, here or on another device. Clearing this browser's data removes your warbands, and so does a private window
 			once it closes. Safari can also remove them by itself after seven days
 			in which the site was not opened; other browsers may do so when the device runs low on storage.
+			The app asks the browser to keep them; Safari grants that mostly to the app on the home screen.
 		</p>
 	</section>
 
