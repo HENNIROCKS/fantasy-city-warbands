@@ -10,9 +10,9 @@ Mordheim is planned.
 Unofficial fan project. No connection to Games Workshop, Johan Markström and
 the Wyrdcry project, or Sam Pearson and Black Death City.
 
-**Status: early.** The app builds a warband and lets you change it later. It
-does not yet export or print one, show fighter cards, or know anything about a
-campaign: no experience, no injuries, no income.
+**Status: early.** The app builds a warband, lets you change it later and shows
+it as a deck of cards. It does not yet export, import or print one, or know
+anything about a campaign: no experience, no injuries, no income.
 
 ## What it does
 
@@ -30,6 +30,11 @@ campaign: no experience, no injuries, no income.
   Apprentices for the Acolytes of Plague
 - Come back to any step later, including the faction; switching faction asks
   first when fighters or a choice would be lost
+- Name the warband, pick the colour of its cards and write its fluff and notes
+- See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
+  card for the warband with its fighters, figures, fluff and notes, then one
+  for each fighter with its profile, weapons and rules
+- Delete a warband after a question that says what is lost
 - Dark and light mode
 - An about page with the games, where their rules come from, and answers to
   the first questions

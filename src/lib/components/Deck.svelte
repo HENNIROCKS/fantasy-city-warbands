@@ -175,6 +175,7 @@
 					style:transform="scale({0.94 + 0.06 * progress})"
 					style:opacity={0.55 + 0.45 * progress}
 					aria-hidden="true"
+					inert
 				>
 					{@render face(cards[beneath])}
 				</div>

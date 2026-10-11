@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -43,9 +44,19 @@
 
 	let warband = $state<Warband | null>(null);
 
+	/* Fluff or notes asked for while still empty; written in, a field stays open anyway. */
+	let writing = $state({ fluff: false, notes: false });
+
 	/* Before the DOM updates, so an existing warband never flashes as missing. */
 	$effect.pre(() => {
-		warband = id ? loadWarband(id) : null;
+		const loaded = id ? loadWarband(id) : null;
+		/* A name that is only the faction's is no name of the warband's: the field
+		   shows it as the placeholder, and the warband card asks for one. */
+		if (loaded && loaded.name === systems[loaded.game]?.factions.find((f) => f.id === loaded.factionId)?.name) {
+			loaded.name = '';
+		}
+		warband = loaded;
+		writing = { fluff: false, notes: false };
 	});
 
 	$effect(() => {
@@ -55,12 +66,12 @@
 	/* The deck's colour, null for the card green. */
 	const colour = $derived(warband?.colour ?? null);
 
-	/* Fluff or notes asked for while still empty; written in, a field stays open anyway. */
-	let writing = $state({ fluff: false, notes: false });
-
-	/* A field opened by its button takes the focus, so the typing can start. */
-	function focusIf(node: HTMLElement, when: boolean) {
-		if (when) node.focus();
+	/* A field opened by its button takes the focus, so the typing can start –
+	   only then, not each time the step is shown again. */
+	async function write(field: 'fluff' | 'notes') {
+		writing[field] = true;
+		await tick();
+		document.getElementById(`warband-${field}`)?.focus();
 	}
 
 	const step = $derived.by((): StepId => {
@@ -500,7 +511,6 @@
 					placeholder="A line or two of story"
 					bind:value={warband.fluff}
 					use:grow
-					use:focusIf={writing.fluff}
 				></textarea>
 			</section>
 		{/if}
@@ -514,17 +524,16 @@
 					placeholder="Anything to remember at the table"
 					bind:value={warband.notes}
 					use:grow
-					use:focusIf={writing.notes}
 				></textarea>
 			</section>
 		{/if}
 		{#if !fluffOpen || !notesOpen}
 			<div class="flex gap-2">
 				{#if !fluffOpen}
-					<button type="button" class="wargear-add" onclick={() => (writing.fluff = true)}>+ Add fluff</button>
+					<button type="button" class="wargear-add" onclick={() => write('fluff')}>+ Add fluff</button>
 				{/if}
 				{#if !notesOpen}
-					<button type="button" class="wargear-add" onclick={() => (writing.notes = true)}>+ Add notes</button>
+					<button type="button" class="wargear-add" onclick={() => write('notes')}>+ Add notes</button>
 				{/if}
 			</div>
 		{/if}

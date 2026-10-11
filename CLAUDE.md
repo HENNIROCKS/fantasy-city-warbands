@@ -61,10 +61,10 @@ im hellen Modus dunkel. Für eine neue Zink-Klasse, auch als `hover:` oder
 `focus-visible:`, die Übersetzung mitliefern – oder die Theme-Variablen
 (`--ui-*`) nutzen.
 
-Die Kämpferkarten folgen dem Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`):
-Aufbau und Bausteine (Deck, FighterCard, ValueTable, WeaponTable, Explanation,
-fit-text) sind dort übernommen und gekürzt. Eine Änderung am Kartenaufbau wird
-zuerst am Deck verglichen.
+Die Karten folgen dem Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`):
+Aufbau und Bausteine (Deck, WarbandCard, FighterCard, ValueTable, WeaponTable,
+Explanation, fit-text) sind dort übernommen und gekürzt. Eine Änderung am
+Kartenaufbau wird zuerst am Deck verglichen.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
