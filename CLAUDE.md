@@ -11,7 +11,19 @@ der `ROADMAP.md`. Beim Übertragen einer Funktion zuerst den Code des Decks lese
 
 Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 `ROADMAP.md`: eine Zeile je Punkt, keine Unterpunkte, keine Begründungen, keine
-Daten. Architektur, Entscheidungen und offene Punkte im Vault unter
+Daten. Sie ist die einzige Stelle, an der offene Punkte zum Bauen gepflegt
+werden. Abgehakte Punkte stehen oben, nie zwischen offenen: ein erledigter
+Punkt rückt ans Ende des abgehakten Blocks. Unter „Ideas“ steht, was weder
+versprochen noch geplant ist.
+
+Wo die App bewusst anders steht als das, was ein Spiel druckt oder als Daten
+mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
+`DEVIATIONS.md` – je Spiel ein Abschnitt, `[x]` vom Autor der Regeln bestätigt,
+`[ ]` eigene Lesart. Eine neue Abweichung bekommt dort eine Zeile, nicht in der
+Roadmap; was dort steht, gleicht keine Session wieder an. Darunter steht unter
+„Open upstream“, was nur der Autor klären kann und hier noch nichts ändert.
+
+Architektur, Entscheidungen und offene Punkte im Vault unter
 `Projekte/Fantasy City Warbands.md`.
 
 ## Befehle
@@ -54,7 +66,7 @@ ein negativer Bonus: Bravery ist ein Wurfziel.
 (`~/Spiele/+ Games Workshop/Mordheim Fanac [1e] - Black Death City Playtest v1.01.pdf`).
 Werte **an der PDF-Seite ablesen, nicht am extrahierten Text** – die
 Spaltenextraktion verschiebt Profile. Widersprechen sich Fighters List und
-Fighter Scroll, gilt die Scroll; der Widerspruch kommt in die Roadmap.
+Fighter Scroll, gilt die Scroll; der Widerspruch kommt in die `DEVIATIONS.md`.
 
 ## Grundsatz der Prüfung
 

@@ -68,7 +68,8 @@ the cost of a Misbegotten's bloodline mutation.
 
 ## Roadmap
 
-What is built and what comes next is a checklist in [`ROADMAP.md`](ROADMAP.md).
+What is built and what comes next is a checklist in [`ROADMAP.md`](ROADMAP.md),
+with ideas nothing is promised for at its end.
 
 ## Data
 
@@ -120,6 +121,9 @@ first and publishes it to GitHub Pages.
 - **Black Death City** – transcribed by hand from the Black Death City
   Playtest v1.01 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.
+
+Where the app reads a game differently from its page or its data, or settles a
+contradiction one way, [`DEVIATIONS.md`](DEVIATIONS.md) says so.
 
 A wrong number or rules text is worth a [bug report](https://github.com/HENNIROCKS/fantasy-city-warbands/issues/new/choose);
 quote the rulebook and name the page if you can.

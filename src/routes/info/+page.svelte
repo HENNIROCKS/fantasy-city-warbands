@@ -196,6 +196,7 @@
 		<ul class="space-y-2">
 			<li><a class={linkClass} href="{REPO}/issues" target="_blank" rel="noopener">{@render github()}Feedback and bug reports</a></li>
 			<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md" target="_blank" rel="noopener">{@render github()}What is planned</a></li>
+			<li><a class={linkClass} href="{REPO}/blob/main/DEVIATIONS.md" target="_blank" rel="noopener">{@render github()}Where the app reads the rules its own way</a></li>
 			<li><a class={linkClass} href={REPO} target="_blank" rel="noopener">{@render github()}Source code</a></li>
 			<li><a class={linkClass} href={CARD_CREATOR} target="_blank" rel="noopener">{@render external()}Warcry Card Creator 2026</a></li>
 		</ul>
