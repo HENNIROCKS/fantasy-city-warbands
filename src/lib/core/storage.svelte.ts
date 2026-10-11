@@ -222,12 +222,17 @@ export function saveWarband(warband: Warband, dated = true): Promise<boolean> {
 /** Every key of one warband's photos: `[id]` sorts before `[id, …]`, and an array after any string. */
 const photosOfWarband = (id: string) => IDBKeyRange.bound([id], [id, []]);
 
-/** The warband, the battle it was in the middle of and its fighters' photos. */
+/** The warband, the battle it was in the middle of, its fighters' photos and its star. */
 export function deleteWarband(id: string): Promise<boolean> {
-	return write([WARBANDS, BATTLES, PHOTOS], (tx) => {
+	return write([WARBANDS, BATTLES, PHOTOS, META], (tx) => {
 		tx.objectStore(WARBANDS).delete(id);
 		tx.objectStore(BATTLES).delete(id);
 		tx.objectStore(PHOTOS).delete(photosOfWarband(id));
+		const meta = tx.objectStore(META);
+		const request = meta.get('favourite');
+		request.onsuccess = () => {
+			if (request.result === id) meta.delete('favourite');
+		};
 	});
 }
 
@@ -284,6 +289,24 @@ export function saveSound(on: boolean): Promise<boolean> {
 		const s = tx.objectStore(META);
 		if (on) s.delete('sound');
 		else s.put(false, 'sound');
+	});
+}
+
+/**
+ * The id of the warband starred on this device, at the top of the list. One at
+ * most, and never part of the warband, so neither an export nor its date
+ * carries it.
+ */
+export async function loadFavourite(): Promise<string | null> {
+	return (await read<string | undefined>(META, (s) => s.get('favourite'), undefined)) ?? null;
+}
+
+/** Null takes the star away. */
+export function saveFavourite(id: string | null): Promise<boolean> {
+	return write([META], (tx) => {
+		const s = tx.objectStore(META);
+		if (id) s.put(id, 'favourite');
+		else s.delete('favourite');
 	});
 }
 

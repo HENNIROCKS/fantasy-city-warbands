@@ -5,7 +5,15 @@
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { toRoster } from '$lib/core/roster';
-	import { deleteWarband, loadPhotos, loadWarbands, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
+	import {
+		deleteWarband,
+		loadFavourite,
+		loadPhotos,
+		loadWarbands,
+		requestPersistence,
+		saveFavourite,
+		saveWarband
+	} from '$lib/core/storage.svelte';
 	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
 	import type { Warband } from '$lib/core/types';
 	import { warbandCost, validate } from '$lib/core/validate';
@@ -17,14 +25,28 @@
 	/* Until the first read, so an empty list does not flash as "No warbands yet". */
 	let loaded = $state(false);
 
-	/* A to Z by the name the list shows, as the Warband Deck has it. */
+	/* The starred warband's id; null when none is, or the one starred is gone. */
+	let favourite = $state<string | null>(null);
+
+	/* A to Z by the name the list shows, as the Warband Deck has it, the starred one first. */
 	async function refresh() {
-		const all = await loadWarbands();
+		const [all, starred] = await Promise.all([loadWarbands(), loadFavourite()]);
 		const title = (w: Warband) => w.name.trim() || systems[w.game]?.factions.find((f) => f.id === w.factionId)?.name || '';
-		warbands = all.sort((a, b) => title(a).localeCompare(title(b), 'en'));
+		const first = (w: Warband) => (w.id === starred ? 0 : 1);
+		warbands = all.sort((a, b) => first(a) - first(b) || title(a).localeCompare(title(b), 'en'));
+		favourite = all.some((w) => w.id === starred) ? starred : null;
 		loaded = true;
 	}
 	refresh();
+
+	/* One at most: starring a warband takes the star from the one that had it.
+	   The row moves, so the focus is put back on its star. */
+	async function star(id: string) {
+		if (!(await saveFavourite(favourite === id ? null : id))) return;
+		await refresh();
+		await tick();
+		document.getElementById(`star-${id}`)?.focus();
+	}
 
 	/* The warband a delete has been asked for, held until it is confirmed. */
 	let condemned = $state<string | null>(null);
@@ -278,6 +300,23 @@
 							class="flex items-center gap-3 rounded-md border border-zinc-700 bg-zinc-800 p-3"
 							style="border-left: 10px solid {w.colour ?? DEFAULT_COLOUR}"
 						>
+							<!-- Reaches to the row's edges like the actions, so the whole height is its tap target. -->
+							<button
+								type="button"
+								id="star-{w.id}"
+								class="-my-3 -mr-3 -ml-3 flex w-11 shrink-0 items-center justify-center self-stretch transition hover:text-white focus-visible:text-white {favourite ===
+								w.id
+									? 'text-zinc-200'
+									: 'text-zinc-400'}"
+								aria-label="Favourite: {s.title}"
+								aria-pressed={favourite === w.id}
+								title="Favourite"
+								onclick={() => star(w.id)}
+							>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill={favourite === w.id ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
+									<path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" />
+								</svg>
+							</button>
 							<!-- A warband opens as its cards; one without fighters has none yet and
 							     opens where they are recruited. -->
 							<a

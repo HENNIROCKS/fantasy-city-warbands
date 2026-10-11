@@ -35,6 +35,7 @@
 - [x] 🃏 A photo of the painted model as the card image, kept out of the JSON export
 - [x] 🃏 Unnamed warband and Unnamed fighter in the head of the card, leading to the name field
 - [x] 🎨 How to add the app to the home screen, on the about page
+- [x] 🛠️ A favourite warband, starred, always at the top of the list
 - [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included

@@ -62,6 +62,11 @@
 				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first. A fighter’s fluff, notes and photo are written on the back of its card: the pencil under the card turns it over.'
 		},
 		{
+			question: 'Can I keep one warband at the top?',
+			answer:
+				'Yes: tap the star beside it on the start page. One warband at a time; the others stay A to Z. The star stays on this device and is not part of an export.'
+		},
+		{
 			question: 'Does the app apply every rule?',
 			answer:
 				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation, and anything that happens in a campaign are still to come.'

@@ -43,6 +43,8 @@ files, or know anything about a campaign: no experience, no injuries, no income.
   Apprentices for the Acolytes of Plague
 - Come back to any step later, including the faction; switching faction asks
   first when fighters or a choice would be lost
+- Star one warband to keep it at the top of the list, which otherwise runs A
+  to Z; the star stays on the device and out of the export
 - Name the warband, pick the colour of its cards and write its fluff and notes;
   a card without a name says Unnamed warband or Unnamed fighter and leads to
   where it is named
