@@ -38,7 +38,7 @@ export function fileName(name: string, now = new Date()): string {
 }
 
 /** What reading a file came to: a warband to offer, or why there is none. */
-export type ReadResult = { ok: true; warband: Warband; exportedAt: string | null } | { ok: false; message: string };
+export type ReadResult = { ok: true; warband: Warband } | { ok: false; message: string };
 
 /** Answers whether the app knows a game and a faction, by name for the message where it does not. */
 export interface Known {
@@ -125,7 +125,7 @@ export function readWarbandFile(text: string, known: Known): ReadResult {
 		return { ok: false, message: `This warband's faction is not one ${game} has here: ${warband.factionId}.` };
 	}
 
-	return { ok: true, warband, exportedAt: typeof parsed.exportedAt === 'string' ? parsed.exportedAt : null };
+	return { ok: true, warband };
 }
 
 /**

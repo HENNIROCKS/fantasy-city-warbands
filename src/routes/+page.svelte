@@ -133,7 +133,7 @@
 	let fileInput: HTMLInputElement | undefined = $state();
 
 	/* A file read and checked, held until the sheet is answered. */
-	let candidate = $state<{ warband: Warband; verdict: Verdict; title: string; label: string } | null>(null);
+	let candidate = $state<{ warband: Warband; verdict: Verdict; title: string; label: string; excess: string[] } | null>(null);
 
 	const known: Known = {
 		game: (id) => systems[id]?.game.name ?? null,
@@ -167,7 +167,10 @@
 			warband: w,
 			verdict: judge(w, warbands.find((x) => x.id === w.id) ?? null),
 			title: w.name.trim() || f.name,
-			label: `${s.game.name} • ${f.name}`
+			label: `${s.game.name} • ${f.name}`,
+			/* Imported as it is: the file is the player's state, and building is
+			   what keeps a warband within its limits, not reading it back. */
+			excess: [...new Set(validate(w, s.game, f).filter((i) => i.kind === 'excess').map((i) => i.message))]
 		};
 	}
 
@@ -195,14 +198,17 @@
 		const s = systems[w.game];
 		const f = s?.factions.find((x) => x.id === w.factionId);
 		const fighters = `${w.fighters.length} ${w.fighters.length === 1 ? 'fighter' : 'fighters'}`;
-		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', fighters, cost: '', ok: false, known: false };
+		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', fighters, cost: '', status: 'missing', known: false };
+		const issues = validate(w, s.game, f);
 		return {
 			/* A warband saved without a name goes by its faction's. */
 			title: w.name.trim() || f.name,
 			label: `${s.game.name} • ${f.name}`,
 			fighters,
 			cost: `${warbandCost(w, f)} / ${s.game.budget} ${s.game.currency}`,
-			ok: validate(w, s.game, f).length === 0,
+			/* Past its limits is not the same as unfinished: an import or a corrected
+			   rule can leave a warband there, and building never does. */
+			status: issues.some((i) => i.kind === 'excess') ? 'excess' : issues.length ? 'missing' : 'valid',
 			/* A roster reads the faction; without it there is nothing to print. */
 			known: true
 		};
@@ -260,10 +266,10 @@
 								<span class="block truncate text-zinc-400">{s.label}</span>
 								<span class="block text-zinc-400">{[s.fighters, s.cost].filter(Boolean).join(' · ')}</span>
 								<!-- Only what still needs doing takes a colour; the row's own is its deck's. -->
-								{#if s.ok}
+								{#if s.status === 'valid'}
 									<span class="block text-zinc-400">valid</span>
 								{:else}
-									<span class="block" style="color: var(--ui-warn-text)">not valid yet</span>
+									<span class="block" style="color: var(--ui-warn-text)">{s.status === 'excess' ? 'over its limits' : 'not valid yet'}</span>
 								{/if}
 							</a>
 							<!-- Two by two and as icons, so the summary keeps most of the row's width.
@@ -390,6 +396,15 @@
 				<p class="notice danger">
 					<strong>Cannot tell which is newer.</strong> This warband is already here, and not both states
 					say when they last changed. Importing overwrites what is stored here.
+				</p>
+			{/if}
+			{#if candidate.excess.length}
+				<!-- Amber, not red: nothing is lost by it, there is something to do. -->
+				<p class="notice mt-2" style="background: var(--ui-warn-bg); border-color: var(--ui-warn-border); color: var(--ui-warn-text)">
+					<strong>This warband goes past its limits here:</strong>
+					<!-- Each fighter's gear reports on its own, so the same line comes many times; three distinct ones say enough. -->
+					{candidate.excess.slice(0, 3).join(' ')}{#if candidate.excess.length > 3}{' '}And {candidate.excess.length - 3} more.{/if}
+					It is imported as it is; fix it in the builder.
 				</p>
 			{/if}
 			<div class="sheet-actions stacked">

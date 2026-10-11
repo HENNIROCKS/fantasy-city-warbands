@@ -76,6 +76,8 @@ gegangen). `excess` darf nicht entstehen: Jede Aktion, die etwas hinzufügt oder
 umstellt, wird vorher probehalber durch `validate` gerechnet und gesperrt, wenn
 sie einen neuen Verstoß brächte – mit dem Grund am Button. Eine neue Grenze
 gehört deshalb in `validate`, nicht als eigene Sperre in die Oberfläche.
+Ein Import übernimmt, was die Datei hat, auch ein `excess`, und sagt es;
+gesperrt wird nur beim Bauen.
 
 ## Oberfläche
 

@@ -64,7 +64,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. State Pride’s effects on the profiles, the skills and spells Black Death City’s fighters pick on recruitment, and anything that happens in a campaign are still to come.'
+				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation, and anything that happens in a campaign are still to come.'
 		},
 		{
 			question: 'Can I track a battle?',
@@ -74,7 +74,7 @@
 		{
 			question: 'Can I print a warband?',
 			answer:
-				'Yes, as a roster in PDF, from the page icon beside the warband on the start page: the warband, a row for each fighter with its profile, abilities and weapons, then every rule once with the fighters that carry it. It is a first version and will change; each game is to get the sheet it prints itself, and Black Death City’s playtest has none yet.'
+				'Yes, as a roster in PDF, from the page icon beside the warband on the start page: the warband, a row for each fighter with its profile, abilities and weapons, then every rule of the warband, its fighters and their gear once, with the fighters that carry it. It is a first version and will change; each game is to get the sheet it prints itself, and Black Death City’s playtest has none yet.'
 		},
 		{
 			question: 'Which rules does the app follow?',

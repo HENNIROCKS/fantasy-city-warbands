@@ -54,11 +54,13 @@ files, or know anything about a campaign: no experience, no injuries, no income.
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it
-  is new, the same, newer or older than what is stored, and asks before an
-  older state overwrites a newer one
+  is new, the same, newer or older than what is stored, asks before an older
+  state overwrites a newer one, and says so where the warband goes past its
+  limits – it is imported as it is
 - Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
   warband, a row per fighter with profile, abilities and weapons in the game's
-  own columns, then every rule once with the fighters that carry it
+  own columns, then every rule of the warband, its fighters and their gear
+  once, with the fighters that carry it
 - Delete a warband after a question that says what is lost and offers the
   export first
 - Dark and light mode
@@ -90,7 +92,9 @@ with ideas nothing is promised for at its end.
 
 Every warband lives in the browser's local storage, on this one device and in
 this one browser. No account, no server, no sync. Clearing the site's data
-removes them.
+removes them. Export a warband to keep a copy; Import warband brings it back,
+here or on another device. A battle in progress stays on the device and is not
+part of the export.
 
 ## Development
 
@@ -117,6 +121,10 @@ The code is split into what every game shares and what each game brings:
   groups, and the translation of its data into the shared shape
 - `src/lib/rules/<game>/factions/<faction>/` – the data, one folder per
   faction; a new folder is picked up without further code
+- `src/lib/pdf/` – the roster as a PDF; its title and columns come from each
+  game's module, as `roster`
+- `src/routes/dev/` – the page `make dev` opens: the dev server's address on
+  the network as a QR code. Empty in a build
 - `src/lib/fixtures/` – warbands to test with, as the app stores them: put one
   into localStorage under `fantasy-city-warbands:warbands`. Taken from the
   Wyrdcry Warband Deck's fixtures; `maximum.json` breaks the budget and the
