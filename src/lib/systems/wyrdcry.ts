@@ -31,7 +31,7 @@ export const game: GameSystem = {
 	defaultRole: 'henchman',
 	roleLabels: { leader: 'Leader', hero: 'Heroes', henchman: 'Henchmen' },
 	groups: [],
-	costLabel: 'Gold Crowns',
+	costLabel: 'Gold Coins',
 	weaponStats: [
 		{ key: 'range', label: 'Range' },
 		{ key: 'attacks', label: 'Attacks' },

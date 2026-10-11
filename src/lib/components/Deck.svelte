@@ -2,16 +2,26 @@
 	import { onMount } from 'svelte';
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
-	import type { FighterCardData } from '$lib/core/card';
+	import WarbandCard from '$lib/components/WarbandCard.svelte';
+	import type { DeckCard } from '$lib/core/card';
 	import { explanation } from '$lib/explanation';
 
 	/*
-	 * The fighters as a stack of cards, as the Wyrdcry Warband Deck holds them:
-	 * one on top, the next beneath it, swiped off sideways with a finger or the
-	 * mouse, or moved with the arrow keys. The stack is closed – behind the last
-	 * card comes the first again.
+	 * The warband and its fighters as a stack of cards, as the Wyrdcry Warband
+	 * Deck holds them: one on top, the next beneath it, swiped off sideways with
+	 * a finger or the mouse, or moved with the arrow keys. The stack is closed –
+	 * behind the last card comes the first again.
 	 */
-	let { cards, columns }: { cards: FighterCardData[]; columns: string[] } = $props();
+	let {
+		cards,
+		columns,
+		edit
+	}: {
+		cards: DeckCard[];
+		columns: string[];
+		/** Where the warband is named, for the warband card to point to while it has no name. */
+		edit?: string;
+	} = $props();
 
 	/** Duration of the fly-out; the same number drives transition and switch point. */
 	const FLY = 260;
@@ -136,6 +146,13 @@
 		}, duration);
 	}
 
+	/** From the warband card's roster: the fighter's card goes on top. */
+	function jumpTo(instanceId: string) {
+		if (leaving) return;
+		const index = cards.findIndex((c) => c.instanceId === instanceId);
+		if (index >= 0) current = index;
+	}
+
 	function onKeyDown(event: KeyboardEvent) {
 		/* The open explanation keeps the keys for itself. */
 		if (cards.length < 2 || explanation()) return;
@@ -159,7 +176,7 @@
 					style:opacity={0.55 + 0.45 * progress}
 					aria-hidden="true"
 				>
-					<FighterCard card={cards[beneath]} {columns} />
+					{@render face(cards[beneath])}
 				</div>
 			{/key}
 		{/if}
@@ -183,7 +200,7 @@
 				onclickcapture={onClickCapture}
 			>
 				<div class="face">
-					<FighterCard card={cards[current]} {columns} />
+					{@render face(cards[current])}
 				</div>
 			</div>
 		{/key}
@@ -201,6 +218,14 @@
 		{/if}
 	</div>
 </div>
+
+{#snippet face(data: DeckCard)}
+	{#if data.kind === 'warband'}
+		<WarbandCard card={data} onpick={jumpTo} {edit} />
+	{:else}
+		<FighterCard card={data} {columns} />
+	{/if}
+{/snippet}
 
 <!-- Outside the stack: inside a pane, the transform would become the frame a
      fixed overlay is placed against. -->

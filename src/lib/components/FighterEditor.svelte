@@ -1,7 +1,7 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import type { Faction, FighterInstance, GameSystem, Issue, WargearKind } from '$lib/core/types';
-	import { fighterCost, formatStat } from '$lib/core/warband';
+	import { fighterCost, fighterName, formatStat } from '$lib/core/warband';
 
 	let {
 		instance,
@@ -29,7 +29,7 @@
 	];
 
 	const fighter = $derived(faction.fighters.find((f) => f.id === instance.fighterId));
-	const label = $derived(instance.name || fighter?.name || instance.fighterId);
+	const label = $derived(fighterName(instance, faction));
 
 	function nameOf(id: string): string {
 		return faction.wargear.find((w) => w.id === id)?.name ?? id;

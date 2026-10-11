@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
+	import { grow } from '$lib/grow';
 	import FactionInfo from '$lib/components/FactionInfo.svelte';
 	import FighterEditor from '$lib/components/FighterEditor.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -16,7 +17,9 @@
 	import {
 		createWarband,
 		fighterCost,
+		fighterName,
 		fighterSections,
+		fighterType,
 		roleOf,
 		withFighter,
 		withInstance,
@@ -51,6 +54,14 @@
 
 	/* The deck's colour, null for the card green. */
 	const colour = $derived(warband?.colour ?? null);
+
+	/* Fluff or notes asked for while still empty; written in, a field stays open anyway. */
+	let writing = $state({ fluff: false, notes: false });
+
+	/* A field opened by its button takes the focus, so the typing can start. */
+	function focusIf(node: HTMLElement, when: boolean) {
+		if (when) node.focus();
+	}
 
 	const step = $derived.by((): StepId => {
 		const s = page.url.searchParams.get('step') as StepId | null;
@@ -143,8 +154,8 @@
 				const what = lost.join(' and ');
 				if (what && !confirm(`Switch to ${f.name}? ${what[0].toUpperCase()}${what.slice(1)} will be removed.`)) return;
 				warband.fighters = [];
-				/* A name that was only the faction's own follows the new faction. */
-				if (warband.name === faction?.name) warband.name = f.name;
+				/* A name that was only the faction's own is no name of the warband's. */
+				if (warband.name === faction?.name) warband.name = '';
 				warband.factionId = f.id;
 				warband.picks = Object.fromEntries(f.choices.map((c) => [c.id, []]));
 			}
@@ -152,7 +163,7 @@
 			return;
 		}
 
-		const created = createWarband(system.game.id, f, f.name);
+		const created = createWarband(system.game.id, f, '');
 		saveWarband(created);
 		/*
 		 * Step 2 without a warband becomes step 2 of this one in the history, so
@@ -199,7 +210,7 @@
 		const index = warband.fighters.findIndex((f) => f.instanceId === instanceId);
 		if (index === -1) return;
 		const instance = $state.snapshot(warband.fighters[index]);
-		const label = instance.name || faction.fighters.find((f) => f.id === instance.fighterId)?.name || 'Fighter';
+		const label = fighterName(instance, faction);
 		warband.fighters.splice(index, 1);
 		removed = { instance, index, label };
 	}
@@ -236,14 +247,14 @@
 
 	let showIssues = $state(false);
 
-	/** The second line of a fighter in the overview: its type where it has a name of its own, then its gear. */
+	/** The second line of a fighter in the overview: its type, then its gear. */
 	function overviewLine(instance: FighterInstance): string {
 		if (!faction) return '';
 		const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 		const gear = [...(fighter?.gear ?? []), ...instance.wargear].map(
 			(w) => faction?.wargear.find((x) => x.id === w)?.name ?? w
 		);
-		return [instance.name ? fighter?.name : null, gear.join(', ') || 'no wargear'].filter(Boolean).join(' · ');
+		return [fighterType(instance, faction), gear.join(', ') || 'no wargear'].join(' · ');
 	}
 
 	function next() {
@@ -255,10 +266,10 @@
 </script>
 
 <svelte:head>
-	<title>{warband?.name || 'New warband'} · {APP_TITLE}</title>
+	<title>{warband?.name.trim() || faction?.name || 'New warband'} · {APP_TITLE}</title>
 </svelte:head>
 
-<PageHeader title={warband?.name || 'New warband'} back={resolve('/')} />
+<PageHeader title={warband?.name.trim() || faction?.name || 'New warband'} back={resolve('/')} />
 
 <main class="mx-auto max-w-2xl space-y-8 p-5 pb-40 text-sm">
 	<Stepper {steps} current={STEPS.indexOf(step)} />
@@ -433,13 +444,9 @@
 			<label class="field-label" for="warband-name">Name of your warband</label>
 			<input
 				id="warband-name"
-				class="field-input"
+				class="field-input scroll-mt-28"
 				bind:value={warband.name}
 				placeholder={faction.name}
-				onblur={() => {
-					/* An empty name would leave the warband unnamed in the list; it falls back to the faction's. */
-					if (warband && !warband.name.trim()) warband.name = faction?.name ?? 'Warband';
-				}}
 			/>
 		</section>
 
@@ -478,6 +485,49 @@
 				<p class="mt-2" style="color: var(--ui-warn-text)">White type on this colour is hard to read on the cards.</p>
 			{/if}
 		</section>
+
+		<!-- Fluff and notes for the warband card. Empty, each is a button; once
+		     opened or written in, a field that grows with its text. -->
+		{@const fluffOpen = writing.fluff || !!warband.fluff?.trim()}
+		{@const notesOpen = writing.notes || !!warband.notes?.trim()}
+		{#if fluffOpen}
+			<section>
+				<label class="field-label" for="warband-fluff">Fluff</label>
+				<textarea
+					id="warband-fluff"
+					class="field-input block resize-none"
+					rows="2"
+					placeholder="A line or two of story"
+					bind:value={warband.fluff}
+					use:grow
+					use:focusIf={writing.fluff}
+				></textarea>
+			</section>
+		{/if}
+		{#if notesOpen}
+			<section>
+				<label class="field-label" for="warband-notes">Notes</label>
+				<textarea
+					id="warband-notes"
+					class="field-input block resize-none"
+					rows="2"
+					placeholder="Anything to remember at the table"
+					bind:value={warband.notes}
+					use:grow
+					use:focusIf={writing.notes}
+				></textarea>
+			</section>
+		{/if}
+		{#if !fluffOpen || !notesOpen}
+			<div class="flex gap-2">
+				{#if !fluffOpen}
+					<button type="button" class="wargear-add" onclick={() => (writing.fluff = true)}>+ Add fluff</button>
+				{/if}
+				{#if !notesOpen}
+					<button type="button" class="wargear-add" onclick={() => (writing.notes = true)}>+ Add notes</button>
+				{/if}
+			</div>
+		{/if}
 
 		<section>
 			<p class="field-label">Check</p>
@@ -519,7 +569,6 @@
 			</dl>
 			<ul class="overflow-hidden rounded-md border border-zinc-700 bg-zinc-800">
 				{#each warband.fighters as instance (instance.instanceId)}
-					{@const fighter = faction.fighters.find((f) => f.id === instance.fighterId)}
 					<!-- Each row leads back to the fighter's own editor in the fighters step. -->
 					<li class="border-t border-zinc-700 first:border-t-0">
 						<a
@@ -527,7 +576,7 @@
 							class="flex gap-3 p-3 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
 						>
 							<div class="min-w-0 flex-1">
-								<span class="block font-semibold text-zinc-200">{instance.name || fighter?.name}</span>
+								<span class="block font-semibold text-zinc-200">{fighterName(instance, faction)}</span>
 								<span class="block text-zinc-400">{overviewLine(instance)}</span>
 							</div>
 							<span class="whitespace-nowrap text-zinc-300">{fighterCost(instance, faction)}&nbsp;{system.game.currency}</span>

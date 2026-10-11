@@ -1,12 +1,13 @@
 /**
- * A fighter of a warband as a card, laid out as the Wyrdcry Warband Deck lays
- * out its own: name and type, keywords, the profile, the cost, the weapons,
- * then the rules in paragraphs. Looked up from the faction and formatted once,
- * so the card and the roster print read the same.
+ * A warband and its fighters as cards, laid out as the Wyrdcry Warband Deck lays
+ * out its own. A fighter's: name and type, keywords, the profile, the cost, the
+ * weapons, then the rules in paragraphs. Looked up from the faction and
+ * formatted once, so the card and the roster print read the same.
  */
 
-import type { Faction, FighterInstance, GameSystem, Rule, Wargear } from './types';
-import { fighterCost, formatStat } from './warband';
+import type { Faction, Fighter, FighterInstance, GameSystem, Rule, Wargear, Warband } from './types';
+import { warbandCost } from './validate';
+import { fighterCost, fighterName, fighterSections, fighterType, formatStat } from './warband';
 
 /** One column of a value table: the label above, its value below. */
 export interface CardValue {
@@ -51,10 +52,11 @@ export interface CardSection {
 }
 
 export interface FighterCardData {
+	kind: 'fighter';
 	instanceId: string;
-	/** The fighter's own name, else its type's. */
+	/** The fighter's own name, else `Unnamed` and its type. */
 	name: string;
-	/** The type, where the fighter has a name of its own. */
+	/** The fighter's type. */
 	subtitle: string;
 	/** Readable: `clan eshin`, not `clan-eshin`. */
 	keywords: string[];
@@ -97,7 +99,6 @@ const times = (name: string, count: number) => (count > 1 ? `${name} ×${count}`
 export function fighterCard(instance: FighterInstance, faction: Faction, game: GameSystem, picks: Record<string, string[]> = {}): FighterCardData {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
-	const own = instance.name.trim();
 	const carried = counted([...(fighter?.gear ?? []), ...instance.wargear], faction);
 
 	/* Melee ahead of ranged, otherwise in the order they are carried. */
@@ -150,9 +151,10 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	).filter((s) => s.entries.length);
 
 	return {
+		kind: 'fighter',
 		instanceId: instance.instanceId,
-		name: own || type,
-		subtitle: own ? type : '',
+		name: fighterName(instance, faction),
+		subtitle: type,
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
 		stats: game.stats.map((s) => ({
 			key: s.key,
@@ -164,5 +166,110 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		weapons,
 		sections,
 		unknown: !fighter
+	};
+}
+
+/** A fighter as the warband card lists it: tapping the entry leads to its own card. */
+export interface RosterEntry {
+	instanceId: string;
+	/** The fighter's own name, else `Unnamed` and its type. */
+	name: string;
+	/** The fighter's type. */
+	type: string;
+	/** Marked where no heading already says so. */
+	leader: boolean;
+}
+
+/**
+ * The warband itself as a card, laid out as the Warband Deck's: the name and
+ * faction in the banderole, the player's fluff, what the warband has and is
+ * worth, what it picked under its faction's choices, its fighters under the
+ * headings of the recruit list, and the notes.
+ */
+export interface WarbandCardData {
+	kind: 'warband';
+	/** The deck addresses every card by this; the warband's own id. */
+	instanceId: string;
+	/** The warband's own name, else its faction's. */
+	name: string;
+	/** Set where the warband has no name of its own; the card then asks for one. */
+	unnamed: boolean;
+	faction: string;
+	/** Two boxes side by side, each a column of label and value. */
+	tables: CardValue[][];
+	/** `(Origin) The Hunt Descends`, with the option's text. */
+	picks: CardEntry[];
+	/** A heading of null where the game lists its fighters as one. */
+	roster: { title: string | null; entries: RosterEntry[] }[];
+	fluff: string;
+	notes: string;
+}
+
+export type DeckCard = WarbandCardData | FighterCardData;
+
+export function warbandCard(warband: Warband, faction: Faction, game: GameSystem): WarbandCardData {
+	const cost = warbandCost(warband, faction);
+	const entry = (instance: FighterInstance, leader = false): RosterEntry => ({
+		instanceId: instance.instanceId,
+		name: fighterName(instance, faction),
+		type: fighterType(instance, faction),
+		leader
+	});
+	const of = (fighters: Fighter[]) => warband.fighters.filter((i) => fighters.some((f) => f.id === i.fighterId));
+
+	/* Fighters in the order of the headings, within one in the order the warband
+	   keeps them. Where the headings are roles, as Wyrdcry's, the leader stands
+	   first among the heroes, marked, as on the Warband Deck's card; a game that
+	   counts its leaders as a group of its own, as Black Death City, keeps it. */
+	const sections = fighterSections(faction, game);
+	const leaderTitle = game.groups.length ? null : game.roleLabels?.leader;
+	const leaders = sections.find((s) => leaderTitle && s.title === leaderTitle);
+	const roster = sections
+		.filter((section) => section !== leaders)
+		.map((section, i) => ({
+			title: section.title,
+			entries: [
+				...(leaders && i === 0 ? of(leaders.fighters).map((f) => entry(f, true)) : []),
+				...of(section.fighters).map((f) => entry(f))
+			]
+		}))
+		.filter((group) => group.entries.length);
+	const placed = new Set(roster.flatMap((g) => g.entries.map((e) => e.instanceId)));
+	const unknown = warband.fighters.filter((i) => !placed.has(i.instanceId)).map((f) => entry(f));
+
+	/* A name that is only the faction's is no name of the warband's own. */
+	const own = warband.name.trim();
+	const unnamed = !own || own === faction.name;
+
+	return {
+		kind: 'warband',
+		instanceId: warband.id,
+		name: unnamed ? faction.name : own,
+		unnamed,
+		faction: faction.name,
+		tables: [
+			[
+				/* As on the Warband Deck's card: how many there are of how many the warband may have. */
+				{
+					key: 'fighters',
+					label: 'Fighters',
+					value:
+						faction.size.max === null
+							? String(warband.fighters.length)
+							: `${warband.fighters.length} / ${faction.size.max}`
+				}
+			],
+			[
+				/* As on the Warband Deck's card: what is left to spend, and what the warband is worth. */
+				{ key: 'left', label: game.costLabel, value: String(Math.max(0, game.budget - cost)) },
+				{ key: 'value', label: 'Value', value: String(cost) }
+			]
+		],
+		picks: faction.choices.flatMap((c) =>
+			c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
+		),
+		roster: unknown.length ? [...roster, { title: 'Other', entries: unknown }] : roster,
+		fluff: warband.fluff?.trim() ?? '',
+		notes: warband.notes?.trim() ?? ''
 	};
 }

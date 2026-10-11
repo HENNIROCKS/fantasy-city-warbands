@@ -64,7 +64,7 @@ export interface GameSystem {
 	 */
 	roleLabels?: Record<string, string>;
 	groups: GroupLimit[];
-	/** The fighter card's heading over the cost: `Gold Crowns`, `Silver`. */
+	/** The fighter card's heading over the cost: `Gold Coins`, `Silver`. */
 	costLabel: string;
 	/** The columns of the fighter card's weapon table after the name, in order; keys of `Wargear.profile`. */
 	weaponStats: { key: string; label: string }[];
@@ -198,6 +198,10 @@ export interface Warband {
 	fighters: FighterInstance[];
 	/** The deck's own colour in place of the card green, `#rrggbb`. Null or missing for the green. */
 	colour?: string | null;
+	/** The player's own background text, shown on the warband card. */
+	fluff?: string;
+	/** Anything to remember at the table, shown on the warband card. */
+	notes?: string;
 }
 
 /** Something that keeps a warband from being valid. */

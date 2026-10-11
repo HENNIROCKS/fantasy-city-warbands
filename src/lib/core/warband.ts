@@ -28,6 +28,16 @@ export function createFighter(fighterId: string): FighterInstance {
 	return { instanceId: newId(), fighterId, name: '', wargear: [] };
 }
 
+/** A fighter's type as the faction names it, else its id. */
+export function fighterType(instance: FighterInstance, faction: Faction): string {
+	return faction.fighters.find((f) => f.id === instance.fighterId)?.name ?? instance.fighterId;
+}
+
+/** A fighter's own name, else `Unnamed` and its type, so a name left to give shows as such. */
+export function fighterName(instance: FighterInstance, faction: Faction): string {
+	return instance.name.trim() || `Unnamed ${fighterType(instance, faction)}`;
+}
+
 /** What one fighter costs with everything it carries. */
 export function fighterCost(instance: FighterInstance, faction: Faction): number {
 	const base = faction.fighters.find((f) => f.id === instance.fighterId)?.cost ?? 0;
@@ -56,6 +66,8 @@ export function formatSpan(limit: Span): string {
 export interface FighterSection {
 	/** `Leaders (1)`, `Heroes`; null where the game lists its fighters as one. */
 	label: string | null;
+	/** The heading without its limit: `Leaders`. */
+	title: string | null;
 	/** Whether the heading names the limit, so a fighter's own only matters where it is tighter. */
 	limited: boolean;
 	fighters: Fighter[];
@@ -70,10 +82,11 @@ export interface FighterSection {
  */
 export function fighterSections(faction: Faction, game: GameSystem): FighterSection[] {
 	const labels = game.roleLabels;
-	if (!game.groups.length && !labels) return [{ label: null, limited: false, fighters: faction.fighters }];
+	if (!game.groups.length && !labels) return [{ label: null, title: null, limited: false, fighters: faction.fighters }];
 	const grouped: FighterSection[] = game.groups.length
 		? game.groups.map((g) => ({
 				label: `${g.label} (${formatSpan(g.limit)})`,
+				title: g.label,
 				limited: true,
 				fighters: faction.fighters.filter((f) => f.keywords.includes(g.keyword))
 			}))
@@ -81,12 +94,13 @@ export function fighterSections(faction: Faction, game: GameSystem): FighterSect
 				.filter((r) => labels?.[r])
 				.map((r) => ({
 					label: labels![r],
+					title: labels![r],
 					limited: false,
 					fighters: faction.fighters.filter((f) => roleKeyOf(f, game) === r)
 				}));
 	const placed = new Set(grouped.flatMap((s) => s.fighters));
 	const rest = faction.fighters.filter((f) => !placed.has(f));
-	return [...grouped, ...(rest.length ? [{ label: 'Other', limited: false, fighters: rest }] : [])].filter(
+	return [...grouped, ...(rest.length ? [{ label: 'Other', title: 'Other', limited: false, fighters: rest }] : [])].filter(
 		(s) => s.fighters.length
 	);
 }

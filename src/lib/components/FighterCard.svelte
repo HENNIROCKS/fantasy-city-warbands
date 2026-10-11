@@ -23,7 +23,7 @@
 			<div class="image-inner" style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};"></div>
 		</div>
 		<div class="image-header">
-			<h2 class="name">{card.name}</h2>
+			<h2 class="name" style="--chars: {card.name.length}">{card.name}</h2>
 			{#if card.subtitle}<p class="subtitle">{card.subtitle}</p>{/if}
 		</div>
 	</div>
@@ -127,11 +127,14 @@
 		text-align: center;
 	}
 
+	/* Unlike the Warband Deck's, a name past 16 characters is set smaller in
+	   proportion, down to 28 – still well above the subtitle – so `Unnamed` and a
+	   long type do not stack four lines high beside the image. */
 	.name {
 		margin: 0;
 		font-family: 'Grenze Gotisch', serif;
 		font-weight: 600;
-		font-size: calc(38 * var(--t));
+		font-size: clamp(calc(28 * var(--t)), calc(38 * var(--t) * 16 / var(--chars, 16)), calc(38 * var(--t)));
 		line-height: 1.1;
 		overflow-wrap: anywhere;
 	}
