@@ -2,7 +2,8 @@
  * The warbands, kept in the browser's IndexedDB. The data is bound to the
  * app's address: move the app elsewhere and it is gone. A battle in progress
  * lies beside its warband in a store of its own, so a tap at the table never
- * touches the warband.
+ * touches the warband. A fighter's photo lies in a store of its own as well,
+ * keyed by the warband and the fighter, and never goes into an export.
  *
  * Storage can be missing or refuse to write (blocked site data, a full disk).
  * Reading then yields nothing and a write resolves to false; either way
@@ -10,16 +11,19 @@
  * the player to export what they want to keep.
  */
 
+import type { StoredPhoto } from '$lib/photo';
 import type { BattleState } from './battle';
 import type { Warband } from './types';
 import { sameWarband } from './warband';
 
 const DB_NAME = 'fantasy-city-warbands';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const WARBANDS = 'warbands';
 /** Keyed by the warband's id. */
 const BATTLES = 'battles';
 const META = 'meta';
+/** Keyed by `[warbandId, instanceId]`. */
+const PHOTOS = 'photos';
 
 /*
  * Where the warbands lay in localStorage. Whatever is still there is carried
@@ -40,7 +44,7 @@ function open(): Promise<IDBDatabase> {
 		const request = indexedDB.open(DB_NAME, DB_VERSION);
 		request.onupgradeneeded = () => {
 			const db = request.result;
-			for (const name of [WARBANDS, BATTLES, META]) {
+			for (const name of [WARBANDS, BATTLES, META, PHOTOS]) {
 				if (!db.objectStoreNames.contains(name)) db.createObjectStore(name);
 			}
 		};
@@ -215,11 +219,45 @@ export function saveWarband(warband: Warband, dated = true): Promise<boolean> {
 	});
 }
 
-/** The warband and the battle it was in the middle of. */
+/** Every key of one warband's photos: `[id]` sorts before `[id, …]`, and an array after any string. */
+const photosOfWarband = (id: string) => IDBKeyRange.bound([id], [id, []]);
+
+/** The warband, the battle it was in the middle of and its fighters' photos. */
 export function deleteWarband(id: string): Promise<boolean> {
-	return write([WARBANDS, BATTLES], (tx) => {
+	return write([WARBANDS, BATTLES, PHOTOS], (tx) => {
 		tx.objectStore(WARBANDS).delete(id);
 		tx.objectStore(BATTLES).delete(id);
+		tx.objectStore(PHOTOS).delete(photosOfWarband(id));
+	});
+}
+
+/**
+ * The photos of one warband's fighters, by instanceId. A photo whose fighter is
+ * not in `keep` any more – removed in the builder, or missing from an imported
+ * file – is deleted on the way, so it is not kept where nothing shows it.
+ */
+export async function loadPhotos(warbandId: string, keep: string[]): Promise<Map<string, StoredPhoto>> {
+	const photos = new Map<string, StoredPhoto>();
+	await write([PHOTOS], (tx) => {
+		const request = tx.objectStore(PHOTOS).openCursor(photosOfWarband(warbandId));
+		request.onsuccess = () => {
+			const cursor = request.result;
+			if (!cursor) return;
+			const instanceId = (cursor.key as [string, string])[1];
+			if (keep.includes(instanceId)) photos.set(instanceId, cursor.value as StoredPhoto);
+			else cursor.delete();
+			cursor.continue();
+		};
+	});
+	return photos;
+}
+
+/** Null removes the photo. */
+export function savePhoto(warbandId: string, instanceId: string, photo: StoredPhoto | null): Promise<boolean> {
+	return write([PHOTOS], (tx) => {
+		const s = tx.objectStore(PHOTOS);
+		if (photo) s.put(photo, [warbandId, instanceId]);
+		else s.delete([warbandId, instanceId]);
 	});
 }
 

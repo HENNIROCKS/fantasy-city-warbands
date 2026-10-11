@@ -51,10 +51,19 @@ const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x)
 
 function readFighter(raw: unknown): FighterInstance | null {
 	if (!isObject(raw)) return null;
-	const { instanceId, fighterId, name, wargear, picks } = raw;
+	const { instanceId, fighterId, name, wargear, picks, fluff, notes } = raw;
 	if (typeof instanceId !== 'string' || typeof fighterId !== 'string' || typeof name !== 'string' || !isStrings(wargear)) return null;
 	if (picks !== undefined && !isStrings(picks)) return null;
-	return { instanceId, fighterId, name, wargear, ...(picks ? { picks } : {}) };
+	for (const text of [fluff, notes]) if (text !== undefined && typeof text !== 'string') return null;
+	return {
+		instanceId,
+		fighterId,
+		name,
+		wargear,
+		...(picks ? { picks } : {}),
+		...(fluff !== undefined ? { fluff: fluff as string } : {}),
+		...(notes !== undefined ? { notes: notes as string } : {})
+	};
 }
 
 /**

@@ -3,8 +3,8 @@
 
 	/*
 	 * The battle under the thumb, below the deck, as the Wyrdcry Warband Deck
-	 * keeps it: a fighter's card counts its damage here, the warband card counts
-	 * who is out and ends the battle.
+	 * keeps it: a fighter's card counts its damage here and is turned over to be
+	 * written on, the warband card counts who is out and ends the battle.
 	 */
 	let {
 		fighter = null,
@@ -14,7 +14,11 @@
 		sound = true,
 		onwound,
 		onend,
-		onsound
+		onsound,
+		editing = false,
+		onedit,
+		ondone,
+		oncancel
 	}: {
 		/** The fighter on top of the stack. Null while the warband card is up. */
 		fighter?: FighterBattleState | null;
@@ -28,6 +32,12 @@
 		onwound?: (delta: number) => void;
 		onend?: () => void;
 		onsound?: () => void;
+		/** Whether the card on top is turned over to be written on. */
+		editing?: boolean;
+		/** Turns the fighter's card on top over. */
+		onedit?: () => void;
+		ondone?: () => void;
+		oncancel?: () => void;
 	} = $props();
 
 	/* What is left of Health, which is what the stepper counts. A fighter whose
@@ -65,7 +75,17 @@
 
 <div class="border-t border-zinc-800 bg-zinc-900" style="padding-bottom: env(safe-area-inset-bottom)">
 	<div class="bar">
-		{#if fighter}
+		{#if editing}
+			<!-- While a card is turned over the bar only finishes the edit: a wound
+			     counted now would land on a card whose front is not in view. -->
+			<div class="finish">
+				<button class="btn" onclick={() => oncancel?.()}>Cancel</button>
+				<button
+					class="min-h-11 rounded bg-[#125E3C] px-6 font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
+					onclick={() => ondone?.()}>Done</button
+				>
+			</div>
+		{:else if fighter}
 			<div class="wounds">
 				<button
 					class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
@@ -91,6 +111,13 @@
 					+
 				</button>
 			</div>
+			<button
+				class="action edit border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 focus-visible:bg-zinc-700"
+				aria-label="Edit"
+				onclick={() => onedit?.()}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+			</button>
 		{:else}
 			<p class="summary text-zinc-400">{running ? `${out} out of action` : 'No battle'}</p>
 			<div class="actions">
@@ -142,14 +169,18 @@
 		gap: 6px;
 	}
 
-	.wounds {
-		margin-inline: auto;
+	.finish {
+		display: flex;
+		gap: 8px;
+		width: 100%;
 	}
 
-	/* Wider than it is tall: the two steppers sit next to each other and a thumb
-	   aiming between them must not land on the other one. */
+	.finish > * {
+		flex: 1;
+	}
+
 	.step {
-		width: 52px;
+		width: 44px;
 		height: 44px;
 		padding: 0;
 		border-width: 1px;
@@ -195,6 +226,13 @@
 		border-radius: 6px;
 		font-size: 0.875rem;
 		font-weight: 600;
+	}
+
+	/* Square, as the steppers it shares the row with. */
+	.edit {
+		min-width: 44px;
+		width: 44px;
+		padding: 0;
 	}
 
 	.action svg {

@@ -11,7 +11,6 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
-	import StorageWarning from '$lib/components/StorageWarning.svelte';
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
@@ -304,8 +303,6 @@
 
 <main class="mx-auto max-w-2xl space-y-8 p-5 pb-40 text-sm">
 	<Stepper {steps} current={STEPS.indexOf(step)} />
-
-	<StorageWarning />
 
 	{#if id && loadedId !== id}
 		<!-- Read in a moment; nothing to show until then. -->

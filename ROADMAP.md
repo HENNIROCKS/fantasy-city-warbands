@@ -31,18 +31,19 @@
 - [x] 📄 Export a warband as JSON and its roster as a PDF – a first version
 - [x] 📄 Import a warband from this app's JSON, saying whether the file is newer or older
 - [x] ⚙️ Move storage to IndexedDB, carrying over what is in localStorage
+- [x] 🛠️ Fluff and notes per fighter, written on the back of the card
+- [x] 🃏 A photo of the painted model as the card image, kept out of the JSON export
 - [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🃏 Derived values on the card, such as armour from equipment, explained when tapped
-- [ ] 🛠️ Edit a fighter after the build: notes and fluff per fighter, dismissal, recruiting between battles
+- [ ] 🛠️ Edit a fighter after the build: dismissal, recruiting between battles
 - [ ] ⚔️ Track a battle: activated and waiting, wavering, panicked, in cover, rounds with undo, zeal
 - [ ] 📈 Campaign: experience and renown, heroic traits included
 - [ ] 📈 Campaign: favour, income and a battle history
 - [ ] 📈 Campaign: the stash and the trading post
 - [ ] 📈 Campaign: injuries
-- [ ] 🃏 A photo of the painted model as the card image
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] ⚙️ Work offline once installed
 - [ ] 🛠️ Hire a Hired Sword for a single battle

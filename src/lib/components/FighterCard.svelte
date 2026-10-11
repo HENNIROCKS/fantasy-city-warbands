@@ -5,16 +5,20 @@
 	import { FRESH, type FighterBattleState } from '$lib/core/battle';
 	import type { CardEntry, CardSection, FighterCardData } from '$lib/core/card';
 	import { imageFieldMask } from '$lib/image-field-mask';
+	import type { PhotoView } from '$lib/photo';
 
 	let {
 		card,
 		columns,
-		state = FRESH
+		state = FRESH,
+		photo = null
 	}: {
 		card: FighterCardData;
 		columns: string[];
 		/** What the fighter has taken in the battle. The bar below the deck sets it. */
 		state?: FighterBattleState;
+		/** The photo of the painted model, shown in the image field where there is one. */
+		photo?: PhotoView | null;
 	} = $props();
 
 	/* How high the blood stands in the image field: a fighter at half its Health is
@@ -48,7 +52,13 @@
 
 	<div class="image-section">
 		<div class="image-box">
-			<div class="image-inner" style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};"></div>
+			<div
+				class="image-inner"
+				class:photo={photo !== null}
+				style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};{photo
+					? ` --photo: url(${photo.url}); --photo-size: ${photo.size}; --photo-pos: ${photo.position};`
+					: ''}"
+			></div>
 		</div>
 		<div class="image-header">
 			<h2 class="name" style="--chars: {card.name.length}">{card.name}</h2>
@@ -58,7 +68,11 @@
 
 	<div class="parchment">
 		{#if card.unknown}
-			<p class="warn">This fighter's type is not in the faction any more.</p>
+			<p class="callout">This fighter's type is not in the faction any more.</p>
+		{/if}
+
+		{#if card.fluff}
+			<p class="fluff">{card.fluff}</p>
 		{/if}
 
 		{#if card.keywords.length}
@@ -90,6 +104,8 @@
 					</summary>
 					<div class="folded">{@render paragraphs(section.entries)}</div>
 				</details>
+			{:else if section.kind === 'notes'}
+				<section class="notes">{@render paragraphs(section.entries)}</section>
 			{:else if section.kind === 'equipment'}
 				<!-- Titled like the folded sections, but open for good: what the
 				     fighter carries is in play. -->
@@ -135,7 +151,8 @@
 	/* The Card Creator's image field, cut from its mask. Without a photo it is a
 	   field of the card's colour. The blood stands in it as high as the damage the
 	   fighter holds, with a hard edge: a level is read off at a glance, a blend
-	   has to be compared to something. */
+	   has to be compared to something. Over a photo the blood is translucent,
+	   denser the more Health is lost. */
 	.image-inner {
 		position: absolute;
 		inset: 0;
@@ -148,6 +165,17 @@
 		mask-repeat: no-repeat;
 		-webkit-mask-size: 100% 100%;
 		-webkit-mask-repeat: no-repeat;
+	}
+
+	.image-inner.photo {
+		background:
+			linear-gradient(
+				to top,
+				color-mix(in srgb, var(--card-blood) calc(30% + var(--wound, 0) * 70%), transparent) 0 calc(var(--wound, 0) * 100%),
+				transparent calc(var(--wound, 0) * 100%) 100%
+			),
+			var(--photo) var(--photo-pos) / var(--photo-size) no-repeat,
+			var(--card-green);
 	}
 
 	.image-header {
@@ -215,6 +243,26 @@
 		border-radius: 999px;
 		background: var(--card-wash);
 		padding: calc(7 * var(--u)) calc(14 * var(--u));
+	}
+
+	/* Prose, not a rule: no wash, no border, set apart only by the italic. Set off
+	   from the image section by a margin of its own, so it reads as its own beat
+	   rather than sitting flush under the name. */
+	.fluff {
+		margin: calc(14 * var(--u)) 0 0;
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		line-height: 1.4;
+		font-style: italic;
+		white-space: pre-wrap;
+	}
+
+	/* The player's own notes on a light wash of their own, which parts them from
+	   the rules above without a rule. */
+	.notes {
+		padding: calc(14 * var(--u)) calc(16 * var(--u));
+		border-radius: calc(7.5 * var(--u));
+		background: var(--card-wash-strong);
 	}
 
 	/* The three tables read as one block: the parchment's gap between them, roughly
@@ -383,16 +431,5 @@
 		text-align: center;
 		color: var(--card-paper);
 		pointer-events: none;
-	}
-
-	.warn {
-		margin: 0;
-		padding: calc(10 * var(--u)) calc(12 * var(--u));
-		border: 1px solid var(--ui-warn-border);
-		border-radius: calc(7.5 * var(--u));
-		background: rgba(180, 83, 9, 0.18);
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.3;
 	}
 </style>

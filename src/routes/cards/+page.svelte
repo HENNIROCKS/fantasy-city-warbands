@@ -1,42 +1,83 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
+	import CardBack, { type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { allocate, stateOf, type BattleState } from '$lib/core/battle';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
-	import { loadBattle, loadSound, loadWarband, saveBattle, saveSound } from '$lib/core/storage.svelte';
-	import type { Warband } from '$lib/core/types';
+	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
+	import type { FighterInstance, Warband } from '$lib/core/types';
+	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { systems } from '$lib/systems';
 
 	/*
 	 * A warband and its fighters as a stack of cards, filling the screen under the
-	 * header; each card scrolls on its own. The fighters change in the builder;
-	 * here only the battle does.
+	 * header; each card scrolls on its own. What the rules decide about a fighter
+	 * changes in the builder; here the battle does, and what is written on the
+	 * back of a fighter's card.
 	 */
 	const id = $derived(page.url.searchParams.get('id'));
 	let warband = $state<Warband | null>(null);
-	/* The battle is the deck's only state: it lives on this device, beside the
-	   warband rather than in it. */
+	/* The battle lives on this device, beside the warband rather than in it. */
 	let battle = $state<BattleState | null>(null);
 	/* The id whose warband and battle have been read, so neither shows as missing before. */
 	let loadedId = $state<string | null>(null);
+	/* The fighter whose card is turned over, and what its back holds until Done.
+	   The draft outlasts the edit by half a turn, while the back is still in view. */
+	let editingId = $state<string | null>(null);
+	let draft = $state<BackDraft>({ fluff: '', notes: '' });
+	/* The photo apart from the draft: the warband is written as a whole and has
+	   to stay free of the bytes. */
+	let photoDraft = $state<BackPhoto>({ photo: null, changed: false });
+	/* The warband's photos as stored, and what the cards draw them from. Each
+	   object URL is handed back once its photo is replaced or the page left. */
+	let stored = new Map<string, StoredPhoto>();
+	let photos = $state(new Map<string, PhotoView>());
+
+	function showPhoto(instanceId: string, photo: StoredPhoto | null) {
+		const next = new Map(photos);
+		const old = next.get(instanceId);
+		if (old) URL.revokeObjectURL(old.url);
+		next.delete(instanceId);
+		stored.delete(instanceId);
+		if (photo) {
+			const url = URL.createObjectURL(new Blob([photo.bytes], { type: photo.type }));
+			next.set(instanceId, { url, ...photoLayout(photo.width, photo.height, photo.crop) });
+			stored.set(instanceId, photo);
+		}
+		photos = next;
+	}
+
+	function dropPhotos() {
+		for (const view of photos.values()) URL.revokeObjectURL(view.url);
+		stored = new Map();
+		photos = new Map();
+	}
+
 	$effect.pre(() => {
 		const current = id;
 		warband = null;
 		battle = null;
 		loadedId = null;
+		editingId = null;
+		untrack(dropPhotos);
 		if (!current) return;
 		/* A read for an id left meanwhile comes back to nothing. */
 		let left = false;
-		Promise.all([loadWarband(current), loadBattle(current)]).then(([w, b]) => {
+		Promise.all([loadWarband(current), loadBattle(current)]).then(async ([w, b]) => {
 			if (left) return;
 			warband = w;
 			battle = b;
 			loadedId = current;
+			if (!w) return;
+			const found = await loadPhotos(current, w.fighters.map((f) => f.instanceId));
+			if (left) return;
+			for (const [instanceId, photo] of found) showPhoto(instanceId, photo);
 		});
 		return () => {
 			left = true;
@@ -52,6 +93,42 @@
 	});
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
+	function edit(instanceId: string) {
+		const fighter = warband?.fighters.find((f) => f.instanceId === instanceId);
+		if (!fighter) return;
+		draft = { fluff: fighter.fluff ?? '', notes: fighter.notes ?? '' };
+		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
+		editingId = instanceId;
+	}
+
+	/** The fighter with the back's text; a field left blank is left out, as it is on a fighter never written on. */
+	function written(fighter: FighterInstance, { fluff, notes }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, ...rest } = fighter;
+		return { ...rest, ...(fluff.trim() ? { fluff: fluff.trim() } : {}), ...(notes.trim() ? { notes: notes.trim() } : {}) };
+	}
+
+	/* A failed write raises the storage warning; the card shows what was written either way. */
+	function done() {
+		if (!warband || !editingId) return;
+		const targetId = editingId;
+		const values = $state.snapshot(draft);
+		const updated = $state.snapshot(warband) as Warband;
+		updated.fighters = updated.fighters.map((f) => (f.instanceId === targetId ? written(f, values) : f));
+		editingId = null;
+		warband = updated;
+		saveWarband(updated);
+		if (photoDraft.changed) {
+			/* IndexedDB trips over the reactivity proxy, so the photo goes in as a plain object. */
+			const photo = photoDraft.photo
+				? { ...photoDraft.photo, bytes: photoDraft.photo.bytes.slice(0), crop: { ...photoDraft.photo.crop } }
+				: null;
+			showPhoto(targetId, photo);
+			savePhoto(updated.id, targetId, photo);
+		}
+	}
+
+	$effect(() => () => untrack(dropPhotos));
+
 	let sound = $state(true);
 	loadSound().then((on) => (sound = on));
 	let audio: HTMLAudioElement | undefined;
@@ -60,7 +137,8 @@
 		if (!id) return;
 		const wasOut = stateOf(battle, instanceId).out;
 		battle = allocate(battle, instanceId, delta, health);
-		saveBattle(id, battle);
+		/* IndexedDB trips over the reactivity proxy: a plain copy goes in. */
+		saveBattle(id, $state.snapshot(battle));
 		/* Played within the tap itself, which is what lets iOS sound it. */
 		if (sound && !wasOut && stateOf(battle, instanceId).out) {
 			audio ??= new Audio(scream);
@@ -133,7 +211,16 @@
 				onwound={wound}
 				onend={endBattle}
 				onsound={toggleSound}
-			/>
+				editing={editingId !== null}
+				onedit={edit}
+				ondone={done}
+				oncancel={() => (editingId = null)}
+				{photos}
+			>
+				{#snippet back(card)}
+					<CardBack name={card.name} bind:draft bind:photo={photoDraft} />
+				{/snippet}
+			</Deck>
 		</main>
 	{/if}
 </div>

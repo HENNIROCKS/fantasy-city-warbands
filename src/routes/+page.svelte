@@ -4,9 +4,8 @@
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import StorageWarning from '$lib/components/StorageWarning.svelte';
 	import { toRoster } from '$lib/core/roster';
-	import { deleteWarband, loadWarbands, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
+	import { deleteWarband, loadPhotos, loadWarbands, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
 	import type { Warband } from '$lib/core/types';
 	import { warbandCost, validate } from '$lib/core/validate';
@@ -191,12 +190,17 @@
 	}
 
 	/* The file's state as it is, its date included: it is not a new change. A
-	   battle running on this device stays, as the Warband Deck keeps it. */
+	   battle running on this device stays, as the Warband Deck keeps it; the
+	   photos of fighters the file does not have go. */
 	async function confirmImport() {
 		if (!candidate) return;
 		const title = candidate.title;
-		const saved = await saveWarband($state.snapshot(candidate.warband) as Warband, false);
-		if (saved) await requestPersistence();
+		const warband = $state.snapshot(candidate.warband) as Warband;
+		const saved = await saveWarband(warband, false);
+		if (saved) {
+			await loadPhotos(warband.id, warband.fighters.map((f) => f.instanceId));
+			await requestPersistence();
+		}
 		candidate = null;
 		await refresh();
 		if (saved) notify(`${title} imported.`);
@@ -258,8 +262,6 @@
 			</button>
 			<input bind:this={fileInput} type="file" accept="application/json,.json" class="hidden" onchange={onPick} />
 		</div>
-
-		<StorageWarning />
 
 		<section>
 			<p class="field-label">Your warbands</p>
@@ -376,7 +378,8 @@
 			<p class="count">{s.label} · {s.fighters}</p>
 			<p class="notice danger">
 				<strong>This cannot be undone.</strong> The warband is stored on this device only. Export it
-				first to keep a copy; the battle it is in is not part of the export.
+				first to keep a copy; the battle it is in and the photos of its fighters are not part of the
+				export.
 			</p>
 			{#if sheetNote}
 				<p class="sheet-note" class:error={sheetNote.error}>{sheetNote.text}</p>
@@ -412,12 +415,14 @@
 			{:else if v.kind === 'older'}
 				<p class="notice danger">
 					<strong>This file is older.</strong> It was changed {when(v.incoming)}, what is stored here
-					{when(v.stored)}. Importing overwrites the newer state.
+					{when(v.stored)}. Importing overwrites the newer state, and photos of fighters the file does not
+					have are removed.
 				</p>
 			{:else}
 				<p class="notice danger">
 					<strong>Cannot tell which is newer.</strong> This warband is already here, and not both states
-					say when they last changed. Importing overwrites what is stored here.
+					say when they last changed. Importing overwrites what is stored here, and photos of fighters
+					the file does not have are removed.
 				</p>
 			{/if}
 			{#if candidate.excess.length}

@@ -59,7 +59,7 @@
 		{
 			question: 'Can I change a warband later?',
 			answer:
-				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first.'
+				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first. A fighter’s fluff, notes and photo are written on the back of its card: the pencil under the card turns it over.'
 		},
 		{
 			question: 'Does the app apply every rule?',
@@ -70,6 +70,11 @@
 			question: 'Can I track a battle?',
 			answer:
 				'The damage, so far. On a fighter’s card, the bar at the foot takes Health down a point at a time, and a fighter at none is out of action – with the Wilhelm scream, which the speaker on the warband card turns off. End battle, also on the warband card, drops every wound. The battle stays on this device and never changes the warband. The scream comes from Wikimedia Commons, where it is released under CC0.'
+		},
+		{
+			question: 'Can I show my painted models?',
+			answer:
+				'Yes, on the back of a fighter’s card: choose a photo, drag it into place and zoom it, and Done puts it in the card’s image field. It stays on this device and is not part of an export.'
 		},
 		{
 			question: 'Can I print a warband?',
@@ -159,6 +164,11 @@
 			once it closes. Safari can also remove them by itself after seven days
 			in which the site was not opened; other browsers may do so when the device runs low on storage.
 			The app asks the browser to keep them; Safari grants that mostly to the app on the home screen.
+		</p>
+		<p>
+			<strong>Photos</strong> of your models stay on this device as well and are not part of an
+			export. Deleting the warband deletes them too. The photo you picked stays in your library; only
+			one taken from inside the app exists nowhere else.
 		</p>
 	</section>
 

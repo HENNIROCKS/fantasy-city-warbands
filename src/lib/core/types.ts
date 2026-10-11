@@ -241,6 +241,10 @@ export interface FighterInstance {
 	wargear: string[];
 	/** The option ids picked under the fighter's own `choice`. Missing in a warband saved before there were any. */
 	picks?: string[];
+	/** The player's own background text, shown at the head of the fighter's card. */
+	fluff?: string;
+	/** Anything to remember at the table, shown at the foot of the fighter's card. */
+	notes?: string;
 }
 
 /** A warband as stored. Everything else is looked up from its game and faction. */

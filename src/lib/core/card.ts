@@ -49,7 +49,7 @@ export interface CardWeapon {
  * universal rules are reference and fold away under a title.
  */
 export interface CardSection {
-	kind: 'fighter' | 'equipment' | 'faction' | 'universal' | 'universal-reaction';
+	kind: 'fighter' | 'equipment' | 'faction' | 'universal' | 'universal-reaction' | 'notes';
 	entries: CardEntry[];
 }
 
@@ -69,6 +69,8 @@ export interface FighterCardData {
 	campaign: CardValue[];
 	weapons: CardWeapon[];
 	sections: CardSection[];
+	/** The player's own background text, empty where there is none. */
+	fluff: string;
 	/** Set where the faction no longer has the fighter's type. */
 	unknown: boolean;
 }
@@ -160,7 +162,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			{ kind: 'equipment', entries: items },
 			{ kind: 'faction', entries: factionRules },
 			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION)) },
-			{ kind: 'universal-reaction', entries: ruleEntries(universal.filter((u) => u.type === REACTION)) }
+			{ kind: 'universal-reaction', entries: ruleEntries(universal.filter((u) => u.type === REACTION)) },
+			/* The player's own text, not the game's – the card gives it its own ground. */
+			{ kind: 'notes', entries: instance.notes?.trim() ? [{ label: 'Notes', text: instance.notes.trim() }] : [] }
 		] satisfies CardSection[]
 	).filter((s) => s.entries.length);
 
@@ -185,6 +189,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		campaign: [{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) }],
 		weapons,
 		sections,
+		fluff: instance.fluff?.trim() ?? '',
 		unknown: !fighter
 	};
 }

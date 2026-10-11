@@ -38,7 +38,7 @@
 
 	<div class="parchment">
 		{#if card.unnamed}
-			<p class="unnamed">
+			<p class="callout unnamed">
 				{#if edit}<a href={edit}>Your warband has no name.</a>{:else}Your warband has no name.{/if}
 			</p>
 		{/if}
@@ -292,13 +292,6 @@
 
 	/* Something left to do, in the colour of what can be tapped: it leads to
 	   where the warband is named. */
-	.unnamed {
-		margin: 0;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.4;
-	}
-
 	.unnamed a {
 		color: var(--card-link);
 		text-decoration: underline;

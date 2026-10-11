@@ -47,6 +47,9 @@ files, or know anything about a campaign: no experience, no injuries, no income.
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
   for each fighter with its profile, weapons and rules
+- Turn a fighter's card over with the pencil under it to write the fighter's
+  fluff and notes, which the card then shows, and to put a photo of the painted
+  model in its image field, moved and zoomed there; the photo stays on the device
 - Count damage at the table: the bar under a fighter's card takes Health down
   a point at a time, the card fills with blood, and a fighter at none is out
   of action – with the Wilhelm scream, which can be switched off. End battle
@@ -95,6 +98,12 @@ this one browser. No account, no server, no sync. Clearing the site's data
 removes them. Export a warband to keep a copy; Import warband brings it back,
 here or on another device. A battle in progress stays on the device and is not
 part of the export.
+
+Photos of the painted models are kept in the same database, reduced to a copy of
+their own, and never go into an export: deleting the warband deletes them too,
+importing it elsewhere brings no photos along, and a photo whose fighter is no
+longer in the warband is dropped. The photo you picked stays where it was –
+unless it was taken with the camera from inside the app.
 
 ## Development
 
