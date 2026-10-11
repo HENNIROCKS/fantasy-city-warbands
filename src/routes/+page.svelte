@@ -115,7 +115,7 @@
 							</a>
 							<!-- Stacked, so the summary keeps the width it has beside one action. The
 							     column reaches to the row's edges, so the rule on its left runs from top
-							     to bottom and each action fills its half. -->
+							     to bottom and the actions share its height evenly. -->
 							<div class="-my-3 -mr-3 flex shrink-0 flex-col self-stretch overflow-hidden rounded-r-md border-l border-zinc-700">
 								<a
 									href={resolve('/build') + `?id=${w.id}&step=finish`}
@@ -124,7 +124,13 @@
 								>
 								<button
 									type="button"
-									class="flex min-h-11 flex-1 items-center justify-center px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+									class="flex min-h-11 flex-1 items-center justify-center px-4 text-zinc-400 disabled:opacity-40"
+									aria-label="Roster PDF of {s.title}"
+									disabled>Roster</button
+								>
+								<button
+									type="button"
+									class="flex min-h-11 flex-1 items-center justify-center border-t border-zinc-700 px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
 									aria-label="Delete {s.title}"
 									onclick={(event) => ask(w.id, event.currentTarget)}>Delete</button
 								>
