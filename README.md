@@ -3,7 +3,7 @@
 Build a warband for a skirmish game set in a fantasy city, step by step, with
 the budget and the roster limits checked as you go. Two games so far:
 [Wyrdcry](https://wyrdcry.net) and [Black Death City](https://www.blackdeathcity.com/).
-Mordheim is planned.
+Mordheim will follow eventually.
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
@@ -43,7 +43,9 @@ files, or know anything about a campaign: no experience, no injuries, no income.
   Apprentices for the Acolytes of Plague
 - Come back to any step later, including the faction; switching faction asks
   first when fighters or a choice would be lost
-- Name the warband, pick the colour of its cards and write its fluff and notes
+- Name the warband, pick the colour of its cards and write its fluff and notes;
+  a card without a name says Unnamed warband or Unnamed fighter and leads to
+  where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
   for each fighter with its profile, weapons and rules
@@ -76,7 +78,7 @@ files, or know anything about a campaign: no experience, no injuries, no income.
 | --- | --- | --- |
 | Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
 | Wyrdcry | 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
-| Mordheim | – | planned |
+| Mordheim | – | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's
@@ -96,7 +98,9 @@ with ideas nothing is promised for at its end.
 Every warband lives in the browser's IndexedDB, on this one device and in
 this one browser. No account, no server, no sync. Clearing the site's data
 removes them. Export a warband to keep a copy; Import warband brings it back,
-here or on another device. A battle in progress stays on the device and is not
+here or on another device. Add the app to the home screen: Safari can remove
+the data of a site not opened for seven days, and keeps it for good mostly for
+an installed app. The about page says how. A battle in progress stays on the device and is not
 part of the export.
 
 Photos of the painted models are kept in the same database, reduced to a copy of

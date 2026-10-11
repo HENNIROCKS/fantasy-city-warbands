@@ -32,7 +32,7 @@
 		'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.01.'
 	};
 
-	/** Playable and planned games in one list, by name. */
+	/** Playable games and those still to come in one list, by name. */
 	const games = [
 		...Object.values(systems).map((s) => ({
 			id: s.game.id,
@@ -40,7 +40,7 @@
 			author: s.game.author,
 			edition: s.game.edition
 		})),
-		...planned.map((g) => ({ ...g, edition: 'planned' }))
+		...planned.map((g) => ({ ...g, edition: 'eventually' }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	/** The domain alone, as the label of a game's link. */
@@ -93,7 +93,7 @@
 		},
 		{
 			question: 'Where is Mordheim?',
-			answer: 'Planned. It is listed when you pick a game, but cannot be chosen yet.'
+			answer: 'Eventually. It is listed when you pick a game, but cannot be chosen yet.'
 		}
 	];
 
@@ -147,6 +147,19 @@
 			An unofficial fan project, not commercial, with no affiliation with or endorsement from Games
 			Workshop.
 		</p>
+	</section>
+
+	<section class="space-y-3">
+		<p class="field-label">Add it to the home screen</p>
+		<p>
+			Safari can remove the data of a site that has not been opened for seven days, and grants the
+			request to keep it mostly to the app on the home screen. Installed, the app also opens full
+			screen, without the browser bars.
+		</p>
+		<ul class="list-disc space-y-1 pl-5">
+			<li><strong>iPhone, iPad:</strong> Share, then “Add to Home Screen”.</li>
+			<li><strong>Android:</strong> browser menu, then “Install app”.</li>
+		</ul>
 	</section>
 
 	<section class="space-y-3">

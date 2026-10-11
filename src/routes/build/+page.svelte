@@ -117,7 +117,7 @@
 	/* Empty while a warband is read, so it does not show as a new one first. */
 	const heading = $derived(id && loadedId !== id ? '' : warband?.name.trim() || faction?.name || 'New warband');
 
-	/** Every game for step 1, the planned ones among them, A to Z. */
+	/** Every game for step 1, those still to come among them, A to Z. */
 	const tiles = [
 		...Object.values(systems).map((s) => ({
 			id: s.game.id,
@@ -130,7 +130,7 @@
 			],
 			available: true
 		})),
-		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['planned'], available: false }))
+		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], available: false }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	function url(params: Record<string, string>): string {
