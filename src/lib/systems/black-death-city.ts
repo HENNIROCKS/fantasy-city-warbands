@@ -65,9 +65,14 @@ interface RawFighter {
 	gear: string[];
 }
 
-/** A faction's `wargear.json` row: a weapon's traits as ids, a parameter after a colon (`rare:0-1`). */
+/**
+ * A faction's `wargear.json` row: traits as ids, a parameter after a colon
+ * (`rare:0-1`) – a weapon's, and an item's Rare. `held` marks a Held Item,
+ * which takes a melee slot instead of an item slot.
+ */
 interface RawWargear extends Omit<Wargear, 'rules'> {
 	traits?: string[];
+	held?: boolean;
 }
 
 const trait = new Map(weaponTraits.map((t) => [t.id, t]));
@@ -128,7 +133,8 @@ function build(
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear
 		})),
-		wargear: wargear.map(({ traits, ...w }) => ({ ...w, rules: (traits ?? []).flatMap(traitRule) }))
+		/* What only the carrying rules read stays out of the shared form. */
+		wargear: wargear.map(({ traits, held: _held, ...w }) => ({ ...w, rules: (traits ?? []).flatMap(traitRule) }))
 	};
 }
 
