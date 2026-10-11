@@ -4,7 +4,7 @@
  * `factions/` is one faction.
  */
 
-import type { Faction, GameSystem, Rule, Wargear } from '$lib/core/types';
+import type { Faction, Fighter, GameSystem, Rule, Wargear } from '$lib/core/types';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 
@@ -40,7 +40,8 @@ export const game: GameSystem = {
 		{ key: 'rend', label: 'Rend' },
 		{ key: 'damage', label: 'Damage' }
 	],
-	universal: []
+	universal: [],
+	carry
 };
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */
@@ -84,6 +85,84 @@ function traitRule(id: string): Rule[] {
 	return found ? [{ name: parameter ? `${found.name} ${parameter}` : found.name, text: found.text }] : [];
 }
 
+/*
+ * What a fighter may carry, from the rulebook's Carrying Limit (p. 13), its
+ * Held Items box (p. 15) and the Two-handed trait: two melee weapons, one
+ * ranged, one set of armour, two items. A Held Item takes a melee slot instead
+ * of an item slot. One two-handed weapon at most, melee or ranged. Neither a
+ * Held Item nor Full-Plate goes with a two-handed ranged weapon, though
+ * Full-Plate does with a Brace of Pistols. A Held Item beside a two-handed melee
+ * weapon is allowed and costs that weapon an attack, which is the card's to show.
+ * Wargear the scroll says the fighter is equipped with fills its slot too: the
+ * Rat-Mutant's claw is one of its two melee weapons.
+ */
+
+const SLOTS = { melee: 2, ranged: 1, armour: 1, item: 2 } as const;
+
+/** The raw rows by faction, for what the shared form leaves out. */
+const rows = new Map<string, Map<string, RawWargear>>();
+
+type Slot = keyof typeof SLOTS;
+
+function slotOf(w: RawWargear): Slot {
+	return w.held ? 'melee' : w.kind;
+}
+
+const twoHanded = (w: RawWargear) => !!w.traits?.includes('two-handed');
+const twoHandedRanged = (w: RawWargear) => w.kind === 'ranged' && twoHanded(w);
+/* Full-Plate goes by the same id in every faction. */
+const fullPlate = (w: RawWargear) => w.id === 'full-plate';
+const pistols = (w: RawWargear) => w.id === 'brace-of-pistols';
+
+const SLOT_FULL: Record<Slot, string> = {
+	melee: 'No melee slot free',
+	ranged: 'No ranged slot free',
+	armour: 'Already wearing armour',
+	item: 'No item slot free'
+};
+
+/** Why the fighter cannot take `w` beside what it already holds, or null when it can. */
+function refuse(held: RawWargear[], w: RawWargear): { message: string; short: string } | null {
+	const slot = slotOf(w);
+	if (held.filter((h) => slotOf(h) === slot).length >= SLOTS[slot]) {
+		const message =
+			slot === 'melee' ? 'A fighter carries up to 2 melee weapons, Held Items included'
+			: slot === 'ranged' ? 'A fighter carries 1 ranged weapon'
+			: slot === 'armour' ? 'A fighter wears 1 set of armour'
+			: 'A fighter carries up to 2 items';
+		return { message, short: SLOT_FULL[slot] };
+	}
+	if (twoHanded(w) && held.some(twoHanded)) {
+		return { message: 'A fighter can only be equipped with 1 two-handed weapon', short: 'One two-handed only' };
+	}
+	if (twoHandedRanged(w)) {
+		if (held.some((h) => h.held)) {
+			return { message: 'A fighter cannot be equipped with a Held Item and a two-handed ranged weapon', short: 'Not with a Held Item' };
+		}
+		if (!pistols(w) && held.some(fullPlate)) {
+			return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not in Full-Plate' };
+		}
+	}
+	if (w.held && held.some(twoHandedRanged)) {
+		return { message: 'A fighter cannot be equipped with a Held Item and a two-handed ranged weapon', short: 'Not with two-handed ranged' };
+	}
+	if (fullPlate(w) && held.some((h) => twoHandedRanged(h) && !pistols(h))) {
+		return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not with two-handed ranged' };
+	}
+	return null;
+}
+
+function carry(fighter: Fighter, faction: Faction, wargear: string[]) {
+	const of = rows.get(faction.id);
+	if (!of) return [];
+	const known = (ids: string[]) => ids.flatMap((id) => of.get(id) ?? []);
+	return wargear.flatMap((id, i) => {
+		const w = of.get(id);
+		const refused = w && refuse(known([...fighter.gear, ...wargear.slice(0, i)]), w);
+		return refused ? [{ message: `${w.name}: ${refused.message}.`, short: refused.short }] : [];
+	});
+}
+
 interface RawOrigin {
 	id: string;
 	name: string;
@@ -100,6 +179,7 @@ function build(
 	lists: Record<string, string[]>,
 	origins: RawOrigin[]
 ): Faction {
+	rows.set(meta.id, new Map(wargear.map((w) => [w.id, w])));
 	return {
 		id: meta.id,
 		game: game.id,
@@ -133,8 +213,12 @@ function build(
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear
 		})),
-		/* What only the carrying rules read stays out of the shared form. */
-		wargear: wargear.map(({ traits, held: _held, ...w }) => ({ ...w, rules: (traits ?? []).flatMap(traitRule) }))
+		/* What only the carrying rules read stays out of the shared form; Rare
+		   is a limit every game may have, so it goes in. */
+		wargear: wargear.map(({ traits, held: _held, ...w }) => {
+			const rare = traits?.find((t) => t.startsWith('rare:'))?.split('-')[1];
+			return { ...w, rules: (traits ?? []).flatMap(traitRule), ...(rare ? { rare: Number(rare) } : {}) };
+		})
 	};
 }
 

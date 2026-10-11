@@ -142,6 +142,8 @@ export interface Wargear {
 	profile?: Record<string, string>;
 	/** A weapon's rules, shown when its name on the card is tapped. */
 	rules?: Rule[];
+	/** How many fighters of a warband may carry it at the same time, such as Black Death City's Rare 0-1. */
+	rare?: number;
 }
 
 /** One of the options a fighter's own choice offers: a spell, a characteristic, a row of a table. */
@@ -262,7 +264,8 @@ export interface Issue {
 		| 'fighter-choice'
 		| 'unknown-fighter'
 		| 'wargear-not-allowed'
-		| 'wargear-carry';
+		| 'wargear-carry'
+		| 'wargear-rare';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */
 	kind: 'missing' | 'excess';
 	message: string;

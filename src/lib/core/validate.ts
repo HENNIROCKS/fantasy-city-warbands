@@ -120,6 +120,18 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		}
 	}
 
+	for (const wargear of faction.wargear) {
+		if (wargear.rare === undefined) continue;
+		const count = warband.fighters.filter((f) => f.wargear.includes(wargear.id)).length;
+		if (count <= wargear.rare) continue;
+		issues.push({
+			code: 'wargear-rare',
+			kind: 'excess',
+			message: `${wargear.name}: ${wargear.rare} ${wargear.rare === 1 ? 'fighter' : 'fighters'} of the warband may carry it, ${count} do.`,
+			short: `Only ${wargear.rare} per warband`
+		});
+	}
+
 	for (const fighter of faction.fighters) {
 		const count = resolved.filter((f) => f.id === fighter.id).length;
 		const { limit, source } = limitOf(fighter, effects);

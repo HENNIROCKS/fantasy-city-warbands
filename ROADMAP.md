@@ -37,7 +37,7 @@
 - [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] ⚙️ Retire the Warband Deck once nothing is missing
 - [ ] 📚 Black Death City: the fighters' special rules as text
-- [ ] 📚 Black Death City: what a fighter may carry – carrying limit, held items, full-plate, Rare
+- [x] 📚 Black Death City: what a fighter may carry – carrying limit, held items, full-plate, Rare
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 📚 Black Death City: settle the playtest's contradictions – Zombie and Zombie Ogre costs, the Blighted Cloister's Origins, Rot Walkers, wargear prices that differ between list and table, the Vermin's Ensorcelled Weapon
