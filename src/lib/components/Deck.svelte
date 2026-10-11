@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import BattleBar from '$lib/components/BattleBar.svelte';
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
+	import { outOfAction, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard } from '$lib/core/card';
 	import { explanation } from '$lib/explanation';
 
@@ -15,12 +17,23 @@
 	let {
 		cards,
 		columns,
-		edit
+		edit,
+		battle = null,
+		sound = true,
+		onwound,
+		onend,
+		onsound
 	}: {
 		cards: DeckCard[];
 		columns: string[];
 		/** Where the warband is named, for the warband card to point to while it has no name. */
 		edit?: string;
+		battle?: BattleState | null;
+		/** Whether a fighter going out of action is heard. */
+		sound?: boolean;
+		onwound?: (instanceId: string, delta: number, health: number) => void;
+		onend?: () => void;
+		onsound?: () => void;
 	} = $props();
 
 	/** Duration of the fly-out; the same number drives transition and switch point. */
@@ -58,6 +71,18 @@
 	const beneath = $derived(cards.length > 1 ? wrap(current + (dx > 0 ? -1 : 1)) : -1);
 
 	const duration = $derived(reduced ? 0 : FLY);
+
+	/* The bar below the stack belongs to the card on top of it. */
+	const topFighter = $derived.by(() => {
+		const top = cards[current];
+		return top?.kind === 'fighter' ? top : null;
+	});
+	const out = $derived(
+		outOfAction(
+			battle,
+			cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId)
+		)
+	);
 
 	const transform = $derived(
 		leaving
@@ -213,18 +238,33 @@
 		{#if cards.length > 1}
 			<div class="ticks" aria-hidden="true">
 				{#each cards as card, i (card.instanceId)}
-					<span class="tick" class:active={i === current}></span>
+					<span
+						class="tick"
+						class:active={i === current}
+						class:out={card.kind === 'fighter' && stateOf(battle, card.instanceId).out}
+					></span>
 				{/each}
 			</div>
 		{/if}
 	</div>
+
+	<BattleBar
+		fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
+		health={topFighter?.health.value ?? 0}
+		{out}
+		running={battle !== null}
+		{sound}
+		onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
+		{onend}
+		{onsound}
+	/>
 </div>
 
 {#snippet face(data: DeckCard)}
 	{#if data.kind === 'warband'}
 		<WarbandCard card={data} onpick={jumpTo} {edit} />
 	{:else}
-		<FighterCard card={data} {columns} />
+		<FighterCard card={data} {columns} state={stateOf(battle, data.instanceId)} />
 	{/if}
 {/snippet}
 
@@ -332,6 +372,16 @@
 	.tick.active {
 		height: 7px;
 		background: rgba(0, 0, 0, 0.55);
+	}
+
+	/* A fighter out of action keeps its stroke in blood, so the stack shows who is
+	   gone without flicking through it. */
+	.tick.out {
+		background: color-mix(in srgb, var(--card-blood) 55%, transparent);
+	}
+
+	.tick.active.out {
+		background: var(--card-blood);
 	}
 
 	@media (prefers-reduced-motion: reduce) {

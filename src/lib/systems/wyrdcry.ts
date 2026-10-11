@@ -27,6 +27,7 @@ export const game: GameSystem = {
 		{ key: 'health', label: 'Health', format: 'plain' },
 		{ key: 'bravery', label: 'Bravery', format: 'target' }
 	],
+	health: 'health',
 	roles: ['leader', 'hero', 'henchman'],
 	defaultRole: 'henchman',
 	roleLabels: { leader: 'Leader', hero: 'Heroes', henchman: 'Henchmen' },

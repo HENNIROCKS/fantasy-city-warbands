@@ -22,6 +22,7 @@
 - [x] 🃏 A colour per warband for its cards
 - [x] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
 - [x] 📚 Black Death City: what a fighter may carry – carrying limit, held items, full-plate, Rare
+- [x] ⚔️ Count damage on a fighter's card, out of action with the Wilhelm scream, and end the battle
 - [ ] ⚙️ Move storage to IndexedDB, carrying over what is in localStorage
 - [ ] 📄 Import and export a warband as a file, the Warband Deck's and the Warband Builder's JSON included
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
@@ -29,7 +30,7 @@
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🃏 Derived values on the card, such as armour from equipment, explained when tapped
 - [ ] 🛠️ Edit a fighter after the build: notes and fluff per fighter, dismissal, recruiting between battles
-- [ ] ⚔️ Track a battle: activated and waiting, damage, out of action, wavering, panicked, in cover, rounds with undo, zeal
+- [ ] ⚔️ Track a battle: activated and waiting, wavering, panicked, in cover, rounds with undo, zeal
 - [ ] 📈 Campaign: experience and renown, heroic traits included
 - [ ] 📈 Campaign: favour, income and a battle history
 - [ ] 📈 Campaign: the stash and the trading post
@@ -51,7 +52,6 @@ Nothing promised, nothing planned.
 
 - 📱 NFC tags under the model bases, so holding the phone to a model opens its card
 - 🔗 Showing an opponent the warband over a read-only link, as a QR code
-- 🔊 A sound when a fighter goes out of action, with a switch to turn it off
 - 🃏 Faction rules on the warband card as well, not only on every fighter card
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark

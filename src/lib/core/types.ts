@@ -51,6 +51,8 @@ export interface GameSystem {
 	budget: number;
 	/** In the order the profile prints them. */
 	stats: StatDef[];
+	/** The key of the stat that damage counts down: `health`, `life`. */
+	health: string;
 	/**
 	 * The keywords that name a fighter's role, first match wins: a Wyrdcry
 	 * Captain is both `leader` and `hero` and reads as a leader.

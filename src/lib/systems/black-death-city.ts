@@ -24,6 +24,7 @@ export const game: GameSystem = {
 		{ key: 'willpower', label: 'Willpower', short: 'Will', format: 'plain' },
 		{ key: 'life', label: 'Life', format: 'plain' }
 	],
+	health: 'life',
 	roles: ['leader', 'champion', 'henchman', 'brute', 'beast'],
 	groups: [
 		{ keyword: 'leader', label: 'Leaders', limit: { min: 1, max: 1 } },

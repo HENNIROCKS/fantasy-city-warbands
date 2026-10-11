@@ -67,6 +67,11 @@
 				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. State Pride’s effects on the profiles, the skills and spells Black Death City’s fighters pick on recruitment, and anything that happens in a campaign are still to come.'
 		},
 		{
+			question: 'Can I track a battle?',
+			answer:
+				'The damage, so far. On a fighter’s card, the bar at the foot takes Health down a point at a time, and a fighter at none is out of action – with the Wilhelm scream, which the speaker on the warband card turns off. End battle, also on the warband card, drops every wound. The battle stays on this device and never changes the warband. The scream comes from Wikimedia Commons, where it is released under CC0.'
+		},
+		{
 			question: 'Which rules does the app follow?',
 			answer: `Wyrdcry ${systems.wyrdcry.game.edition}, as kept in the Wyrdcry Warband Deck. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
 		},

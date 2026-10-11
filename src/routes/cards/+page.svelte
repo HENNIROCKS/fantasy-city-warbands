@@ -5,14 +5,16 @@
 	import { APP_TITLE } from '$lib/app';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
+	import { allocate, stateOf, type BattleState } from '$lib/core/battle';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
-	import { loadWarband } from '$lib/core/storage';
+	import { loadBattle, loadSound, loadWarband, saveBattle, saveSound } from '$lib/core/storage';
 	import { systems } from '$lib/systems';
 
 	/*
 	 * A warband and its fighters as a stack of cards, filling the screen under the
-	 * header; each card scrolls on its own. Read only: the cards change in the
-	 * builder.
+	 * header; each card scrolls on its own. The fighters change in the builder;
+	 * here only the battle does.
 	 */
 	const id = $derived(page.url.searchParams.get('id'));
 	const warband = $derived(id ? loadWarband(id) : null);
@@ -28,6 +30,40 @@
 			: []
 	);
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
+
+	/* The battle is the deck's only state: it lives on this device, beside the
+	   warband rather than in it. */
+	let battle = $state<BattleState | null>(null);
+	$effect.pre(() => {
+		battle = id ? loadBattle(id) : null;
+	});
+
+	let sound = $state(loadSound());
+	let audio: HTMLAudioElement | undefined;
+
+	function wound(instanceId: string, delta: number, health: number) {
+		if (!id) return;
+		const wasOut = stateOf(battle, instanceId).out;
+		battle = allocate(battle, instanceId, delta, health);
+		saveBattle(id, battle);
+		/* Played within the tap itself, which is what lets iOS sound it. */
+		if (sound && !wasOut && stateOf(battle, instanceId).out) {
+			audio ??= new Audio(scream);
+			audio.currentTime = 0;
+			audio.play().catch(() => {});
+		}
+	}
+
+	function endBattle() {
+		if (!id) return;
+		battle = null;
+		saveBattle(id, null);
+	}
+
+	function toggleSound() {
+		sound = !sound;
+		saveSound(sound);
+	}
 
 	/* The deck's own colour stands in for the card green on the root, where the
 	   explanation overlay reads it too. Left again, the green. */
@@ -75,6 +111,11 @@
 				{cards}
 				columns={system.game.weaponStats.map((s) => s.label)}
 				edit={resolve('/build') + `?id=${warband.id}&step=finish#warband-name`}
+				{battle}
+				{sound}
+				onwound={wound}
+				onend={endBattle}
+				onsound={toggleSound}
 			/>
 		</main>
 	{/if}

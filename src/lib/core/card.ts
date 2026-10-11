@@ -63,6 +63,8 @@ export interface FighterCardData {
 	/** Readable: `clan eshin`, not `clan-eshin`. */
 	keywords: string[];
 	stats: CardValue[];
+	/** The stat damage counts down, with its figure – 0 where the profile has none. */
+	health: { key: string; value: number };
 	/** What the fighter carries out of a game rather than into one; for now its cost. */
 	campaign: CardValue[];
 	weapons: CardWeapon[];
@@ -176,6 +178,10 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			short: s.short,
 			value: formatStat(s, profile?.[s.key])
 		})),
+		health: {
+			key: game.health,
+			value: typeof profile?.[game.health] === 'number' ? (profile[game.health] as number) : 0
+		},
 		campaign: [{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) }],
 		weapons,
 		sections,

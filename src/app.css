@@ -110,6 +110,13 @@
 	/* A weapon whose name opens its rules. The one signal colour on a green and
 	   paper card. */
 	--card-link: #9c2b14;
+	/*
+	 * The wound state. The image field fills with it in step with the damage a
+	 * fighter holds, and the band of one taken out of action is laid in it.
+	 * Deeper than the link red, which is the colour of something to tap.
+	 */
+	--card-blood: #8a1c12;
+	--card-blood-veil: rgba(74, 12, 7, 0.62);
 
 	/* Design width of the printed card. Sizes inside a card are written as
 	   multiples of --u so the whole thing scales with the container, down to

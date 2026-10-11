@@ -11,7 +11,7 @@ Unofficial fan project. No connection to Games Workshop, Johan Markström and
 the Wyrdcry project, or Sam Pearson and Black Death City.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
-it as a deck of cards. It does not yet export, import or print one, or know
+it as a deck of cards that counts damage in a battle. It does not yet export, import or print one, or know
 anything about a campaign: no experience, no injuries, no income.
 
 ## What it does
@@ -45,6 +45,10 @@ anything about a campaign: no experience, no injuries, no income.
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
   for each fighter with its profile, weapons and rules
+- Count damage at the table: the bar under a fighter's card takes Health down
+  a point at a time, the card fills with blood, and a fighter at none is out
+  of action – with the Wilhelm scream, which can be switched off. End battle
+  on the warband card drops every wound
 - Delete a warband after a question that says what is lost
 - Dark and light mode
 - An about page with the games, where their rules come from, and answers to
@@ -131,4 +135,7 @@ quote the rulebook and name the page if you can.
 ## Licence
 
 The code is MIT, see [LICENSE](LICENSE). The rules data under `src/lib/rules/`
-is not covered by it: it belongs to the authors of the games.
+is not covered by it: it belongs to the authors of the games. The Wilhelm
+scream (`src/lib/assets/sounds/`) is converted from
+[Wilhelm_Scream.ogg](https://commons.wikimedia.org/wiki/File:Wilhelm_Scream.ogg)
+on Wikimedia Commons, released there under CC0.

@@ -2,10 +2,34 @@
 	import RuleText from '$lib/components/RuleText.svelte';
 	import ValueTable from '$lib/components/ValueTable.svelte';
 	import WeaponTable from '$lib/components/WeaponTable.svelte';
+	import { FRESH, type FighterBattleState } from '$lib/core/battle';
 	import type { CardEntry, CardSection, FighterCardData } from '$lib/core/card';
 	import { imageFieldMask } from '$lib/image-field-mask';
 
-	let { card, columns }: { card: FighterCardData; columns: string[] } = $props();
+	let {
+		card,
+		columns,
+		state = FRESH
+	}: {
+		card: FighterCardData;
+		columns: string[];
+		/** What the fighter has taken in the battle. The bar below the deck sets it. */
+		state?: FighterBattleState;
+	} = $props();
+
+	/* How high the blood stands in the image field: a fighter at half its Health is
+	   red to half its height. */
+	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
+
+	/* Health counts down with the damage the fighter holds, so the table reads the
+	   same figure as the bar below the deck. */
+	const stats = $derived(
+		card.stats.map((stat) =>
+			stat.key === card.health.key && state.damage
+				? { ...stat, value: String(Math.max(0, card.health.value - state.damage)) }
+				: stat
+		)
+	);
 
 	/* General reference rather than this fighter's own rules: worth having on the
 	   card, not worth the room when it is in play. Folded away, with the title in
@@ -17,7 +41,11 @@
 	};
 </script>
 
-<article class="card">
+<article class="card" class:out={state.out} style:--wound={wound}>
+	{#if state.out}
+		<p class="band" aria-hidden="true">Out of Action</p>
+	{/if}
+
 	<div class="image-section">
 		<div class="image-box">
 			<div class="image-inner" style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};"></div>
@@ -42,7 +70,7 @@
 		{/if}
 
 		<div class="profile">
-			<ValueTable rows={card.stats} />
+			<ValueTable rows={stats} />
 
 			<ValueTable rows={card.campaign} />
 
@@ -105,11 +133,17 @@
 	}
 
 	/* The Card Creator's image field, cut from its mask. Without a photo it is a
-	   field of the card's colour. */
+	   field of the card's colour. The blood stands in it as high as the damage the
+	   fighter holds, with a hard edge: a level is read off at a glance, a blend
+	   has to be compared to something. */
 	.image-inner {
 		position: absolute;
 		inset: 0;
-		background: var(--card-green);
+		background: linear-gradient(
+			to top,
+			var(--card-blood) 0 calc(var(--wound, 0) * 100%),
+			var(--card-green) calc(var(--wound, 0) * 100%) 100%
+		);
 		mask-size: 100% 100%;
 		mask-repeat: no-repeat;
 		-webkit-mask-size: 100% 100%;
@@ -303,6 +337,52 @@
 
 	.folded {
 		padding-top: 1em;
+	}
+
+	/* ── In battle ─────────────────────────────── */
+
+	/* The band measures from the card, and the card clips it. Without this it
+	   would hang off the pane instead, which scrolls rather than clips – the band
+	   is wider than the card it lies across, so the deck would scroll sideways. */
+	.card {
+		position: relative;
+	}
+
+	/* The whole card is veiled in blood, so a fighter who is gone reads from
+	   across the table and while flicking through the stack. */
+	.card.out::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: var(--card-blood-veil);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/*
+	 * Across the head of the card rather than its middle: the card scrolls and
+	 * grows with its rules, so the middle is off screen on a long one. The image
+	 * section is what a swipe brings up first.
+	 */
+	.band {
+		position: absolute;
+		top: calc(74 * var(--u));
+		left: calc(-10 * var(--u));
+		right: calc(-10 * var(--u));
+		margin: 0;
+		z-index: 2;
+		transform: rotate(-8deg);
+		padding: calc(6 * var(--u)) 0;
+		background: color-mix(in srgb, var(--card-blood) 82%, transparent);
+		border-top: 1px solid var(--card-wash);
+		border-bottom: 1px solid var(--card-wash);
+		font-family: 'Grenze Gotisch', serif;
+		font-size: calc(40 * var(--t));
+		line-height: 1;
+		letter-spacing: 0.08em;
+		text-align: center;
+		color: var(--card-paper);
+		pointer-events: none;
 	}
 
 	.warn {
