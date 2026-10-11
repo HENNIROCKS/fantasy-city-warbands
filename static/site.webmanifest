@@ -1,6 +1,6 @@
 {
   "name": "Fantasy City Warbands",
-  "short_name": "Fantasy City Warbands",
+  "short_name": "Warbands",
   "start_url": "./",
   "scope": "./",
   "icons": [
@@ -17,7 +17,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#125E3C",
-  "background_color": "#125E3C",
+  "theme_color": "#e4ddd3",
+  "background_color": "#e4ddd3",
   "display": "standalone"
 }
