@@ -13,8 +13,9 @@ Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 `ROADMAP.md`: eine Zeile je Punkt, keine Unterpunkte, keine Begründungen, keine
 Daten. Sie ist die einzige Stelle, an der offene Punkte zum Bauen gepflegt
 werden. Abgehakte Punkte stehen oben, nie zwischen offenen: ein erledigter
-Punkt rückt ans Ende des abgehakten Blocks. Unter „Ideas“ steht, was weder
-versprochen noch geplant ist.
+Punkt rückt ans Ende des abgehakten Blocks – so liest sich der abgehakte Block
+als Changelog, in der Reihenfolge, in der die Punkte fertig wurden. Unter
+„Ideas“ steht, was weder versprochen noch geplant ist.
 
 Wo die App bewusst anders steht als das, was ein Spiel druckt oder als Daten
 mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
