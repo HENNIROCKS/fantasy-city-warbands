@@ -16,9 +16,10 @@
 - [x] 🎨 An about page with the games, their sources and a few questions
 - [x] 🛠️ Wargear as a button matrix instead of a select
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
-- [ ] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
+- [x] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
 - [ ] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
 - [ ] 📚 Black Death City: the fighters' special rules as text
+- [ ] 📚 Black Death City: what a fighter may carry – carrying limit, held items, full-plate, Rare
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 📚 Black Death City: settle the playtest's contradictions – Zombie and Zombie Ogre costs, the Blighted Cloister's Origins, Rot Walkers, wargear prices that differ between list and table, the Vermin's Ensorcelled Weapon

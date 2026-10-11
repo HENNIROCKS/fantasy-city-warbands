@@ -97,6 +97,23 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 				});
 			}
 		}
+
+		const choice = fighter.choice;
+		if (choice) {
+			const picked = instance.picks ?? [];
+			const options = new Set(choice.options.map((o) => o.id));
+			const valid = new Set(picked.filter((id) => options.has(id)));
+			const tooMany = valid.size > choice.pick || valid.size !== picked.length;
+			if (tooMany || valid.size < choice.pick) {
+				issues.push({
+					code: 'fighter-choice',
+					kind: tooMany ? 'excess' : 'missing',
+					message: `${fighter.name}: pick ${choice.pick}, ${valid.size} picked.`,
+					short: tooMany ? `Pick ${choice.pick} only` : 'Choice open',
+					instanceId: instance.instanceId
+				});
+			}
+		}
 	}
 
 	for (const fighter of faction.fighters) {

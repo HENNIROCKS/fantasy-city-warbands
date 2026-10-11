@@ -137,6 +137,36 @@ export interface Wargear {
 	rules?: Rule[];
 }
 
+/** One of the options a fighter's own choice offers: a spell, a characteristic, a row of a table. */
+export interface FighterChoiceOption {
+	id: string;
+	name: string;
+	text: string;
+	/** As the card prints it in brackets, where the option is an ability: `double`. */
+	type?: string;
+	/** Added to the profile, keyed by the game's `StatDef.key`. */
+	bonus?: Record<string, number>;
+	/** Keywords the option gives the fighter on top of its own. */
+	keywords?: string[];
+	/** Wargear ids the option is, such as a mutation that attacks like a weapon. Free, like `gear`. */
+	gear?: string[];
+}
+
+/** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */
+export interface FighterChoice {
+	/** The sentence above the options. */
+	prompt: string;
+	/** The fighter rule the choice comes out of, by name; its card entry says the pick is already included. */
+	source?: string;
+	pick: number;
+	options: FighterChoiceOption[];
+	/**
+	 * The table's name where the option is rolled at the table: `Mutation Table`.
+	 * The option ids are then the results, `21-23`, and picking asks whether that was rolled.
+	 */
+	roll?: string;
+}
+
 export interface Fighter {
 	id: string;
 	name: string;
@@ -158,6 +188,8 @@ export interface Fighter {
 	 * the fighter's cost, and not to be removed.
 	 */
 	gear: string[];
+	/** What the fighter picks when it is recruited. */
+	choice?: FighterChoice;
 }
 
 export interface Faction {
@@ -185,6 +217,8 @@ export interface FighterInstance {
 	name: string;
 	/** Wargear ids; an id may appear more than once. */
 	wargear: string[];
+	/** The option ids picked under the fighter's own `choice`. Missing in a warband saved before there were any. */
+	picks?: string[];
 }
 
 /** A warband as stored. Everything else is looked up from its game and faction. */
@@ -213,6 +247,7 @@ export interface Issue {
 		| 'fighter-limit'
 		| 'group-limit'
 		| 'choice'
+		| 'fighter-choice'
 		| 'unknown-fighter'
 		| 'wargear-not-allowed';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */

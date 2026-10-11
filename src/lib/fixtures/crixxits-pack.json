@@ -1,0 +1,83 @@
+{
+	"id": "15cf10b3-a905-4faa-ad74-c8bf08100ae5",
+	"game": "wyrdcry",
+	"factionId": "clan-eshin",
+	"name": "Crixxit's Pack",
+	"picks": {},
+	"fighters": [
+		{
+			"instanceId": "135ac2f6-44f3-469c-b65d-2bb53dab5a7e",
+			"fighterId": "assassin-adept",
+			"name": "Crixxit",
+			"wargear": [
+				"weapon:weeping-blade"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "e8bb1097-bbf1-4ea8-a842-1a61f5d1c12f",
+			"fighterId": "eshin-sorcerer",
+			"name": "Kretch",
+			"wargear": [
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "88307a6d-872a-4dfb-b957-8fc119930163",
+			"fighterId": "black-skaven",
+			"name": "Niritik",
+			"wargear": [
+				"weapon:fighting-claws"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "ab61862c-c2a2-403a-bc9e-7416386cedd2",
+			"fighterId": "black-skaven",
+			"name": "Ratch",
+			"wargear": [
+				"weapon:fighting-claws"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "4f254868-67b3-4300-a121-caca58f9a4aa",
+			"fighterId": "black-skaven",
+			"name": "Grask",
+			"wargear": [
+				"weapon:sword",
+				"weapon:sword"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "0f1799b4-cd9a-44f6-a962-c10be773609e",
+			"fighterId": "night-runner",
+			"name": "Mange",
+			"wargear": [
+				"weapon:sling"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "0ede4df9-431d-4d14-99ea-a4dee75ad8c6",
+			"fighterId": "night-runner",
+			"name": "Qurirrik",
+			"wargear": [
+				"weapon:sling"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "86b9bd4d-be71-4f06-b248-15d5e839f625",
+			"fighterId": "night-runner",
+			"name": "Yerg",
+			"wargear": [
+				"weapon:sling"
+			],
+			"picks": []
+		}
+	],
+	"notes": "- TODO: Collect income, spend 1 renown for Niritik\n- Battle history: 260919 Draw – Undead\n- Niritik, Grask: [Trait] Terrible scars: This fighter gains the Terrifying keyword."
+}

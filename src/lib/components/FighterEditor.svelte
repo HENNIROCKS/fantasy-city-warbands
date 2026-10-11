@@ -1,7 +1,8 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import type { Faction, FighterInstance, GameSystem, Issue, WargearKind } from '$lib/core/types';
-	import { fighterCost, fighterName, formatStat } from '$lib/core/warband';
+	import { fighterCost, fighterName, formatStat, profileOf } from '$lib/core/warband';
+	import { tick } from 'svelte';
 
 	let {
 		instance,
@@ -30,6 +31,9 @@
 
 	const fighter = $derived(faction.fighters.find((f) => f.id === instance.fighterId));
 	const label = $derived(fighterName(instance, faction));
+	/* An open choice says so under its own options. */
+	const listed = $derived(issues.filter((i) => i.code !== 'fighter-choice' || i.kind === 'excess'));
+	const profile = $derived(fighter ? profileOf(instance, fighter) : undefined);
 
 	function nameOf(id: string): string {
 		return faction.wargear.find((w) => w.id === id)?.name ?? id;
@@ -48,6 +52,43 @@
 		instance.wargear.push(id);
 		adding = false;
 		addButton?.focus();
+	}
+
+	/* A rolled option is rolled at the table, so the first tap asks whether it
+	   was – as the Warband Deck asks for the Rarity roll before a rare piece. */
+	let asking = $state<string | null>(null);
+
+	/** `21-23` as the rules print a range of results. */
+	const roll = (id: string) => id.replace('-', '–');
+
+	async function choose(id: string) {
+		const choice = fighter?.choice;
+		if (!choice) return;
+		const picks = instance.picks ?? [];
+		if (choice.roll && asking !== id && !picks.includes(id)) {
+			asking = id;
+			return;
+		}
+		asking = null;
+		/* Once full, the oldest pick makes room, so a pick of one is swapped in a single tap. */
+		if (picks.includes(id)) instance.picks = picks.filter((p) => p !== id);
+		else if (picks.length < choice.pick) instance.picks = [...picks, id];
+		else instance.picks = [...picks.slice(1), id];
+		await tick();
+		document.getElementById(optionId(id))?.focus();
+	}
+
+	/* Not rolled: back to the row it was asked about. */
+	async function notRolled(id: string) {
+		asking = null;
+		await tick();
+		document.getElementById(optionId(id))?.focus();
+	}
+
+	const optionId = (id: string) => `pick-${instance.instanceId}-${id}`;
+
+	function focusOnMount(node: HTMLElement) {
+		node.focus();
 	}
 </script>
 
@@ -87,7 +128,7 @@
 						{/if}
 					</span>
 					<span class="block rounded bg-zinc-900 py-1 font-semibold text-zinc-200">
-						{formatStat(stat, fighter.profile[stat.key])}
+						{formatStat(stat, profile?.[stat.key])}
 					</span>
 				</div>
 			{/each}
@@ -105,6 +146,54 @@
 					</div>
 				{/each}
 			</details>
+		{/if}
+
+		{#if fighter.choice}
+			{@const choice = fighter.choice}
+			{@const picks = instance.picks ?? []}
+			<section>
+				<p class="sublabel">{choice.source ?? choice.roll ?? 'Choose'} · {picks.length} / {choice.pick}</p>
+				<div class="mb-2 text-zinc-400"><RichText text={choice.prompt} /></div>
+				<!-- A characteristic needs no explaining, so two fit a row; a spell or a
+				     row of a table is a paragraph, read before it is picked. -->
+				<div class="grid gap-2 {choice.options.every((o) => !o.text) ? 'grid-cols-2' : ''}">
+					{#each choice.options as option (option.id)}
+						{#if asking === option.id}
+							<!-- On the option's own surface, so the buttons stand out from it as they do in a sheet. -->
+							<div
+								class="rounded-md border p-3"
+								style="background: var(--ui-surface); border-color: var(--ui-border)"
+								role="group"
+								aria-labelledby="ask-{instance.instanceId}"
+							>
+								<p id="ask-{instance.instanceId}" class="font-semibold">Rolled {roll(option.id)} on the {choice.roll}?</p>
+								<div class="sheet-actions">
+									<button type="button" class="btn" onclick={() => notRolled(option.id)}>Not rolled</button>
+									<button type="button" class="btn" onclick={() => choose(option.id)} use:focusOnMount>Take it</button>
+								</div>
+							</div>
+						{:else}
+							<button
+								type="button"
+								id={optionId(option.id)}
+								class="choice"
+								aria-pressed={picks.includes(option.id)}
+								onclick={() => choose(option.id)}
+							>
+								<span class="block font-semibold"
+									>{choice.roll ? `${roll(option.id)} ${option.name}` : option.name}{#if option.type}<span
+											class="font-normal text-zinc-400">{' · '}{option.type[0].toUpperCase() + option.type.slice(1)}</span
+										>{/if}</span
+								>
+								{#if option.text}<span class="block text-zinc-400"><RichText text={option.text} /></span>{/if}
+							</button>
+						{/if}
+					{/each}
+				</div>
+				{#if picks.length < choice.pick}
+					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {choice.pick} to carry on.</p>
+				{/if}
+			</section>
 		{/if}
 
 		<div>
@@ -173,9 +262,9 @@
 		</div>
 	{/if}
 
-	{#if issues.length}
+	{#if listed.length}
 		<ul style="color: var(--ui-warn-text)">
-			{#each issues as issue, i (i)}
+			{#each listed as issue, i (i)}
 				<li>{issue.message}</li>
 			{/each}
 		</ul>

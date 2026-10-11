@@ -64,7 +64,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each fighter may carry, and what an Origin changes about the roster. State Pride’s effects on the profiles, the skills and spells picked on recruitment, and anything that happens in a campaign are still to come.'
+				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. How much a fighter may carry at once, State Pride’s effects on the profiles, the skills and spells Black Death City’s fighters pick on recruitment, and anything that happens in a campaign are still to come.'
 		},
 		{
 			question: 'Which rules does the app follow?',

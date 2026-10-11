@@ -7,7 +7,7 @@
 
 import type { Faction, Fighter, FighterInstance, GameSystem, Rule, Wargear, Warband } from './types';
 import { warbandCost } from './validate';
-import { fighterCost, fighterName, fighterSections, fighterType, formatStat } from './warband';
+import { chosenOptions, fighterCost, fighterName, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
 /** One column of a value table: the label above, its value below. */
 export interface CardValue {
@@ -24,6 +24,8 @@ export interface CardEntry {
 	label: string;
 	/** Empty where the game gives the thing no text of its own. */
 	text: string;
+	/** The app speaking rather than the rules, after the text: `Already included.` */
+	note?: string;
 }
 
 /** What tapping a weapon's name opens: its profile in short and its rules in full. */
@@ -76,11 +78,11 @@ const REACTION = 'reaction';
 const typeRank = (type = '') => TYPE_ORDER.indexOf(type.toLowerCase());
 const titleCase = (word: string) => word[0].toUpperCase() + word.slice(1).toLowerCase();
 
-/** Grouped by type, within a type by name, each labelled with its type: `[Double] Rush`. */
-function ruleEntries(rules: Rule[]): CardEntry[] {
+/** Grouped by type, within a type by name, each labelled with its type: `[Double] Rush`. A note goes to the rule of its name. */
+function ruleEntries(rules: Rule[], notes = new Map<string, string>()): CardEntry[] {
 	return [...rules]
 		.sort((a, b) => typeRank(a.type) - typeRank(b.type) || a.name.localeCompare(b.name))
-		.map((r) => ({ label: r.type ? `[${titleCase(r.type)}] ${r.name}` : r.name, text: r.text }));
+		.map((r) => ({ label: r.type ? `[${titleCase(r.type)}] ${r.name}` : r.name, text: r.text, note: notes.get(r.name) }));
 }
 
 /** Each piece once, in the order it is first carried, with how many there are. */
@@ -99,7 +101,8 @@ const times = (name: string, count: number) => (count > 1 ? `${name} ×${count}`
 export function fighterCard(instance: FighterInstance, faction: Faction, game: GameSystem, picks: Record<string, string[]> = {}): FighterCardData {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
-	const carried = counted([...(fighter?.gear ?? []), ...instance.wargear], faction);
+	const options = fighter ? chosenOptions(instance, fighter) : [];
+	const carried = counted([...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear], faction);
 
 	/* Melee ahead of ranged, otherwise in the order they are carried. */
 	const weapons = carried
@@ -137,18 +140,29 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		)
 	];
 
-	const keywords = fighter?.keywords ?? [];
+	const keywords = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
+
+	/* A pick that raises a characteristic is in the profile above, and the rule
+	   it comes out of says so. Any other pick – a spell, a mutation – is a rule
+	   of the fighter's own. */
+	const raised = options.some((o) => o.bonus) ? fighter?.choice?.source : undefined;
+	const fighterRules = ruleEntries(
+		[...(fighter?.rules ?? []), ...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type }))],
+		new Map(raised ? [[raised, 'Already included.']] : [])
+	);
 
 	const sections: CardSection[] = (
 		[
-			{ kind: 'fighter', entries: ruleEntries(fighter?.rules ?? []) },
+			{ kind: 'fighter', entries: fighterRules },
 			{ kind: 'equipment', entries: items },
 			{ kind: 'faction', entries: factionRules },
 			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION)) },
 			{ kind: 'universal-reaction', entries: ruleEntries(universal.filter((u) => u.type === REACTION)) }
 		] satisfies CardSection[]
 	).filter((s) => s.entries.length);
+
+	const profile = fighter ? profileOf(instance, fighter) : undefined;
 
 	return {
 		kind: 'fighter',
@@ -160,7 +174,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			key: s.key,
 			label: s.label,
 			short: s.short,
-			value: formatStat(s, fighter?.profile[s.key])
+			value: formatStat(s, profile?.[s.key])
 		})),
 		campaign: [{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) }],
 		weapons,

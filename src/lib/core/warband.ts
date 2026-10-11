@@ -3,7 +3,7 @@
  * stores ids; costs and names are looked up from its faction.
  */
 
-import type { Faction, Fighter, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
+import type { Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
 
 /**
  * A random id. Not `crypto.randomUUID()`: that only exists in a secure context,
@@ -25,7 +25,25 @@ export function createWarband(game: string, faction: Faction, name: string): War
 }
 
 export function createFighter(fighterId: string): FighterInstance {
-	return { instanceId: newId(), fighterId, name: '', wargear: [] };
+	return { instanceId: newId(), fighterId, name: '', wargear: [], picks: [] };
+}
+
+/** The options picked under the fighter's own choice, in the order the choice offers them. */
+export function chosenOptions(instance: FighterInstance, fighter: Fighter): FighterChoiceOption[] {
+	const picks = instance.picks ?? [];
+	return fighter.choice?.options.filter((o) => picks.includes(o.id)) ?? [];
+}
+
+/** The fighter's profile with what its picks add, such as Fight +1 from Martial Discipline. */
+export function profileOf(instance: FighterInstance, fighter: Fighter): Fighter['profile'] {
+	const profile = { ...fighter.profile };
+	for (const option of chosenOptions(instance, fighter)) {
+		for (const [key, bonus] of Object.entries(option.bonus ?? {})) {
+			const value = profile[key];
+			if (typeof value === 'number') profile[key] = value + bonus;
+		}
+	}
+	return profile;
 }
 
 /** A fighter's type as the faction names it, else its id. */

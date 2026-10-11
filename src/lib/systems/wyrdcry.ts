@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, GameSystem, Wargear } from '$lib/core/types';
+import type { Faction, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -73,6 +73,34 @@ interface RawFighter {
 	abilities: string[];
 	/** Prefixed `weapon:` or `item:`, like the rows of `equipment.json`. */
 	gear: string[];
+	choose: RawChoice | null;
+}
+
+/**
+ * What a fighter picks on recruitment, as the Warband Deck writes it. `roles`
+ * only a homebrew fighter has, and `instead_of_talent` belongs to the campaign.
+ */
+interface RawChoice {
+	/** The ability the choice comes out of, by id. */
+	source: string | null;
+	prompt?: string;
+	kind: 'stat' | 'ability' | 'roll' | 'role';
+	pick: number;
+	characteristics?: string[];
+	bonus?: number;
+	abilities?: string[];
+	/** The id of the rule carrying the table. */
+	table?: string;
+}
+
+/** A row of a roll table, such as the Possessed's Mutation Table. */
+interface RawRow {
+	roll: string;
+	name: string;
+	text: string;
+	keywords?: string[];
+	/** A weapon id from `weapons.json`. */
+	weapon?: string;
 }
 
 interface RawRule {
@@ -81,6 +109,7 @@ interface RawRule {
 	text: string;
 	pick: number | null;
 	options: { id: string; name: string; text: string }[];
+	table?: RawRow[];
 }
 
 interface RawAbility {
@@ -122,6 +151,44 @@ const catalogue = new Map<string, Wargear>([
 	)
 ]);
 
+/** The Deck's `choose` in the shared form, or undefined where it is one this app does not offer. */
+function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, RawAbility>): FighterChoice | undefined {
+	if (!raw) return undefined;
+	const source = raw.source ? ability.get(raw.source) : undefined;
+	const prompt = raw.prompt ?? source?.text ?? '';
+	const base = { prompt, source: source?.name, pick: raw.pick };
+
+	if (raw.kind === 'ability') {
+		const options = (raw.abilities ?? []).flatMap((id) => {
+			const a = ability.get(id);
+			return a ? [{ id, name: a.name, text: a.text, type: a.type }] : [];
+		});
+		return { ...base, options };
+	}
+	if (raw.kind === 'stat') {
+		const bonus = raw.bonus ?? 0;
+		const options = (raw.characteristics ?? []).map((key) => ({
+			id: key,
+			name: `${game.stats.find((s) => s.key === key)?.label ?? key} +${bonus}`,
+			text: '',
+			bonus: { [key]: bonus }
+		}));
+		return { ...base, options };
+	}
+	if (raw.kind === 'roll') {
+		const table = rules.find((r) => r.id === raw.table);
+		const options = (table?.table ?? []).map((row) => ({
+			id: row.roll,
+			name: row.name,
+			text: row.text,
+			keywords: row.keywords,
+			gear: row.weapon ? [`weapon:${row.weapon}`] : undefined
+		}));
+		return { ...base, roll: table?.name, options };
+	}
+	return undefined;
+}
+
 function build(
 	meta: RawFaction,
 	fighters: RawFighter[],
@@ -158,12 +225,18 @@ function build(
 				.filter((e) => e.allow === 'all' || f.keywords.includes(e.allow))
 				.filter((e) => !e.restrict || f.keywords.includes(e.restrict))
 				.map((e) => e.id),
-			gear: f.gear
+			gear: f.gear,
+			choice: choiceOf(f.choose, rules, ability)
 		})),
-		/* What a fighter carries from the start has to resolve as well as what it can buy. */
-		wargear: [...new Set([...equipment.map((e) => e.id), ...fighters.flatMap((f) => f.gear)])].flatMap(
-			(id) => catalogue.get(id) ?? []
-		)
+		/* What a fighter carries from the start, or gets from a table row, has to
+		   resolve as well as what it can buy. */
+		wargear: [
+			...new Set([
+				...equipment.map((e) => e.id),
+				...fighters.flatMap((f) => f.gear),
+				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
+			])
+		].flatMap((id) => catalogue.get(id) ?? [])
 	};
 }
 

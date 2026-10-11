@@ -22,6 +22,9 @@ anything about a campaign: no experience, no injuries, no income.
   its choice and its rules
 - Recruit fighters and give them wargear from what their faction allows them,
   with the fighter's profile in the game's own notation – `5"`, `3+`, `–`
+- Make the choice a fighter brings on recruitment: an Eshin Sorcerer's spell, a
+  Mercenary Champion's Fight or Shoot, the Mutation Table row rolled at the
+  table. A raised characteristic is counted into the profile
 - Never go too far: whatever would take the warband over its budget, past a
   fighter's or a group's limit, or against its Origin is disabled, and says why
 - See what is still missing – a leader, enough henchmen, an open choice – on
@@ -49,10 +52,11 @@ anything about a campaign: no experience, no injuries, no income.
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take, the warband's choice and its effect on the
-roster. Wyrdcry's abilities and faction rules are shown as text. Not there
-yet: State Pride's effects on the profiles, the special rules of Black Death
-City's fighters, the skills and spells picked on recruitment, and the cost of
-a Misbegotten's bloodline mutation.
+roster, and the choice a Wyrdcry fighter makes on recruitment. Wyrdcry's
+abilities and faction rules are shown as text. Not there yet: State Pride's
+effects on the profiles, the special rules of Black Death City's fighters, the
+skills and spells its fighters pick on recruitment, and the cost of a
+Misbegotten's bloodline mutation.
 
 ## Roadmap
 
@@ -89,6 +93,10 @@ The code is split into what every game shares and what each game brings:
   groups, and the translation of its data into the shared shape
 - `src/lib/rules/<game>/factions/<faction>/` – the data, one folder per
   faction; a new folder is picked up without further code
+- `src/lib/fixtures/` – warbands to test with, as the app stores them: put one
+  into localStorage under `fantasy-city-warbands:warbands`. Taken from the
+  Wyrdcry Warband Deck's fixtures; `maximum.json` breaks the budget and the
+  limits on purpose, and Crixxit's Pack leaves its sorcerer's spell open
 
 ## Deployment
 

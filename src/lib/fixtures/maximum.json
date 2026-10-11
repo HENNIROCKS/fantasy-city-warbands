@@ -1,0 +1,192 @@
+{
+	"id": "maximum-0000-0000-0000-000000000000",
+	"game": "wyrdcry",
+	"factionId": "sisters-of-sigmar",
+	"name": "The Most Blessed Sisterhood of the Twin-Tailed Comet",
+	"picks": {},
+	"fighters": [
+		{
+			"instanceId": "max-00",
+			"fighterId": "matriarch",
+			"name": "Matriarch Ulrike Steinhauer",
+			"wargear": [
+				"weapon:sigmarite-warhammer",
+				"weapon:steel-whip",
+				"item:heavy-armour",
+				"item:shield"
+			],
+			"picks": [
+				"soulfire"
+			]
+		},
+		{
+			"instanceId": "max-01",
+			"fighterId": "sister-superior",
+			"name": "Sister Superior Adelheid",
+			"wargear": [
+				"weapon:sigmarite-warhammer",
+				"weapon:steel-whip",
+				"item:heavy-armour",
+				"item:shield"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-02",
+			"fighterId": "sister-superior",
+			"name": "Sister Superior Brunhilde",
+			"wargear": [
+				"weapon:sigmarite-warhammer",
+				"weapon:steel-whip",
+				"item:heavy-armour",
+				"item:shield"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-03",
+			"fighterId": "augur",
+			"name": "Augur Clementia",
+			"wargear": [
+				"weapon:sigmarite-warhammer",
+				"weapon:steel-whip",
+				"item:heavy-armour",
+				"item:shield"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-04",
+			"fighterId": "augur",
+			"name": "Augur Dorothea",
+			"wargear": [
+				"weapon:sigmarite-warhammer",
+				"weapon:steel-whip",
+				"item:heavy-armour",
+				"item:shield"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-05",
+			"fighterId": "sister",
+			"name": "Sister Elsbeth",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-06",
+			"fighterId": "sister",
+			"name": "Sister Friederike",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-07",
+			"fighterId": "sister",
+			"name": "Sister Gertrud",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-08",
+			"fighterId": "sister",
+			"name": "Sister Hildegard",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-09",
+			"fighterId": "sister",
+			"name": "Sister Irmgard",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-10",
+			"fighterId": "novice",
+			"name": "Novice Johanna",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-11",
+			"fighterId": "novice",
+			"name": "Novice Katharina",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-12",
+			"fighterId": "novice",
+			"name": "Novice Lieselotte",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-13",
+			"fighterId": "novice",
+			"name": "Novice Mechthild",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		},
+		{
+			"instanceId": "max-14",
+			"fighterId": "novice",
+			"name": "Novice Notburga",
+			"wargear": [
+				"weapon:great-weapon",
+				"weapon:sling",
+				"item:light-armour",
+				"weapon:dagger"
+			],
+			"picks": []
+		}
+	],
+	"notes": "- TODO: Collect income, promote two Novices, spend renown on the Matriarch\n- Battle history: 260901 Win – Possessed, 260908 Loss – Undead, 260915 Draw – Witch Hunters\n- The Augurs still owe the Temple of Sigmar a tithe of 120 gold crowns"
+}
