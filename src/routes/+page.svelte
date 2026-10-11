@@ -113,27 +113,62 @@
 									<span class="block" style="color: var(--ui-warn-text)">not valid yet</span>
 								{/if}
 							</a>
-							<!-- Stacked, so the summary keeps the width it has beside one action. The
-							     column reaches to the row's edges, so the rule on its left runs from top
-							     to bottom and the actions share its height evenly. -->
-							<div class="-my-3 -mr-3 flex shrink-0 flex-col self-stretch overflow-hidden rounded-r-md border-l border-zinc-700">
+							<!-- Two by two and as icons, so the summary keeps most of the row's width.
+							     The grid reaches to the row's edges, so its rules run from edge to edge
+							     and the actions share the row's height evenly. Delete sits in the corner
+							     furthest from Edit. A disabled action fades its icon, not its rules. -->
+							<div class="-my-3 -mr-3 grid shrink-0 grid-cols-2 grid-rows-2 self-stretch overflow-hidden rounded-r-md border-l border-zinc-700">
 								<a
 									href={resolve('/build') + `?id=${w.id}&step=finish`}
-									class="flex min-h-11 flex-1 items-center justify-center border-b border-zinc-700 px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
-									aria-label="Edit {s.title}">Edit</a
+									class="flex min-h-11 w-11 items-center justify-center border-r border-b border-zinc-700 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+									aria-label="Edit {s.title}"
+									title="Edit"
 								>
+									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M10.5 2.5l3 3L6 13H3v-3z" />
+										<line x1="9" y1="4" x2="12" y2="7" />
+									</svg>
+								</a>
 								<button
 									type="button"
-									class="flex min-h-11 flex-1 items-center justify-center px-4 text-zinc-400 disabled:opacity-40"
+									class="flex min-h-11 w-11 items-center justify-center border-b border-zinc-700 text-zinc-400 disabled:*:opacity-40"
 									aria-label="Roster PDF of {s.title}"
-									disabled>Roster</button
+									title="Roster PDF"
+									disabled
 								>
+									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<path d="M3.5 1.5h6l3 3v10h-9z" />
+										<path d="M9.5 1.5v3h3" />
+										<line x1="6" y1="8.5" x2="10" y2="8.5" />
+										<line x1="6" y1="11.5" x2="10" y2="11.5" />
+									</svg>
+								</button>
 								<button
 									type="button"
-									class="flex min-h-11 flex-1 items-center justify-center border-t border-zinc-700 px-4 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
-									aria-label="Delete {s.title}"
-									onclick={(event) => ask(w.id, event.currentTarget)}>Delete</button
+									class="flex min-h-11 w-11 items-center justify-center border-r border-zinc-700 text-zinc-400 disabled:*:opacity-40"
+									aria-label="Export {s.title} as JSON"
+									title="Export as JSON"
+									disabled
 								>
+									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<line x1="8" y1="2" x2="8" y2="10" />
+										<polyline points="4.5 6.5 8 10 11.5 6.5" />
+										<path d="M2.5 10.5v3h11v-3" />
+									</svg>
+								</button>
+								<button
+									type="button"
+									class="flex min-h-11 w-11 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+									aria-label="Delete {s.title}"
+									title="Delete"
+									onclick={(event) => ask(w.id, event.currentTarget)}
+								>
+									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+										<line x1="2.5" y1="4" x2="13.5" y2="4" />
+										<path d="M6 4V2.5h4V4" />
+										<path d="M4 4l.8 9.5h6.4L12 4" />
+									</svg>
+								</button>
 							</div>
 						</li>
 					{/each}
