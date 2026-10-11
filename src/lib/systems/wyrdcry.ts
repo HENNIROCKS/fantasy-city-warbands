@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -45,7 +45,8 @@ export const game: GameSystem = {
 			name: 'Dual Wielding',
 			text: 'If a fighter is equipped with two melee weapons of the same type (for example, two swords), they are considered to be dual wielding. While a fighter is dual wielding, improve the Attack characteristic of the weapon they are using by 1.'
 		}
-	}
+	},
+	carry
 };
 
 interface RawFaction {
@@ -151,6 +152,117 @@ const catalogue = new Map<string, Wargear>([
 	)
 ]);
 
+/*
+ * What a fighter may carry, as the Warband Deck's `build/equipment.ts` has it:
+ * two melee slots, one ranged, a shield in a melee slot, a two-handed weapon in
+ * both, a BRACE pair in one. The same melee weapon may be taken twice – that is
+ * what makes a fighter dual wielding – a ranged one may not, unless it braces,
+ * where the pair is the point.
+ */
+
+const MELEE_SLOTS = 2;
+const RANGED_SLOTS = 1;
+
+const weaponOf = new Map(weapons.map((w) => [`weapon:${w.id}`, w]));
+const itemOf = new Map(items.map((i) => [`item:${i.id}`, i]));
+
+/** What the shared form leaves out and the carrying rules read, by faction and fighter id. */
+const carrying = new Map<string, { raw: RawFighter; equipment: Allowance[] }>();
+
+/** Why a fighter takes nothing at all, whatever it is, or undefined where it takes some. */
+function takesNothing(raw: RawFighter): string | undefined {
+	if (raw.keywords.includes('beast')) return 'A BEAST fights with what is on its profile and cannot be given equipment';
+	if (raw.keywords.includes('thrall')) return 'A THRALL cannot be equipped with any weapons, armour or equipment';
+	if (raw.abilities.includes('ascended')) return 'An Ascended fighter refuses to be equipped with any weapons, armour or equipment';
+	return undefined;
+}
+
+function slotsFree(held: string[]): { melee: number; ranged: number } {
+	let melee = 0;
+	let ranged = 0;
+	const braced = new Set<string>();
+	for (const id of held) {
+		/* A shield needs a hand, so it is counted with the weapons rather than the armour. */
+		if (itemOf.get(id)?.slot === 'hand') {
+			melee += 1;
+			continue;
+		}
+		const weapon = weaponOf.get(id);
+		if (!weapon) continue;
+		if (weapon.type === 'melee') melee += weapon.rules.includes('two-handed') ? 2 : 1;
+		else if (weapon.rules.includes('brace')) {
+			/* Both copies of a braced pair share the one slot. */
+			if (!braced.has(id)) ranged += 1;
+			braced.add(id);
+		} else ranged += 1;
+	}
+	return { melee: MELEE_SLOTS - melee, ranged: RANGED_SLOTS - ranged };
+}
+
+/**
+ * Why the fighter cannot take `id` beside what it already holds, or null when
+ * it can. The message is the Warband Deck's sentence; the short one fits the
+ * disabled button.
+ */
+function refuse(raw: RawFighter, equipment: Allowance[], held: string[], id: string): { message: string; short: string } | null {
+	const same = (message: string) => ({ message, short: message });
+
+	const allowance = equipment.find((e) => e.id === id);
+	if (allowance?.restrict && !raw.keywords.includes(allowance.restrict)) return same(`${allowance.restrict.toUpperCase()} only`);
+	if (allowance && allowance.allow !== 'all' && !raw.keywords.includes(allowance.allow)) {
+		return same(`${allowance.allow.toUpperCase()} only`);
+	}
+
+	const weapon = weaponOf.get(id);
+	const item = itemOf.get(id);
+	const free = slotsFree(held);
+	const carried = held.filter((entry) => entry === id).length;
+
+	if (item?.type === 'armour') {
+		if (raw.keywords.includes('wizard')) return { message: 'A WIZARD cannot wear armour', short: 'Not for a WIZARD' };
+		if (raw.abilities.includes('penitent')) return { message: 'A PENITENT fighter cannot wear armour', short: 'Not for a PENITENT' };
+		if (raw.abilities.includes('armour-of-faith')) {
+			return { message: 'A fighter with Armour of Faith cannot wear armour', short: 'Armour of Faith' };
+		}
+		if (carried) return same('Already worn');
+		/* One piece of body armour at a time – light or heavy, not both. */
+		if (item.slot === 'body' && held.some((worn) => itemOf.get(worn)?.slot === 'body')) return same('Already wearing armour');
+		if (item.slot === 'hand' && free.melee < 1) return same('No hand free');
+		return null;
+	}
+	if (!weapon) return null;
+
+	if (weapon.type === 'ranged' && raw.abilities.includes('penitent')) {
+		return { message: 'A PENITENT fighter cannot be equipped with ranged weapons', short: 'Not for a PENITENT' };
+	}
+	if (weapon.type === 'melee') {
+		const cost = weapon.rules.includes('two-handed') ? 2 : 1;
+		if (cost === 2 && carried) return same('A two handed weapon fills both hands');
+		if (free.melee < cost) return same(cost === 2 ? 'Needs both hands' : 'No hand free');
+		return null;
+	}
+	if (weapon.rules.includes('brace')) {
+		if (carried >= 2) return same('A braced pair is two');
+		/* The second of a pair rides along in the slot the first one took. */
+		if (carried === 1) return null;
+		return free.ranged < 1 ? same('No ranged slot free') : null;
+	}
+	if (carried) return same('Already carried');
+	return free.ranged < 1 ? same('No ranged slot free') : null;
+}
+
+/* Fixed gear fills its hands like anything else – an Elf Ranger holds a bow
+   and a sword before a single coin is spent. */
+function carry(fighter: Fighter, faction: Faction, wargear: string[]) {
+	const found = carrying.get(`${faction.id}/${fighter.id}`);
+	if (!found) return [];
+	const name = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+	return wargear.flatMap((id, i) => {
+		const refused = refuse(found.raw, found.equipment, [...fighter.gear, ...wargear.slice(0, i)], id);
+		return refused ? [{ message: `${name(id)}: ${refused.message}.`, short: refused.short }] : [];
+	});
+}
+
 /** The Deck's `choose` in the shared form, or undefined where it is one this app does not offer. */
 function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, RawAbility>): FighterChoice | undefined {
 	if (!raw) return undefined;
@@ -197,6 +309,7 @@ function build(
 	abilities: RawAbility[]
 ): Faction {
 	const ability = new Map(abilities.map((a) => [a.id, a]));
+	for (const raw of fighters) carrying.set(`${meta.id}/${raw.id}`, { raw, equipment });
 
 	return {
 		id: meta.id,
@@ -221,10 +334,10 @@ function build(
 				const a = ability.get(id);
 				return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
 			}),
-			wargear: equipment
-				.filter((e) => e.allow === 'all' || f.keywords.includes(e.allow))
-				.filter((e) => !e.restrict || f.keywords.includes(e.restrict))
-				.map((e) => e.id),
+			/* Offered whether the fighter may take it or not: a player looking for a
+			   Handgun needs to read that it is for HEROes, not to find it missing. */
+			wargear: takesNothing(f) ? [] : equipment.map((e) => e.id),
+			unequipped: takesNothing(f),
 			gear: f.gear,
 			choice: choiceOf(f.choose, rules, ability)
 		})),

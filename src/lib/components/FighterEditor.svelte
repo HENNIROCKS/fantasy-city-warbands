@@ -258,6 +258,8 @@
 						{/each}
 					</div>
 				{/if}
+			{:else if fighter.unequipped}
+				<p class="text-zinc-400 {fighter.gear.length ? 'mt-2' : ''}">{fighter.unequipped}.</p>
 			{/if}
 		</div>
 	{/if}

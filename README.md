@@ -22,6 +22,9 @@ anything about a campaign: no experience, no injuries, no income.
   its choice and its rules
 - Recruit fighters and give them wargear from what their faction allows them,
   with the fighter's profile in the game's own notation – `5"`, `3+`, `–`
+- Keep a Wyrdcry fighter within what it may carry: two hands and one ranged
+  slot, one body armour, no armour for a WIZARD, nothing at all for a BEAST.
+  What it may not take stays in the list, disabled with the reason
 - Make the choice a fighter brings on recruitment: an Eshin Sorcerer's spell, a
   Mercenary Champion's Fight or Shoot, the Mutation Table row rolled at the
   table. A raised characteristic is counted into the profile
@@ -51,12 +54,13 @@ anything about a campaign: no experience, no injuries, no income.
 | Mordheim | – | planned |
 
 What the app reads from the rules so far: profiles, costs, limits, the
-wargear each fighter may take, the warband's choice and its effect on the
-roster, and the choice a Wyrdcry fighter makes on recruitment. Wyrdcry's
-abilities and faction rules are shown as text. Not there yet: State Pride's
-effects on the profiles, the special rules of Black Death City's fighters, the
-skills and spells its fighters pick on recruitment, and the cost of a
-Misbegotten's bloodline mutation.
+wargear each fighter may take and, for Wyrdcry, how much of it at once, the
+warband's choice and its effect on the roster, and the choice a Wyrdcry
+fighter makes on recruitment. Wyrdcry's abilities and faction rules are shown
+as text. Not there yet: State Pride's effects on the profiles, what a Black
+Death City fighter may carry, the special rules of its fighters, the skills
+and spells they pick on recruitment, and the cost of a Misbegotten's
+bloodline mutation.
 
 ## Roadmap
 

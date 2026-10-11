@@ -75,6 +75,13 @@ export interface GameSystem {
 	 * Wyrdcry does: the weapon column it adds to, and the rule that says so.
 	 */
 	dualWielding?: { stat: string; rule: Rule };
+	/**
+	 * What keeps a fighter from carrying its wargear, one entry per piece it may
+	 * not have, in the order it carries them. Each piece is held against those
+	 * before it and the fighter's own `gear`, so the last one taken is the one
+	 * refused. Without it, a fighter carries whatever it is offered.
+	 */
+	carry?: (fighter: Fighter, faction: Faction, wargear: string[]) => { message: string; short: string }[];
 }
 
 /** A rule a game gives every fighter with a keyword, such as Wyrdcry's Rush. */
@@ -181,8 +188,13 @@ export interface Fighter {
 	profile: Record<string, number | string | null>;
 	/** Shown as text, not applied. */
 	rules: Rule[];
-	/** The wargear ids this fighter may be given, already resolved from the game's own allowance rules. */
+	/**
+	 * The wargear ids offered to this fighter. Whether it may take one, and
+	 * beside what, is the game's `carry`.
+	 */
 	wargear: string[];
+	/** Why the fighter takes no wargear at all, said in place of the offer. */
+	unequipped?: string;
 	/**
 	 * Wargear ids the fighter always carries, such as a beast's bite. Covered by
 	 * the fighter's cost, and not to be removed.
@@ -249,7 +261,8 @@ export interface Issue {
 		| 'choice'
 		| 'fighter-choice'
 		| 'unknown-fighter'
-		| 'wargear-not-allowed';
+		| 'wargear-not-allowed'
+		| 'wargear-carry';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */
 	kind: 'missing' | 'excess';
 	message: string;

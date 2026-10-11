@@ -98,6 +98,10 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			}
 		}
 
+		for (const refused of game.carry?.(fighter, faction, instance.wargear) ?? []) {
+			issues.push({ code: 'wargear-carry', kind: 'excess', ...refused, instanceId: instance.instanceId });
+		}
+
 		const choice = fighter.choice;
 		if (choice) {
 			const picked = instance.picks ?? [];

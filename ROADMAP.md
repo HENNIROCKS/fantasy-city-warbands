@@ -21,7 +21,7 @@
 - [ ] ⚙️ Move storage to IndexedDB, carrying over what is in localStorage
 - [ ] 📄 Import and export a warband as a file, the Warband Deck's and the Warband Builder's JSON included
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
-- [ ] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
+- [x] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🃏 Derived values on the card, such as armour from equipment, explained when tapped

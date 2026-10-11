@@ -54,7 +54,7 @@
 		{
 			question: 'Why is a button disabled?',
 			answer:
-				'Because pressing it would take the warband too far: over its budget, past the limit of a fighter or a group, or against its Origin. The button says which. What the warband still lacks – a leader, enough henchmen, an open choice – is never blocked; it is listed as still to do.'
+				'Because pressing it would take the warband too far: over its budget, past the limit of a fighter or a group, beyond what a fighter may carry, or against its Origin. The button says which. What the warband still lacks – a leader, enough henchmen, an open choice – is never blocked; it is listed as still to do.'
 		},
 		{
 			question: 'Can I change a warband later?',
@@ -64,7 +64,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. How much a fighter may carry at once, State Pride’s effects on the profiles, the skills and spells Black Death City’s fighters pick on recruitment, and anything that happens in a campaign are still to come.'
+				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a Wyrdcry fighter may carry at once, what an Origin changes about the roster, and the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment. How much a Black Death City fighter may carry, State Pride’s effects on the profiles, the skills and spells Black Death City’s fighters pick on recruitment, and anything that happens in a campaign are still to come.'
 		},
 		{
 			question: 'Which rules does the app follow?',
