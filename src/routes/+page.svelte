@@ -20,24 +20,61 @@
 	/* The Delete it was asked with, where the focus goes back to when it is not. */
 	let opener: HTMLElement | null = null;
 
+	/* What the export asked for from the sheet came to, said inside it. */
+	let sheetNote = $state<{ text: string; error: boolean } | null>(null);
+	/* While the share sheet is open, so nothing overtakes the export. */
+	let exporting = $state(false);
+
 	function ask(id: string, from: HTMLElement) {
 		opener = from;
 		condemned = id;
+		sheetNote = null;
+		/* One layer at a time: a message from before would lie on the sheet. */
+		notify(null);
 	}
 
 	/* The page takes focus again only once it is no longer inert. */
 	async function cancel() {
+		if (exporting) return;
 		condemned = null;
 		await tick();
 		opener?.focus();
 	}
 
 	/* The warband lives on this device only, so this loses it for good. */
-	function confirmDelete() {
-		if (!condemned) return;
-		deleteWarband(condemned);
+	function remove(id: string, exported: boolean) {
+		const name = summary(id).title;
+		deleteWarband(id);
 		condemned = null;
 		warbands = loadWarbands();
+		notify(exported ? `${name} exported and deleted.` : `${name} deleted.`);
+	}
+
+	/*
+	 * Deletes only once the share sheet has taken the file. A download is not
+	 * proof of that – in the installed iOS app it only opens a preview – so the
+	 * delete is then left to a second, deliberate tap.
+	 */
+	async function exportAndDelete() {
+		const id = condemned;
+		const w = warbands.find((x) => x.id === id);
+		if (!id || !w || exporting) return;
+		exporting = true;
+		sheetNote = null;
+		let result: ShareResult;
+		try {
+			result = await shareFile(warbandFile(w));
+		} catch (error) {
+			sheetNote = { text: `The export failed, nothing was deleted: ${error instanceof Error ? error.message : error}`, error: true };
+			return;
+		} finally {
+			exporting = false;
+		}
+		/* The sheet may have been closed meanwhile, or opened for another warband. */
+		if (condemned !== id) return;
+		if (result === 'shared') remove(id, true);
+		else if (result === 'downloaded') sheetNote = { text: 'Downloaded as JSON. Check that the file is there, then delete.', error: false };
+		else sheetNote = { text: 'Not exported – nothing deleted.', error: false };
 	}
 
 	/* Into the sheet as it opens, on the answer that keeps the warband. */
@@ -56,16 +93,20 @@
 		if (text && !error) messageTimer = setTimeout(() => (message = null), 4000);
 	}
 
-	function report(result: ShareResult) {
-		if (result === 'downloaded') notify('Downloaded as a file.');
-		else if (result === 'shared') notify('Shared.');
+	/* The share sheet is its own answer; what is said afterwards names the file it took. */
+	function report(result: ShareResult, kind: 'JSON' | 'PDF') {
+		if (result === 'downloaded') notify(`Downloaded as ${kind}.`);
+		else if (result === 'shared') notify(`Exported as ${kind}.`);
 		else notify(null);
 	}
 
-	async function exportWarband(w: Warband) {
-		const name = safeName(summary(w.id).title);
+	function warbandFile(w: Warband): File {
 		const payload = JSON.stringify(toFile(w), null, 2);
-		report(await shareFile(new File([payload], fileName(name), { type: 'application/json' })));
+		return new File([payload], fileName(safeName(summary(w.id).title)), { type: 'application/json' });
+	}
+
+	async function exportWarband(w: Warband) {
+		report(await shareFile(warbandFile(w)), 'JSON');
 	}
 
 	/* Building takes a moment on a phone, loading pdfmake and the fonts on the
@@ -79,7 +120,7 @@
 		buildingRoster = true;
 		notify('Building the roster…');
 		try {
-			report(await shareFile(await rosterPdf(toRoster(w, f, s.game))));
+			report(await shareFile(await rosterPdf(toRoster(w, f, s.game))), 'PDF');
 		} catch (error) {
 			notify(`The roster could not be built: ${error instanceof Error ? error.message : error}`, true);
 		} finally {
@@ -244,29 +285,63 @@
 				<strong>This cannot be undone.</strong> The warband is stored on this device only. Export it
 				first to keep a copy; the battle it is in is not part of the export.
 			</p>
-			<div class="sheet-actions">
-				<button type="button" class="btn" onclick={cancel} use:focusOnMount>Cancel</button>
-				<button type="button" class="btn" onclick={() => exportWarband(warbands.find((w) => w.id === condemned)!)}>Export</button>
-				<button type="button" class="btn danger" onclick={confirmDelete}>Delete</button>
+			{#if sheetNote}
+				<p class="sheet-note" class:error={sheetNote.error}>{sheetNote.text}</p>
+			{/if}
+			<!-- One above the other at full width: "Export and delete" does not fit
+			     a third of a phone. The way out stays at the foot. -->
+			<div class="sheet-actions stacked">
+				<button type="button" class="btn" disabled={exporting} onclick={exportAndDelete}>Export and delete</button>
+				<button type="button" class="btn danger" disabled={exporting} onclick={() => condemned && remove(condemned, false)}>Delete</button>
+				<button type="button" class="btn" disabled={exporting} onclick={cancel} use:focusOnMount>Cancel</button>
 			</div>
 		</div>
 	</div>
 {/if}
 
-<!-- At the head of the screen and above the sheet, so an export made from it
-     reports there too without covering its answers. Tapped, it goes. -->
-{#if message}
-	<div class="pointer-events-none fixed inset-x-0 top-0 z-30 flex justify-center p-3" style="padding-top: calc(12px + env(safe-area-inset-top))">
-		<button
-			type="button"
-			class="pointer-events-auto max-w-md rounded-md border border-zinc-700 bg-zinc-800 px-4 py-3 text-left text-sm text-zinc-200 shadow-lg"
-			style={message.error ? 'border-color: var(--ui-danger); color: var(--ui-danger-text)' : ''}
-			onclick={() => notify(null)}
-		>
+<!-- At the foot, in the look of the sheet above, but without its backdrop: the
+     page stays usable. Never beside an open sheet – that one speaks for itself.
+     Tapped, it goes. -->
+{#if message && !condemned}
+	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center p-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom))">
+		<button type="button" class="bottom-sheet message pointer-events-auto" class:error={message.error} onclick={() => notify(null)}>
 			{message.text}
 		</button>
 	</div>
 {/if}
 
-<!-- Outside the toast's block, so it is in the page before anything is said. -->
-<p class="sr-only" role="status">{message?.text ?? ''}</p>
+<!-- Outside the blocks above, so it is in the page before anything is said. -->
+<p class="sr-only" role="status">{(condemned ? sheetNote?.text : message?.text) ?? ''}</p>
+
+<style>
+	.sheet-actions.stacked {
+		flex-direction: column;
+	}
+
+	.sheet-actions .btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.sheet-note {
+		margin: 12px 0 0;
+		font-size: 15px;
+		line-height: 1.45;
+		color: var(--ui-text-muted);
+	}
+
+	.sheet-note.error,
+	.message.error {
+		color: var(--ui-danger-text);
+	}
+
+	.message {
+		text-align: left;
+		font-size: 15px;
+		line-height: 1.45;
+	}
+
+	.message.error {
+		border-color: var(--ui-danger);
+	}
+</style>
