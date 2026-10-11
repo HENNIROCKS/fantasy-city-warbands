@@ -25,6 +25,16 @@
 	);
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
+	/* The deck's own colour stands in for the card green on the root, where the
+	   explanation overlay reads it too. Left again, the green. */
+	$effect(() => {
+		const colour = warband?.colour;
+		const root = document.documentElement.style;
+		if (colour) root.setProperty('--card-green', colour);
+		else root.removeProperty('--card-green');
+		return () => root.removeProperty('--card-green');
+	});
+
 	/*
 	 * Reached from within the app – the warband list or the builder's last step –
 	 * back returns to where the cards were opened. Opened directly, it goes to

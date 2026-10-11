@@ -5,7 +5,7 @@
 		value?: string;
 		/** Null where the step cannot be reached from here. */
 		href: string | null;
-		/** Something in this step still keeps the warband from being legal. */
+		/** Something in this step still keeps the warband from being valid. */
 		incomplete?: boolean;
 	}
 

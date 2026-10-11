@@ -51,7 +51,7 @@
 	}
 </script>
 
-<article class="space-y-3 rounded-md border border-zinc-700 bg-zinc-800 p-3">
+<article id="fighter-{instance.instanceId}" class="scroll-mt-20 space-y-3 rounded-md border border-zinc-700 bg-zinc-800 p-3">
 	<!-- The name takes the full width, so the placeholder fits a long fighter type. -->
 	<div>
 		<input

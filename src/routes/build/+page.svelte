@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
+	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
 	import FactionInfo from '$lib/components/FactionInfo.svelte';
 	import FighterEditor from '$lib/components/FighterEditor.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -47,6 +48,9 @@
 	$effect(() => {
 		if (warband) saveWarband($state.snapshot(warband));
 	});
+
+	/* The deck's colour, null for the card green. */
+	const colour = $derived(warband?.colour ?? null);
 
 	const step = $derived.by((): StepId => {
 		const s = page.url.searchParams.get('step') as StepId | null;
@@ -390,7 +394,7 @@
 			<p class="field-label">
 				Recruit
 				<span class="font-normal normal-case text-zinc-400"
-					>· {Math.max(0, system.game.budget - cost)}&nbsp;{system.game.currency} left</span
+					>· {Math.max(0, system.game.budget - cost)}&nbsp;{system.game.currencyName ?? system.game.currency} left</span
 				>
 			</p>
 			<!-- Under the same headings as the faction's preview, two to a row at any width. -->
@@ -426,7 +430,7 @@
 		</section>
 	{:else if step === 'finish'}
 		<section>
-			<label class="field-label" for="warband-name">Name</label>
+			<label class="field-label" for="warband-name">Name of your warband</label>
 			<input
 				id="warband-name"
 				class="field-input"
@@ -440,6 +444,42 @@
 		</section>
 
 		<section>
+			<p class="field-label">Colour of the cards</p>
+			<div class="swatches" role="group" aria-label="Colour of the cards">
+				{#each PALETTE as entry (entry.value)}
+					<button
+						type="button"
+						class="swatch"
+						style:--swatch={entry.value}
+						aria-label={entry.name}
+						aria-pressed={(colour ?? DEFAULT_COLOUR) === entry.value}
+						onclick={() => {
+							if (warband) warband.colour = entry.value === DEFAULT_COLOUR ? null : entry.value;
+						}}
+					></button>
+				{/each}
+				<!-- Any colour beyond the palette, through the browser's own picker. -->
+				<label
+					class="swatch custom"
+					class:on={colour !== null && !PALETTE.some((entry) => entry.value === colour)}
+					style:--swatch={colour}
+				>
+					<input
+						type="color"
+						aria-label="Any colour"
+						value={colour ?? DEFAULT_COLOUR}
+						oninput={(event) => {
+							if (warband) warband.colour = readColour(event.currentTarget.value);
+						}}
+					/>
+				</label>
+			</div>
+			{#if colour && !readable(colour)}
+				<p class="mt-2" style="color: var(--ui-warn-text)">White type on this colour is hard to read on the cards.</p>
+			{/if}
+		</section>
+
+		<section>
 			<p class="field-label">Check</p>
 			<div
 				class="rounded-md border p-3"
@@ -448,7 +488,7 @@
 					: 'background: var(--ui-sel-bg); border-color: var(--ui-sel-border); color: var(--ui-sel-text)'}
 			>
 				{#if issues.length === 0}
-					This warband is legal.
+					This warband is valid.
 				{:else}
 					<p class="mb-1 font-semibold">{excess.length ? 'Problems' : 'Still to do'}</p>
 					<ul class="list-disc space-y-1 pl-5">
@@ -477,15 +517,22 @@
 					</div>
 				{/each}
 			</dl>
-			<ul class="rounded-md border border-zinc-700 bg-zinc-800">
+			<ul class="overflow-hidden rounded-md border border-zinc-700 bg-zinc-800">
 				{#each warband.fighters as instance (instance.instanceId)}
 					{@const fighter = faction.fighters.find((f) => f.id === instance.fighterId)}
-					<li class="flex gap-3 border-t border-zinc-700 p-3 first:border-t-0">
-						<div class="min-w-0 flex-1">
-							<span class="block font-semibold text-zinc-200">{instance.name || fighter?.name}</span>
-							<span class="block text-zinc-400">{overviewLine(instance)}</span>
-						</div>
-						<span class="text-zinc-300">{fighterCost(instance, faction)}</span>
+					<!-- Each row leads back to the fighter's own editor in the fighters step. -->
+					<li class="border-t border-zinc-700 first:border-t-0">
+						<a
+							href={url({ id: warband.id, step: 'fighters' }) + `#fighter-${instance.instanceId}`}
+							class="flex gap-3 p-3 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
+						>
+							<div class="min-w-0 flex-1">
+								<span class="block font-semibold text-zinc-200">{instance.name || fighter?.name}</span>
+								<span class="block text-zinc-400">{overviewLine(instance)}</span>
+							</div>
+							<span class="whitespace-nowrap text-zinc-300">{fighterCost(instance, faction)}&nbsp;{system.game.currency}</span>
+							<span aria-hidden="true" class="text-zinc-400">›</span>
+						</a>
 					</li>
 				{:else}
 					<li class="p-3 text-zinc-400">No fighters.</li>
@@ -545,7 +592,7 @@
 							<span aria-hidden="true">{showIssues ? '▾' : '▸'}</span>
 						</span>
 					{:else}
-						<span class="block" style="color: var(--ui-sel-text)">legal</span>
+						<span class="block" style="color: var(--ui-sel-text)">valid</span>
 					{/if}
 				{/snippet}
 				{#if issues.length}

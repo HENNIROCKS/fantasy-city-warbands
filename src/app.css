@@ -26,6 +26,13 @@
 	--ui-warn-border: rgba(217, 119, 6, 0.4);
 	--ui-warn-text: #fcd34d;
 	--ui-danger-text: #fca5a5;
+	/* The edge of a field or a colour swatch, at least 3:1 off the page and off a surface. */
+	--ui-field-border: #71717a;
+	--ui-surface-2: #3f3f46;
+	--ui-surface-hover: #52525b;
+	--ui-danger: #b91c1c;
+	--ui-danger-bg: rgba(185, 28, 28, 0.18);
+	--ui-backdrop: rgba(0, 0, 0, 0.6);
 }
 
 [data-theme='light'] {
@@ -43,6 +50,11 @@
 	--ui-warn-border: rgba(180, 83, 9, 0.35);
 	--ui-warn-text: #7c3d06;
 	--ui-danger-text: #a3271b;
+	--ui-field-border: #78736c;
+	--ui-surface-2: #c8c0b5;
+	--ui-surface-hover: #b0a89c;
+	--ui-danger-bg: rgba(185, 28, 28, 0.1);
+	--ui-backdrop: rgba(46, 38, 32, 0.45);
 }
 
 /* ── Cards ────────────────────────────────────────────────────────────────── */
@@ -219,6 +231,9 @@
 [data-theme='light'] .bg-\[\#125E3C\].text-white,
 [data-theme='light'] .bg-\[\#16754A\].text-white { color: #ffffff; }
 
+/* Muted text on a picked option lies on the green tint; a step darker holds 4.5:1 there. */
+[data-theme='light'] .choice[aria-pressed='true'] .text-zinc-400 { color: #5a5048; }
+
 /* ── Form elements ────────────────────────────────────────────────────────── */
 
 @layer components {
@@ -244,7 +259,7 @@
 		box-sizing: border-box;
 		appearance: none;
 		background: var(--ui-surface);
-		border: 1px solid var(--ui-border);
+		border: 1px solid var(--ui-field-border);
 		border-radius: 6px;
 		padding: 6px 10px;
 		color: var(--ui-text);
@@ -292,6 +307,163 @@
 	.choice:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
+	}
+
+	/*
+	 * A question raised from the foot of the screen, over the page it belongs
+	 * to, as the Warband Deck asks it: a heading, a line of detail, a notice and
+	 * the answers side by side.
+	 */
+	.sheet-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 20;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		padding: 12px;
+		padding-bottom: calc(12px + env(safe-area-inset-bottom));
+		background: var(--ui-backdrop);
+	}
+
+	.bottom-sheet {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 420px;
+		padding: 16px;
+		color: var(--ui-text);
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 10px;
+	}
+
+	.bottom-sheet h2 {
+		margin: 0;
+		font-size: 19px;
+		font-weight: 600;
+		overflow-wrap: anywhere;
+	}
+
+	.bottom-sheet .count {
+		margin: 3px 0 12px;
+		font-size: 15px;
+		color: var(--ui-text-muted);
+	}
+
+	.sheet-actions {
+		display: flex;
+		gap: 8px;
+		margin-top: 14px;
+	}
+
+	.sheet-actions .btn {
+		flex: 1;
+	}
+
+	/* A message that sits in the page; `danger` tints it for what cannot be undone. */
+	.notice {
+		margin: 0;
+		padding: 10px 12px;
+		font-size: 15px;
+		line-height: 1.45;
+		color: var(--ui-text);
+		background: var(--ui-surface-2);
+		border: 1px solid transparent;
+		border-radius: 6px;
+	}
+
+	.notice.danger {
+		background: var(--ui-danger-bg);
+		border-color: var(--ui-danger);
+	}
+
+	/* Plain, it steps back: cancel. `danger` loses something. At least 44px high. */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		padding: 10px 16px;
+		font-size: 17px;
+		font-weight: 600;
+		line-height: 1.2;
+		color: var(--ui-text);
+		background: var(--ui-surface-2);
+		border: 1px solid transparent;
+		border-radius: 6px;
+		transition: background-color 0.15s;
+	}
+
+	.btn:not(.danger):focus-visible {
+		background: var(--ui-surface-hover);
+	}
+
+	@media (hover: hover) {
+		.btn:not(.danger):hover {
+			background: var(--ui-surface-hover);
+		}
+	}
+
+	.btn.danger {
+		color: #fff;
+		background: var(--ui-danger);
+	}
+
+	.btn:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	/*
+	 * The deck's colour as the Warband Deck picks it: round fields of the
+	 * palette and one for any colour, seven to a row across the full width.
+	 */
+	.swatches {
+		display: grid;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+		gap: 6px;
+	}
+
+	.swatch {
+		position: relative;
+		aspect-ratio: 1;
+		padding: 0;
+		/* Transparent, so the page shows as a gap between the colour and its ring. */
+		border: 2px solid transparent;
+		border-radius: 999px;
+		background: var(--swatch) padding-box;
+		box-shadow: 0 0 0 1px var(--ui-field-border);
+		cursor: pointer;
+	}
+
+	.swatch[aria-pressed='true'],
+	.swatch.custom.on {
+		box-shadow: 0 0 0 2px var(--ui-text);
+	}
+
+	.swatch:focus-visible,
+	.swatch.custom:focus-within {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.swatch.custom {
+		overflow: hidden;
+		background: conic-gradient(#c33, #cc3, #3c3, #3cc, #33c, #c3c, #c33) padding-box;
+	}
+
+	.swatch.custom.on {
+		background: var(--swatch) padding-box;
+	}
+
+	.swatch.custom input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		opacity: 0;
+		cursor: pointer;
 	}
 
 	/*

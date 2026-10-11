@@ -196,9 +196,11 @@ export interface Warband {
 	/** Choice id to the option ids picked under it. */
 	picks: Record<string, string[]>;
 	fighters: FighterInstance[];
+	/** The deck's own colour in place of the card green, `#rrggbb`. Null or missing for the green. */
+	colour?: string | null;
 }
 
-/** Something that keeps a warband from being legal. */
+/** Something that keeps a warband from being valid. */
 export interface Issue {
 	code:
 		| 'unknown-faction'
