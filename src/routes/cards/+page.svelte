@@ -106,7 +106,7 @@
 			No fighters yet. <a class="underline" href={resolve('/build') + `?id=${warband.id}&step=fighters`}>Recruit some.</a>
 		</p>
 	{:else}
-		<main class="flex min-h-0 flex-1 flex-col pt-2.5" style="padding-bottom: env(safe-area-inset-bottom)">
+		<main class="flex min-h-0 flex-1 flex-col pt-2.5">
 			<Deck
 				{cards}
 				columns={system.game.weaponStats.map((s) => s.label)}

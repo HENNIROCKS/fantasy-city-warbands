@@ -228,6 +228,7 @@
 [data-theme='light'] .hover\:bg-zinc-800:hover { background-color: #ede8e2; }
 [data-theme='light'] .hover\:bg-zinc-700:hover { background-color: #c8c0b5; }
 [data-theme='light'] .hover\:border-zinc-500:hover { border-color: #8a7e72; }
+[data-theme='light'] .enabled\:hover\:bg-zinc-700:enabled:hover { background-color: #c8c0b5; }
 
 /* Keyboard focus gets the same feedback as the pointer, in both themes. */
 [data-theme='light'] .focus-visible\:text-white:focus-visible { color: #1c1810; }

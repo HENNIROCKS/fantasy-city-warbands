@@ -30,12 +30,15 @@
 		onsound?: () => void;
 	} = $props();
 
-	/* What is left of Health, which is what the stepper counts. */
+	/* What is left of Health, which is what the stepper counts. A fighter whose
+	   Health dropped in the builder can stand at none without being out; the next
+	   damage point puts it out, so only being out holds the stepper back. */
 	const left = $derived(fighter ? Math.max(0, health - fighter.damage) : 0);
 	const unknown = $derived(health <= 0);
 
 	/* Ending the battle drops every wound, so it asks once more before it does.
-	   The question goes away again when it is not answered. */
+	   The question goes away again when it is not answered, or when a fighter's
+	   card comes up in between. */
 	let confirming = $state(false);
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -50,16 +53,23 @@
 		timer = setTimeout(() => (confirming = false), 4000);
 	}
 
+	$effect(() => {
+		if (fighter) {
+			clearTimeout(timer);
+			confirming = false;
+		}
+	});
+
 	$effect(() => () => clearTimeout(timer));
 </script>
 
-<div class="border-t border-zinc-800 bg-zinc-900">
+<div class="border-t border-zinc-800 bg-zinc-900" style="padding-bottom: env(safe-area-inset-bottom)">
 	<div class="bar">
 		{#if fighter}
 			<div class="wounds">
 				<button
-					class="step border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-					disabled={unknown || left === 0}
+					class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
+					disabled={unknown || fighter.out}
 					aria-label="Allocate a damage point"
 					onclick={() => onwound?.(1)}
 				>
@@ -73,7 +83,7 @@
 					{/if}
 				</span>
 				<button
-					class="step border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+					class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
 					disabled={unknown || fighter.damage === 0}
 					aria-label="Take back a damage point"
 					onclick={() => onwound?.(-1)}
@@ -85,7 +95,7 @@
 			<p class="summary text-zinc-400">{running ? `${out} out of action` : 'No battle'}</p>
 			<div class="actions">
 				<button
-					class="action border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+					class="action border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 focus-visible:bg-zinc-700"
 					aria-pressed={sound}
 					aria-label="Sound when a fighter goes out of action"
 					onclick={() => onsound?.()}
@@ -98,7 +108,7 @@
 				</button>
 				{#if running}
 					<button
-						class="action border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+						class="action border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 focus-visible:bg-zinc-700"
 						class:confirming
 						onclick={end}
 					>
