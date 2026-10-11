@@ -4,6 +4,11 @@ Eine SvelteKit-App, mit der man eine Bande für ein Skirmish-Spiel in einer
 Fantasy-Stadt baut und umbaut: Wyrdcry und Black Death City, Mordheim geplant.
 Was die App kann und wie sie deployt wird, steht in der `README.md`.
 
+Sie löst das Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`) auf Dauer
+ab: Wyrdcry soll hier den Stand des Decks erreichen, und die App wird so
+gebaut, dass sie alle Spiele trägt. Was dem Deck gegenüber noch fehlt, steht in
+der `ROADMAP.md`. Beim Übertragen einer Funktion zuerst den Code des Decks lesen.
+
 Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 `ROADMAP.md`: eine Zeile je Punkt, keine Unterpunkte, keine Begründungen, keine
 Daten. Architektur, Entscheidungen und offene Punkte im Vault unter
@@ -21,6 +26,9 @@ Daten. Architektur, Entscheidungen und offene Punkte im Vault unter
 **Immer `make`, nie `npm run` direkt.** Herds nvm stellt Node 16 in den PATH,
 SvelteKit und Vite brauchen 20+; das Makefile stellt `/opt/homebrew/bin` voran.
 
+Ein laufender Dev-Server wird nie beendet, auch kein selbst gestarteter; der
+Nutzer prüft womöglich gerade darüber.
+
 Deployt wird bei jedem Push auf `main` über GitHub Actions nach Pages, unter
 `/fantasy-city-warbands/`. Den Pfad setzt `BASE_PATH` nur im Workflow; jeder
 Link zwischen Routen läuft deshalb über `resolve()`, nie über ein hartes `/`.
@@ -34,10 +42,13 @@ Link zwischen Routen läuft deshalb über `resolve()`, nie über ein hartes `/`.
 - `src/lib/rules/<spiel>/factions/<fraktion>/` – die Daten, ein Ordner je
   Fraktion. Ein neuer Ordner wird ohne weiteren Code geladen.
 
-**Wyrdcry** ist unverändert aus dem handgepflegten Bestand des Warband Decks
-kopiert (`~/Sites/wyrdcry-warband-deck/src/lib/rules/`), nur die offiziellen
-Fraktionen. Hier nicht von Hand ändern – sonst ist der Abgleich per `diff` mit
-dem Deck verloren. Eine Korrektur gehört ins Deck und wird neu kopiert.
+**Wyrdcry** wird hier gepflegt. Der Bestand stammt aus dem handgepflegten
+Regelbestand des Warband Decks (`~/Sites/wyrdcry-warband-deck/src/lib/rules/`),
+dessen Daten eingefroren sind; eine Korrektur gehört hierher, nicht ins Deck.
+Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
+`~/Sites/wyrdcry`. Ob sich das Regelwerk bewegt hat, zeigt der Skill
+`wyrdcry-rules-watch`; übertragen wird von Hand. Eine Bravery-Verbesserung ist
+ein negativer Bonus: Bravery ist ein Wurfziel.
 
 **Black Death City** ist von Hand aus dem Playtest v1.01 übertragen
 (`~/Spiele/+ Games Workshop/Mordheim Fanac [1e] - Black Death City Playtest v1.01.pdf`).
