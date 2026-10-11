@@ -12,8 +12,9 @@ the Wyrdcry project, or Sam Pearson and Black Death City.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
-a file and its roster as a PDF, both in a first version. It does not yet import
-one, or know anything about a campaign: no experience, no injuries, no income.
+a file, imports it again and prints its roster as a PDF, all in a first
+version. It does not yet import the Warband Deck's or the Warband Builder's
+files, or know anything about a campaign: no experience, no injuries, no income.
 
 ## What it does
 
@@ -52,6 +53,9 @@ one, or know anything about a campaign: no experience, no injuries, no income.
   on the warband card drops every wound
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
+- Import such a file again, on this device or another: the app says whether it
+  is new, the same, newer or older than what is stored, and asks before an
+  older state overwrites a newer one
 - Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
   warband, a row per fighter with profile, abilities and weapons in the game's
   own columns, then every rule once with the fighters that carry it

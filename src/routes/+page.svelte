@@ -5,8 +5,8 @@
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { toRoster } from '$lib/core/roster';
-	import { deleteWarband, loadWarbands } from '$lib/core/storage';
-	import { fileName, toFile } from '$lib/core/transfer';
+	import { deleteWarband, loadWarbands, saveWarband } from '$lib/core/storage';
+	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
 	import type { Warband } from '$lib/core/types';
 	import { warbandCost, validate } from '$lib/core/validate';
 	import { rosterPdf } from '$lib/pdf/roster';
@@ -128,6 +128,68 @@
 		}
 	}
 
+	/* ── Import ─────────────────────────────────── */
+
+	let fileInput: HTMLInputElement | undefined = $state();
+
+	/* A file read and checked, held until the sheet is answered. */
+	let candidate = $state<{ warband: Warband; verdict: Verdict; title: string; label: string } | null>(null);
+
+	const known: Known = {
+		game: (id) => systems[id]?.game.name ?? null,
+		faction: (game, id) => systems[game]?.factions.find((f) => f.id === id)?.name ?? null
+	};
+
+	async function onPick(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0];
+		/* Reset, otherwise the same file does not fire a change event twice. */
+		input.value = '';
+		if (!file) return;
+
+		let text: string;
+		try {
+			text = await file.text();
+		} catch {
+			notify('That file could not be read.', true);
+			return;
+		}
+		const result = readWarbandFile(text, known);
+		if (!result.ok) {
+			notify(result.message, true);
+			return;
+		}
+		const w = result.warband;
+		const s = systems[w.game];
+		const f = s.factions.find((x) => x.id === w.factionId)!;
+		notify(null);
+		candidate = {
+			warband: w,
+			verdict: judge(w, warbands.find((x) => x.id === w.id) ?? null),
+			title: w.name.trim() || f.name,
+			label: `${s.game.name} • ${f.name}`
+		};
+	}
+
+	/* The file's state as it is, its date included: it is not a new change. A
+	   battle running on this device stays, as the Warband Deck keeps it. */
+	function confirmImport() {
+		if (!candidate) return;
+		const title = candidate.title;
+		saveWarband($state.snapshot(candidate.warband) as Warband, false);
+		candidate = null;
+		warbands = loadWarbands();
+		notify(`${title} imported.`);
+	}
+
+	/* Spelled out rather than left to toLocaleString, whose output differs between engines. */
+	const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	function when(iso: string): string {
+		const d = new Date(iso);
+		const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+		return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}, ${time}`;
+	}
+
 	function summary(id: string) {
 		const w = warbands.find((x) => x.id === id)!;
 		const s = systems[w.game];
@@ -152,7 +214,7 @@
 </svelte:head>
 
 <!-- Out of reach while the sheet asks, so the keyboard and a screen reader stay in it. -->
-<div inert={condemned !== null}>
+<div inert={condemned !== null || candidate !== null}>
 	<PageHeader title={APP_NAME} badge={STAGE} />
 
 	<main class="mx-auto max-w-2xl space-y-6 p-5 text-sm">
@@ -165,11 +227,12 @@
 			</a>
 			<button
 				type="button"
-				class="flex cursor-not-allowed items-center justify-center rounded border border-zinc-700 bg-zinc-800 px-8 py-4 text-center text-lg font-semibold text-zinc-200 opacity-40"
-				disabled
+				class="flex items-center justify-center rounded border border-zinc-700 bg-zinc-800 px-8 py-4 text-center text-lg font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
+				onclick={() => fileInput?.click()}
 			>
 				Import warband
 			</button>
+			<input bind:this={fileInput} type="file" accept="application/json,.json" class="hidden" onchange={onPick} />
 		</div>
 
 		<section>
@@ -271,7 +334,9 @@
 
 <svelte:window
 	onkeydown={(event) => {
-		if (event.key === 'Escape' && condemned) cancel();
+		if (event.key !== 'Escape') return;
+		if (condemned) cancel();
+		else if (candidate) candidate = null;
 	}}
 />
 
@@ -299,10 +364,48 @@
 	</div>
 {/if}
 
+{#if candidate}
+	{@const v = candidate.verdict}
+	<!-- As the Warband Deck asks: only the ordinary case may feel ordinary;
+	     anything that could lose a newer state asks to be overwritten anyway. -->
+	{@const harmless = v.kind === 'new' || v.kind === 'newer' || v.kind === 'same'}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title">
+			<h2 id="import-title">{candidate.title}</h2>
+			<p class="count">{candidate.label} · {candidate.warband.fighters.length} {candidate.warband.fighters.length === 1 ? 'fighter' : 'fighters'}</p>
+			{#if v.kind === 'new'}
+				<p class="notice">New warband. Will be added.</p>
+			{:else if v.kind === 'same'}
+				<p class="notice">Same state as stored here. Importing changes nothing.</p>
+			{:else if v.kind === 'newer'}
+				<p class="notice">
+					Newer than the stored state: changed {when(v.incoming)}, stored here {when(v.stored)}.
+				</p>
+			{:else if v.kind === 'older'}
+				<p class="notice danger">
+					<strong>This file is older.</strong> It was changed {when(v.incoming)}, what is stored here
+					{when(v.stored)}. Importing overwrites the newer state.
+				</p>
+			{:else}
+				<p class="notice danger">
+					<strong>Cannot tell which is newer.</strong> This warband is already here, and not both states
+					say when they last changed. Importing overwrites what is stored here.
+				</p>
+			{/if}
+			<div class="sheet-actions stacked">
+				<button type="button" class={harmless ? 'btn' : 'btn danger'} disabled={v.kind === 'same'} onclick={confirmImport}>
+					{harmless ? 'Import' : 'Overwrite anyway'}
+				</button>
+				<button type="button" class="btn" onclick={() => (candidate = null)} use:focusOnMount>Cancel</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <!-- At the foot, in the look of the sheet above, but without its backdrop: the
      page stays usable. Never beside an open sheet – that one speaks for itself.
      Tapped, it goes. -->
-{#if message && !condemned}
+{#if message && !condemned && !candidate}
 	<div class="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center p-3" style="padding-bottom: calc(12px + env(safe-area-inset-bottom))">
 		<button type="button" class="bottom-sheet message pointer-events-auto" class:error={message.error} onclick={() => notify(null)}>
 			{message.text}

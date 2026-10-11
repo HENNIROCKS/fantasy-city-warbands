@@ -24,6 +24,24 @@ export function createWarband(game: string, faction: Faction, name: string): War
 	};
 }
 
+/** Whether two warbands hold the same, leaving out when each was last changed. */
+export function sameWarband(a: Warband, b: Warband): boolean {
+	const { updatedAt: _a, ...left } = a;
+	const { updatedAt: _b, ...right } = b;
+	return equal(left, right);
+}
+
+function equal(a: unknown, b: unknown): boolean {
+	if (a === b) return true;
+	if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+	if (Array.isArray(a) !== Array.isArray(b)) return false;
+	/* A key holding `undefined` is a key the JSON on disk does not have. */
+	const keys = (o: object) => Object.keys(o).filter((k) => (o as Record<string, unknown>)[k] !== undefined);
+	const ka = keys(a);
+	if (ka.length !== keys(b).length) return false;
+	return ka.every((k) => equal((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]));
+}
+
 export function createFighter(fighterId: string): FighterInstance {
 	return { instanceId: newId(), fighterId, name: '', wargear: [], picks: [] };
 }

@@ -258,6 +258,12 @@ export interface Warband {
 	fluff?: string;
 	/** Anything to remember at the table, shown on the warband card. */
 	notes?: string;
+	/**
+	 * When its content last changed, ISO 8601. Travels with an export, so an
+	 * import can tell which of two states is newer. Missing on a warband not
+	 * changed since the field came in.
+	 */
+	updatedAt?: string;
 }
 
 /** Something that keeps a warband from being valid. */

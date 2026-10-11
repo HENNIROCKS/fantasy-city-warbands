@@ -6,6 +6,7 @@
 
 import type { BattleState } from './battle';
 import type { Warband } from './types';
+import { sameWarband } from './warband';
 
 const KEY = 'fantasy-city-warbands:warbands';
 /** One key per warband, so a tap at the table writes only its own battle. */
@@ -33,12 +34,22 @@ export function loadWarband(id: string): Warband | null {
 	return loadWarbands().find((w) => w.id === id) ?? null;
 }
 
-/** Adds the warband, or replaces the stored one with the same id. */
-export function saveWarband(warband: Warband): void {
+/**
+ * Adds the warband, or replaces the stored one with the same id. A change is
+ * dated; a save that changes nothing – the builder saves on opening – writes
+ * nothing, so the date stays the one of the last real change.
+ *
+ * An import keeps the date the file carries (`dated: false`): it is the same
+ * state, not a new one.
+ */
+export function saveWarband(warband: Warband, dated = true): void {
 	const warbands = loadWarbands();
 	const index = warbands.findIndex((w) => w.id === warband.id);
-	if (index === -1) warbands.push(warband);
-	else warbands[index] = warband;
+	const stored = index === -1 ? null : warbands[index];
+	if (stored && sameWarband(stored, warband) && (dated || stored.updatedAt === warband.updatedAt)) return;
+	const saved = dated ? { ...warband, updatedAt: new Date().toISOString() } : warband;
+	if (index === -1) warbands.push(saved);
+	else warbands[index] = saved;
 	store(warbands);
 }
 

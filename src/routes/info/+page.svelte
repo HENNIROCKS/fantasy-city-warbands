@@ -155,7 +155,7 @@
 			style="background: var(--ui-warn-bg); border-color: var(--ui-warn-border); color: var(--ui-warn-text)"
 		>
 			<strong>Export what you want to keep.</strong> The arrow beside a warband on the start page saves
-			it as a file. Clearing this browser's data removes your warbands, and so does a private window
+			it as a file, and Import warband brings it back, here or on another device. Clearing this browser's data removes your warbands, and so does a private window
 			once it closes. Safari can also remove them by itself after seven days
 			in which the site was not opened; other browsers may do so when the device runs low on storage.
 		</p>

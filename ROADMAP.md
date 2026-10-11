@@ -29,8 +29,9 @@
 - [x] 📚 Where the app reads the rules its own way, kept in DEVIATIONS.md
 - [x] ⚔️ Count damage on a fighter's card, out of action with the Wilhelm scream, and end the battle
 - [x] 📄 Export a warband as JSON and its roster as a PDF – a first version
+- [x] 📄 Import a warband from this app's JSON, saying whether the file is newer or older
 - [ ] ⚙️ Move storage to IndexedDB, carrying over what is in localStorage
-- [ ] 📄 Import a warband from a file, the Warband Deck's and the Warband Builder's JSON included
+- [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
