@@ -33,8 +33,8 @@
 	}: {
 		cards: DeckCard[];
 		columns: string[];
-		/** Where the warband is named, for the warband card to point to while it has no name. */
-		edit?: string;
+		/** Where a card's warband or fighter is named, for the card to point to while it has no name. */
+		edit?: (card: DeckCard) => string;
 		battle?: BattleState | null;
 		/** Whether a fighter going out of action is heard. */
 		sound?: boolean;
@@ -343,9 +343,15 @@
 
 {#snippet front(data: DeckCard)}
 	{#if data.kind === 'warband'}
-		<WarbandCard card={data} onpick={jumpTo} {edit} />
+		<WarbandCard card={data} onpick={jumpTo} edit={edit?.(data)} />
 	{:else}
-		<FighterCard card={data} {columns} state={stateOf(battle, data.instanceId)} photo={photos?.get(data.instanceId) ?? null} />
+		<FighterCard
+			card={data}
+			{columns}
+			state={stateOf(battle, data.instanceId)}
+			photo={photos?.get(data.instanceId) ?? null}
+			edit={edit?.(data)}
+		/>
 	{/if}
 {/snippet}
 

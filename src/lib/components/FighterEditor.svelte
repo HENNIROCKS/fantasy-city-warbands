@@ -114,7 +114,8 @@
 	<!-- The name takes the full width, so the placeholder fits a long fighter type. -->
 	<div>
 		<input
-			class="field-input h-11 font-semibold placeholder:font-normal"
+			id="fighter-name-{instance.instanceId}"
+			class="field-input h-11 scroll-mt-28 font-semibold placeholder:font-normal"
 			bind:value={instance.name}
 			placeholder="Name your {fighter?.name ?? instance.fighterId}"
 			aria-label="Fighter name"

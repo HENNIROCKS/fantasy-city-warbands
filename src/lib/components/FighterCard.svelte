@@ -11,7 +11,8 @@
 		card,
 		columns,
 		state = FRESH,
-		photo = null
+		photo = null,
+		edit
 	}: {
 		card: FighterCardData;
 		columns: string[];
@@ -19,6 +20,8 @@
 		state?: FighterBattleState;
 		/** The photo of the painted model, shown in the image field where there is one. */
 		photo?: PhotoView | null;
+		/** Where the fighter is named, for a fighter without a name. */
+		edit?: string;
 	} = $props();
 
 	/* How high the blood stands in the image field: a fighter at half its Health is
@@ -61,7 +64,9 @@
 			></div>
 		</div>
 		<div class="image-header">
-			<h2 class="name" style="--chars: {card.name.length}">{card.name}</h2>
+			<h2 class="name" style="--chars: {card.name.length}">
+				{#if card.unnamed && edit}<a href={edit}>{card.name}</a>{:else}{card.name}{/if}
+			</h2>
 			{#if card.subtitle}<p class="subtitle">{card.subtitle}</p>{/if}
 		</div>
 	</div>
@@ -190,8 +195,8 @@
 	}
 
 	/* Unlike the Warband Deck's, a name past 16 characters is set smaller in
-	   proportion, down to 28 – still well above the subtitle – so `Unnamed` and a
-	   long type do not stack four lines high beside the image. */
+	   proportion, down to 28 – still well above the subtitle – so a long name and
+	   a long type do not stack four lines high beside the image. */
 	.name {
 		margin: 0;
 		font-family: 'Grenze Gotisch', serif;
@@ -199,6 +204,15 @@
 		font-size: clamp(calc(28 * var(--t)), calc(38 * var(--t) * 16 / var(--chars, 16)), calc(38 * var(--t)));
 		line-height: 1.1;
 		overflow-wrap: anywhere;
+	}
+
+	/* `Unnamed fighter` leads to where the fighter is named, in the colour of what can
+	   be tapped. */
+	.name a {
+		color: var(--card-link);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.14em;
 	}
 
 	.subtitle {

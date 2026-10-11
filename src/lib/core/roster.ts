@@ -116,7 +116,8 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 		for (const e of entries(card, 'equipment')) if (e.text) add(e, 'Item', card.instanceId);
 	}
 
-	const names = new Map(cards.map((c) => [c.instanceId, c.name]));
+	/* The card's `Unnamed fighter` would not tell two fighters apart in a list. */
+	const names = new Map(cards.map((c) => [c.instanceId, c.unnamed ? `Unnamed ${c.subtitle}` : c.name]));
 
 	return [...rules.values()]
 		.sort((a, b) => RULE_ORDER.indexOf(a.type) - RULE_ORDER.indexOf(b.type) || a.name.localeCompare(b.name))
@@ -133,8 +134,9 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 
 	return {
 		title: game.roster.title,
-		name: card.name,
-		subtitle: `${game.name} • ${faction.name}`,
+		/* The faction's name stands in, as the file is named after it too. */
+		name: card.unnamed ? faction.name : card.name,
+		subtitle: card.subtitle,
 		figures: card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
 		picks: card.picks.map((p) => p.label),
 		statLabels: game.roster.stats,

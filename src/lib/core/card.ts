@@ -7,7 +7,7 @@
 
 import type { Faction, Fighter, FighterInstance, GameSystem, Rule, Wargear, Warband } from './types';
 import { warbandCost } from './validate';
-import { chosenOptions, fighterCost, fighterName, fighterSections, fighterType, formatStat, profileOf } from './warband';
+import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
 /** One column of a value table: the label above, its value below. */
 export interface CardValue {
@@ -56,8 +56,10 @@ export interface CardSection {
 export interface FighterCardData {
 	kind: 'fighter';
 	instanceId: string;
-	/** The fighter's own name, else `Unnamed` and its type. */
+	/** The fighter's own name, else `Unnamed fighter`. */
 	name: string;
+	/** Set where the fighter has no name of its own; the card then leads to where it is named. */
+	unnamed: boolean;
 	/** The fighter's type. */
 	subtitle: string;
 	/** Readable: `clan eshin`, not `clan-eshin`. */
@@ -173,7 +175,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	return {
 		kind: 'fighter',
 		instanceId: instance.instanceId,
-		name: fighterName(instance, faction),
+		name: instance.name.trim() || 'Unnamed fighter',
+		unnamed: !instance.name.trim(),
 		subtitle: type,
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
 		stats: game.stats.map((s) => ({
@@ -197,7 +200,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 /** A fighter as the warband card lists it: tapping the entry leads to its own card. */
 export interface RosterEntry {
 	instanceId: string;
-	/** The fighter's own name, else `Unnamed` and its type. */
+	/** The fighter's own name, else `Unnamed fighter`. */
 	name: string;
 	/** The fighter's type. */
 	type: string;
@@ -215,11 +218,11 @@ export interface WarbandCardData {
 	kind: 'warband';
 	/** The deck addresses every card by this; the warband's own id. */
 	instanceId: string;
-	/** The warband's own name, else its faction's. */
+	/** The warband's own name, else `Unnamed warband`. */
 	name: string;
-	/** Set where the warband has no name of its own; the card then asks for one. */
+	/** Set where the warband has no name of its own; the card then leads to where it is named. */
 	unnamed: boolean;
-	/** `Wyrdcry • Clan Eshin` under the name; the game alone where the name is the faction's. */
+	/** `Wyrdcry • Clan Eshin` under the name. */
 	subtitle: string;
 	/** Two boxes side by side, each a column of label and value. */
 	tables: CardValue[][];
@@ -237,7 +240,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	const cost = warbandCost(warband, faction);
 	const entry = (instance: FighterInstance, leader = false): RosterEntry => ({
 		instanceId: instance.instanceId,
-		name: fighterName(instance, faction),
+		name: instance.name.trim() || 'Unnamed fighter',
 		type: fighterType(instance, faction),
 		leader
 	});
@@ -270,9 +273,9 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	return {
 		kind: 'warband',
 		instanceId: warband.id,
-		name: unnamed ? faction.name : own,
+		name: unnamed ? 'Unnamed warband' : own,
 		unnamed,
-		subtitle: unnamed ? game.name : `${game.name} • ${faction.name}`,
+		subtitle: `${game.name} • ${faction.name}`,
 		tables: [
 			[
 				/* As on the Warband Deck's card: how many there are of how many the warband may have. */

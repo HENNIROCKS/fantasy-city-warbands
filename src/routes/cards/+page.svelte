@@ -91,6 +91,12 @@
 		if (!w || !system || !faction) return [];
 		return [warbandCard(w, faction, system.game), ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks))];
 	});
+	/** Where the builder names the warband, or the fighter in its editor. */
+	function nameField(card: DeckCard): string {
+		const at = resolve('/build') + `?id=${warband?.id}`;
+		return card.kind === 'warband' ? `${at}&step=finish#warband-name` : `${at}&step=fighters#fighter-name-${card.instanceId}`;
+	}
+
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
 	function edit(instanceId: string) {
@@ -205,7 +211,7 @@
 			<Deck
 				{cards}
 				columns={system.game.weaponStats.map((s) => s.label)}
-				edit={resolve('/build') + `?id=${warband.id}&step=finish#warband-name`}
+				edit={nameField}
 				{battle}
 				{sound}
 				onwound={wound}

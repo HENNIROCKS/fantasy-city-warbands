@@ -88,6 +88,18 @@
 		document.getElementById(`warband-${field}`)?.focus();
 	}
 
+	/* A card's `Unnamed` leads to a name field, which then takes the focus. The
+	   warband is read in only after the navigation, so this waits for it, and
+	   does it once per arrival. */
+	let focusedAt: string | null = null;
+	$effect(() => {
+		const href = page.url.href;
+		const target = page.url.hash.match(/^#(warband-name|fighter-name-.+)$/)?.[1];
+		if (!target || !warband || focusedAt === href) return;
+		focusedAt = href;
+		tick().then(() => document.getElementById(target)?.focus());
+	});
+
 	const step = $derived.by((): StepId => {
 		const s = page.url.searchParams.get('step') as StepId | null;
 		const index = s ? STEPS.indexOf(s) : -1;
@@ -606,7 +618,7 @@
 							class="flex gap-3 p-3 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
 						>
 							<div class="min-w-0 flex-1">
-								<span class="block font-semibold text-zinc-200">{fighterName(instance, faction)}</span>
+								<span class="block font-semibold text-zinc-200">{instance.name.trim() || 'Unnamed fighter'}</span>
 								<span class="block text-zinc-400">{overviewLine(instance)}</span>
 							</div>
 							<span class="whitespace-nowrap text-zinc-300">{fighterCost(instance, faction)}&nbsp;{system.game.currency}</span>

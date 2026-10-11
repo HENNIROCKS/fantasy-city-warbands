@@ -30,19 +30,13 @@
 		<div class="banderole">
 			<div class="banderole-bg" style="mask-image: {mask}; -webkit-mask-image: {mask};"></div>
 			<div class="banderole-text">
-				<h2 class="name">{card.name}</h2>
+				<h2 class="name">{#if card.unnamed && edit}<a href={edit}>{card.name}</a>{:else}{card.name}{/if}</h2>
 				<p class="faction">{card.subtitle}</p>
 			</div>
 		</div>
 	</div>
 
 	<div class="parchment">
-		{#if card.unnamed}
-			<p class="callout unnamed">
-				{#if edit}<a href={edit}>Your warband has no name.</a>{:else}Your warband has no name.{/if}
-			</p>
-		{/if}
-
 		{#if card.fluff}
 			<p class="fluff">{card.fluff}</p>
 		{/if}
@@ -151,6 +145,15 @@
 		font-size: calc(34 * var(--t));
 		line-height: 1.1;
 		overflow-wrap: anywhere;
+	}
+
+	/* `Unnamed warband` leads to where the warband is named. In the banderole's own
+	   colour, underlined: the link red would not read on the green. */
+	.name a {
+		color: inherit;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.14em;
 	}
 
 	.faction {
@@ -288,15 +291,6 @@
 		display: block;
 		font-size: calc(15 * var(--t));
 		color: var(--card-ink-muted);
-	}
-
-	/* Something left to do, in the colour of what can be tapped: it leads to
-	   where the warband is named. */
-	.unnamed a {
-		color: var(--card-link);
-		text-decoration: underline;
-		text-decoration-thickness: 1px;
-		text-underline-offset: 0.14em;
 	}
 
 	/* Prose, not a rule: no wash, no border, set apart only by the italic. Twice
