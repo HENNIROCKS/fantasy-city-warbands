@@ -358,10 +358,6 @@ export interface WarbandCardData {
 	subtitle: string;
 	/** Two boxes side by side, each a column of label and value. */
 	tables: CardValue[][];
-	/** Figures on a row of their own under the boxes, for a word too long for them. */
-	wide: CardValue[];
-	/** `(Origin) The Hunt Descends`, with the option's text. */
-	picks: CardEntry[];
 	/** A heading of null where the game lists its fighters as one. */
 	roster: { title: string | null; entries: RosterEntry[] }[];
 	fluff: string;
@@ -438,7 +434,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 							? String(warband.fighters.length)
 							: `${warband.fighters.length} / ${faction.size.max}`
 				},
-				...values.filter((v) => !v.wide)
+				...values
 			],
 			[
 				/* As on the Warband Deck's card: what is left to spend, and what the warband is worth. */
@@ -446,10 +442,6 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 				{ key: 'value', label: 'Value', value: String(cost) }
 			]
 		],
-		wide: values.filter((v) => v.wide).map(({ key, label, value }) => ({ key, label, value })),
-		picks: faction.choices.flatMap((c) =>
-			c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
-		),
 		roster: unknown.length ? [...roster, { title: 'Other', entries: unknown }] : roster,
 		fluff: warband.fluff?.trim() ?? '',
 		notes: warband.notes?.trim() ?? '',

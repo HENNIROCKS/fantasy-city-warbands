@@ -43,10 +43,8 @@ export interface Roster {
 	name: string;
 	/** `Wyrdcry • Clan Eshin`. */
 	subtitle: string;
-	/** Fighters, what is left to spend, value – each a heading and its figure. */
+	/** The warband card's figures, each a heading and its value. */
 	figures: { label: string; value: string }[];
-	/** What the warband picked under its faction's choices: `(Origin) The Hunt Descends`. */
-	picks: string[];
 	statLabels: string[];
 	weaponLabels: string[];
 	/** The heading over the cost column: `gc`, `silver`. */
@@ -138,7 +136,6 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		name: card.unnamed ? faction.name : card.name,
 		subtitle: card.subtitle,
 		figures: card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
-		picks: card.picks.map((p) => p.label),
 		statLabels: game.roster.stats,
 		weaponLabels: game.roster.weapons,
 		currency: game.currency,

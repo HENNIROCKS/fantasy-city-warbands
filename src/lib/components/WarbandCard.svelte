@@ -7,7 +7,7 @@
 	/*
 	 * The warband itself as the first card of the deck, as the Warband Deck lays
 	 * it out: the name in a banderole, the fluff, two boxes of figures with the
-	 * roster across them, then the faction's picks and the notes.
+	 * roster across them, then the notes.
 	 */
 	let {
 		card,
@@ -50,14 +50,6 @@
 					{/each}
 				</dl>
 			{/each}
-			{#if card.wide.length}
-				<dl class="stats wide">
-					{#each card.wide as row (row.key)}
-						<dt>{row.label}</dt>
-						<dd use:fitText><span data-fit>{row.value}</span></dd>
-					{/each}
-				</dl>
-			{/if}
 
 			<div class="roster">
 				{#each card.roster as group, i (group.title ?? i)}
@@ -74,10 +66,6 @@
 				{/each}
 			</div>
 		</div>
-
-		{#if card.picks.length}
-			<section class="notes">{@render paragraphs(card.picks)}</section>
-		{/if}
 
 		{#if card.notes}
 			<section class="notes">{@render paragraphs([{ label: 'Notes', text: card.notes }])}</section>
@@ -227,11 +215,6 @@
 		background: var(--card-wash);
 	}
 
-	/* A figure whose word is too long for a box beside another: across both. */
-	.stats.wide {
-		grid-column: 1 / -1;
-	}
-
 	/* Labels in a column as wide as the longest, so every value of a box starts
 	   on the same edge. On the baseline, so a value set smaller still sits on the
 	   line of its label. */
@@ -357,16 +340,15 @@
 		margin-top: 1em;
 	}
 
-	/* The boxes' light wash sets picks and notes off from the paper, so neither
-	   needs a rule of its own. */
+	/* The boxes' light wash sets the notes off from the paper, so they need no
+	   rule of their own. */
 	.notes {
 		padding: calc(14 * var(--u)) calc(16 * var(--u));
 		border-radius: calc(7.5 * var(--u));
 		background: var(--card-wash);
 	}
 
-	/* Picks, notes and battles stand twice the parchment's gap apart. */
-	.notes ~ .notes,
+	/* Notes and battles stand twice the parchment's gap apart. */
 	.battles {
 		margin-top: calc(14 * var(--u));
 	}

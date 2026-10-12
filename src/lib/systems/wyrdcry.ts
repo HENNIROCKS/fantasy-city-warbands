@@ -63,16 +63,16 @@ export const game: GameSystem = {
 	campaign: {
 		warband: [{ key: 'favour', label: 'Favour' }],
 		fighter: [{ key: 'renown', label: 'Renown' }],
-		/* As on the Warband Deck's card, but Standing on a row of its own: beside
-		   Reputation a standing such as Recognized does not fit a phone. Reputation
-		   is every fighter's renown and the favour, as the builder counts it. */
+		/* As on the Warband Deck's card. Reputation is every fighter's renown and
+		   the favour, as the builder counts it. */
 		values: (warband) => {
 			const favour = warband.tally?.favour ?? 0;
 			const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour);
 			return [
 				{ key: 'favour', label: 'Favour', value: String(favour) },
-				{ key: 'reputation', label: 'Reputation', value: String(reputation) },
-				{ key: 'standing', label: 'Standing', value: tierFor(favour).label, wide: true }
+				/* Between the two it is read as what the favour buys, which is what it is. */
+				{ key: 'standing', label: 'Standing', value: tierFor(favour).label },
+				{ key: 'reputation', label: 'Reputation', value: String(reputation) }
 			];
 		}
 	},

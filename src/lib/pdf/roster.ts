@@ -87,16 +87,13 @@ function nameCell(name: string, type: string): TableCell {
 }
 
 function warbandTable(roster: Roster): Content {
-	const columns = 1 + roster.figures.length;
-	const filler = Array.from({ length: columns - 1 }, () => '');
 	return {
 		table: {
 			headerRows: 1,
 			widths: ['*', ...roster.figures.map(() => 'auto')],
 			body: [
 				[th('Warband / Game & Faction'), ...roster.figures.map((f) => th(figure(f.label)))],
-				[nameCell(roster.name, roster.subtitle), ...roster.figures.map((f) => figure(f.value))],
-				...(roster.picks.length ? [[{ text: roster.picks.join(' · '), colSpan: columns }, ...filler]] : [])
+				[nameCell(roster.name, roster.subtitle), ...roster.figures.map((f) => figure(f.value))]
 			]
 		},
 		layout: ruled(),

@@ -98,12 +98,8 @@ export interface GameSystem {
 	campaign?: {
 		warband: Counter[];
 		fighter: Counter[];
-		/**
-		 * Figures the warband card shows beside its size, such as Wyrdcry's favour.
-		 * A `wide` one gets a row of its own across the card, for a word too long
-		 * for the box.
-		 */
-		values?: (warband: Warband) => { key: string; label: string; value: string; wide?: boolean }[];
+		/** Figures the warband card shows beside its size, such as Wyrdcry's favour. */
+		values?: (warband: Warband) => { key: string; label: string; value: string }[];
 	};
 	/**
 	 * What ending a battle asks and writes into the warband. Without it, ending a
