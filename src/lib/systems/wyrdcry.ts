@@ -477,6 +477,15 @@ function zeal(rules: RawRule[]): FactionCounter | undefined {
 	return stages.length ? { label: 'Zeal', stages } : undefined;
 }
 
+/**
+ * The prefixed id of a weapon or item the Warband Builder and the Warband Deck
+ * store bare, or null where the game data has neither.
+ */
+export function wargearId(bare: string): string | null {
+	for (const id of [`weapon:${bare}`, `item:${bare}`]) if (catalogue.has(id)) return id;
+	return null;
+}
+
 /** Each faction folder's files, keyed by path. */
 const files = import.meta.glob('/src/lib/rules/wyrdcry/factions/*/*.json', { eager: true, import: 'default' });
 

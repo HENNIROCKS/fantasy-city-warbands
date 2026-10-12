@@ -40,13 +40,21 @@ export function fileName(name: string, now = new Date()): string {
 	return `${name} – ${now.toISOString().slice(0, 10)}.json`;
 }
 
-/** What reading a file came to: a warband to offer, or why there is none. */
-export type ReadResult = { ok: true; warband: Warband } | { ok: false; message: string };
+/**
+ * What reading a file came to: a warband to offer, with what was carried over
+ * differently where the file is another app's, or why there is none.
+ */
+export type ReadResult = { ok: true; warband: Warband; hints?: string[] } | { ok: false; message: string };
 
 /** Answers whether the app knows a game and a faction, by name for the message where it does not. */
 export interface Known {
 	game(id: string): string | null;
 	faction(game: string, id: string): string | null;
+	/**
+	 * Reads a file of another app the games here know, such as the Warband Deck's;
+	 * null where the file is none of them.
+	 */
+	other?(parsed: Record<string, unknown>): ReadResult | null;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -155,18 +163,6 @@ function readWarband(raw: unknown): Warband | null {
 	};
 }
 
-/**
- * A file out of the Wyrdcry Warband Deck or the Warband Builder: the warband at
- * the top, the deck's own data under `_deck`, and a fighter's gear under
- * `equipment`.
- */
-function isDeckOrBuilder(parsed: Record<string, unknown>): boolean {
-	return (
-		'_deck' in parsed ||
-		(Array.isArray(parsed.fighters) && parsed.fighters.some((f) => isObject(f) && 'equipment' in f))
-	);
-}
-
 export function readWarbandFile(text: string, known: Known): ReadResult {
 	let parsed: unknown;
 	try {
@@ -175,11 +171,9 @@ export function readWarbandFile(text: string, known: Known): ReadResult {
 		return { ok: false, message: 'That file is not valid JSON.' };
 	}
 	if (!isObject(parsed)) return { ok: false, message: 'That file does not look like a warband.' };
-	if (isDeckOrBuilder(parsed)) {
-		return {
-			ok: false,
-			message: 'This is a file from the Wyrdcry Warband Deck or the Warband Builder. Those cannot be imported yet.'
-		};
+	if (parsed.format !== FORMAT) {
+		const other = known.other?.(parsed);
+		if (other) return other;
 	}
 	if (parsed.format !== FORMAT) return { ok: false, message: 'That file does not look like a warband.' };
 	if (typeof parsed.version !== 'number' || parsed.version > VERSION) {

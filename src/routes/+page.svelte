@@ -20,6 +20,7 @@
 	import { rosterPdf } from '$lib/pdf/roster';
 	import { safeName, shareFile, type ShareResult } from '$lib/share';
 	import { systems } from '$lib/systems';
+	import { isDeckOrBuilder, readDeckFile } from '$lib/systems/wyrdcry-file';
 
 	let warbands = $state<Warband[]>([]);
 	/* Until the first read, so an empty list does not flash as "No warbands yet". */
@@ -170,11 +171,13 @@
 	let fileInput: HTMLInputElement | undefined = $state();
 
 	/* A file read and checked, held until the sheet is answered. */
-	let candidate = $state<{ warband: Warband; verdict: Verdict; title: string; label: string; excess: string[] } | null>(null);
+	let candidate = $state<{ warband: Warband; verdict: Verdict; title: string; label: string; excess: string[]; hints: string[] } | null>(null);
 
 	const known: Known = {
 		game: (id) => systems[id]?.game.name ?? null,
-		faction: (game, id) => systems[game]?.factions.find((f) => f.id === id)?.name ?? null
+		faction: (game, id) => systems[game]?.factions.find((f) => f.id === id)?.name ?? null,
+		/* The Wyrdcry Warband Deck's and the Warband Builder's files. */
+		other: (parsed) => (isDeckOrBuilder(parsed) ? readDeckFile(parsed) : null)
 	};
 
 	async function onPick(event: Event) {
@@ -207,7 +210,8 @@
 			label: `${s.game.name} • ${f.name}`,
 			/* Imported as it is: the file is the player's state, and building is
 			   what keeps a warband within its limits, not reading it back. */
-			excess: [...new Set(validate(w, s.game, f).filter((i) => i.kind === 'excess').map((i) => i.message))]
+			excess: [...new Set(validate(w, s.game, f).filter((i) => i.kind === 'excess').map((i) => i.message))],
+			hints: result.hints ?? []
 		};
 	}
 
@@ -463,6 +467,12 @@
 					say when they last changed. Importing overwrites what is stored here, and photos of fighters
 					the file does not have are removed.
 				</p>
+			{/if}
+			{#if candidate.hints.length}
+				<!-- Another app's file: what it brought that has no place here, and where it went. -->
+				<ul class="notice mt-2 list-disc pl-7">
+					{#each candidate.hints as hint (hint)}<li>{hint}</li>{/each}
+				</ul>
 			{/if}
 			{#if candidate.excess.length}
 				<!-- Amber, not red: nothing is lost by it, there is something to do. -->

@@ -62,6 +62,11 @@
 				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first. A fighter’s fluff, notes and photo are written on the back of its card: the pencil under the card turns it over.'
 		},
 		{
+			question: 'Can I bring a warband over from the Warband Deck?',
+			answer:
+				'Yes: export it there, then Import warband on the start page here takes the file – one from the Warband Builder too. Experience, renown, favour, gold, stash, fluff, notes, colour and battle history come along. The sheet before importing says what is carried over differently: purchases still pending in the builder are taken as bought, custom abilities and weapons go into the warband’s notes, and characteristics raised with renown are kept, though the cards do not count them in yet. Clan Pestilens and the Greenskin Marauders are not here yet, and a hired sword shows as unknown.'
+		},
+		{
 			question: 'Can I keep one warband at the top?',
 			answer:
 				'Yes: tap the star beside it on the start page. One warband at a time; the others stay A to Z. The star stays on this device and is not part of an export.'

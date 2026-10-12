@@ -41,7 +41,7 @@
 - [x] ⚔️ Start a battle from the warband card, beside the first tap
 - [x] 📈 Campaign: the aftermath of a Wyrdcry battle – experience, favour, income and a battle history
 - [x] ⚔️ Cancel a battle without the aftermath
-- [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
+- [x] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
@@ -55,7 +55,6 @@
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] ⚙️ Work offline once installed
 - [ ] 🛠️ Hire a Hired Sword for a single battle
-- [ ] ⚙️ Retire the Warband Deck once nothing is missing
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
