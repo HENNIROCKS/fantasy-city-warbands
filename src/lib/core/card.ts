@@ -6,7 +6,7 @@
  */
 
 import type { Faction, Fighter, FighterInstance, GameSystem, Rule, Wargear, Warband } from './types';
-import { warbandCost } from './validate';
+import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
 /** One column of a value table: the label above, its value below. */
@@ -290,7 +290,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 			],
 			[
 				/* As on the Warband Deck's card: what is left to spend, and what the warband is worth. */
-				{ key: 'left', label: game.costLabel, value: String(Math.max(0, game.budget - cost)) },
+				{ key: 'left', label: game.costLabel, value: String(Math.max(0, purse(warband, game) - cost)) },
 				{ key: 'value', label: 'Value', value: String(cost) }
 			]
 		],

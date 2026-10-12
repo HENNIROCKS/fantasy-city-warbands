@@ -53,7 +53,11 @@ export const game: GameSystem = {
 			text: 'If a fighter is equipped with two melee weapons of the same type (for example, two swords), they are considered to be dual wielding. While a fighter is dual wielding, improve the Attack characteristic of the weapon they are using by 1.'
 		}
 	},
-	carry
+	carry,
+	campaign: {
+		warband: [{ key: 'favour', label: 'Favour' }],
+		fighter: [{ key: 'renown', label: 'Renown' }]
+	}
 };
 
 interface RawFaction {

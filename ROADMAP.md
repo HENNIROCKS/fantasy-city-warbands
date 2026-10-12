@@ -36,16 +36,20 @@
 - [x] 🃏 Unnamed warband and Unnamed fighter in the head of the card, leading to the name field
 - [x] 🎨 How to add the app to the home screen, on the about page
 - [x] 🛠️ A favourite warband, starred, always at the top of the list
+- [x] ⚙️ Room for a campaign in the warband and its export: gold, stash, experience, advances, battles
 - [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🃏 Derived values on the card, such as armour from equipment, explained when tapped
 - [ ] 🛠️ Edit a fighter after the build: dismissal, recruiting between battles
+- [ ] ⚔️ Start and cancel a battle, beside ending it
 - [ ] ⚔️ Track a battle: activated and waiting, wavering, panicked, in cover, rounds with undo, zeal
-- [ ] 📈 Campaign: experience and renown, heroic traits included
+- [ ] 📈 Campaign: experience and renown, spent on a characteristic or a henchman's promotion
+- [ ] 📈 Campaign: heroic traits, what a HERO picks instead of a characteristic
+- [ ] 🛠️ Correct a fighter's experience and renown by hand, on the back of its card
 - [ ] 📈 Campaign: favour, income and a battle history
-- [ ] 📈 Campaign: the stash and the trading post
+- [ ] 📈 Campaign: the stash, gold to add and the trading post
 - [ ] 📈 Campaign: injuries
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] ⚙️ Work offline once installed

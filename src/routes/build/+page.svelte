@@ -14,7 +14,7 @@
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
-	import { newExcess, validate, warbandCost } from '$lib/core/validate';
+	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import {
 		createWarband,
 		fighterCost,
@@ -114,6 +114,7 @@
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	const issues = $derived(warband && system && faction ? validate(warband, system.game, faction) : []);
 	const cost = $derived(warband && faction ? warbandCost(warband, faction) : 0);
+	const gold = $derived(warband && system ? purse(warband, system.game) : (system?.game.budget ?? 0));
 	/* Empty while a warband is read, so it does not show as a new one first. */
 	const heading = $derived(id && loadedId !== id ? '' : warband?.name.trim() || faction?.name || 'New warband');
 
@@ -449,7 +450,7 @@
 			<p class="field-label">
 				Recruit
 				<span class="font-normal normal-case text-zinc-400"
-					>· {Math.max(0, system.game.budget - cost)}&nbsp;{system.game.currencyName ?? system.game.currency} left</span
+					>· {Math.max(0, gold - cost)}&nbsp;{system.game.currencyName ?? system.game.currency} left</span
 				>
 			</p>
 			<!-- Under the same headings as the faction's preview, two to a row at any width. -->
@@ -674,8 +675,8 @@
 
 			<div class="flex items-center gap-2">
 				{#snippet summary()}
-					<span class="block font-semibold" style={cost > system.game.budget ? 'color: var(--ui-danger-text)' : ''}>
-						{cost} / {system.game.budget}&nbsp;{system.game.currency}
+					<span class="block font-semibold" style={cost > gold ? 'color: var(--ui-danger-text)' : ''}>
+						{cost} / {gold}&nbsp;{system.game.currency}
 					</span>
 					{#if issues.length}
 						<span class="block underline decoration-dotted underline-offset-2" style="color: var(--ui-warn-text)">

@@ -26,7 +26,10 @@ function compare(count: number, span: Span): 'missing' | 'excess' | null {
 	return null;
 }
 
-/** What the warband has spent: every fighter's cost and everything they carry. */
+/**
+ * What the warband has spent: every fighter's cost, everything they carry and
+ * everything in its stash.
+ */
 export function warbandCost(warband: Warband, faction: Faction): number {
 	const fighters = new Map(faction.fighters.map((f) => [f.id, f]));
 	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
@@ -36,7 +39,13 @@ export function warbandCost(warband: Warband, faction: Faction): number {
 		total += fighters.get(instance.fighterId)?.cost ?? 0;
 		for (const id of instance.wargear) total += wargear.get(id)?.cost ?? 0;
 	}
+	for (const id of warband.stash ?? []) total += wargear.get(id)?.cost ?? 0;
 	return total;
+}
+
+/** The whole purse the warband's cost is held against. */
+export function purse(warband: Warband, game: GameSystem): number {
+	return warband.gold ?? game.budget;
 }
 
 export function validate(warband: Warband, game: GameSystem, faction: Faction): Issue[] {
@@ -50,11 +59,12 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	const effects = activeEffects(warband, faction);
 
 	const cost = warbandCost(warband, faction);
-	if (cost > game.budget) {
+	const gold = purse(warband, game);
+	if (cost > gold) {
 		issues.push({
 			code: 'over-budget',
 			kind: 'excess',
-			message: `${cost} ${game.currency} spent of ${game.budget} ${game.currency}.`,
+			message: `${cost} ${game.currency} spent of ${gold} ${game.currency}.`,
 			short: `Not enough ${game.currency}`
 		});
 	}

@@ -16,7 +16,7 @@
 	} from '$lib/core/storage.svelte';
 	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
 	import type { Warband } from '$lib/core/types';
-	import { warbandCost, validate } from '$lib/core/validate';
+	import { purse, warbandCost, validate } from '$lib/core/validate';
 	import { rosterPdf } from '$lib/pdf/roster';
 	import { safeName, shareFile, type ShareResult } from '$lib/share';
 	import { systems } from '$lib/systems';
@@ -249,7 +249,7 @@
 			title: w.name.trim() || f.name,
 			label: `${s.game.name} • ${f.name}`,
 			fighters,
-			cost: `${warbandCost(w, f)} / ${s.game.budget} ${s.game.currency}`,
+			cost: `${warbandCost(w, f)} / ${purse(w, s.game)} ${s.game.currency}`,
 			/* Past its limits is not the same as unfinished: an import or a corrected
 			   rule can leave a warband there, and building never does. */
 			status: issues.some((i) => i.kind === 'excess') ? 'excess' : issues.length ? 'missing' : 'valid',

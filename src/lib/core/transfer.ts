@@ -11,12 +11,15 @@
  * two states is newer.
  */
 
-import type { FighterInstance, Warband } from './types';
+import type { Advance, BattleRecord, FighterInstance, Warband } from './types';
 import { sameWarband } from './warband';
 
 export const FORMAT = 'fantasy-city-warbands';
-/** Raised whenever the shape of `warband` changes in a way an import has to know about. */
-export const VERSION = 1;
+/**
+ * Raised whenever the shape of `warband` changes in a way an import has to know
+ * about. 2 brought the campaign; a file of 1 reads as a warband without one.
+ */
+export const VERSION = 2;
 
 export interface WarbandFile {
 	format: typeof FORMAT;
@@ -48,13 +51,58 @@ export interface Known {
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
+const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+const isTally = (v: unknown): v is Record<string, number> => isObject(v) && Object.values(v).every(isNumber);
+
+function readAdvance(raw: unknown): Advance | null {
+	if (!isObject(raw)) return null;
+	const { level, stat, bonus, rule, option } = raw;
+	if (!isNumber(level)) return null;
+	if (bonus !== undefined && !isNumber(bonus)) return null;
+	for (const text of [stat, rule, option]) if (text !== undefined && typeof text !== 'string') return null;
+	return {
+		level,
+		...(stat !== undefined ? { stat: stat as string } : {}),
+		...(bonus !== undefined ? { bonus } : {}),
+		...(rule !== undefined ? { rule: rule as string } : {}),
+		...(option !== undefined ? { option: option as string } : {})
+	};
+}
+
+const RESULTS: BattleRecord['result'][] = ['win', 'draw', 'loss'];
+
+function readRecord(raw: unknown): BattleRecord | null {
+	if (!isObject(raw)) return null;
+	const { id, date, result, opponentWarband, opponentPlayer } = raw;
+	if (!isStrings([id, date, opponentWarband, opponentPlayer])) return null;
+	if (!/^\d{4}-\d{2}-\d{2}$/.test(date as string)) return null;
+	if (!RESULTS.includes(result as BattleRecord['result'])) return null;
+	return {
+		id: id as string,
+		date: date as string,
+		result: result as BattleRecord['result'],
+		opponentWarband: opponentWarband as string,
+		opponentPlayer: opponentPlayer as string
+	};
+}
+
+/** Every entry read, or null where any one of them is not what it should be. */
+function readAll<T>(raw: unknown, read: (entry: unknown) => T | null): T[] | null {
+	if (!Array.isArray(raw)) return null;
+	const all = raw.map(read);
+	return all.some((entry) => entry === null) ? null : (all as T[]);
+}
 
 function readFighter(raw: unknown): FighterInstance | null {
 	if (!isObject(raw)) return null;
-	const { instanceId, fighterId, name, wargear, picks, fluff, notes } = raw;
+	const { instanceId, fighterId, name, wargear, picks, fluff, notes, xp, advances, tally } = raw;
 	if (typeof instanceId !== 'string' || typeof fighterId !== 'string' || typeof name !== 'string' || !isStrings(wargear)) return null;
 	if (picks !== undefined && !isStrings(picks)) return null;
 	for (const text of [fluff, notes]) if (text !== undefined && typeof text !== 'string') return null;
+	if (xp !== undefined && !isNumber(xp)) return null;
+	if (tally !== undefined && !isTally(tally)) return null;
+	const spent = advances === undefined ? undefined : readAll(advances, readAdvance);
+	if (spent === null) return null;
 	return {
 		instanceId,
 		fighterId,
@@ -62,24 +110,33 @@ function readFighter(raw: unknown): FighterInstance | null {
 		wargear,
 		...(picks ? { picks } : {}),
 		...(fluff !== undefined ? { fluff: fluff as string } : {}),
-		...(notes !== undefined ? { notes: notes as string } : {})
+		...(notes !== undefined ? { notes: notes as string } : {}),
+		...(xp !== undefined ? { xp } : {}),
+		...(spent !== undefined ? { advances: spent } : {}),
+		...(tally !== undefined ? { tally } : {})
 	};
 }
 
 /**
  * Only the fields the app knows, so nothing a file brings along ends up
- * stored. A fighter type or a piece of wargear the faction lacks is let
+ * stored – except under `tally`, which keeps every counter it holds: what the
+ * game does not declare, nothing reads. A fighter type or a piece of wargear the faction lacks is let
  * through: the cards name it as unknown, as they do for a stored warband.
  */
 function readWarband(raw: unknown): Warband | null {
 	if (!isObject(raw)) return null;
-	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt } = raw;
+	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, tally } = raw;
 	if (typeof id !== 'string' || typeof game !== 'string' || typeof factionId !== 'string' || typeof name !== 'string') return null;
 	if (!isObject(picks) || !Object.values(picks).every(isStrings) || !Array.isArray(fighters)) return null;
 	const read = fighters.map(readFighter);
 	if (read.some((f) => f === null)) return null;
 	if (colour !== undefined && colour !== null && typeof colour !== 'string') return null;
 	for (const text of [fluff, notes, updatedAt]) if (text !== undefined && typeof text !== 'string') return null;
+	if (gold !== undefined && !isNumber(gold)) return null;
+	if (stash !== undefined && !isStrings(stash)) return null;
+	if (tally !== undefined && !isTally(tally)) return null;
+	const records = history === undefined ? undefined : readAll(history, readRecord);
+	if (records === null) return null;
 	return {
 		id,
 		game,
@@ -90,6 +147,10 @@ function readWarband(raw: unknown): Warband | null {
 		...(colour !== undefined ? { colour: colour as string | null } : {}),
 		...(fluff !== undefined ? { fluff: fluff as string } : {}),
 		...(notes !== undefined ? { notes: notes as string } : {}),
+		...(gold !== undefined ? { gold } : {}),
+		...(stash !== undefined ? { stash } : {}),
+		...(records !== undefined ? { history: records } : {}),
+		...(tally !== undefined ? { tally } : {}),
 		...(updatedAt !== undefined ? { updatedAt: updatedAt as string } : {})
 	};
 }

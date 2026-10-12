@@ -90,6 +90,18 @@ export interface GameSystem {
 	 * refused. Without it, a fighter carries whatever it is offered.
 	 */
 	carry?: (fighter: Fighter, faction: Faction, wargear: string[]) => { message: string; short: string }[];
+	/**
+	 * The counters the game's campaign keeps beyond what every game shares, such
+	 * as Wyrdcry's favour for the warband and renown for a fighter. Stored under
+	 * `tally` by their key. Without it, the game keeps none.
+	 */
+	campaign?: { warband: Counter[]; fighter: Counter[] };
+}
+
+/** A number a game's campaign counts up and down, such as favour. */
+export interface Counter {
+	key: string;
+	label: string;
 }
 
 /** A rule a game gives every fighter with a keyword, such as Wyrdcry's Rush. */
@@ -245,6 +257,41 @@ export interface FighterInstance {
 	fluff?: string;
 	/** Anything to remember at the table, shown at the foot of the fighter's card. */
 	notes?: string;
+	/** Experience towards the next level. Missing reads as none. */
+	xp?: number;
+	/** What the fighter's levels were spent on, in the order they were spent. */
+	advances?: Advance[];
+	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
+	tally?: Record<string, number>;
+}
+
+/**
+ * One level a fighter spent: a characteristic raised, a rule taken, or – with
+ * neither – a level used up. The characteristic's figure is worked out from
+ * the profile and every advance, so the card can say where each point came from.
+ */
+export interface Advance {
+	/** The fighter's level this advance spent. */
+	level: number;
+	/** The key of the characteristic raised. */
+	stat?: string;
+	/** Signed, as the figure moves: −1 for a roll to meet, such as Bravery. */
+	bonus?: number;
+	/** The id of a rule taken, such as a heroic talent or a skill. */
+	rule?: string;
+	/** What the rule was taken for, such as a weapon's id. */
+	option?: string;
+}
+
+/** One battle the warband fought, as the player wrote it down afterwards. */
+export interface BattleRecord {
+	id: string;
+	/** A calendar day, `YYYY-MM-DD`. */
+	date: string;
+	result: 'win' | 'draw' | 'loss';
+	/** Either name may be empty. */
+	opponentWarband: string;
+	opponentPlayer: string;
 }
 
 /** A warband as stored. Everything else is looked up from its game and faction. */
@@ -262,6 +309,18 @@ export interface Warband {
 	fluff?: string;
 	/** Anything to remember at the table, shown on the warband card. */
 	notes?: string;
+	/**
+	 * The whole purse: what the warband is worth together with what it has left
+	 * to spend, as the Warband Builder counts it. Missing reads as the game's
+	 * `budget`, which a warband not yet in a campaign has.
+	 */
+	gold?: number;
+	/** Wargear ids held by the warband rather than a fighter; an id may appear more than once. */
+	stash?: string[];
+	/** The battles fought, in the order they were written down. */
+	history?: BattleRecord[];
+	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
+	tally?: Record<string, number>;
 	/**
 	 * When its content last changed, ISO 8601. Travels with an export, so an
 	 * import can tell which of two states is newer. Missing on a warband not
