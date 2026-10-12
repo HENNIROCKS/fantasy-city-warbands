@@ -6,6 +6,7 @@
 
 import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
+import { advancement } from './wyrdcry-renown';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -87,6 +88,7 @@ export const game: GameSystem = {
 		gainXp,
 		income
 	},
+	advancement,
 	/* As the Warband Deck tracks them. Cover changes no figure of the fighter's:
 	   it raises the difficulty rating of a ranged attack against it, a number on
 	   the attacker's side. */
@@ -196,7 +198,8 @@ interface RawFighter {
 
 /**
  * What a fighter picks on recruitment, as the Warband Deck writes it. `roles`
- * only a homebrew fighter has, and `instead_of_talent` belongs to the campaign.
+ * only a homebrew fighter has; `instead_of_talent` is how many more a wizard
+ * may learn later with renown.
  */
 interface RawChoice {
 	/** The ability the choice comes out of, by id. */
@@ -209,6 +212,8 @@ interface RawChoice {
 	abilities?: string[];
 	/** The id of the rule carrying the table. */
 	table?: string;
+	/** How many more of `abilities` a wizard may learn later, each in place of a heroic talent. */
+	instead_of_talent?: number;
 }
 
 /** A row of a roll table, such as the Possessed's Mutation Table. */
@@ -463,7 +468,7 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 			const a = ability.get(id);
 			return a ? [{ id, name: a.name, text: a.text, type: a.type }] : [];
 		});
-		return { ...base, options };
+		return { ...base, options, ...(raw.instead_of_talent ? { later: raw.instead_of_talent } : {}) };
 	}
 	if (raw.kind === 'stat') {
 		const bonus = raw.bonus ?? 0;

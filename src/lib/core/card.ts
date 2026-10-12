@@ -149,6 +149,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
 	const options = fighter ? chosenOptions(instance, fighter) : [];
+	/* What the fighter's spent levels bring besides characteristics. */
+	const advanced = fighter && game.advancement ? game.advancement.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [] };
 	const carried = counted([...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear], faction);
 
 	/* Melee ahead of ranged, otherwise in the order they are carried. */
@@ -158,11 +160,18 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		.map(({ wargear, count }): CardWeapon => {
 			/* The extra attack belongs to the weapon in hand, so it is the row's own number. */
 			const dual = count > 1 && wargear.kind === 'melee' ? game.dualWielding : undefined;
+			/* A level spent on this weapon, such as a heroic talent's point of critical damage. */
+			const raised = advanced.weapons.filter((w) => w.wargear === wargear.id);
 			const values = game.weaponStats.map((s) => {
-				const value = wargear.profile?.[s.key] ?? '–';
+				const own = raised.find((w) => w.stat === s.key)?.value;
+				const value = own ?? wargear.profile?.[s.key] ?? '–';
 				return dual?.stat === s.key && /^\d+$/.test(value) ? String(Number(value) + 1) : value;
 			});
-			const rules = [...(wargear.rules ?? []), ...(dual ? [dual.rule] : [])]
+			const rules = [
+				...(wargear.rules ?? []),
+				...(dual ? [dual.rule] : []),
+				...raised.map((w) => ({ name: w.source, text: `Counted into the ${game.weaponStats.find((s) => s.key === w.stat)?.label ?? w.stat} above.` }))
+			]
 				.map((r) => ({ label: r.name, text: r.text }))
 				.sort((a, b) => a.label.localeCompare(b.label));
 			const name = times(wargear.name, count);
@@ -194,7 +203,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		)
 	];
 
-	const keywords = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
+	/* As the levels make them: a henchman with four of Wyrdcry's renown is a HERO. */
+	const recruited = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
+	const keywords = [...new Set([...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited), ...advanced.keywords])];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
 	/* A pick that raises a characteristic is in the profile above, and the rule
@@ -202,7 +213,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	   of the fighter's own. */
 	const raised = options.some((o) => o.bonus) ? fighter?.choice?.source : undefined;
 	const fighterRules = ruleEntries(
-		[...(fighter?.rules ?? []), ...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type }))],
+		[...(fighter?.rules ?? []), ...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type })), ...advanced.rules],
 		new Map(raised ? [[raised, 'Already included.']] : [])
 	);
 
@@ -371,7 +382,18 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 		type: fighterType(instance, faction),
 		leader
 	});
-	const of = (fighters: Fighter[]) => warband.fighters.filter((i) => fighters.some((f) => f.id === i.fighterId));
+	/* A henchman its levels made a HERO stands among the heroes, where the game names them. */
+	const heroTitle = game.groups.length ? undefined : game.roleLabels?.hero;
+	const promoted = (i: FighterInstance) => {
+		const type = faction.fighters.find((f) => f.id === i.fighterId);
+		return !!type && !!game.advancement && !type.keywords.includes('hero') && game.advancement.keywords(i, type.keywords).includes('hero');
+	};
+	const of = (fighters: Fighter[], title: string | null = null) =>
+		warband.fighters.filter(
+			(i) =>
+				(fighters.some((f) => f.id === i.fighterId) && !(heroTitle && promoted(i))) ||
+				(heroTitle !== undefined && title === heroTitle && promoted(i))
+		);
 
 	/* Fighters in the order of the headings, within one in the order the warband
 	   keeps them. Where the headings are roles, as Wyrdcry's, the leader stands
@@ -386,7 +408,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 			title: section.title,
 			entries: [
 				...(leaders && i === 0 ? of(leaders.fighters).map((f) => entry(f, true)) : []),
-				...of(section.fighters).map((f) => entry(f))
+				...of(section.fighters, section.title).map((f) => entry(f))
 			]
 		}))
 		.filter((group) => group.entries.length);

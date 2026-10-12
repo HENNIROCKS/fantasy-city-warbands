@@ -32,6 +32,9 @@
 		onend,
 		oncancelbattle,
 		onsound,
+		levelsOpen = 0,
+		levelLabel = '',
+		onlevels,
 		editing = false,
 		doneLabel = 'Done',
 		doneDisabled = false,
@@ -72,6 +75,11 @@
 		/** Drops the battle without its aftermath, after asking. Only where the game has an aftermath. */
 		oncancelbattle?: () => void;
 		onsound?: () => void;
+		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
+		levelsOpen?: number;
+		levelLabel?: string;
+		/** Opens the sheet that spends them. */
+		onlevels?: () => void;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
 		/** What finishing the turned card does, on its button. */
@@ -204,6 +212,10 @@
 						{/if}
 					{:else}
 						<button onclick={() => onstart?.()}>Start battle</button>
+					{/if}
+					{#if levelsOpen > 0}
+						<hr />
+						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
 					{/if}
 					<hr />
 					<button aria-pressed={sound} onclick={() => onsound?.()}>

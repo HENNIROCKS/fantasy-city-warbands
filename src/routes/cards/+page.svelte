@@ -6,6 +6,7 @@
 	import { APP_TITLE } from '$lib/app';
 	import AftermathBack from '$lib/components/AftermathBack.svelte';
 	import CardBack, { type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
+	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
@@ -214,6 +215,37 @@
 		warband = updated;
 		aftermath = null;
 		setBattle(null);
+		spending = levels.length > 0;
+	}
+
+	/* The levels the fighters have open, in the order the warband keeps them, each
+	   lowest first: spent one after the other in a sheet, after a battle or from
+	   the Battle menu. */
+	const levels = $derived.by(() => {
+		const advancement = system?.game.advancement;
+		if (!warband || !faction || !advancement) return [];
+		return warband.fighters.flatMap((instance) => {
+			const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+			if (!fighter) return [];
+			return advancement.open(instance, fighter).map((level) => ({ instance, fighter, level }));
+		});
+	});
+	let spending = $state(false);
+
+	/* Written at once, so a phone that goes dark cannot leave a level both spent and open.
+	   A failed write raises the storage warning and leaves the level open. */
+	async function spendLevel(pick: LevelPick) {
+		const next = levels[0];
+		if (!warband || !next) return;
+		const { level } = next.level;
+		const advance = { level, ...pick };
+		const updated = $state.snapshot(warband) as Warband;
+		updated.fighters = updated.fighters.map((f) =>
+			f.instanceId === next.instance.instanceId ? { ...f, advances: [...(f.advances ?? []), advance] } : f
+		);
+		if (!(await saveWarband(updated))) return;
+		warband = updated;
+		if (levels.length === 0) spending = false;
 	}
 
 	function focusOnMount(node: HTMLElement) {
@@ -254,9 +286,15 @@
 	<title>{title} · Cards · {APP_TITLE}</title>
 </svelte:head>
 
-<svelte:window onkeydown={(event) => asking && event.key === 'Escape' && keepPlaying()} />
+<svelte:window
+	onkeydown={(event) => {
+		if (event.key !== 'Escape') return;
+		if (asking) keepPlaying();
+		else if (spending) spending = false;
+	}}
+/>
 
-<div class="flex h-dvh flex-col" inert={asking !== null}>
+<div class="flex h-dvh flex-col" inert={asking !== null || (spending && levels.length > 0)}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -290,6 +328,9 @@
 				onend={endBattle}
 				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}
 				onsound={toggleSound}
+				levelsOpen={levels.length}
+				levelLabel={system.game.advancement?.label ?? ''}
+				onlevels={() => (spending = true)}
 				editing={editingId !== null || aftermath !== null}
 				doneLabel={aftermath ? 'Apply' : 'Done'}
 				doneDisabled={aftermath !== null && !aftermath.result}
@@ -312,6 +353,19 @@
 		</main>
 	{/if}
 </div>
+
+{#if spending && levels.length && system?.game.advancement}
+	{@const next = levels[0]}
+	<RenownSheet
+		name={next.instance.name.trim() || 'Unnamed fighter'}
+		label={system.game.advancement.label}
+		level={next.level}
+		offer={system.game.advancement.offer(next.instance, next.fighter, faction!, next.level)}
+		waiting={levels.length - 1}
+		onspend={spendLevel}
+		onclose={() => (spending = false)}
+	/>
+{/if}
 
 {#if asking && battle}
 	{@const verb = asking === 'end' ? 'End' : 'Cancel'}

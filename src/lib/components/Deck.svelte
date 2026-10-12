@@ -35,6 +35,9 @@
 		onend,
 		oncancelbattle,
 		onsound,
+		levelsOpen = 0,
+		levelLabel = '',
+		onlevels,
 		editing = false,
 		doneLabel = 'Done',
 		doneDisabled = false,
@@ -68,6 +71,10 @@
 		/** Drops the battle without its aftermath; only where the game has one. */
 		oncancelbattle?: (out: number) => void;
 		onsound?: () => void;
+		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
+		levelsOpen?: number;
+		levelLabel?: string;
+		onlevels?: () => void;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
 		/** What finishing the turned card does, on its button. */
@@ -400,6 +407,9 @@
 		onend={() => onend?.(out)}
 		oncancelbattle={oncancelbattle && (() => oncancelbattle(out))}
 		{onsound}
+		{levelsOpen}
+		{levelLabel}
+		{onlevels}
 		{editing}
 		{doneLabel}
 		{doneDisabled}

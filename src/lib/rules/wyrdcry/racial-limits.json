@@ -1,0 +1,65 @@
+[
+  {
+    "id": "daemon",
+    "name": "Daemon",
+    "profile": {
+      "move": 8,
+      "fight": 8,
+      "shoot": 4,
+      "health": 30,
+      "bravery": 2
+    }
+  },
+  {
+    "id": "ghoul",
+    "name": "Ghoul",
+    "profile": {
+      "move": 6,
+      "fight": 6,
+      "shoot": 3,
+      "health": 24,
+      "bravery": 4
+    }
+  },
+  {
+    "id": "human",
+    "name": "Human",
+    "profile": {
+      "move": 6,
+      "fight": 6,
+      "shoot": 6,
+      "health": 24,
+      "bravery": 3
+    }
+  },
+  {
+    "id": "skaven",
+    "name": "Skaven",
+    "profile": {
+      "move": 8,
+      "fight": 6,
+      "shoot": 6,
+      "health": 20,
+      "bravery": 5
+    }
+  },
+  {
+    "id": "vampire",
+    "name": "Vampire",
+    "profile": {
+      "move": 8,
+      "fight": 8,
+      "shoot": 6,
+      "health": 30,
+      "bravery": 2
+    }
+  },
+  { "id": "beastman", "name": "Beastman", "profile": null },
+  { "id": "dire-wolf", "name": "Dire Wolf", "profile": null },
+  { "id": "dwarf", "name": "Dwarf", "profile": null },
+  { "id": "elf", "name": "Elf", "profile": null },
+  { "id": "monster", "name": "Monster", "profile": null },
+  { "id": "ogre", "name": "Ogre", "profile": null },
+  { "id": "war-hound", "name": "War Hound", "profile": null },
+  { "id": "zombie", "name": "Zombie", "profile": null }
+]

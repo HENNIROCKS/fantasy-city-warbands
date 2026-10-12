@@ -110,6 +110,8 @@ export interface GameSystem {
 	 * battle only drops it.
 	 */
 	aftermath?: Aftermath;
+	/** What a fighter's levels are spent on and what that does to its card. Without it, levels are not spent here. */
+	advancement?: Advancement;
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -194,6 +196,62 @@ export interface Aftermath {
 		gold: number;
 		lines: { gain: string; why: string }[];
 	};
+}
+
+/**
+ * A game's way of spending a fighter's levels, such as Wyrdcry's renown: which
+ * levels are open, what each offers, and what the spent ones do to the card.
+ */
+export interface Advancement {
+	/** What a level is called: `Renown`. */
+	label: string;
+	/** The fighter's levels earned and not yet spent, lowest first. */
+	open(instance: FighterInstance, fighter: Fighter): OpenLevel[];
+	/** What one of those levels can be spent on, each with the reason where it cannot. */
+	offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel): LevelOffer;
+	/** The fighter's keywords as its levels make them, such as a henchman's promotion to HERO. */
+	keywords(instance: FighterInstance, keywords: string[]): string[];
+	/** What the spent levels add to the card besides characteristics: rules, keywords, a weapon's figures. */
+	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): AdvanceEffects;
+}
+
+export interface OpenLevel {
+	level: number;
+	/** What the rules let this level do, in a sentence for the sheet. */
+	note: string;
+}
+
+export interface LevelOffer {
+	stats: {
+		stat: string;
+		label: string;
+		/** The figure as it stands and as it would become, written as the card writes them. */
+		from: string;
+		to: string;
+		bonus: number;
+		blocked: string | null;
+	}[];
+	/** What a level can be spent on besides a characteristic, by heading: `Heroic Talents`, `Agility`. Empty where nothing. */
+	rules: { heading: string; options: LevelRule[] }[];
+	/** The tab the rules sit under: `Heroic Talents`. */
+	rulesLabel: string;
+}
+
+export interface LevelRule {
+	id: string;
+	name: string;
+	text: string;
+	type?: string;
+	blocked: string | null;
+	/** The weapons it can be taken for, where it is taken for one; null for the rest. */
+	weapons: { id: string; name: string }[] | null;
+}
+
+export interface AdvanceEffects {
+	rules: Rule[];
+	keywords: string[];
+	/** A weapon column the levels change, by wargear id: its new figure and why. */
+	weapons: { wargear: string; stat: string; value: string; source: string }[];
 }
 
 /** A number a game's campaign counts up and down, such as favour. */
@@ -314,6 +372,8 @@ export interface FighterChoice {
 	source?: string;
 	pick: number;
 	options: FighterChoiceOption[];
+	/** How many more of the options it may learn later in place of a level's other reward, such as a wizard's spell for a heroic talent. */
+	later?: number;
 	/**
 	 * The table's name where the option is rolled at the table: `Mutation Table`.
 	 * The option ids are then the results, `21-23`, and picking asks whether that was rolled.

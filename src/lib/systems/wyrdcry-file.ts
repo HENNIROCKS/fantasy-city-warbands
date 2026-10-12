@@ -12,6 +12,7 @@ import { readColour } from '$lib/colour';
 import { profileOf } from '$lib/core/warband';
 import type { Advance, BattleRecord, Faction, FighterInstance, Warband } from '$lib/core/types';
 import { factions, game, wargearId } from './wyrdcry';
+import { usedUp } from './wyrdcry-renown';
 
 type Raw = Record<string, unknown>;
 
@@ -61,6 +62,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	const fighterFluff = fluff && isObject(fluff.fighters) ? fluff.fighters : {};
 
 	let pending = 0;
+	let usedLevels = 0;
 	let overridden = 0;
 	const unexplained: string[] = [];
 
@@ -90,6 +92,12 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 
 		const advances = advancesOf(instance, raw, faction, renownHistory, modifiers, selections !== null);
 		if (advances.length) instance.advances = advances;
+		/* A level the file holds no record of was spent elsewhere, or is lost with the deck's open ones: either way not open here. */
+		const unrecorded = usedUp(instance);
+		if (unrecorded.length) {
+			instance.advances = [...advances, ...unrecorded];
+			usedLevels += unrecorded.length;
+		}
 		for (const a of advances) {
 			if (a.level === 0 && a.stat) unexplained.push(`${name || 'Unnamed fighter'} ${statLabel(a.stat)} ${signed(a.bonus ?? 0)}`);
 		}
@@ -129,8 +137,8 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	if (pending) hints.push(`${pending} ${pending === 1 ? 'purchase' : 'purchases'} still pending in the builder ${pending === 1 ? 'is' : 'are'} taken as bought.`);
 	if (custom.length) hints.push(`${custom.length} custom ${custom.length === 1 ? 'ability or weapon is' : 'abilities and weapons are'} added to the warband's notes.`);
 	if (overridden) hints.push(`The builder's own price for ${overridden} ${overridden === 1 ? 'fighter' : 'fighters'} is left out; the app prices them itself.`);
-	if (fighters.some((f) => f.advances?.length)) {
-		hints.push('Characteristics raised with renown are kept; the cards do not count them in yet.');
+	if (usedLevels) {
+		hints.push(`${usedLevels} renown ${usedLevels === 1 ? 'level' : 'levels'} without a record of what ${usedLevels === 1 ? 'it was' : 'they were'} spent on ${usedLevels === 1 ? 'counts' : 'count'} as spent.`);
 	}
 	if (unexplained.length) hints.push(`Raised without a record of why, kept as such: ${unexplained.join(', ')}.`);
 	const unknown = fighters.filter((f) => !faction.fighters.some((x) => x.id === f.fighterId));
@@ -177,7 +185,7 @@ function advancesOf(
 			level: e.level as number,
 			...(typeof e.characteristic === 'string' ? { stat: e.characteristic, bonus: number(e.bonus) ?? 0 } : {}),
 			...(typeof e.talent === 'string' ? { rule: e.talent } : {}),
-			...(typeof e.choice === 'string' ? { option: e.choice } : {})
+			...(typeof e.choice === 'string' ? { option: gear([e.choice])[0] } : {})
 		}));
 
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);

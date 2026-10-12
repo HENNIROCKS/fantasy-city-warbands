@@ -14,9 +14,9 @@ the Wyrdcry project, or Sam Pearson and Black Death City.
 it as a deck of cards that counts damage in a battle. It exports a warband as
 a file, imports it again and prints its roster as a PDF, all in a first
 version. In Wyrdcry, ending a battle brings experience, favour and income and
-adds it to the warband's history. It imports the Warband Deck's and the
-Warband Builder's files. It does not yet spend renown, roll injuries, or know
-Black Death City's campaign.
+adds it to the warband's history, and renown is spent on a characteristic or a
+heroic talent. It imports the Warband Deck's and the Warband Builder's files.
+It does not yet roll injuries or know Black Death City's campaign.
 
 ## What it does
 
@@ -72,6 +72,10 @@ Black Death City's campaign.
   delivered and each fighter's experience, with what they bring in favour and
   gold; Apply writes it into the warband and the battle history, which the
   warband card shows with its favour, standing and reputation
+- Spend each level of renown in a sheet, after the battle or from the Battle
+  menu: a characteristic within the fighter's racial limit, and for a hero a
+  heroic talent – a henchman's fourth level makes it a HERO, on its card and
+  among the warband's heroes
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it
