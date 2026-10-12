@@ -52,12 +52,16 @@ Link zwischen Routen läuft deshalb über `resolve()`, nie über ein hartes `/`.
   Wahl. Spielunabhängig; ein Feld, das nur ein Spiel kennt, gehört nicht hierher.
 - `src/lib/systems/<spiel>.ts` – je Spiel Werte, Budget, Gruppen, Rollen und die
   Übersetzung der Rohdaten in die gemeinsame Form.
+- `src/lib/systems/<spiel>-*.ts` – was nur ein Spiel kann und sein System
+  einbindet, etwa `wyrdcry-file.ts` (Import aus Deck und Builder) und
+  `wyrdcry-renown.ts`. Als Spiel lädt `systems/index.ts` nur `<spiel>.ts`.
 - `src/lib/rules/<spiel>/factions/<fraktion>/` – die Daten, ein Ordner je
   Fraktion. Ein neuer Ordner wird ohne weiteren Code geladen.
 
 **Wyrdcry** wird hier gepflegt. Der Bestand stammt aus dem handgepflegten
 Regelbestand des Warband Decks (`~/Sites/wyrdcry-warband-deck/src/lib/rules/`),
-dessen Daten eingefroren sind; eine Korrektur gehört hierher, nicht ins Deck.
+dessen Daten eingefroren sind; sein Repo ist seit 12.10.2026 ein öffentliches
+Archiv, nur lesend. Eine Korrektur gehört hierher, nicht ins Deck.
 Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
 `~/Sites/wyrdcry`. Ob sich das Regelwerk bewegt hat, zeigt der Skill
 `wyrdcry-rules-watch`; übertragen wird von Hand. Eine Bravery-Verbesserung ist
