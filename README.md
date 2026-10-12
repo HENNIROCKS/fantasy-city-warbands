@@ -58,8 +58,11 @@ files, or know anything about a campaign: no experience, no injuries, no income.
   the rounds with one step back, and ends it after asking; the bar under a
   fighter's card takes Health down a point at a time, the card fills with
   blood, and a fighter at none is out of action – with the Wilhelm scream,
-  which can be switched off. State marks a fighter activated or waiting, on
-  the card and in the strokes over the deck
+  which can be switched off. State marks a fighter activated or waiting, and
+  in Wyrdcry in cover, panicked or with its heroic reaction used, on the card
+  and in the strokes over the deck. A wavering warband asks each fighter for
+  its Bravery test, and the Witch Hunters count Zeal into every fighter's
+  figures
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it

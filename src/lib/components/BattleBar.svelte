@@ -1,6 +1,7 @@
 <script lang="ts">
 	import MenuButton from '$lib/components/MenuButton.svelte';
 	import type { BattleState, FighterBattleState } from '$lib/core/battle';
+	import type { FactionCounter } from '$lib/core/types';
 
 	/*
 	 * The battle under the thumb, below the deck, as the Wyrdcry Warband Deck
@@ -13,12 +14,18 @@
 		fighter = null,
 		health = 0,
 		waiting = false,
+		marks = [],
+		counter,
+		stage = null,
+		wavering = false,
 		toAct = 0,
 		out = 0,
 		sound = true,
 		onwound,
 		onactivated,
 		onwaiting,
+		onmark,
+		oncount,
 		onstart,
 		onnext,
 		onundo,
@@ -36,6 +43,14 @@
 		health?: number;
 		/** Whether the game lets a fighter wait. */
 		waiting?: boolean;
+		/** The marks the fighter on top can carry, and whether it does. */
+		marks?: { key: string; label: string; on: boolean }[];
+		/** What the faction counts through the battle; the warband card counts it in place of the round. */
+		counter?: FactionCounter;
+		/** The highest stage of it reached, by its label. */
+		stage?: string | null;
+		/** Whether the warband's morale is wavering. */
+		wavering?: boolean;
 		/** How many fighters still have to act this round. */
 		toAct?: number;
 		/** How many fighters are out of action. */
@@ -44,6 +59,8 @@
 		onwound?: (delta: number) => void;
 		onactivated?: () => void;
 		onwaiting?: () => void;
+		onmark?: (key: string) => void;
+		oncount?: (delta: number) => void;
 		onstart?: () => void;
 		onnext?: () => void;
 		onundo?: () => void;
@@ -118,44 +135,83 @@
 							<span class="tick" aria-hidden="true">{fighter.waiting ? '✓' : ''}</span>Waiting
 						</button>
 					{/if}
+					{#each marks as mark (mark.key)}
+						<button aria-pressed={mark.on} onclick={() => onmark?.(mark.key)}>
+							<span class="tick" aria-hidden="true">{mark.on ? '✓' : ''}</span>{mark.label}
+						</button>
+					{/each}
 				</MenuButton>
 				<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
 					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
 				</button>
 			</div>
 		{:else}
-			<p class="summary text-zinc-400" aria-live="polite">
-				{#if battle}
-					Round {battle.round} · {toAct} to act{#if out > 0}{' '}· {out} out{/if}
-				{:else}
-					No battle
-				{/if}
-			</p>
+			{#if counter}
+				<!-- A faction that counts through the battle has the count where a
+				     fighter has its wounds, under the same thumb; the round is in the
+				     battle menu. -->
+				<div class="wounds">
+					<button
+						class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
+						disabled={!battle || battle.counter === 0}
+						aria-label="Take back a point of {counter.label}"
+						onclick={() => oncount?.(-1)}
+					>
+						&minus;
+					</button>
+					<span class="readout wide" aria-live="polite">
+						<span class="of text-zinc-400">{counter.label}</span> {battle?.counter ?? 0}
+					</span>
+					<button
+						class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
+						aria-label="Count a point of {counter.label}"
+						onclick={() => oncount?.(1)}
+					>
+						+
+					</button>
+					<span class="stage" aria-live="polite">{battle ? (stage ?? '') : ''}</span>
+				</div>
+			{:else}
+				<p class="summary text-zinc-400" aria-live="polite">
+					{@render standing()}
+				</p>
+			{/if}
 			<div class="actions">
-				<button class="action {BUTTON}" aria-pressed={sound} aria-label="Sound when a fighter goes out of action" onclick={() => onsound?.()}>
-					{#if sound}
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" /></svg>
-					{:else}
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4Z" /><path d="m16 9 6 6M22 9l-6 6" /></svg>
-					{/if}
-				</button>
 				<MenuButton label="Battle" class="action {BUTTON}">
 					{#snippet trigger()}Battle{/snippet}
+					{#if counter}
+						<p>{@render standing()}</p>
+					{/if}
 					{#if battle}
 						<button onclick={() => onnext?.()}>Next round</button>
 						{#if battle.undo}
 							<button onclick={() => onundo?.()}>Back to round {battle.undo.round}</button>
 						{/if}
-						<hr />
-						<button onclick={() => onend?.()}>End battle…</button>
 					{:else}
 						<button onclick={() => onstart?.()}>Start battle</button>
+					{/if}
+					<hr />
+					<button aria-pressed={sound} onclick={() => onsound?.()}>
+						<span class="tick" aria-hidden="true">{sound ? '✓' : ''}</span>Scream when out of action
+					</button>
+					{#if battle}
+						<hr />
+						<button onclick={() => onend?.()}>End battle…</button>
 					{/if}
 				</MenuButton>
 			</div>
 		{/if}
 	</div>
 </div>
+
+{#snippet standing()}
+	{#if battle}
+		Round {battle.round} · {toAct} to act{#if out > 0}{' '}· {out} out{/if}{#if wavering}{' '}·
+			<span class="wavering">Wavering</span>{/if}
+	{:else}
+		No battle
+	{/if}
+{/snippet}
 
 <style>
 	.bar {
@@ -253,6 +309,23 @@
 		stroke-width: 1.8;
 		stroke-linecap: round;
 		stroke-linejoin: round;
+	}
+
+	/* Wide enough for two digits, so the + under the thumb stays where it is. */
+	.readout.wide {
+		min-width: 7ch;
+	}
+
+	.stage {
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	/* The one state of the warband that asks something of every fighter: in the
+	   colour for what needs doing. */
+	.wavering {
+		font-weight: 600;
+		color: var(--ui-warn-text);
 	}
 
 	/* Holds the column the entries line up in, whether an entry is ticked or not. */

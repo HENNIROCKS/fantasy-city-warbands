@@ -100,7 +100,54 @@ export interface GameSystem {
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
 		waiting: boolean;
+		/** States a fighter can be marked with, in the order the menu lists them. */
+		marks: BattleMark[];
+		/**
+		 * When the warband's morale breaks, and what it asks of each fighter then.
+		 * Worked out rather than latched, so taking back a mistaken wound takes the
+		 * warband back out of it as well.
+		 */
+		wavering?: {
+			/** How many fighters out of action make the warband waver, from its size. */
+			threshold: (size: number) => number;
+			/** What each fighter has to do before it acts, on its card: `Bravery test`. */
+			test: string;
+			/** The mark failing it sets, which also ends the question. */
+			failed: string;
+		};
 	};
+}
+
+/** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */
+export interface BattleMark {
+	key: string;
+	/** In the menu and on the card's band. */
+	label: string;
+	/** Only a fighter with this keyword can be marked, such as a `hero` for its heroic reaction. */
+	keyword?: string;
+	/** Whether the next round clears it, or only the end of the battle. */
+	lasts: 'round' | 'battle';
+	/** What it does to the characteristics while it stands, by stat key. */
+	bonus?: Record<string, number>;
+}
+
+/**
+ * A count a faction keeps through a battle, such as the Witch Hunters' Zeal,
+ * with what each stage of it does to every fighter.
+ */
+export interface FactionCounter {
+	label: string;
+	/** Lowest first. A stage holds from its `at` on, and the stages add up. */
+	stages: CounterStage[];
+}
+
+export interface CounterStage {
+	at: number;
+	label: string;
+	/** What it adds to every fighter's characteristics, by stat key. */
+	bonus: Record<string, number>;
+	/** A keyword whose carriers the stage leaves out, such as `hired-sword`. */
+	except?: string;
 }
 
 /** A number a game's campaign counts up and down, such as favour. */
@@ -247,6 +294,8 @@ export interface Faction {
 	choices: Choice[];
 	fighters: Fighter[];
 	wargear: Wargear[];
+	/** Where the faction counts something through a battle. */
+	counter?: FactionCounter;
 }
 
 /** One fighter in a warband, as stored. */

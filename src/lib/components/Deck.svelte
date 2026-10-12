@@ -4,8 +4,9 @@
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
-	import { outOfAction, remaining, stateOf, type BattleState } from '$lib/core/battle';
-	import type { DeckCard } from '$lib/core/card';
+	import { battleEffects, isWavering, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
+	import type { DeckCard, FighterCardData } from '$lib/core/card';
+	import type { FactionCounter, GameSystem } from '$lib/core/types';
 	import { explanation } from '$lib/explanation';
 	import type { PhotoView } from '$lib/photo';
 
@@ -20,11 +21,14 @@
 		columns,
 		edit,
 		battle = null,
-		waiting = false,
+		rules,
+		counter,
 		sound = true,
 		onwound,
 		onactivated,
 		onwaiting,
+		onmark,
+		oncount,
 		onstart,
 		onnext,
 		onundo,
@@ -44,11 +48,15 @@
 		battle?: BattleState | null;
 		/** Whether a fighter going out of action is heard. */
 		sound?: boolean;
-		/** Whether the game lets a fighter wait. */
-		waiting?: boolean;
+		/** What the game tracks in a battle beyond rounds, activations and damage. */
+		rules?: GameSystem['battle'];
+		/** What the faction counts through a battle, such as Zeal. */
+		counter?: FactionCounter;
 		onwound?: (instanceId: string, delta: number, health: number) => void;
 		onactivated?: (instanceId: string) => void;
 		onwaiting?: (instanceId: string) => void;
+		onmark?: (instanceId: string, key: string) => void;
+		oncount?: (delta: number) => void;
 		onstart?: () => void;
 		onnext?: () => void;
 		onundo?: () => void;
@@ -117,6 +125,26 @@
 	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
 	const out = $derived(outOfAction(battle, fighterIds));
 	const toAct = $derived(remaining(battle, fighterIds));
+	const wavering = $derived(rules?.wavering ? isWavering(battle, fighterIds, rules.wavering.threshold) : false);
+	const stage = $derived(counter && battle ? (reached(counter.stages, battle.counter).at(-1) ?? null) : null);
+
+	/** What the battle does to one fighter's card, and whether the wavering warband asks it for a test. */
+	function inBattle(card: FighterCardData) {
+		const state = stateOf(battle, card.instanceId);
+		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], battle?.counter ?? 0, card.keywordIds);
+		/* Due until the fighter has acted or waited – it rolled then – or failed it. */
+		const due = wavering && rules?.wavering && !state.out && !state.activated && !state.waiting && !state.marks[rules.wavering.failed];
+		return { state, ...effects, test: due ? rules!.wavering!.test : null };
+	}
+
+	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers. */
+	const topMarks = $derived(
+		topFighter
+			? (rules?.marks ?? [])
+					.filter((m) => !m.keyword || topFighter.keywordIds.includes(m.keyword))
+					.map((m) => ({ key: m.key, label: m.label, on: !!stateOf(battle, topFighter.instanceId).marks[m.key] }))
+			: []
+	);
 
 	const transform = $derived(
 		leaving
@@ -343,13 +371,19 @@
 		{battle}
 		fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
 		health={topFighter?.health.value ?? 0}
-		{waiting}
+		waiting={rules?.waiting ?? false}
+		marks={topMarks}
+		{counter}
+		stage={stage?.label ?? null}
+		{wavering}
 		{toAct}
 		{out}
 		{sound}
 		onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
 		onactivated={() => topFighter && onactivated?.(topFighter.instanceId)}
 		onwaiting={() => topFighter && onwaiting?.(topFighter.instanceId)}
+		onmark={(key) => topFighter && onmark?.(topFighter.instanceId, key)}
+		{oncount}
 		{onstart}
 		{onnext}
 		{onundo}
@@ -366,10 +400,14 @@
 	{#if data.kind === 'warband'}
 		<WarbandCard card={data} onpick={jumpTo} edit={edit?.(data)} />
 	{:else}
+		{@const view = inBattle(data)}
 		<FighterCard
 			card={data}
 			{columns}
-			state={stateOf(battle, data.instanceId)}
+			state={view.state}
+			marks={view.labels}
+			bonus={view.bonus}
+			test={view.test}
 			photo={photos?.get(data.instanceId) ?? null}
 			edit={edit?.(data)}
 		/>

@@ -4,6 +4,7 @@
 	import WeaponTable from '$lib/components/WeaponTable.svelte';
 	import { FRESH, type FighterBattleState } from '$lib/core/battle';
 	import type { CardEntry, CardSection, FighterCardData } from '$lib/core/card';
+	import { formatStat } from '$lib/core/warband';
 	import { imageFieldMask } from '$lib/image-field-mask';
 	import type { PhotoView } from '$lib/photo';
 
@@ -11,6 +12,9 @@
 		card,
 		columns,
 		state = FRESH,
+		marks = [],
+		bonus = {},
+		test = null,
 		photo = null,
 		edit
 	}: {
@@ -18,6 +22,12 @@
 		columns: string[];
 		/** What the fighter has taken in the battle. The bar below the deck sets it. */
 		state?: FighterBattleState;
+		/** The marks it carries, by label, in the order the bands stack. */
+		marks?: string[];
+		/** What the battle adds to its characteristics, by stat key. */
+		bonus?: Record<string, number>;
+		/** What the wavering warband asks of it before it acts, such as `Bravery test`; null where nothing. */
+		test?: string | null;
 		/** The photo of the painted model, shown in the image field where there is one. */
 		photo?: PhotoView | null;
 		/** Where the fighter is named, for a fighter without a name. */
@@ -34,13 +44,16 @@
 	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
 
 	/* Health counts down with the damage the fighter holds, so the table reads the
-	   same figure as the bar below the deck. */
+	   same figure as the bar below the deck. What a mark or a stage of the
+	   faction's count adds goes into the figure, as on the Warband Deck's card. */
 	const stats = $derived(
-		card.stats.map((stat) =>
-			stat.key === card.health.key && state.damage
-				? { ...stat, value: String(Math.max(0, card.health.value - state.damage)) }
-				: stat
-		)
+		card.stats.map((stat) => {
+			const damage = stat.key === card.health.key ? state.damage : 0;
+			const moved = (bonus[stat.key] ?? 0) - damage;
+			if (!moved || stat.amount === undefined || !stat.format) return stat;
+			const amount = stat.key === card.health.key ? Math.max(0, stat.amount + moved) : stat.amount + moved;
+			return { ...stat, value: formatStat({ key: stat.key, label: stat.label, format: stat.format }, amount) };
+		})
 	);
 
 	/* General reference rather than this fighter's own rules: worth having on the
@@ -54,9 +67,17 @@
 </script>
 
 <article class="card" class:dulled={band !== ''} class:out={state.out} style:--wound={wound}>
+	<!-- The test takes the first band's place, which is free by definition while
+	     it is due. Something to do this round, like the states that band names,
+	     but the card stays undulled: the fighter has not acted yet. -->
 	{#if band}
 		<p class="band" aria-hidden="true">{band}</p>
+	{:else if test}
+		<p class="band" aria-hidden="true">{test}</p>
 	{/if}
+	{#each marks as label, slot (label)}
+		<p class="band quiet" style:--slot={slot} aria-hidden="true">{label}</p>
+	{/each}
 
 	<div class="image-section">
 		<div class="image-box">
@@ -461,5 +482,31 @@
 
 	.card.out .band {
 		background: color-mix(in srgb, var(--card-blood) 82%, transparent);
+	}
+
+	/* The same ribbon, held back: half the type size, a thinner ink and no second
+	   pair of rules, so the state of the round keeps the eye and this one is read
+	   after it rather than with it.
+
+	   `top` adds the first band's own box – its padding, line height and border –
+	   plus a fixed clearance, rather than naming a unit offset of its own: below
+	   529px card width `--t` floors while `--u` keeps shrinking, so a flat number
+	   that clears the box at one width closes the gap at another. Each further
+	   `--slot` carries the sum on by one quiet band's box – 8u padding, 21t type,
+	   2px border – and the same 8u clearance. */
+	.band.quiet {
+		top: calc(
+			(94 + 16 * var(--slot)) * var(--u) + (40 + 21 * var(--slot)) * var(--t) + (2 + 2 * var(--slot)) * 1px
+		);
+		padding: calc(4 * var(--u)) 0;
+		background: rgba(18, 18, 22, 0.58);
+		border-top-color: transparent;
+		border-bottom-color: transparent;
+		font-size: calc(21 * var(--t));
+		letter-spacing: 0.05em;
+	}
+
+	.card.out .band.quiet {
+		background: rgba(18, 18, 22, 0.58);
 	}
 </style>

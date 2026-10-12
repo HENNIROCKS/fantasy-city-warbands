@@ -8,7 +8,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { allocate, nextRound, start, stateOf, toggleActivated, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
+	import { adjustCounter, allocate, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
@@ -96,6 +96,9 @@
 		const at = resolve('/build') + `?id=${warband?.id}`;
 		return card.kind === 'warband' ? `${at}&step=finish#warband-name` : `${at}&step=fighters#fighter-name-${card.instanceId}`;
 	}
+
+	/* The marks the next round clears. */
+	const roundMarks = $derived((system?.game.battle?.marks ?? []).filter((m) => m.lasts === 'round').map((m) => m.key));
 
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
@@ -248,13 +251,16 @@
 				columns={system.game.weaponStats.map((s) => s.label)}
 				edit={nameField}
 				{battle}
-				waiting={system.game.battle?.waiting ?? false}
+				rules={system.game.battle}
+				counter={faction.counter}
 				{sound}
 				onwound={wound}
 				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
 				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
+				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key))}
+				oncount={(delta) => setBattle(adjustCounter(battle, delta))}
 				onstart={() => setBattle(start())}
-				onnext={() => battle && setBattle(nextRound(battle))}
+				onnext={() => battle && setBattle(nextRound(battle, roundMarks))}
 				onundo={() => battle && setBattle(undoRound(battle))}
 				onend={askEnd}
 				onsound={toggleSound}

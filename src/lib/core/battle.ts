@@ -6,13 +6,17 @@
  * when the battle ends, and never changes the warband itself.
  *
  * Health is not known here. Whoever allocates damage hands the figure in, so
- * this module stays free of game data and of the card that works it out.
+ * this module stays free of game data and of the card that works it out. The
+ * marks and stages a game declares arrive the same way, handed in.
  */
+
+import type { BattleMark, CounterStage } from './types';
 
 /**
  * What a fighter carries in the battle running right now. `activated` and
  * `waiting` belong to the round and are cleared by the next one; `damage` and
- * `out` belong to the battle.
+ * `out` belong to the battle. `marks` holds the states the game declares, each
+ * cleared by the round or kept for the battle as the game says.
  */
 export interface FighterBattleState {
 	activated: boolean;
@@ -30,6 +34,8 @@ export interface FighterBattleState {
 	 * for the state without having a card at hand.
 	 */
 	out: boolean;
+	/** By the key of a `BattleMark`; a missing key is not marked. */
+	marks: Record<string, boolean>;
 }
 
 /** One round: its number, and what each fighter carries in it. */
@@ -44,6 +50,8 @@ export interface BattleRound {
 
 export interface BattleState extends BattleRound {
 	startedAt: string;
+	/** The faction's count through the battle, such as Zeal. It belongs to the battle, not to the round. */
+	counter: number;
 	/**
 	 * The round the last `nextRound` left behind, so a mistaken tap can be taken
 	 * back. Null once the new round has been played into – from there on there is
@@ -53,10 +61,10 @@ export interface BattleState extends BattleRound {
 }
 
 /** What a fighter carries before anything has happened to it. */
-export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false };
+export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {} };
 
 export function start(): BattleState {
-	return { startedAt: new Date().toISOString(), round: 1, fighters: {}, undo: null };
+	return { startedAt: new Date().toISOString(), round: 1, counter: 0, fighters: {}, undo: null };
 }
 
 /**
@@ -68,6 +76,7 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 	return {
 		startedAt: stored.startedAt ?? new Date().toISOString(),
 		round: stored.round ?? 1,
+		counter: stored.counter ?? 0,
 		fighters: stored.fighters ?? {},
 		undo: stored.undo ?? null
 	};
@@ -108,6 +117,18 @@ export function toggleWaiting(battle: BattleState | null, instanceId: string): B
 	return write(battle, instanceId, { waiting: !stateOf(battle, instanceId).waiting, activated: false });
 }
 
+/** A mark the game declares, set or cleared. It neither ends an activation nor excludes another state. */
+export function toggleMark(battle: BattleState | null, instanceId: string, key: string): BattleState {
+	const marks = stateOf(battle, instanceId).marks;
+	return write(battle, instanceId, { marks: { ...marks, [key]: !marks[key] } });
+}
+
+/** Counts the faction's count up or down, starting a battle if none is running. It cannot fall below nothing. */
+export function adjustCounter(battle: BattleState | null, delta: number): BattleState {
+	const current = battle ?? start();
+	return { ...current, counter: Math.max(0, current.counter + delta), undo: null };
+}
+
 /**
  * Allocates or takes back damage points. A fighter holding damage equal to its
  * Health is out of action, and anything past that is discarded.
@@ -120,12 +141,15 @@ export function allocate(battle: BattleState | null, instanceId: string, delta: 
 
 /**
  * The next round clears what belongs to a round and keeps what belongs to the
- * battle: the wounds and whoever is out of action carry over.
+ * battle: the wounds, whoever is out of action and the marks that last the
+ * battle carry over. `roundMarks` are the keys of the marks the round clears.
  */
-export function nextRound(battle: BattleState): BattleState {
+export function nextRound(battle: BattleState, roundMarks: string[] = []): BattleState {
 	const fighters: Record<string, FighterBattleState> = {};
 	for (const [id, state] of Object.entries(battle.fighters)) {
-		fighters[id] = { ...FRESH, ...state, activated: false, waiting: false };
+		const marks = { ...state.marks };
+		for (const key of roundMarks) delete marks[key];
+		fighters[id] = { ...FRESH, ...state, activated: false, waiting: false, marks };
 	}
 	return { ...battle, round: battle.round + 1, fighters, undo: { round: battle.round, fighters: battle.fighters } };
 }
@@ -153,4 +177,38 @@ export function remaining(battle: BattleState | null, instanceIds: string[]): nu
 /** How many of the given fighters are out of action. */
 export function outOfAction(battle: BattleState | null, instanceIds: string[]): number {
 	return instanceIds.filter((id) => stateOf(battle, id).out).length;
+}
+
+/** Whether as many of the given fighters as `threshold` names for their number are out of action. */
+export function isWavering(battle: BattleState | null, instanceIds: string[], threshold: (size: number) => number): boolean {
+	if (!battle || !instanceIds.length) return false;
+	return outOfAction(battle, instanceIds) >= threshold(instanceIds.length);
+}
+
+/** The stages a count has reached, lowest first; the stages arrive sorted. */
+export function reached(stages: CounterStage[], counter: number): CounterStage[] {
+	return stages.filter((stage) => stage.at <= counter);
+}
+
+/**
+ * What the battle does to one fighter's card: the marks it carries, by label –
+ * those of the round first, as the band above them belongs to the round – and
+ * what the marks and the faction's reached stages add to its characteristics.
+ * A stage leaves out the carriers of its `except` keyword.
+ */
+export function battleEffects(
+	state: FighterBattleState,
+	marks: BattleMark[],
+	stages: CounterStage[],
+	counter: number,
+	keywords: string[]
+): { labels: string[]; bonus: Record<string, number> } {
+	const set = marks.filter((m) => state.marks[m.key]);
+	const labels = [...set.filter((m) => m.lasts === 'round'), ...set.filter((m) => m.lasts === 'battle')].map((m) => m.label);
+	const holding = reached(stages, counter).filter((stage) => !stage.except || !keywords.includes(stage.except));
+	const bonus: Record<string, number> = {};
+	for (const amounts of [...set.map((m) => m.bonus ?? {}), ...holding.map((stage) => stage.bonus)]) {
+		for (const [key, amount] of Object.entries(amounts)) bonus[key] = (bonus[key] ?? 0) + amount;
+	}
+	return { labels, bonus };
 }

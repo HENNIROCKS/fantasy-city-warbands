@@ -5,7 +5,7 @@
  * formatted once, so the card and the roster print read the same.
  */
 
-import type { Faction, Fighter, FighterInstance, GameSystem, Rule, Wargear, Warband } from './types';
+import type { Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
@@ -16,6 +16,9 @@ export interface CardValue {
 	/** For a narrow card, where the label does not fit its column: `Init`. */
 	short?: string;
 	value: string;
+	/** The figure behind `value` and how it is written, where something in play can move it. */
+	amount?: number;
+	format?: StatFormat;
 }
 
 /** One paragraph below the tables: a bold label, then the text. */
@@ -64,6 +67,8 @@ export interface FighterCardData {
 	subtitle: string;
 	/** Readable: `clan eshin`, not `clan-eshin`. */
 	keywords: string[];
+	/** As the rules write them, `hired-sword`, for what a battle asks of the fighter by keyword. */
+	keywordIds: string[];
 	stats: CardValue[];
 	/** The stat damage counts down, with its figure – 0 where the profile has none. */
 	health: { key: string; value: number };
@@ -179,12 +184,17 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		unnamed: !instance.name.trim(),
 		subtitle: type,
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
-		stats: game.stats.map((s) => ({
-			key: s.key,
-			label: s.label,
-			short: s.short,
-			value: formatStat(s, profile?.[s.key])
-		})),
+		keywordIds: keywords,
+		stats: game.stats.map((s) => {
+			const amount = profile?.[s.key];
+			return {
+				key: s.key,
+				label: s.label,
+				short: s.short,
+				value: formatStat(s, amount),
+				...(typeof amount === 'number' ? { amount, format: s.format } : {})
+			};
+		}),
 		health: {
 			key: game.health,
 			value: typeof profile?.[game.health] === 'number' ? (profile[game.health] as number) : 0

@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, Fighter, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
+import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -58,7 +58,21 @@ export const game: GameSystem = {
 		warband: [{ key: 'favour', label: 'Favour' }],
 		fighter: [{ key: 'renown', label: 'Renown' }]
 	},
-	battle: { waiting: true }
+	/* As the Warband Deck tracks them. Cover changes no figure of the fighter's:
+	   it raises the difficulty rating of a ranged attack against it, a number on
+	   the attacker's side. */
+	battle: {
+		waiting: true,
+		marks: [
+			{ key: 'heroic', label: 'Heroic reaction used', keyword: 'hero', lasts: 'battle' },
+			{ key: 'cover', label: 'In cover', lasts: 'battle' },
+			{ key: 'panicked', label: 'Panicked', lasts: 'round', bonus: { fight: -1, shoot: -1 } }
+		],
+		/* Half the warband out of action, rounding up: each fighter takes a
+		   Bravery test when first activated in a round, and a fail panics it
+		   until the round ends. */
+		wavering: { threshold: (size) => Math.ceil(size / 2), test: 'Bravery test', failed: 'panicked' }
+	}
 };
 
 interface RawFaction {
@@ -123,6 +137,17 @@ interface RawRule {
 	pick: number | null;
 	options: { id: string; name: string; text: string }[];
 	table?: RawRow[];
+	/** What the rule does that the app counts, as the Warband Deck writes it; only Zeal is read here. */
+	effect?: RawEffect | null;
+}
+
+/** A stage of Zeal, as the Warband Deck's ruleset writes it. `except` is a keyword id. */
+interface RawEffect {
+	kind: string;
+	at?: number;
+	label?: string;
+	amounts?: Record<string, number>;
+	except?: string;
 }
 
 interface RawAbility {
@@ -361,8 +386,18 @@ function build(
 				...fighters.flatMap((f) => f.gear),
 				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
 			])
-		].flatMap((id) => catalogue.get(id) ?? [])
+		].flatMap((id) => catalogue.get(id) ?? []),
+		counter: zeal(rules)
 	};
+}
+
+/** The faction's Zeal, where its rules have stages of it. */
+function zeal(rules: RawRule[]): FactionCounter | undefined {
+	const stages = rules
+		.flatMap((r) => (r.effect?.kind === 'zeal' ? [r.effect] : []))
+		.map((e) => ({ at: e.at ?? 0, label: e.label ?? '', bonus: e.amounts ?? {}, ...(e.except ? { except: e.except } : {}) }))
+		.sort((a, b) => a.at - b.at);
+	return stages.length ? { label: 'Zeal', stages } : undefined;
 }
 
 /** Each faction folder's files, keyed by path. */
