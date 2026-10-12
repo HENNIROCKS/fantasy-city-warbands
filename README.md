@@ -52,7 +52,10 @@ Black Death City's campaign.
   where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
-  for each fighter with its profile, weapons and rules
+  for each fighter with its profile, weapons and rules. In Wyrdcry a
+  characteristic counts in the fighter's pick, its renown and its armour, and
+  tapped it says how it adds up and what a situation can still change, marked
+  with a star
 - Turn a fighter's card over with the pencil under it to write the fighter's
   fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device

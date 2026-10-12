@@ -20,6 +20,33 @@ export interface CardValue {
 	/** The figure behind `value` and how it is written, where something in play can move it. */
 	amount?: number;
 	format?: StatFormat;
+	/** What the figure is made of, the profile first. Only on a fighter's characteristics. */
+	layers?: StatLayer[];
+	/** What changes the figure in one situation only, beside it rather than in it. */
+	conditions?: CardCondition[];
+	/** Opened when the value is tapped. */
+	explanation?: CardExplanation;
+}
+
+/**
+ * One contribution to a characteristic, as the Warband Deck's card shows it.
+ * The base layer carries the profile value, every other layer the signed amount
+ * it adds; `damage` and `battle` are the battle's own.
+ */
+export interface StatLayer {
+	kind: 'base' | 'permanent' | 'equipment' | 'damage' | 'battle';
+	/** Named the way the card names it: `Profile`, `Heavy Armour`, `Renown 2`. */
+	source: string;
+	amount: number;
+}
+
+/** A rule that can change a characteristic without being counted into it, by what it hangs on. */
+export interface CardCondition {
+	/** Where the rule hangs: a weapon, an item, a state of the battle. */
+	source: string;
+	name: string;
+	text: string;
+	amount?: number;
 }
 
 /** One paragraph below the tables: a bold label, then the text. */
@@ -32,11 +59,19 @@ export interface CardEntry {
 	note?: string;
 }
 
-/** What tapping a weapon's name opens: its profile in short and its rules in full. */
+/**
+ * What tapping a weapon's name or a characteristic opens: a weapon's profile in
+ * short and its rules in full, or how a figure is made up and what can still
+ * change it.
+ */
 export interface CardExplanation {
 	title: string;
-	facts: { label: string; value: string }[];
-	rules: CardEntry[];
+	/** What the card shows, spelled the way the card spells it: `6`, `4"`. */
+	result?: string;
+	facts?: { label: string; value: string }[];
+	layers?: StatLayer[];
+	conditions?: CardCondition[];
+	rules?: CardEntry[];
 }
 
 export interface CardWeapon {
@@ -140,9 +175,16 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			};
 		});
 
+	/* A rule an item gives, the Elven Cloak's Stealthy, stands right under the
+	   item while it is carried, as on the Warband Deck's card – once, however
+	   many pieces give it. */
+	const given = new Set<string>();
 	const items = carried
 		.filter(({ wargear }) => wargear.kind === 'armour' || wargear.kind === 'item')
-		.map(({ wargear, count }) => ({ label: times(wargear.name, count), text: wargear.text ?? '' }));
+		.flatMap(({ wargear, count }) => [
+			{ label: times(wargear.name, count), text: wargear.text ?? '' },
+			...ruleEntries((wargear.grants ?? []).filter((r) => !given.has(r.name) && given.add(r.name)))
+		]);
 
 	/* The faction's standing rules, then what the warband picked under its choices. */
 	const factionRules: CardEntry[] = [
@@ -177,6 +219,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	).filter((s) => s.entries.length);
 
 	const profile = fighter ? profileOf(instance, fighter) : undefined;
+	const statLayers = fighter ? layersOf(instance, fighter, faction) : new Map<string, StatLayer[]>();
+	const statConditions = conditionsOf(carried.map((c) => c.wargear), instance.wargear);
 
 	return {
 		kind: 'fighter',
@@ -187,18 +231,24 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
 		keywordIds: keywords,
 		stats: game.stats.map((s) => {
-			const amount = profile?.[s.key];
+			const layers = statLayers.get(s.key);
+			if (!layers) return { key: s.key, label: s.label, short: s.short, value: formatStat(s, profile?.[s.key]) };
+			const amount = layers.reduce((sum, layer) => sum + layer.amount, 0);
 			return {
 				key: s.key,
 				label: s.label,
 				short: s.short,
 				value: formatStat(s, amount),
-				...(typeof amount === 'number' ? { amount, format: s.format } : {})
+				amount,
+				format: s.format,
+				layers,
+				conditions: statConditions.get(s.key) ?? []
 			};
 		}),
+		/* With its levels and wargear, as the table counts it, so damage counts down from the same figure. */
 		health: {
 			key: game.health,
-			value: typeof profile?.[game.health] === 'number' ? (profile[game.health] as number) : 0
+			value: statLayers.get(game.health)?.reduce((sum, layer) => sum + layer.amount, 0) ?? 0
 		},
 		campaign: [{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) }],
 		weapons,
@@ -206,6 +256,66 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		fluff: instance.fluff?.trim() ?? '',
 		unknown: !fighter
 	};
+}
+
+/**
+ * How each numeric characteristic is made up, as the Warband Deck's card has it:
+ * the profile, what the fighter's own pick and its levels add, then what its
+ * bought wargear adds whenever it is carried. Wargear on the profile is not
+ * counted: the profile already carries it.
+ */
+function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction): Map<string, StatLayer[]> {
+	const map = new Map<string, StatLayer[]>();
+	for (const [key, value] of Object.entries(fighter.profile)) {
+		if (typeof value === 'number') map.set(key, [{ kind: 'base', source: 'Profile', amount: value }]);
+	}
+	const add = (key: string, layer: StatLayer) => {
+		if (layer.amount !== 0) map.get(key)?.push(layer);
+	};
+
+	const source = fighter.choice?.source;
+	for (const option of chosenOptions(instance, fighter)) {
+		for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: source ?? option.name, amount: bonus });
+	}
+	for (const advance of instance.advances ?? []) {
+		if (!advance.stat) continue;
+		add(advance.stat, {
+			kind: 'permanent',
+			/* A level of 0 is a raise the warband file holds without saying why. */
+			source: advance.level > 0 ? `Renown ${advance.level}` : 'Warband file',
+			amount: advance.bonus ?? 0
+		});
+	}
+	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
+	for (const id of instance.wargear) {
+		const piece = wargear.get(id);
+		for (const effect of piece?.effects ?? []) add(effect.stat, { kind: 'equipment', source: piece!.name, amount: effect.bonus });
+	}
+	return map;
+}
+
+/**
+ * What can change a characteristic in one situation only: the rules of every
+ * weapon the fighter has, its profile's and a mutation's included, and the bought
+ * items. A rule two weapons share is named once for each weapon, a second copy of
+ * the same weapon adds nothing the first did not say.
+ */
+function conditionsOf(carried: Wargear[], bought: string[]): Map<string, CardCondition[]> {
+	const map = new Map<string, CardCondition[]>();
+	const add = (key: string, condition: CardCondition) => {
+		const list = map.get(key) ?? [];
+		if (!list.some((c) => c.name === condition.name && c.source === condition.source)) map.set(key, [...list, condition]);
+	};
+	for (const piece of carried) {
+		if (piece.kind === 'melee' || piece.kind === 'ranged') {
+			for (const rule of piece.rules ?? []) {
+				for (const c of rule.conditions ?? []) add(c.stat, { source: piece.name, name: c.name, text: c.text, amount: c.bonus });
+			}
+		} else if (bought.includes(piece.id)) {
+			for (const c of piece.conditions ?? []) add(c.stat, { source: piece.name, name: c.name, text: c.text, amount: c.bonus });
+		}
+	}
+	return map;
 }
 
 /** A fighter as the warband card lists it: tapping the entry leads to its own card. */

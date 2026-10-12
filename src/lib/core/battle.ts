@@ -10,7 +10,7 @@
  * marks and stages a game declares arrive the same way, handed in.
  */
 
-import type { BattleMark, CounterStage } from './types';
+import type { BattleMark, CounterStage, StatCondition } from './types';
 
 /**
  * What a fighter carries in the battle running right now. `activated` and
@@ -190,25 +190,46 @@ export function reached(stages: CounterStage[], counter: number): CounterStage[]
 	return stages.filter((stage) => stage.at <= counter);
 }
 
+/** A characteristic the battle moves, and what moves it: `Panicked`, `Zeal 10: Frenzied`. */
+export interface BattleLayer {
+	stat: string;
+	source: string;
+	amount: number;
+}
+
+/** A rule of the battle that changes a characteristic in one situation only, such as cover. */
+export interface BattleCondition extends StatCondition {
+	source: string;
+}
+
 /**
  * What the battle does to one fighter's card: the marks it carries, by label –
  * those of the round first, as the band above them belongs to the round – and
- * what the marks and the faction's reached stages add to its characteristics.
- * A stage leaves out the carriers of its `except` keyword.
+ * what the marks and the faction's reached stages add to its characteristics,
+ * always or in one situation. A stage leaves out the carriers of its `except`
+ * keyword.
  */
 export function battleEffects(
 	state: FighterBattleState,
 	marks: BattleMark[],
 	stages: CounterStage[],
-	counter: number,
+	counter: { label: string; value: number },
 	keywords: string[]
-): { labels: string[]; bonus: Record<string, number> } {
+): { labels: string[]; layers: BattleLayer[]; conditions: BattleCondition[] } {
 	const set = marks.filter((m) => state.marks[m.key]);
-	const labels = [...set.filter((m) => m.lasts === 'round'), ...set.filter((m) => m.lasts === 'battle')].map((m) => m.label);
-	const holding = reached(stages, counter).filter((stage) => !stage.except || !keywords.includes(stage.except));
-	const bonus: Record<string, number> = {};
-	for (const amounts of [...set.map((m) => m.bonus ?? {}), ...holding.map((stage) => stage.bonus)]) {
-		for (const [key, amount] of Object.entries(amounts)) bonus[key] = (bonus[key] ?? 0) + amount;
-	}
-	return { labels, bonus };
+	const ordered = [...set.filter((m) => m.lasts === 'round'), ...set.filter((m) => m.lasts === 'battle')];
+	const holding = reached(stages, counter.value).filter((stage) => !stage.except || !keywords.includes(stage.except));
+	const sources = [
+		...ordered.map((m) => ({ source: m.label, bonus: m.bonus ?? {}, conditions: m.conditions ?? [] })),
+		...holding.map((stage) => ({ source: `${counter.label} ${stage.at}: ${stage.label}`, bonus: stage.bonus, conditions: stage.conditions ?? [] }))
+	];
+	return {
+		labels: ordered.map((m) => m.label),
+		layers: sources.flatMap(({ source, bonus }) =>
+			Object.entries(bonus)
+				.filter(([, amount]) => amount !== 0)
+				.map(([stat, amount]) => ({ stat, source, amount }))
+		),
+		conditions: sources.flatMap(({ source, conditions }) => conditions.map((c) => ({ ...c, source })))
+	};
 }

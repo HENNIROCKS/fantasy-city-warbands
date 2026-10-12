@@ -143,6 +143,8 @@ export interface BattleMark {
 	lasts: 'round' | 'battle';
 	/** What it does to the characteristics while it stands, by stat key. */
 	bonus?: Record<string, number>;
+	/** What it does in one situation only, such as cover against a ranged attack. */
+	conditions?: StatCondition[];
 }
 
 /**
@@ -160,6 +162,8 @@ export interface CounterStage {
 	label: string;
 	/** What it adds to every fighter's characteristics, by stat key. */
 	bonus: Record<string, number>;
+	/** What it adds in one situation only, such as against a condemned fighter. */
+	conditions?: StatCondition[];
 	/** A keyword whose carriers the stage leaves out, such as `hired-sword`. */
 	except?: string;
 }
@@ -212,6 +216,27 @@ export interface Rule {
 	name: string;
 	text: string;
 	type?: string;
+	/** What the rule adds to its bearer's characteristics in one situation only, such as Parry's Fight in melee. */
+	conditions?: StatCondition[];
+}
+
+/** What a piece of wargear adds to a characteristic whenever it is carried, such as body armour's Armour. */
+export interface StatEffect {
+	stat: string;
+	bonus: number;
+}
+
+/**
+ * What a rule or a piece of wargear does to a characteristic in one situation
+ * only – a melee attack, a ranged one – which the card cannot know. Shown beside
+ * the figure rather than counted into it.
+ */
+export interface StatCondition {
+	stat: string;
+	/** What it adds, where the rule says a number for this characteristic. */
+	bonus?: number;
+	name: string;
+	text: string;
 }
 
 /** What picking an option changes about which fighters the warband may have. */
@@ -258,6 +283,12 @@ export interface Wargear {
 	rules?: Rule[];
 	/** How many fighters of a warband may carry it at the same time, such as Black Death City's Rare 0-1. */
 	rare?: number;
+	/** What it adds whenever it is carried, such as Heavy Armour's +3 Armour and −1 Move. */
+	effects?: StatEffect[];
+	/** What it adds in one situation only, such as the Shield's Fight against a melee attack. */
+	conditions?: StatCondition[];
+	/** Rules the bearer has while carrying it, such as the Elven Cloak's Stealthy. */
+	grants?: Rule[];
 }
 
 /** One of the options a fighter's own choice offers: a spell, a characteristic, a row of a table. */

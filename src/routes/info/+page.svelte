@@ -74,7 +74,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment, and in Wyrdcry the experience, favour and income a battle brings. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation, spending renown, injuries and Black Death City’s campaign are still to come.'
+				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment, and in Wyrdcry the experience, favour and income a battle brings. A Wyrdcry fighter’s characteristics count in its pick, its renown and its armour; tap one to see how it adds up, and a star marks one a situation can still change, such as Parry or a shield. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation, spending renown, injuries and Black Death City’s campaign are still to come.'
 		},
 		{
 			question: 'Can I track a battle?',

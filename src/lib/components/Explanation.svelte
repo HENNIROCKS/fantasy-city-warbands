@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import RuleText from '$lib/components/RuleText.svelte';
+	import type { StatLayer } from '$lib/core/card';
 	import { dismiss, explanation, settle } from '$lib/explanation';
 
 	/**
@@ -27,6 +28,12 @@
 		closing = true;
 		await painted();
 		dismiss();
+	}
+
+	/* The profile stands as it is, every other layer with its sign. */
+	function amount(layer: StatLayer): string {
+		if (layer.kind === 'base') return String(layer.amount);
+		return layer.amount >= 0 ? `+${layer.amount}` : String(layer.amount);
 	}
 
 	/* Focus belongs in the dialog while it is open, and back where it came from
@@ -61,23 +68,46 @@
 		}}
 	>
 		<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="explanation-title" tabindex="-1" bind:this={sheet}>
-			<h2 id="explanation-title">{open.title}</h2>
+			<div class="top">
+				<h2 id="explanation-title">{open.title}</h2>
+				{#if open.result}<p class="result">{open.result}</p>{/if}
+			</div>
 
 			<ul class="facts">
-				{#each open.facts as fact (fact.label)}
+				{#each open.facts ?? [] as fact (fact.label)}
 					<li>
 						<span>{fact.label}</span>
 						<span class="amount">{fact.value}</span>
 					</li>
 				{/each}
+				{#each open.layers ?? [] as layer, i (layer.source + i)}
+					<li>
+						<span>{layer.source}</span>
+						<span class="amount">{amount(layer)}</span>
+					</li>
+				{/each}
 			</ul>
 
-			{#each open.rules as rule, i (rule.label + i)}
+			{#each open.rules ?? [] as rule, i (rule.label + i)}
 				<div class="rule">
 					<p class="name">{rule.label}</p>
 					{#if rule.text}<p class="text"><RuleText text={rule.text} /></p>{/if}
 				</div>
 			{/each}
+
+			{#if open.conditions?.length}
+				<p class="legend">Only in the right situation</p>
+				{#each open.conditions as condition, i (condition.name + i)}
+					<div class="rule">
+						<p class="name">
+							{condition.name}
+							{#if condition.source !== condition.name}<span class="from">{condition.source}</span>{/if}
+							{#if condition.amount !== undefined}<span class="amount">+{condition.amount}</span>{/if}
+						</p>
+						<p class="text"><RuleText text={condition.text} /></p>
+					</div>
+				{/each}
+			{/if}
 
 			<button class="close" onclick={close}>Close</button>
 		</div>
@@ -135,11 +165,26 @@
 		padding: 16px;
 	}
 
+	/* The title and, for a characteristic, the figure the card shows, on one line. */
+	.top {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
 	h2 {
 		margin: 0;
 		font-family: 'Grenze Gotisch', serif;
 		font-size: 22px;
 		font-weight: 400;
+	}
+
+	.result {
+		margin: 0;
+		font-family: 'Grenze Gotisch', serif;
+		font-size: 28px;
+		font-variant-numeric: lining-nums tabular-nums;
 	}
 
 	.facts {
@@ -185,10 +230,34 @@
 	}
 
 	.name {
+		display: flex;
+		align-items: baseline;
+		gap: 6px;
 		margin: 0 0 3px;
 		font-family: 'Alegreya', serif;
 		font-size: 15px;
 		font-weight: 700;
+	}
+
+	/* What it is worth where it applies – the card knows the number, only not
+	   the moment. */
+	.name .amount {
+		margin-left: auto;
+	}
+
+	.from {
+		font-weight: 400;
+		color: var(--card-ink-muted);
+	}
+
+	/* Alegreya carries the small capitals here; Grenze Gotisch never does. */
+	.legend {
+		margin: 14px 0 8px;
+		font-family: 'Alegreya', serif;
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--card-ink-muted);
 	}
 
 	.text {

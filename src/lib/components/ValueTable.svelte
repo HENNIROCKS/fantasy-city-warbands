@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CardValue } from '$lib/core/card';
+	import { explain } from '$lib/explanation';
 	import { fitText } from '$lib/fit-text';
 
 	let { rows }: { rows: CardValue[] } = $props();
@@ -24,7 +25,17 @@
 	</div>
 	<div class="row values" use:fitText>
 		{#each rows as row (row.key)}
-			<div class="col value"><span data-fit>{row.value}</span></div>
+			{#if row.explanation}
+				<button
+					class="col value explained"
+					onclick={() => row.explanation && explain(row.explanation)}
+					aria-label="{row.label} {row.value}, how it adds up"
+				>
+					<span data-fit>{row.value}</span>
+				</button>
+			{:else}
+				<div class="col value"><span data-fit>{row.value}</span></div>
+			{/if}
 		{/each}
 	</div>
 </div>
@@ -114,5 +125,24 @@
 		white-space: nowrap;
 		overflow: hidden;
 		padding: 0 calc(4 * var(--u));
+	}
+
+	/* A value that opens how it adds up, as on the Warband Deck's card. Type, size
+	   and alignment come from `.col` and `.value`, which a button obeys like any
+	   other element. A link, not a surface: six marked cells side by side read as
+	   a state of the table, while an underlined figure stays a figure that offers
+	   something. */
+	.explained {
+		appearance: none;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+
+	.explained span {
+		color: var(--card-link);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.14em;
 	}
 </style>

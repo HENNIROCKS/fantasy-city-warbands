@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Wargear, Warband } from '$lib/core/types';
+import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
@@ -12,6 +12,9 @@ import items from '$lib/rules/wyrdcry/items.json';
 import weaponRules from '$lib/rules/wyrdcry/weapon-rules.json';
 import universal from '$lib/rules/wyrdcry/universal-abilities.json';
 import campaign from '$lib/rules/wyrdcry/campaign.json';
+import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
+import curatedGrants from '$lib/rules/wyrdcry/item-grants.json';
+import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -91,7 +94,18 @@ export const game: GameSystem = {
 		waiting: true,
 		marks: [
 			{ key: 'heroic', label: 'Heroic reaction used', keyword: 'hero', lasts: 'battle' },
-			{ key: 'cover', label: 'In cover', lasts: 'battle' },
+			{
+				key: 'cover',
+				label: 'In cover',
+				lasts: 'battle',
+				conditions: [
+					{
+						stat: 'defense',
+						name: 'In Cover',
+						text: 'A ranged attack action against this fighter has its difficulty rating (DR) increased by 1.'
+					}
+				]
+			},
 			{ key: 'panicked', label: 'Panicked', lasts: 'round', bonus: { fight: -1, shoot: -1 } }
 		],
 		/* Half the warband out of action, rounding up: each fighter takes a
@@ -225,6 +239,8 @@ interface RawEffect {
 	label?: string;
 	amounts?: Record<string, number>;
 	except?: string;
+	/** What the stage adds in one situation only: to which characteristics, how much, when. */
+	conditions?: { stats: string[]; amount: number; text: string };
 }
 
 interface RawAbility {
@@ -235,7 +251,51 @@ interface RawAbility {
 	text: string;
 }
 
-const weaponRule = new Map(weaponRules.map((r) => [r.id, { name: r.name, text: r.text }]));
+/**
+ * What a weapon rule or an item adds in one situation only, and what an item
+ * gives while carried, kept by hand as the Warband Deck keeps it: the game data
+ * says it only in the text. Parry raises the defender's Fight when targeted in
+ * melee; the Shield does the same, and against a ranged attack raises the
+ * attacker's difficulty rating instead, which goes under Armour without a number,
+ * since a +1 there would read as a point of Armour. `expect` is the wording each
+ * entry was taken from: a development build says when the text has moved away
+ * from it, which is the moment the entry is either wrong or no longer needed.
+ */
+function curated<T extends { weaponRule?: string; item?: string; expect: string }>(entries: T[], what: string): Map<string, { entry: T; name: string; text: string }[]> {
+	const map = new Map<string, { entry: T; name: string; text: string }[]>();
+	for (const entry of entries) {
+		const key = entry.weaponRule ? `rule:${entry.weaponRule}` : `item:${entry.item}`;
+		const source = entry.weaponRule ? weaponRules.find((r) => r.id === entry.weaponRule) : items.find((i) => i.id === entry.item);
+		if (import.meta.env.DEV) {
+			if (!source) console.warn(`curated ${what}: no "${key}" in the game data`);
+			else if (!source.text.includes(entry.expect)) console.warn(`curated ${what}: "${key}" no longer reads "${entry.expect}"`);
+		}
+		if (source) map.set(key, [...(map.get(key) ?? []), { entry, name: source.name, text: source.text }]);
+	}
+	return map;
+}
+
+const conditionsBy = new Map(
+	[...curated(curatedConditions, 'conditions')].map(([key, list]) => [
+		key,
+		list.map(({ entry, name, text }): StatCondition => ({ stat: entry.characteristic, ...(entry.bonus !== null ? { bonus: entry.bonus } : {}), name, text }))
+	])
+);
+
+/* Talents an item gives while it is carried, the Elven Cloak's Stealthy, as rules of their own. */
+const grantsBy = new Map(
+	[...curated(curatedGrants, 'grants')].map(([key, list]) => [
+		key,
+		list.flatMap(({ entry }): Rule[] => {
+			const talent = heroicTalents.find((t) => t.id === entry.talent);
+			return talent ? [{ name: talent.name, text: talent.text, type: talent.type }] : [];
+		})
+	])
+);
+
+const weaponRule = new Map(
+	weaponRules.map((r) => [r.id, { name: r.name, text: r.text, ...(conditionsBy.has(`rule:${r.id}`) ? { conditions: conditionsBy.get(`rule:${r.id}`) } : {}) }])
+);
 
 /** A reach of `{ min: 0, max: 1 }` as the card prints it: `1"`, or `4–18"` where it starts further out. */
 function range({ min, max }: { min: number; max: number }): string {
@@ -261,7 +321,21 @@ const catalogue = new Map<string, Wargear>([
 	]),
 	...items.flatMap((i): [string, Wargear][] =>
 		typeof i.cost === 'number'
-			? [[`item:${i.id}`, { id: `item:${i.id}`, name: i.name, kind: i.type === 'armour' ? 'armour' : 'item', cost: i.cost, text: i.text }]]
+			? [
+					[
+						`item:${i.id}`,
+						{
+							id: `item:${i.id}`,
+							name: i.name,
+							kind: i.type === 'armour' ? 'armour' : 'item',
+							cost: i.cost,
+							text: i.text,
+							...(i.effects.length ? { effects: i.effects.map((e) => ({ stat: e.characteristic, bonus: e.bonus })) } : {}),
+							...(conditionsBy.has(`item:${i.id}`) ? { conditions: conditionsBy.get(`item:${i.id}`) } : {}),
+							...(grantsBy.has(`item:${i.id}`) ? { grants: grantsBy.get(`item:${i.id}`) } : {})
+						}
+					]
+				]
 			: []
 	)
 ]);
@@ -472,7 +546,15 @@ function build(
 function zeal(rules: RawRule[]): FactionCounter | undefined {
 	const stages = rules
 		.flatMap((r) => (r.effect?.kind === 'zeal' ? [r.effect] : []))
-		.map((e) => ({ at: e.at ?? 0, label: e.label ?? '', bonus: e.amounts ?? {}, ...(e.except ? { except: e.except } : {}) }))
+		.map((e) => ({
+			at: e.at ?? 0,
+			label: e.label ?? '',
+			bonus: e.amounts ?? {},
+			...(e.except ? { except: e.except } : {}),
+			...(e.conditions
+				? { conditions: e.conditions.stats.map((stat) => ({ stat, bonus: e.conditions!.amount, name: e.label ?? '', text: e.conditions!.text })) }
+				: {})
+		}))
 		.sort((a, b) => a.at - b.at);
 	return stages.length ? { label: 'Zeal', stages } : undefined;
 }

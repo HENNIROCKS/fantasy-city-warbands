@@ -140,7 +140,7 @@
 	/** What the battle does to one fighter's card, and whether the wavering warband asks it for a test. */
 	function inBattle(card: FighterCardData) {
 		const state = stateOf(battle, card.instanceId);
-		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], battle?.counter ?? 0, card.keywordIds);
+		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], { label: counter?.label ?? '', value: battle?.counter ?? 0 }, card.keywordIds);
 		/* Due until the fighter has acted or waited – it rolled then – or failed it. */
 		const morale = rules?.wavering;
 		const due = morale && wavering && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
@@ -419,7 +419,8 @@
 			{columns}
 			state={view.state}
 			marks={view.labels}
-			bonus={view.bonus}
+			layers={view.layers}
+			conditions={view.conditions}
 			test={view.test}
 			photo={photos?.get(data.instanceId) ?? null}
 			edit={edit?.(data)}

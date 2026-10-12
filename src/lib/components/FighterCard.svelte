@@ -2,8 +2,8 @@
 	import RuleText from '$lib/components/RuleText.svelte';
 	import ValueTable from '$lib/components/ValueTable.svelte';
 	import WeaponTable from '$lib/components/WeaponTable.svelte';
-	import { FRESH, type FighterBattleState } from '$lib/core/battle';
-	import type { CardEntry, CardSection, FighterCardData } from '$lib/core/card';
+	import { FRESH, type BattleCondition, type BattleLayer, type FighterBattleState } from '$lib/core/battle';
+	import type { CardEntry, CardSection, CardValue, FighterCardData, StatLayer } from '$lib/core/card';
 	import { formatStat } from '$lib/core/warband';
 	import { imageFieldMask } from '$lib/image-field-mask';
 	import type { PhotoView } from '$lib/photo';
@@ -13,7 +13,8 @@
 		columns,
 		state = FRESH,
 		marks = [],
-		bonus = {},
+		layers = [],
+		conditions = [],
 		test = null,
 		photo = null,
 		edit
@@ -24,8 +25,10 @@
 		state?: FighterBattleState;
 		/** The marks it carries, by label, in the order the bands stack. */
 		marks?: string[];
-		/** What the battle adds to its characteristics, by stat key. */
-		bonus?: Record<string, number>;
+		/** What the battle adds to its characteristics, and from what. */
+		layers?: BattleLayer[];
+		/** What the battle changes in one situation only, such as cover. */
+		conditions?: BattleCondition[];
 		/** What the wavering warband asks of it before it acts, such as `Bravery test`; null where nothing. */
 		test?: string | null;
 		/** The photo of the painted model, shown in the image field where there is one. */
@@ -43,16 +46,28 @@
 	   red to half its height. */
 	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
 
-	/* Health counts down with the damage the fighter holds, so the table reads the
-	   same figure as the bar below the deck. What a mark or a stage of the
-	   faction's count adds goes into the figure, as on the Warband Deck's card. */
+	/* Each figure as the Warband Deck's card reads it: the layers the card was
+	   built with, then the battle's own – the damage Health counts down, so the
+	   table reads the same figure as the bar below the deck, and what a mark or a
+	   stage of the faction's count adds. A figure made of more than the profile,
+	   or one a situation can still change, opens its explanation when tapped; the
+	   star says the latter, which a tag alone would not. */
 	const stats = $derived(
-		card.stats.map((stat) => {
-			const damage = stat.key === card.health.key ? state.damage : 0;
-			const moved = (bonus[stat.key] ?? 0) - damage;
-			if (!moved || stat.amount === undefined || !stat.format) return stat;
-			const amount = stat.key === card.health.key ? Math.max(0, stat.amount + moved) : stat.amount + moved;
-			return { ...stat, value: formatStat({ key: stat.key, label: stat.label, format: stat.format }, amount) };
+		card.stats.map((stat): CardValue => {
+			if (!stat.layers || stat.amount === undefined || !stat.format) return stat;
+			const damage = stat.key === card.health.key ? Math.min(state.damage, stat.amount) : 0;
+			const all: StatLayer[] = [
+				...stat.layers,
+				...(damage ? [{ kind: 'damage' as const, source: 'Damage', amount: -damage }] : []),
+				...layers.filter((l) => l.stat === stat.key).map((l) => ({ kind: 'battle' as const, source: l.source, amount: l.amount }))
+			];
+			const situations = [...(stat.conditions ?? []), ...conditions.filter((c) => c.stat === stat.key).map((c) => ({ source: c.source, name: c.name, text: c.text, amount: c.bonus }))];
+			const shown = formatStat({ key: stat.key, label: stat.label, format: stat.format }, all.reduce((sum, l) => sum + l.amount, 0));
+			return {
+				...stat,
+				value: shown + (situations.length ? '*' : ''),
+				explanation: all.length > 1 || situations.length ? { title: stat.label, result: shown, layers: all, conditions: situations } : undefined
+			};
 		})
 	);
 
