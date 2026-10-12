@@ -4,11 +4,13 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
+	import AftermathBack from '$lib/components/AftermathBack.svelte';
 	import CardBack, { type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { adjustCounter, allocate, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
+	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
@@ -162,32 +164,55 @@
 		}
 	}
 
-	/* Ending drops the battle for good, so it is asked in a sheet first, with
-	   the focus on the answer that keeps playing. Closed again, the focus goes
+	/* Dropping a battle loses it for good, so it is asked in a sheet first, with
+	   the focus on the answer that keeps playing: ending it where the game has
+	   no aftermath, cancelling it where it does. Closed again, the focus goes
 	   back to where it came from – for an entry of a menu, the button that
 	   opened the menu, since the entry is gone with it. The page behind the
 	   sheet is inert meanwhile, which drops the focus it held. */
-	let ending = $state(false);
+	let asking = $state<'end' | 'cancel' | null>(null);
 	let opener: HTMLElement | null = null;
 	/* How many were out when it was asked, as the bar counted them. */
-	let endingOut = $state(0);
+	let askedOut = $state(0);
 
-	function askEnd(out: number) {
+	function ask(what: 'end' | 'cancel', out: number) {
 		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		const menu = active?.closest('[popover]');
 		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
-		endingOut = out;
-		ending = true;
+		askedOut = out;
+		asking = what;
 	}
 
 	async function keepPlaying() {
-		ending = false;
+		asking = null;
 		await tick();
 		opener?.focus();
 	}
 
-	function endBattle() {
-		ending = false;
+	function dropBattle() {
+		asking = null;
+		setBattle(null);
+	}
+
+	/* The aftermath while it is answered on the back of the warband card. Who is
+	   asked is read once, as the battle starts ending. */
+	let aftermath = $state<AftermathDraft | null>(null);
+
+	function endBattle(out: number) {
+		const rules = system?.game.aftermath;
+		if (!rules || !warband) return ask('end', out);
+		const fighters = cards.flatMap((c) => (c.kind === 'fighter' ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds }] : []));
+		aftermath = startAftermath(rules, fighters, battle, warband.history ?? []);
+	}
+
+	/* The warband first: only once it is stored does the battle go, so a failed
+	   write – which raises the storage warning – loses neither. */
+	async function applyEnd() {
+		if (!warband || !system || !aftermath) return;
+		const updated = applyAftermath($state.snapshot(warband) as Warband, system.game, $state.snapshot(aftermath));
+		if (!(await saveWarband(updated))) return;
+		warband = updated;
+		aftermath = null;
 		setBattle(null);
 	}
 
@@ -229,9 +254,9 @@
 	<title>{title} · Cards · {APP_TITLE}</title>
 </svelte:head>
 
-<svelte:window onkeydown={(event) => ending && event.key === 'Escape' && keepPlaying()} />
+<svelte:window onkeydown={(event) => asking && event.key === 'Escape' && keepPlaying()} />
 
-<div class="flex h-dvh flex-col" inert={ending}>
+<div class="flex h-dvh flex-col" inert={asking !== null}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -262,31 +287,46 @@
 				onstart={() => setBattle(start())}
 				onnext={() => battle && setBattle(nextRound(battle, roundMarks))}
 				onundo={() => battle && setBattle(undoRound(battle))}
-				onend={askEnd}
+				onend={endBattle}
+				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}
 				onsound={toggleSound}
-				editing={editingId !== null}
+				editing={editingId !== null || aftermath !== null}
+				doneLabel={aftermath ? 'Apply' : 'Done'}
+				doneDisabled={aftermath !== null && !aftermath.result}
 				onedit={edit}
-				ondone={done}
-				oncancel={() => (editingId = null)}
+				ondone={aftermath ? applyEnd : done}
+				oncancel={() => {
+					editingId = null;
+					aftermath = null;
+				}}
 				{photos}
 			>
 				{#snippet back(card)}
-					<CardBack name={card.name} bind:draft bind:photo={photoDraft} />
+					{#if card.kind === 'warband' && aftermath && warband}
+						<AftermathBack name={card.name} {warband} game={system.game} bind:draft={aftermath} />
+					{:else}
+						<CardBack name={card.name} bind:draft bind:photo={photoDraft} />
+					{/if}
 				{/snippet}
 			</Deck>
 		</main>
 	{/if}
 </div>
 
-{#if ending && battle}
+{#if asking && battle}
+	{@const verb = asking === 'end' ? 'End' : 'Cancel'}
 	<div class="sheet-backdrop">
-		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="end-title">
-			<h2 id="end-title">End the battle?</h2>
-			<p class="count">Round {battle.round}{#if endingOut > 0}{' '}· {endingOut} out of action{/if}</p>
-			<p class="notice">Wounds, activations and who is out of action are dropped. The warband itself does not change.</p>
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="drop-title">
+			<h2 id="drop-title">{verb} the battle?</h2>
+			<p class="count">Round {battle.round}{#if askedOut > 0}{' '}· {askedOut} out of action{/if}</p>
+			<p class="notice">
+				Wounds, activations and who is out of action are dropped{asking === 'cancel'
+					? ', and nobody earns experience'
+					: ''}. The warband itself does not change.
+			</p>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={keepPlaying} use:focusOnMount>Keep playing</button>
-				<button type="button" class="btn danger" onclick={endBattle}>End battle</button>
+				<button type="button" class="btn danger" onclick={dropBattle}>{verb} battle</button>
 			</div>
 		</div>
 	</div>

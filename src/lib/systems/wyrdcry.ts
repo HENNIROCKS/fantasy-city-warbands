@@ -4,12 +4,14 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Wargear } from '$lib/core/types';
+import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Wargear, Warband } from '$lib/core/types';
+import { purse } from '$lib/core/validate';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
 import weaponRules from '$lib/rules/wyrdcry/weapon-rules.json';
 import universal from '$lib/rules/wyrdcry/universal-abilities.json';
+import campaign from '$lib/rules/wyrdcry/campaign.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -56,7 +58,31 @@ export const game: GameSystem = {
 	carry,
 	campaign: {
 		warband: [{ key: 'favour', label: 'Favour' }],
-		fighter: [{ key: 'renown', label: 'Renown' }]
+		fighter: [{ key: 'renown', label: 'Renown' }],
+		/* As on the Warband Deck's card, but Standing on a row of its own: beside
+		   Reputation a standing such as Recognized does not fit a phone. Reputation
+		   is every fighter's renown and the favour, as the builder counts it. */
+		values: (warband) => {
+			const favour = warband.tally?.favour ?? 0;
+			const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour);
+			return [
+				{ key: 'favour', label: 'Favour', value: String(favour) },
+				{ key: 'reputation', label: 'Reputation', value: String(reputation) },
+				{ key: 'standing', label: 'Standing', value: tierFor(favour).label, wide: true }
+			];
+		}
+	},
+	aftermath: {
+		questions: [
+			{ key: 'participated', label: 'Participated', start: 'yes' },
+			{ key: 'survived', label: 'Not taken out of action', start: 'not-out' },
+			{ key: 'enemy-out', label: 'Took an enemy out of action', start: 'no' }
+		],
+		bonus: true,
+		/* `keywords.json`: BEAST and THRALL both read "Never earn experience or gain renown". */
+		noXp: ['beast', 'thrall'],
+		gainXp,
+		income
 	},
 	/* As the Warband Deck tracks them. Cover changes no figure of the fighter's:
 	   it raises the difficulty rating of a ranged attack against it, a number on
@@ -74,6 +100,57 @@ export const game: GameSystem = {
 		wavering: { threshold: (size) => Math.ceil(size / 2), test: 'Bravery test', failed: 'panicked' }
 	}
 };
+
+type FavourTier = (typeof campaign.favour_tiers)[number];
+
+/**
+ * The standing a favour score is in, off the income page's four tiers rather
+ * than the campaign data's five (DEVIATIONS.md). The last tier is open at the top.
+ */
+function tierFor(favour: number): FavourTier {
+	const tiers = campaign.favour_tiers;
+	return tiers.find((t) => favour >= t.min && favour <= t.max) ?? tiers[tiers.length - 1];
+}
+
+/**
+ * As the Warband Builder's reducer has it (`SET_FIGHTER_XP`): on the point that
+ * would make a fourth, experience goes back to 0 and renown rises by one. Applied
+ * a point at a time, so a gain of several crosses the threshold as that many
+ * single points would, more than one level included.
+ */
+function gainXp(fighter: FighterInstance, points: number): FighterInstance {
+	let xp = fighter.xp ?? 0;
+	let renown = fighter.tally?.renown ?? 0;
+	for (let i = 0; i < points; i++) {
+		xp += 1;
+		if (xp > 3) {
+			xp = 0;
+			renown += 1;
+		}
+	}
+	return { ...fighter, xp, tally: { ...fighter.tally, renown } };
+}
+
+/**
+ * Step 4 of the aftermath: a favour for each shard and one more for a win, then
+ * the income of the standing the warband now holds, so a rise counts at once.
+ * The gold goes into the purse, which counts the warband's value in.
+ */
+function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number) {
+	const before = warband.tally?.favour ?? 0;
+	const favour = shards + (result === 'win' ? 1 : 0);
+	const tier = tierFor(before + favour);
+	const gold = tier.income + tier.per_shard * shards;
+	const rises = tier.label !== tierFor(before).label;
+	return {
+		tally: { ...warband.tally, favour: before + favour },
+		gold: purse(warband, game) + gold,
+		lines: [
+			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}` },
+			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
+		]
+	};
+}
 
 interface RawFaction {
 	id: string;

@@ -50,6 +50,14 @@
 					{/each}
 				</dl>
 			{/each}
+			{#if card.wide.length}
+				<dl class="stats wide">
+					{#each card.wide as row (row.key)}
+						<dt>{row.label}</dt>
+						<dd use:fitText><span data-fit>{row.value}</span></dd>
+					{/each}
+				</dl>
+			{/if}
 
 			<div class="roster">
 				{#each card.roster as group, i (group.title ?? i)}
@@ -73,6 +81,32 @@
 
 		{#if card.notes}
 			<section class="notes">{@render paragraphs([{ label: 'Notes', text: card.notes }])}</section>
+		{/if}
+
+		{#if card.battles.length}
+			<section class="battles">
+				<p class="entry"><strong>Battles</strong>: {card.tally}</p>
+				<table>
+					<!-- The columns speak for themselves on the card; a screen reader
+					     needs them named. -->
+					<thead class="visually-hidden">
+						<tr>
+							<th scope="col">Date</th>
+							<th scope="col">Opponent</th>
+							<th scope="col">Result</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each card.battles as battle (battle.id)}
+							<tr>
+								<td class="date">{battle.date}</td>
+								<td>{battle.opponent}</td>
+								<td class="result">{battle.result}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</section>
 		{/if}
 	</div>
 </article>
@@ -191,6 +225,11 @@
 		/* The fighter tables' values row: it lifts the green labels to 4.8:1
 		   over the texture's mean. */
 		background: var(--card-wash);
+	}
+
+	/* A figure whose word is too long for a box beside another: across both. */
+	.stats.wide {
+		grid-column: 1 / -1;
 	}
 
 	/* Labels in a column as wide as the longest, so every value of a box starts
@@ -326,8 +365,72 @@
 		background: var(--card-wash);
 	}
 
-	/* Picks and notes stand twice the parchment's gap apart. */
-	.notes ~ .notes {
+	/* Picks, notes and battles stand twice the parchment's gap apart. */
+	.notes ~ .notes,
+	.battles {
 		margin-top: calc(14 * var(--u));
+	}
+
+	/* A log rather than a figure of the warband, as on the Warband Deck's card:
+	   the boxes' light wash and padding but no border and no green, a solid rule
+	   under the heading and a dashed one between the rows. */
+	.battles {
+		padding: calc(14 * var(--u)) calc(16 * var(--u));
+		border-radius: calc(7.5 * var(--u));
+		background: var(--card-wash);
+	}
+
+	.battles table {
+		width: 100%;
+		margin-top: calc(6 * var(--u));
+		/* Separate rather than collapsed, so each line belongs to exactly one cell
+		   and two of them never meet in the same place. */
+		border-collapse: separate;
+		border-spacing: 0;
+		border-top: 1.5px solid #000;
+		font-family: 'Alegreya', serif;
+		font-size: calc(16 * var(--t));
+		line-height: 1.3;
+	}
+
+	.battles td {
+		padding: calc(6 * var(--u)) calc(8 * var(--u)) calc(6 * var(--u)) 0;
+		border-bottom: 1px dashed #000;
+		vertical-align: baseline;
+		overflow-wrap: anywhere;
+	}
+
+	/* The box's padding ends the log, not a rule of its own. */
+	.battles tr:last-child td {
+		padding-bottom: 0;
+		border-bottom: 0;
+	}
+
+	.battles .date,
+	.battles .result {
+		width: 1%;
+		white-space: nowrap;
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	.battles .date {
+		padding-right: calc(16 * var(--u));
+	}
+
+	.battles .result {
+		padding-right: 0;
+		text-align: right;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>

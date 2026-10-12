@@ -13,8 +13,10 @@ the Wyrdcry project, or Sam Pearson and Black Death City.
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
 a file, imports it again and prints its roster as a PDF, all in a first
-version. It does not yet import the Warband Deck's or the Warband Builder's
-files, or know anything about a campaign: no experience, no injuries, no income.
+version. In Wyrdcry, ending a battle brings experience, favour and income and
+adds it to the warband's history. It does not yet import the Warband Deck's or
+the Warband Builder's files, spend renown, roll injuries, or know Black Death
+City's campaign.
 
 ## What it does
 
@@ -63,6 +65,10 @@ files, or know anything about a campaign: no experience, no injuries, no income.
   and in the strokes over the deck. A wavering warband asks each fighter for
   its Bravery test, and the Witch Hunters count Zeal into every fighter's
   figures
+- End a Wyrdcry battle on the back of the warband card: the result, the shards
+  delivered and each fighter's experience, with what they bring in favour and
+  gold; Apply writes it into the warband and the battle history, which the
+  warband card shows with its favour, standing and reputation
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it

@@ -95,7 +95,21 @@ export interface GameSystem {
 	 * as Wyrdcry's favour for the warband and renown for a fighter. Stored under
 	 * `tally` by their key. Without it, the game keeps none.
 	 */
-	campaign?: { warband: Counter[]; fighter: Counter[] };
+	campaign?: {
+		warband: Counter[];
+		fighter: Counter[];
+		/**
+		 * Figures the warband card shows beside its size, such as Wyrdcry's favour.
+		 * A `wide` one gets a row of its own across the card, for a word too long
+		 * for the box.
+		 */
+		values?: (warband: Warband) => { key: string; label: string; value: string; wide?: boolean }[];
+	};
+	/**
+	 * What ending a battle asks and writes into the warband. Without it, ending a
+	 * battle only drops it.
+	 */
+	aftermath?: Aftermath;
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -148,6 +162,34 @@ export interface CounterStage {
 	bonus: Record<string, number>;
 	/** A keyword whose carriers the stage leaves out, such as `hired-sword`. */
 	except?: string;
+}
+
+/**
+ * A game's aftermath: who earns experience for what, and what the battle's
+ * result and shards bring the warband.
+ */
+export interface Aftermath {
+	/**
+	 * Asked of every fighter that earns experience, a point each: `Participated`.
+	 * `start` is the answer it begins with: yes, no, or yes unless the battle
+	 * left the fighter out of action.
+	 */
+	questions: { key: string; label: string; start: 'yes' | 'no' | 'not-out' }[];
+	/** Whether one fighter of the warband's choosing earns a point more. */
+	bonus: boolean;
+	/** Fighters carrying one of these keywords never earn experience. */
+	noXp: string[];
+	/** The fighter with `points` more experience, levels and all. */
+	gainXp: (fighter: FighterInstance, points: number) => FighterInstance;
+	/**
+	 * What the result and the shards bring: the warband's counters and gold as
+	 * they become, and two lines saying how, as the back of the card shows them.
+	 */
+	income: (warband: Warband, game: GameSystem, result: BattleRecord['result'] | null, shards: number) => {
+		tally: Record<string, number>;
+		gold: number;
+		lines: { gain: string; why: string }[];
+	};
 }
 
 /** A number a game's campaign counts up and down, such as favour. */

@@ -33,8 +33,11 @@
 		onnext,
 		onundo,
 		onend,
+		oncancelbattle,
 		onsound,
 		editing = false,
+		doneLabel = 'Done',
+		doneDisabled = false,
 		back,
 		onedit,
 		ondone,
@@ -62,9 +65,15 @@
 		onundo?: () => void;
 		/** Asks to end the battle, with how many fighters are out of action. */
 		onend?: (out: number) => void;
+		/** Drops the battle without its aftermath; only where the game has one. */
+		oncancelbattle?: (out: number) => void;
 		onsound?: () => void;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
+		/** What finishing the turned card does, on its button. */
+		doneLabel?: string;
+		/** Holds that button back while the turned card still lacks an answer. */
+		doneDisabled?: boolean;
 		/** The back of the card on top, shown while `editing`. */
 		back?: Snippet<[DeckCard]>;
 		/** Asks for the fighter's card on top to be turned over. */
@@ -389,8 +398,11 @@
 		{onnext}
 		{onundo}
 		onend={() => onend?.(out)}
+		oncancelbattle={oncancelbattle && (() => oncancelbattle(out))}
 		{onsound}
 		{editing}
+		{doneLabel}
+		{doneDisabled}
 		onedit={() => topFighter && onedit?.(topFighter.instanceId)}
 		{ondone}
 		{oncancel}

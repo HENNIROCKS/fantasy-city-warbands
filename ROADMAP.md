@@ -39,17 +39,17 @@
 - [x] ⚙️ Room for a campaign in the warband and its export: gold, stash, experience, advances, battles
 - [x] ⚔️ Track a battle: activated and waiting, wavering, panicked, in cover, rounds with undo, zeal
 - [x] ⚔️ Start a battle from the warband card, beside the first tap
+- [x] 📈 Campaign: the aftermath of a Wyrdcry battle – experience, favour, income and a battle history
+- [x] ⚔️ Cancel a battle without the aftermath
 - [ ] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🃏 Derived values on the card, such as armour from equipment, explained when tapped
 - [ ] 🛠️ Edit a fighter after the build: dismissal, recruiting between battles
-- [ ] ⚔️ Cancel a battle without the aftermath
-- [ ] 📈 Campaign: experience and renown, spent on a characteristic or a henchman's promotion
+- [ ] 📈 Campaign: spend renown on a characteristic or a henchman's promotion
 - [ ] 📈 Campaign: heroic traits, what a HERO picks instead of a characteristic
 - [ ] 🛠️ Correct a fighter's experience and renown by hand, on the back of its card
-- [ ] 📈 Campaign: favour, income and a battle history
 - [ ] 📈 Campaign: the stash, gold to add and the trading post
 - [ ] 📈 Campaign: injuries
 - [ ] 📄 The roster per game, as each game's own sheet has it

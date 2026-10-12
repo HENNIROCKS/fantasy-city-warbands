@@ -6,6 +6,7 @@
  */
 
 import type { Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
+import { RESULT_LABELS, displayDate, newestFirst, opponent, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
@@ -236,12 +237,18 @@ export interface WarbandCardData {
 	subtitle: string;
 	/** Two boxes side by side, each a column of label and value. */
 	tables: CardValue[][];
+	/** Figures on a row of their own under the boxes, for a word too long for them. */
+	wide: CardValue[];
 	/** `(Origin) The Hunt Descends`, with the option's text. */
 	picks: CardEntry[];
 	/** A heading of null where the game lists its fighters as one. */
 	roster: { title: string | null; entries: RosterEntry[] }[];
 	fluff: string;
 	notes: string;
+	/** The battles fought, newest first, as the card lists them. */
+	battles: { id: string; date: string; opponent: string; result: string }[];
+	/** `2 won · 1 drawn · 0 lost`. */
+	tally: string;
 }
 
 export type DeckCard = WarbandCardData | FighterCardData;
@@ -276,6 +283,8 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	const placed = new Set(roster.flatMap((g) => g.entries.map((e) => e.instanceId)));
 	const unknown = warband.fighters.filter((i) => !placed.has(i.instanceId)).map((f) => entry(f));
 
+	const values = game.campaign?.values?.(warband) ?? [];
+
 	/* A name that is only the faction's is no name of the warband's own. */
 	const own = warband.name.trim();
 	const unnamed = !own || own === faction.name;
@@ -296,7 +305,8 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 						faction.size.max === null
 							? String(warband.fighters.length)
 							: `${warband.fighters.length} / ${faction.size.max}`
-				}
+				},
+				...values.filter((v) => !v.wide)
 			],
 			[
 				/* As on the Warband Deck's card: what is left to spend, and what the warband is worth. */
@@ -304,11 +314,19 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 				{ key: 'value', label: 'Value', value: String(cost) }
 			]
 		],
+		wide: values.filter((v) => v.wide).map(({ key, label, value }) => ({ key, label, value })),
 		picks: faction.choices.flatMap((c) =>
 			c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
 		),
 		roster: unknown.length ? [...roster, { title: 'Other', entries: unknown }] : roster,
 		fluff: warband.fluff?.trim() ?? '',
-		notes: warband.notes?.trim() ?? ''
+		notes: warband.notes?.trim() ?? '',
+		battles: newestFirst(warband.history ?? []).map((record) => ({
+			id: record.id,
+			date: displayDate(record.date),
+			opponent: opponent(record),
+			result: RESULT_LABELS[record.result]
+		})),
+		tally: tally(warband.history ?? [])
 	};
 }

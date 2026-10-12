@@ -30,8 +30,11 @@
 		onnext,
 		onundo,
 		onend,
+		oncancelbattle,
 		onsound,
 		editing = false,
+		doneLabel = 'Done',
+		doneDisabled = false,
 		onedit,
 		ondone,
 		oncancel
@@ -64,11 +67,17 @@
 		onstart?: () => void;
 		onnext?: () => void;
 		onundo?: () => void;
-		/** Asks whether to end the battle; the page holds the question. */
+		/** Ends the battle: asks the aftermath where the game has one, else whether to drop it. */
 		onend?: () => void;
+		/** Drops the battle without its aftermath, after asking. Only where the game has an aftermath. */
+		oncancelbattle?: () => void;
 		onsound?: () => void;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
+		/** What finishing the turned card does, on its button. */
+		doneLabel?: string;
+		/** Holds the button back while the turned card still lacks an answer. */
+		doneDisabled?: boolean;
 		/** Turns the fighter's card on top over. */
 		onedit?: () => void;
 		ondone?: () => void;
@@ -92,8 +101,9 @@
 			<div class="finish">
 				<button class="btn" onclick={() => oncancel?.()}>Cancel</button>
 				<button
-					class="min-h-11 rounded bg-[#125E3C] px-6 font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
-					onclick={() => ondone?.()}>Done</button
+					class="min-h-11 rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
+					disabled={doneDisabled}
+					onclick={() => ondone?.()}>{doneLabel}</button
 				>
 			</div>
 		{:else if fighter}
@@ -202,6 +212,9 @@
 					{#if battle}
 						<hr />
 						<button onclick={() => onend?.()}>End battle…</button>
+						{#if oncancelbattle}
+							<button onclick={() => oncancelbattle?.()}>Cancel battle…</button>
+						{/if}
 					{/if}
 				</MenuButton>
 			</div>

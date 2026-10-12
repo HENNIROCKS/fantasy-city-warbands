@@ -167,53 +167,6 @@
 </article>
 
 <style>
-	/* Clear of the strokes that mark the place in the stack across the top. */
-	.name {
-		margin: 0;
-		padding: calc(44 * var(--u)) calc(30 * var(--u)) 0;
-		text-align: center;
-		font-family: 'Grenze Gotisch', serif;
-		font-weight: 600;
-		font-size: calc(34 * var(--t));
-		line-height: 1.1;
-		color: #000;
-		overflow-wrap: anywhere;
-	}
-
-	.parchment {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		gap: calc(66 * var(--u));
-		padding: calc(18 * var(--u)) calc(30 * var(--u)) calc(38 * var(--u));
-	}
-
-	section {
-		display: flex;
-		flex-direction: column;
-		gap: calc(10 * var(--u));
-	}
-
-	.heading {
-		display: flex;
-		align-items: center;
-		gap: calc(8 * var(--t));
-		margin: 0;
-		padding: calc(4 * var(--t)) 0;
-		font-family: 'Grenze Gotisch', serif;
-		font-weight: 400;
-		font-size: calc(18 * var(--t));
-		line-height: 1;
-		letter-spacing: 0.04em;
-		color: #000;
-	}
-
-	.rule {
-		flex: 1;
-		height: 2px;
-		background: #000;
-	}
-
 	/* A lighter patch of the paper rather than a box: no frame and no line,
 	   brighter and edged in green while the field is being written in. */
 	textarea {
@@ -245,15 +198,6 @@
 
 	.fluff {
 		font-style: italic;
-	}
-
-	.hint {
-		margin: 0;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.4;
-		font-style: italic;
-		color: var(--card-ink-muted);
 	}
 
 	.photo-row {
