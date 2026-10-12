@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { xpEarned, type AftermathDraft } from '$lib/core/aftermath';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
-	import type { BattleRecord, GameSystem, Warband } from '$lib/core/types';
+	import type { Aftermath, BattleRecord, GameSystem, Warband } from '$lib/core/types';
 
 	/*
 	 * The back of the warband card as a battle ends, as the Wyrdcry Warband Deck
@@ -13,16 +13,18 @@
 		name,
 		warband,
 		game,
+		rules,
 		draft = $bindable()
 	}: {
 		name: string;
 		/** The warband as it stands before the battle is written in. */
 		warband: Warband;
 		game: GameSystem;
+		/** The game's aftermath, which the back asks. */
+		rules: Aftermath;
 		draft: AftermathDraft;
 	} = $props();
 
-	const rules = $derived(game.aftermath!);
 	const earned = $derived(rules.income(warband, game, draft.result, draft.shards));
 
 	function pick(result: BattleRecord['result']) {
@@ -146,7 +148,7 @@
 
 	/* Each answer a pill of its own, set in green once it holds. */
 	.toggle {
-		min-height: 40px;
+		min-height: 44px;
 		padding: 0 calc(14 * var(--u));
 		border: 1px solid var(--card-green);
 		border-radius: 999px;

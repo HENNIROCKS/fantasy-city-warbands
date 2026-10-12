@@ -302,8 +302,8 @@
 				{photos}
 			>
 				{#snippet back(card)}
-					{#if card.kind === 'warband' && aftermath && warband}
-						<AftermathBack name={card.name} {warband} game={system.game} bind:draft={aftermath} />
+					{#if card.kind === 'warband' && aftermath && warband && system.game.aftermath}
+						<AftermathBack name={card.name} {warband} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
 					{:else}
 						<CardBack name={card.name} bind:draft bind:photo={photoDraft} />
 					{/if}

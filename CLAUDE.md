@@ -88,9 +88,10 @@ im hellen Modus dunkel. Für eine neue Zink-Klasse, auch als `hover:` oder
 (`--ui-*`) nutzen.
 
 Die Karten folgen dem Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`):
-Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, ValueTable,
-WeaponTable, Explanation, fit-text) sind dort übernommen und gekürzt. Eine Änderung am
-Kartenaufbau wird zuerst am Deck verglichen.
+Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, AftermathBack,
+BattleBar, MenuButton, ValueTable, WeaponTable, Explanation, fit-text) sind dort
+übernommen und gekürzt. Eine Änderung am Kartenaufbau wird zuerst am Deck
+verglichen.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
