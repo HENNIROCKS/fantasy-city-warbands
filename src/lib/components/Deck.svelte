@@ -133,8 +133,9 @@
 		const state = stateOf(battle, card.instanceId);
 		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], battle?.counter ?? 0, card.keywordIds);
 		/* Due until the fighter has acted or waited – it rolled then – or failed it. */
-		const due = wavering && rules?.wavering && !state.out && !state.activated && !state.waiting && !state.marks[rules.wavering.failed];
-		return { state, ...effects, test: due ? rules!.wavering!.test : null };
+		const morale = rules?.wavering;
+		const due = morale && wavering && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
+		return { state, ...effects, test: due ? morale.test : null };
 	}
 
 	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers. */

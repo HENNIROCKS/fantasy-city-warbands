@@ -177,7 +177,12 @@
 				</p>
 			{/if}
 			<div class="actions">
-				<MenuButton label="Battle" class="action {BUTTON}">
+				<!-- Where the count takes the standing line's place, the menu's trigger
+				     carries the morale instead, so it shows under the warband card too. -->
+				<MenuButton
+					label={counter && wavering ? 'Battle, wavering' : 'Battle'}
+					class="action {BUTTON} {counter && wavering ? 'warn' : ''}"
+				>
 					{#snippet trigger()}Battle{/snippet}
 					{#if counter}
 						<p>{@render standing()}</p>
@@ -325,6 +330,11 @@
 	   colour for what needs doing. */
 	.wavering {
 		font-weight: 600;
+		color: var(--ui-warn-text);
+	}
+
+	.bar :global(.action.warn) {
+		border-color: var(--ui-warn-border);
 		color: var(--ui-warn-text);
 	}
 
