@@ -54,10 +54,12 @@ files, or know anything about a campaign: no experience, no injuries, no income.
 - Turn a fighter's card over with the pencil under it to write the fighter's
   fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device
-- Count damage at the table: the bar under a fighter's card takes Health down
-  a point at a time, the card fills with blood, and a fighter at none is out
-  of action – with the Wilhelm scream, which can be switched off. End battle
-  on the warband card drops every wound
+- Track a battle at the table: Battle on the warband card starts it, counts
+  the rounds with one step back, and ends it after asking; the bar under a
+  fighter's card takes Health down a point at a time, the card fills with
+  blood, and a fighter at none is out of action – with the Wilhelm scream,
+  which can be switched off. State marks a fighter activated or waiting, on
+  the card and in the strokes over the deck
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it

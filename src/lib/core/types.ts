@@ -96,6 +96,11 @@ export interface GameSystem {
 	 * `tally` by their key. Without it, the game keeps none.
 	 */
 	campaign?: { warband: Counter[]; fighter: Counter[] };
+	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
+	battle?: {
+		/** Whether a fighter can wait, ending its activation without being done for the round. */
+		waiting: boolean;
+	};
 }
 
 /** A number a game's campaign counts up and down, such as favour. */

@@ -57,7 +57,8 @@ export const game: GameSystem = {
 	campaign: {
 		warband: [{ key: 'favour', label: 'Favour' }],
 		fighter: [{ key: 'renown', label: 'Renown' }]
-	}
+	},
+	battle: { waiting: true }
 };
 
 interface RawFaction {

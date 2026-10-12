@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -8,7 +8,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { allocate, stateOf, type BattleState } from '$lib/core/battle';
+	import { allocate, nextRound, start, stateOf, toggleActivated, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
@@ -139,12 +139,18 @@
 	loadSound().then((on) => (sound = on));
 	let audio: HTMLAudioElement | undefined;
 
-	function wound(instanceId: string, delta: number, health: number) {
+	/* Written on every tap: at the table the screen goes dark long before anyone
+	   thinks about saving. A failed write raises the storage warning. */
+	function setBattle(next: BattleState | null) {
 		if (!id) return;
-		const wasOut = stateOf(battle, instanceId).out;
-		battle = allocate(battle, instanceId, delta, health);
+		battle = next;
 		/* IndexedDB trips over the reactivity proxy: a plain copy goes in. */
-		saveBattle(id, $state.snapshot(battle));
+		saveBattle(id, next ? $state.snapshot(next) : null);
+	}
+
+	function wound(instanceId: string, delta: number, health: number) {
+		const wasOut = stateOf(battle, instanceId).out;
+		setBattle(allocate(battle, instanceId, delta, health));
 		/* Played within the tap itself, which is what lets iOS sound it. */
 		if (sound && !wasOut && stateOf(battle, instanceId).out) {
 			audio ??= new Audio(scream);
@@ -153,10 +159,37 @@
 		}
 	}
 
+	/* Ending drops the battle for good, so it is asked in a sheet first, with
+	   the focus on the answer that keeps playing. Closed again, the focus goes
+	   back to where it came from – for an entry of a menu, the button that
+	   opened the menu, since the entry is gone with it. The page behind the
+	   sheet is inert meanwhile, which drops the focus it held. */
+	let ending = $state(false);
+	let opener: HTMLElement | null = null;
+	/* How many were out when it was asked, as the bar counted them. */
+	let endingOut = $state(0);
+
+	function askEnd(out: number) {
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+		endingOut = out;
+		ending = true;
+	}
+
+	async function keepPlaying() {
+		ending = false;
+		await tick();
+		opener?.focus();
+	}
+
 	function endBattle() {
-		if (!id) return;
-		battle = null;
-		saveBattle(id, null);
+		ending = false;
+		setBattle(null);
+	}
+
+	function focusOnMount(node: HTMLElement) {
+		node.focus();
 	}
 
 	function toggleSound() {
@@ -193,7 +226,9 @@
 	<title>{title} · Cards · {APP_TITLE}</title>
 </svelte:head>
 
-<div class="flex h-dvh flex-col">
+<svelte:window onkeydown={(event) => ending && event.key === 'Escape' && keepPlaying()} />
+
+<div class="flex h-dvh flex-col" inert={ending}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -213,9 +248,15 @@
 				columns={system.game.weaponStats.map((s) => s.label)}
 				edit={nameField}
 				{battle}
+				waiting={system.game.battle?.waiting ?? false}
 				{sound}
 				onwound={wound}
-				onend={endBattle}
+				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
+				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
+				onstart={() => setBattle(start())}
+				onnext={() => battle && setBattle(nextRound(battle))}
+				onundo={() => battle && setBattle(undoRound(battle))}
+				onend={askEnd}
 				onsound={toggleSound}
 				editing={editingId !== null}
 				onedit={edit}
@@ -230,3 +271,17 @@
 		</main>
 	{/if}
 </div>
+
+{#if ending && battle}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="end-title">
+			<h2 id="end-title">End the battle?</h2>
+			<p class="count">Round {battle.round}{#if endingOut > 0}{' '}· {endingOut} out of action{/if}</p>
+			<p class="notice">Wounds, activations and who is out of action are dropped. The warband itself does not change.</p>
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={keepPlaying} use:focusOnMount>Keep playing</button>
+				<button type="button" class="btn danger" onclick={endBattle}>End battle</button>
+			</div>
+		</div>
+	</div>
+{/if}

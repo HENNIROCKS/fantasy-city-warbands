@@ -12,7 +12,7 @@
  */
 
 import type { StoredPhoto } from '$lib/photo';
-import type { BattleState } from './battle';
+import { readBattle, type BattleState } from './battle';
 import type { Warband } from './types';
 import { sameWarband } from './warband';
 
@@ -267,7 +267,7 @@ export function savePhoto(warbandId: string, instanceId: string, photo: StoredPh
 }
 
 export async function loadBattle(warbandId: string): Promise<BattleState | null> {
-	return (await read<BattleState | undefined>(BATTLES, (s) => s.get(warbandId), undefined)) ?? null;
+	return readBattle(await read<Partial<BattleState> | undefined>(BATTLES, (s) => s.get(warbandId), undefined));
 }
 
 /** Null ends the battle. */

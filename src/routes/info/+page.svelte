@@ -74,7 +74,7 @@
 		{
 			question: 'Can I track a battle?',
 			answer:
-				'The damage, so far. On a fighter’s card, the bar at the foot takes Health down a point at a time, and a fighter at none is out of action – with the Wilhelm scream, which the speaker on the warband card turns off. End battle, also on the warband card, drops every wound. The battle stays on this device and never changes the warband. The scream comes from Wikimedia Commons, where it is released under CC0.'
+				'Rounds, activations and damage, so far. On the warband card, Battle starts it, moves on to the next round – one step back is possible until the next tap – and ends it; the bar there says the round and how many fighters still have to act. On a fighter’s card, the bar at the foot takes Health down a point at a time, and a fighter at none is out of action – with the Wilhelm scream, which the speaker on the warband card turns off. State beside it marks a fighter activated or, in Wyrdcry, waiting; the next round clears both and keeps the wounds. The first tap on a fighter starts a battle too. Ending it drops everything the battle holds and never changes the warband; it stays on this device. The scream comes from Wikimedia Commons, where it is released under CC0.'
 		},
 		{
 			question: 'Can I show my painted models?',

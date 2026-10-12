@@ -24,6 +24,11 @@
 		edit?: string;
 	} = $props();
 
+	/* The card names the state, the bar changes it – one band, the worst of the
+	   three, because a fighter out of action is neither waiting nor to be read as
+	   having merely acted. */
+	const band = $derived(state.out ? 'Out of Action' : state.waiting ? 'Waiting' : state.activated ? 'Activated' : '');
+
 	/* How high the blood stands in the image field: a fighter at half its Health is
 	   red to half its height. */
 	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
@@ -48,9 +53,9 @@
 	};
 </script>
 
-<article class="card" class:out={state.out} style:--wound={wound}>
-	{#if state.out}
-		<p class="band" aria-hidden="true">Out of Action</p>
+<article class="card" class:dulled={band !== ''} class:out={state.out} style:--wound={wound}>
+	{#if band}
+		<p class="band" aria-hidden="true">{band}</p>
 	{/if}
 
 	<div class="image-section">
@@ -410,15 +415,22 @@
 		position: relative;
 	}
 
-	/* The whole card is veiled in blood, so a fighter who is gone reads from
-	   across the table and while flicking through the stack. */
-	.card.out::after {
+	/* The whole card dulls, so a fighter who has acted is recognisable while
+	   flicking through the stack rather than only when read. */
+	.card.dulled::after {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: var(--card-blood-veil);
+		background: rgba(18, 18, 22, 0.44);
 		pointer-events: none;
 		z-index: 1;
+	}
+
+	/* Out of action is the same veil in blood rather than ink: at the table the
+	   difference between a fighter who has acted and one who is gone has to read
+	   from across the board. */
+	.card.out::after {
+		background: var(--card-blood-veil);
 	}
 
 	/*
@@ -435,7 +447,7 @@
 		z-index: 2;
 		transform: rotate(-8deg);
 		padding: calc(6 * var(--u)) 0;
-		background: color-mix(in srgb, var(--card-blood) 82%, transparent);
+		background: rgba(18, 18, 22, 0.72);
 		border-top: 1px solid var(--card-wash);
 		border-bottom: 1px solid var(--card-wash);
 		font-family: 'Grenze Gotisch', serif;
@@ -445,5 +457,9 @@
 		text-align: center;
 		color: var(--card-paper);
 		pointer-events: none;
+	}
+
+	.card.out .band {
+		background: color-mix(in srgb, var(--card-blood) 82%, transparent);
 	}
 </style>

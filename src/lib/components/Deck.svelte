@@ -4,7 +4,7 @@
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
-	import { outOfAction, stateOf, type BattleState } from '$lib/core/battle';
+	import { outOfAction, remaining, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard } from '$lib/core/card';
 	import { explanation } from '$lib/explanation';
 	import type { PhotoView } from '$lib/photo';
@@ -20,8 +20,14 @@
 		columns,
 		edit,
 		battle = null,
+		waiting = false,
 		sound = true,
 		onwound,
+		onactivated,
+		onwaiting,
+		onstart,
+		onnext,
+		onundo,
 		onend,
 		onsound,
 		editing = false,
@@ -38,8 +44,16 @@
 		battle?: BattleState | null;
 		/** Whether a fighter going out of action is heard. */
 		sound?: boolean;
+		/** Whether the game lets a fighter wait. */
+		waiting?: boolean;
 		onwound?: (instanceId: string, delta: number, health: number) => void;
-		onend?: () => void;
+		onactivated?: (instanceId: string) => void;
+		onwaiting?: (instanceId: string) => void;
+		onstart?: () => void;
+		onnext?: () => void;
+		onundo?: () => void;
+		/** Asks to end the battle, with how many fighters are out of action. */
+		onend?: (out: number) => void;
 		onsound?: () => void;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
@@ -100,12 +114,9 @@
 		const top = cards[current];
 		return top?.kind === 'fighter' ? top : null;
 	});
-	const out = $derived(
-		outOfAction(
-			battle,
-			cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId)
-		)
-	);
+	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
+	const out = $derived(outOfAction(battle, fighterIds));
+	const toAct = $derived(remaining(battle, fighterIds));
 
 	const transform = $derived(
 		leaving
@@ -315,10 +326,13 @@
 		{#if cards.length > 1}
 			<div class="ticks" aria-hidden="true">
 				{#each cards as card, i (card.instanceId)}
+					{@const state = card.kind === 'fighter' ? stateOf(battle, card.instanceId) : null}
 					<span
 						class="tick"
 						class:active={i === current}
-						class:out={card.kind === 'fighter' && stateOf(battle, card.instanceId).out}
+						class:activated={state?.activated}
+						class:waiting={state?.waiting}
+						class:out={state?.out}
 					></span>
 				{/each}
 			</div>
@@ -326,13 +340,20 @@
 	</div>
 
 	<BattleBar
+		{battle}
 		fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
 		health={topFighter?.health.value ?? 0}
+		{waiting}
+		{toAct}
 		{out}
-		running={battle !== null}
 		{sound}
 		onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
-		{onend}
+		onactivated={() => topFighter && onactivated?.(topFighter.instanceId)}
+		onwaiting={() => topFighter && onwaiting?.(topFighter.instanceId)}
+		{onstart}
+		{onnext}
+		{onundo}
+		onend={() => onend?.(out)}
 		{onsound}
 		{editing}
 		onedit={() => topFighter && onedit?.(topFighter.instanceId)}
@@ -457,9 +478,24 @@
 			height 120ms ease;
 	}
 
+	/* Height rather than colour alone, and declared before the states so they
+	   keep the colour: a fighter who has acted is still marked as such while
+	   their card is the one on top. */
 	.tick.active {
 		height: 7px;
 		background: rgba(0, 0, 0, 0.55);
+	}
+
+	/* Who has acted is struck out in light, who waits is picked out in the card
+	   green because they are still to come. Light rather than a paler ink: as
+	   the Warband Deck measured it against the card's texture, a lighter stroke
+	   stands 2.5:1 off its neighbours where a paler one manages 1.1:1. */
+	.tick.activated {
+		background: rgba(255, 255, 255, 0.75);
+	}
+
+	.tick.waiting {
+		background: var(--card-green);
 	}
 
 	/* A fighter out of action keeps its stroke in blood, so the stack shows who is
