@@ -5,7 +5,7 @@
  * formatted once, so the card and the roster print read the same.
  */
 
-import type { Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
+import type { Faction, Fighter, FighterInstance, GameSystem, InjuryEffects, Rule, StatFormat, Wargear, Warband } from './types';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
@@ -151,6 +151,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const options = fighter ? chosenOptions(instance, fighter) : [];
 	/* What the fighter's spent levels bring besides characteristics. */
 	const advanced = fighter && game.advancement ? game.advancement.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [] };
+	/* What the injuries it keeps do to it. */
+	const injured = fighter && game.injuries ? game.injuries.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [], stats: [], forbid: [] };
+	const changed = [...advanced.weapons, ...injured.weapons];
 	const carried = counted([...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear], faction);
 
 	/* Melee ahead of ranged, otherwise in the order they are carried. */
@@ -160,8 +163,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		.map(({ wargear, count }): CardWeapon => {
 			/* The extra attack belongs to the weapon in hand, so it is the row's own number. */
 			const dual = count > 1 && wargear.kind === 'melee' ? game.dualWielding : undefined;
-			/* A level spent on this weapon, such as a heroic talent's point of critical damage. */
-			const raised = advanced.weapons.filter((w) => w.wargear === wargear.id);
+			/* A level spent on this weapon, such as a heroic talent's point of critical damage, or an injury's cut to its reach. */
+			const raised = changed.filter((w) => w.wargear === wargear.id);
 			const values = game.weaponStats.map((s) => {
 				const own = raised.find((w) => w.stat === s.key)?.value;
 				const value = own ?? wargear.profile?.[s.key] ?? '–';
@@ -205,7 +208,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 	/* As the levels make them: a henchman with four of Wyrdcry's renown is a HERO. */
 	const recruited = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
-	const keywords = [...new Set([...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited), ...advanced.keywords])];
+	const keywords = [
+		...new Set([...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited), ...advanced.keywords, ...injured.keywords])
+	];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
 	/* A fighter with no melee weapon in hand fights with the game's Unarmed
@@ -220,10 +225,21 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	   it comes out of says so. Any other pick – a spell, a mutation – is a rule
 	   of the fighter's own. */
 	const raised = options.some((o) => o.bonus) ? fighter?.choice?.source : undefined;
-	const fighterRules = ruleEntries(
-		[...(fighter?.rules ?? []), ...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type })), ...advanced.rules],
-		new Map(raised ? [[raised, 'Already included.']] : [])
-	);
+	const ownRules = [
+		...(fighter?.rules ?? []),
+		...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type })),
+		...advanced.rules,
+		...injured.rules
+	];
+	/* An injury that bars a type of ability, as Alcoholic bars reactions, leaves
+	   them on the card and says so under each. */
+	const barred = (rules: Rule[]) =>
+		rules.flatMap((r) => {
+			const by = injured.forbid.find((f) => f.type === r.type?.toLowerCase());
+			return by ? [[r.name, `Cannot be used: ${by.source}.`] as const] : [];
+		});
+	const fighterRules = ruleEntries(ownRules, new Map([...(raised ? [[raised, 'Already included.'] as const] : []), ...barred(ownRules)]));
+	const universalReactions = universal.filter((u) => u.type === REACTION);
 
 	const sections: CardSection[] = (
 		[
@@ -231,14 +247,14 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			{ kind: 'equipment', entries: items },
 			{ kind: 'faction', entries: factionRules },
 			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION)) },
-			{ kind: 'universal-reaction', entries: ruleEntries(universal.filter((u) => u.type === REACTION)) },
+			{ kind: 'universal-reaction', entries: ruleEntries(universalReactions, new Map(barred(universalReactions))) },
 			/* The player's own text, not the game's – the card gives it its own ground. */
 			{ kind: 'notes', entries: instance.notes?.trim() ? [{ label: 'Notes', text: instance.notes.trim() }] : [] }
 		] satisfies CardSection[]
 	).filter((s) => s.entries.length);
 
 	const profile = fighter ? profileOf(instance, fighter) : undefined;
-	const statLayers = fighter ? layersOf(instance, fighter, faction) : new Map<string, StatLayer[]>();
+	const statLayers = fighter ? layersOf(instance, fighter, faction, injured.stats) : new Map<string, StatLayer[]>();
 	const statConditions = conditionsOf(carried.map((c) => c.wargear), instance.wargear);
 
 	return {
@@ -289,11 +305,11 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 /**
  * How each numeric characteristic is made up, as the Warband Deck's card has it:
- * the profile, what the fighter's own pick and its levels add, then what its
- * bought wargear adds whenever it is carried. Wargear on the profile is not
+ * the profile, what the fighter's own pick, its levels and its injuries add,
+ * then what its bought wargear adds whenever it is carried. Wargear on the profile is not
  * counted: the profile already carries it.
  */
-function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction): Map<string, StatLayer[]> {
+function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction, injuries: InjuryEffects['stats']): Map<string, StatLayer[]> {
 	const map = new Map<string, StatLayer[]>();
 	for (const [key, value] of Object.entries(fighter.profile)) {
 		if (typeof value === 'number') map.set(key, [{ kind: 'base', source: 'Profile', amount: value }]);
@@ -315,6 +331,7 @@ function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction)
 			amount: advance.bonus ?? 0
 		});
 	}
+	for (const injury of injuries) add(injury.stat, { kind: 'permanent', source: injury.source, amount: injury.bonus });
 	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
 	for (const id of instance.wargear) {
 		const piece = wargear.get(id);

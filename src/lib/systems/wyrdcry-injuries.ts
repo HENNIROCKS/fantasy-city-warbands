@@ -149,7 +149,7 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 			for (const effect of raw.effects) {
 				if (effect.kind === 'stat' && effect.characteristic) found.stats.push({ stat: effect.characteristic, bonus: effect.bonus ?? 0, source: raw.name });
 				if (effect.kind === 'keyword' && effect.keyword) found.keywords.push(effect.keyword);
-				if (effect.kind === 'forbid' && effect.ability_type) found.forbid.push(effect.ability_type);
+				if (effect.kind === 'forbid' && effect.ability_type) found.forbid.push({ type: effect.ability_type, source: raw.name });
 				if (effect.kind !== 'range') continue;
 				for (const id of carried) {
 					const piece = faction.wargear.find((w) => w.id === id);
@@ -162,5 +162,10 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 		return found;
 	}
 
-	return { table, exempt, resolve, apply, effects };
+	function kept(id: string): InjuryResult | null {
+		const raw = HERO.find((r) => r.id === id);
+		return raw && isLasting(raw) ? result(raw) : null;
+	}
+
+	return { table, exempt, resolve, apply, effects, result: kept };
 }

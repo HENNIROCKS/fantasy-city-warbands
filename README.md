@@ -13,10 +13,12 @@ the Wyrdcry project, or Sam Pearson and Black Death City.
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
 a file, imports it again and prints its roster as a PDF, all in a first
-version. In Wyrdcry, ending a battle brings experience, favour and income and
-adds it to the warband's history, and renown is spent on a characteristic or a
-heroic talent. It imports the Warband Deck's and the Warband Builder's files.
-It does not yet roll injuries or know Black Death City's campaign.
+version. In Wyrdcry, ending a battle brings experience, favour and income,
+rolls injuries and adds it to the warband's history, and renown is spent on a
+characteristic or a heroic talent. It imports the Warband Deck's and the
+Warband Builder's files. It does not yet carry out what an injury does once –
+death, a surgeon, a missed battle, robbery, capture – or know Black Death
+City's campaign.
 
 ## What it does
 
@@ -60,9 +62,10 @@ It does not yet roll injuries or know Black Death City's campaign.
   for each fighter with its profile, its cost – in Wyrdcry beside its
   experience and renown – its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. In Wyrdcry a
-  characteristic counts in the fighter's pick, its renown and its armour, and
-  tapped it says how it adds up and what a situation can still change, marked
-  with a star
+  characteristic counts in the fighter's pick, its renown, its injuries and its
+  armour, and tapped it says how it adds up and what a situation can still
+  change, marked with a star. An injury the fighter keeps stands among its
+  rules, with the keyword, the shorter reach or the bar on reactions it brings
 - Turn a fighter's card over with the pencil under it to write the fighter's
   fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device.
@@ -75,7 +78,8 @@ It does not yet roll injuries or know Black Death City's campaign.
   point of experience is a level of renown, and renown does not go below a
   level already spent; a BEAST or THRALL has neither. Spend renown turns the
   back to a page for the next open level, as the Warband Deck does, and lists
-  the levels spent, the last with Undo – kept until Done like the rest. The
+  the levels spent, the last with Undo, and the injuries the fighter keeps,
+  each to remove – kept until Done like the rest. The
   warband's favour is set by hand in the finish step, with the standing and
   reputation it comes to
 - Turn the warband card over with the pencil under it to add gold, sell or
@@ -91,10 +95,14 @@ It does not yet roll injuries or know Black Death City's campaign.
   and in the strokes over the deck. A wavering warband asks each fighter for
   its Bravery test, and the Witch Hunters count Zeal into every fighter's
   figures
-- End a Wyrdcry battle on the back of the warband card: the result, the shards
-  delivered and each fighter's experience, with what they bring in favour and
-  gold; Apply writes it into the warband and the battle history, which the
-  warband card shows with its favour, standing and reputation
+- End a Wyrdcry battle in a sheet of pages over the deck: the result, the
+  shards delivered with what they bring in favour and gold, and the battle
+  history; who was taken out of action, and for each of them the injury table
+  to tap what the dice rolled – an injury it already has counts as a Flesh
+  Wound, a fourth kills a HERO without Nine Lives, Unbending Will rolls none;
+  then each fighter's experience. Apply writes it into the warband and the
+  battle history, which the warband card shows with its favour, standing and
+  reputation
 - Spend each level of renown in a sheet, after the battle or from the Battle
   menu: a characteristic within the fighter's racial limit, and for a hero a
   heroic talent – a henchman's fourth level makes it a HERO, on its card and

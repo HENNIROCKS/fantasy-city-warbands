@@ -15,6 +15,8 @@
 		stash: string[];
 		/** What the fighter's levels were spent on, in order, those spent on this back included. */
 		advances: Advance[];
+		/** The ids of the injury results the fighter keeps, in order, less those removed on this back. */
+		injuries: string[];
 	}
 
 	/** What the back may move between the fighter and the stash, worked out by the page from the draft. */
@@ -81,6 +83,7 @@
 		photo = $bindable(),
 		campaign,
 		renown,
+		injuries,
 		equipment
 	}: {
 		name: string;
@@ -88,6 +91,8 @@
 		photo: BackPhoto;
 		campaign: BackCampaign | null;
 		renown: BackRenown | null;
+		/** The names of `draft.injuries`, in its order; null where the game has no injuries. */
+		injuries: string[] | null;
 		equipment: BackEquipment | null;
 	} = $props();
 
@@ -369,6 +374,21 @@
 					{#if renown?.next}
 						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})</button>
 					{/if}
+				</section>
+			{/if}
+
+			{#if injuries?.length}
+				<!-- What the aftermath wrote in, to take back a result tapped by mistake. -->
+				<section>
+					<h3 class="heading"><span>Injuries</span><span class="rule"></span></h3>
+					<ul class="list">
+						{#each injuries as injury, i (i)}
+							<li>
+								<span class="line">{injury}</span>
+								<button class="remove" onclick={() => (draft.injuries = draft.injuries.filter((_, j) => j !== i))}>Remove</button>
+							</li>
+						{/each}
+					</ul>
 				</section>
 			{/if}
 

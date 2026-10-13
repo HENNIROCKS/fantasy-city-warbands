@@ -284,6 +284,8 @@ export interface Injuries {
 	apply(instance: FighterInstance, fighter: Fighter, faction: Faction, id: string): FighterInstance;
 	/** What the results the fighter keeps add to the card. */
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryEffects;
+	/** A result a fighter can keep, by its id; null where the game has none of that id. */
+	result(id: string): InjuryResult | null;
 }
 
 export interface InjuryTable {
@@ -323,8 +325,8 @@ export interface InjuryResolution {
 export interface InjuryEffects extends AdvanceEffects {
 	/** What the results add to a characteristic, each by the result's name. */
 	stats: { stat: string; bonus: number; source: string }[];
-	/** Types of ability the fighter cannot use, such as `reaction`. */
-	forbid: string[];
+	/** Types of ability the fighter cannot use, such as `reaction`, each by the result's name. */
+	forbid: { type: string; source: string }[];
 }
 
 /** A number a game's campaign counts up and down, such as favour. */

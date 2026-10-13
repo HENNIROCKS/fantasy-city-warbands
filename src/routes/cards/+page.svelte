@@ -37,7 +37,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [] });
+	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [] });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
@@ -128,7 +128,8 @@
 			tally: { ...fighter.tally },
 			wargear: [...fighter.wargear],
 			stash: [...(warband?.stash ?? [])],
-			advances: [...(fighter.advances ?? [])]
+			advances: [...(fighter.advances ?? [])],
+			injuries: [...(fighter.injuries ?? [])]
 		};
 		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
@@ -220,7 +221,8 @@
 			xp: values.xp,
 			tally: values.tally,
 			wargear: values.wargear,
-			advances: values.advances
+			advances: values.advances,
+			injuries: values.injuries
 		};
 		const open = advancement.open(now, profile);
 		return {
@@ -231,13 +233,20 @@
 		};
 	});
 
+	/* The names of the injuries the fighter on the back keeps, as the draft leaves them. */
+	const backInjuries = $derived.by(() => {
+		const injuries = system?.game.injuries;
+		if (!injuries || !editingId || editingId === warband?.id) return null;
+		return draft.injuries.map((id) => injuries.result(id)?.name ?? id);
+	});
+
 	/**
 	 * The fighter with the back's text and campaign; a field left blank is left
 	 * out, as it is on a fighter never written on, and so are experience and
 	 * counters at none where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances }: BackDraft): FighterInstance {
-		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, ...rest } = fighter;
+	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances, injuries }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, injuries: _injuries, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
 			...rest,
@@ -246,6 +255,7 @@
 			...(xp || fighter.xp !== undefined ? { xp } : {}),
 			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
 			...(advances.length || fighter.advances ? { advances } : {}),
+			...(injuries.length || fighter.injuries ? { injuries } : {}),
 			wargear
 		};
 	}
@@ -496,7 +506,7 @@
 					{#if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} equipment={backEquipment} />
+						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} equipment={backEquipment} />
 					{/if}
 				{/snippet}
 			</Deck>
