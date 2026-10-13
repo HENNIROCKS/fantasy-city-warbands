@@ -117,6 +117,8 @@ export interface GameSystem {
 	aftermath?: Aftermath;
 	/** What a fighter's levels are spent on and what that does to its card. Without it, levels are not spent here. */
 	advancement?: Advancement;
+	/** What a fighter taken out of action rolls on afterwards, and what the result does. Without it, no injuries. */
+	injuries?: Injuries;
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -263,6 +265,66 @@ export interface AdvanceEffects {
 	keywords: string[];
 	/** A weapon column the levels change, by wargear id: its new figure and why. */
 	weapons: { wargear: string; stat: string; value: string; source: string }[];
+}
+
+/**
+ * A game's injuries, such as Wyrdcry's Lasting Injury Table: which table a
+ * fighter rolls on, what a result comes to under the game's limits, and what the
+ * results a fighter keeps do to its card. The dice are rolled at the table; the
+ * app is handed the result.
+ */
+export interface Injuries {
+	/** The table the fighter rolls on, or null where it never rolls. */
+	table(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryTable | null;
+	/** Why the fighter never rolls, by the rule that says so: `Unbending Will`. Null where it does. */
+	exempt(instance: FighterInstance, fighter: Fighter, faction: Faction): string | null;
+	/** What a result rolled on the fighter's table comes to, such as an injury it already has turning into a Flesh Wound. */
+	resolve(instance: FighterInstance, fighter: Fighter, faction: Faction, id: string): InjuryResolution;
+	/** The fighter with a rolled result written in: one it keeps, or a level of renown. Other outcomes leave it as it is. */
+	apply(instance: FighterInstance, fighter: Fighter, faction: Faction, id: string): FighterInstance;
+	/** What the results the fighter keeps add to the card. */
+	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryEffects;
+}
+
+export interface InjuryTable {
+	/** As the rules name the table: `Lasting Injury Table`. */
+	table: string;
+	/** `D66`, `D6`. */
+	dice: string;
+	results: InjuryResult[];
+}
+
+/**
+ * What the result does once rather than to the card: the fighter dies, needs a
+ * surgeon, misses the next battle, loses its equipment, is captured or earns a
+ * level of renown.
+ */
+export type InjuryOutcome = 'dead' | 'surgeon' | 'miss-next-battle' | 'robbed' | 'captured' | 'renown';
+
+export interface InjuryResult {
+	id: string;
+	name: string;
+	/** The rolls it covers, as the table prints them: `12–13`, `5`. */
+	roll: string;
+	text: string;
+	/** As the rules name it in brackets: `injury`, `trait`. */
+	type?: string;
+	outcome?: InjuryOutcome;
+	/** Whether the fighter keeps it and the card shows it. */
+	lasting: boolean;
+}
+
+export interface InjuryResolution {
+	result: InjuryResult;
+	/** Why the result differs from the one rolled, null where it does not. */
+	note: string | null;
+}
+
+export interface InjuryEffects extends AdvanceEffects {
+	/** What the results add to a characteristic, each by the result's name. */
+	stats: { stat: string; bonus: number; source: string }[];
+	/** Types of ability the fighter cannot use, such as `reaction`. */
+	forbid: string[];
 }
 
 /** A number a game's campaign counts up and down, such as favour. */
@@ -463,6 +525,8 @@ export interface FighterInstance {
 	xp?: number;
 	/** What the fighter's levels were spent on, in the order they were spent. */
 	advances?: Advance[];
+	/** The ids of the injury results the fighter keeps, in the order they came. */
+	injuries?: string[];
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
 }

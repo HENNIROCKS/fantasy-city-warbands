@@ -7,6 +7,7 @@
  */
 
 import { chosenOptions, profileOf } from '$lib/core/warband';
+import { injuryBonus } from './wyrdcry-injuries';
 import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, LevelOffer, LevelRule, OpenLevel, Rule } from '$lib/core/types';
 
 import talents from '$lib/rules/wyrdcry/heroic-talents.json';
@@ -116,8 +117,8 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 	const stats = Object.keys(STEP).flatMap((stat) => {
 		const start = profile[stat];
 		if (typeof start !== 'number') return [];
-		/* From the figure as the fighter's levels left it: the reach of the limit is the result's, not the start's. */
-		const from = advances.filter((a) => a.stat === stat).reduce((sum, a) => sum + (a.bonus ?? 0), start);
+		/* From the figure as the fighter's levels and injuries left it: the reach of the limit is the result's, not the start's. */
+		const from = advances.filter((a) => a.stat === stat).reduce((sum, a) => sum + (a.bonus ?? 0), start + injuryBonus(instance, stat));
 		const bonus = STEP[stat];
 		const to = from + bonus;
 		const cap = limit?.[stat];

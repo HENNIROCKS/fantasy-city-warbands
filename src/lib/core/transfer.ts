@@ -103,9 +103,10 @@ function readAll<T>(raw: unknown, read: (entry: unknown) => T | null): T[] | nul
 
 function readFighter(raw: unknown): FighterInstance | null {
 	if (!isObject(raw)) return null;
-	const { instanceId, fighterId, name, wargear, picks, fluff, notes, xp, advances, tally } = raw;
+	const { instanceId, fighterId, name, wargear, picks, fluff, notes, xp, advances, injuries, tally } = raw;
 	if (typeof instanceId !== 'string' || typeof fighterId !== 'string' || typeof name !== 'string' || !isStrings(wargear)) return null;
 	if (picks !== undefined && !isStrings(picks)) return null;
+	if (injuries !== undefined && !isStrings(injuries)) return null;
 	for (const text of [fluff, notes]) if (text !== undefined && typeof text !== 'string') return null;
 	if (xp !== undefined && !isNumber(xp)) return null;
 	if (tally !== undefined && !isTally(tally)) return null;
@@ -121,6 +122,7 @@ function readFighter(raw: unknown): FighterInstance | null {
 		...(notes !== undefined ? { notes: notes as string } : {}),
 		...(xp !== undefined ? { xp } : {}),
 		...(spent !== undefined ? { advances: spent } : {}),
+		...(injuries !== undefined ? { injuries } : {}),
 		...(tally !== undefined ? { tally } : {})
 	};
 }

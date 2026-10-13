@@ -118,8 +118,8 @@ export interface FighterCardData {
 	unknown: boolean;
 }
 
-/** In the order the Warband Deck lists abilities; a type it does not know comes first. */
-const TYPE_ORDER = ['trait', 'double', 'triple', 'quad', 'reaction'];
+/** In the order the Warband Deck lists abilities, injuries after the traits; a type it does not know comes first. */
+const TYPE_ORDER = ['trait', 'injury', 'double', 'triple', 'quad', 'reaction'];
 const REACTION = 'reaction';
 
 const typeRank = (type = '') => TYPE_ORDER.indexOf(type.toLowerCase());

@@ -7,6 +7,7 @@
 import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
+import { wyrdcryInjuries } from './wyrdcry-injuries';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -99,6 +100,12 @@ export const game: GameSystem = {
 		income
 	},
 	advancement,
+	/* Unbending Will is an ability of the fighter's type, which the shared form
+	   carries only as a rule's text; the raw fighter still has its id. */
+	injuries: wyrdcryInjuries({
+		abilities: (faction, fighter) => carrying.get(`${faction.id}/${fighter.id}`)?.raw.abilities ?? [],
+		keywords: advancement.keywords
+	}),
 	/* As the Warband Deck tracks them. Cover changes no figure of the fighter's:
 	   it raises the difficulty rating of a ranged attack against it, a number on
 	   the attacker's side. */
