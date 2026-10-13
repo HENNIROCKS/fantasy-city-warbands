@@ -208,6 +208,13 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const keywords = [...new Set([...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited), ...advanced.keywords])];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
+	/* A fighter with no melee weapon in hand fights with the game's Unarmed
+	   profile, at the head of the table where the melee weapons stand. */
+	const unarmed = game.unarmed;
+	if (unarmed && !carried.some(({ wargear }) => wargear.kind === 'melee') && !keywords.some((k) => unarmed.except.includes(k))) {
+		weapons.unshift({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
+	}
+
 	/* A pick that raises a characteristic is in the profile above, and the rule
 	   it comes out of says so. Any other pick – a spell, a mutation – is a rule
 	   of the fighter's own. */

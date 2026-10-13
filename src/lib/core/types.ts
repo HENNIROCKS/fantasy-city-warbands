@@ -87,6 +87,12 @@ export interface GameSystem {
 	 */
 	dualWielding?: { stat: string; rule: Rule };
 	/**
+	 * The profile a fighter fights with that carries no melee weapon, as
+	 * Wyrdcry's Unarmed, and the keywords of fighters that never do – a BEAST
+	 * fights with what is on its profile.
+	 */
+	unarmed?: { weapon: Wargear; except: string[] };
+	/**
 	 * What keeps a fighter from carrying its wargear, one entry per piece it may
 	 * not have, in the order it carries them. Each piece is held against those
 	 * before it and the fighter's own `gear`, so the last one taken is the one

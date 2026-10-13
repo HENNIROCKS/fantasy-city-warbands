@@ -11,6 +11,7 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 - [ ] Clan Eshin: a warband holds up to 15 fighters, as the page says, where the faction data says 20
 - [ ] Clan Eshin: Murder-Stab is a Double for every fighter, as the page says, where the ability data keeps the old Triple
 - [ ] Clan Eshin and Mercenaries: the allowances weeping-blades and wawr point at no weapon and are left out
+- [ ] Unarmed: the weapon profile the site repo's weapon data carries (1", 2 attacks, 1/2), which the hand-kept weapons leave out
 - [ ] Unholy Relic: rare, a Rarity roll of 6+ before it is bought, as the hand-kept items have it, where the site repo's item data has it common
 
 ### Open upstream

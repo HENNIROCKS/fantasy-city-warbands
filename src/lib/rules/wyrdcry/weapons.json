@@ -339,5 +339,16 @@
 		"crit": 7,
 		"rules": ["reload", "unreliable", "brace", "pierce-2"],
 		"cost": 40
+	},
+	{
+		"id": "unarmed",
+		"name": "Unarmed",
+		"type": "melee",
+		"range": { "min": 0, "max": 1 },
+		"attacks": 2,
+		"hit": 1,
+		"crit": 2,
+		"rules": [],
+		"cost": 0
 	}
 ]

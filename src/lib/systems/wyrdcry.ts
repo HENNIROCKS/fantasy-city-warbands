@@ -61,6 +61,13 @@ export const game: GameSystem = {
 		}
 	},
 	carry,
+	/* "A fighter that isn't equipped with any melee weapon is considered to be
+	   unarmed, and uses the Unarmed weapon profile." BEAST and THRALL are out
+	   of it, as in the Warband Deck: neither can be equipped at all. Read when
+	   asked for, as the catalogue is built further down. */
+	get unarmed() {
+		return { weapon: catalogue.get('weapon:unarmed')!, except: ['beast', 'thrall'] };
+	},
 	/* As the Warband Deck sells: half the price, rounded down to 5 gc, never below 5 gc. */
 	salePrice: (cost) => Math.max(5, Math.floor(cost / 2 / 5) * 5),
 	campaign: {
