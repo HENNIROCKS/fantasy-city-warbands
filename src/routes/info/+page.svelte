@@ -2,20 +2,21 @@
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
-	import { areas } from '$lib/core/coverage';
+	// import { areas } from '$lib/core/coverage';
 	import { planned, systems } from '$lib/systems';
 
 	/** Each game's own site and where its rules come from, by game id. */
 	const SITES: Record<string, string> = {
 		wyrdcry: 'https://wyrdcry.net',
 		'black-death-city': 'https://www.blackdeathcity.com/',
-		mordheim: 'https://mordheimer.net/'
+		mordheim: 'https://mordheimer.net/',
+		necropolis: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/'
 	};
 
 	const SOURCES: Record<string, string> = {
-		wyrdcry:
-			'The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net.',
-		'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.01.'
+		// wyrdcry:
+		// 	'The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net.',
+		// 'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.01.'
 	};
 
 	/** Playable games and those still to come in one list, by name. */
@@ -203,7 +204,7 @@
 				</li>
 			{/each}
 		</ul>
-		<p>
+		<!-- <p>
 			The ring beside a game when you pick it is a rough count of how much of the game the app carries:
 			one piece for each of these, filled where it is built.
 		</p>
@@ -211,7 +212,7 @@
 			{#each areas as area (area.label)}
 				<li>{area.label}</li>
 			{/each}
-		</ul>
+		</ul> -->
 	</section>
 
 	<section class="space-y-3">
