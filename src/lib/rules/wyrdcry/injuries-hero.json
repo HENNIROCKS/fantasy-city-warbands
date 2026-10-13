@@ -1,0 +1,187 @@
+[
+  {
+    "id": "dead",
+    "name": "Dead",
+    "roll": { "min": 11, "max": 11 },
+    "type": null,
+    "outcome": "dead",
+    "text": "The fighter is killed instantly.",
+    "effects": []
+  },
+  {
+    "id": "deep-wound",
+    "name": "Deep Wound",
+    "roll": { "min": 12, "max": 13 },
+    "type": null,
+    "outcome": "surgeon",
+    "text": "The fighter will die unless you take them to a surgeon. You may remove 15gc from the warband stash to roll a D6. On a 1-2, the fighter dies (but you retain their equipment!). On a 3+, the fighter survives.",
+    "effects": []
+  },
+  {
+    "id": "infection",
+    "name": "Infection",
+    "roll": { "min": 14, "max": 16 },
+    "type": null,
+    "outcome": "miss-next-battle",
+    "text": "The fighter survives but will miss the next battle.",
+    "effects": []
+  },
+  {
+    "id": "wyrdlung-rot",
+    "name": "Wyrdlung Rot",
+    "roll": { "min": 21, "max": 21 },
+    "type": "injury",
+    "text": "This fighter can only make one Move action per battle round.",
+    "effects": []
+  },
+  {
+    "id": "crippled-leg",
+    "name": "Crippled Leg",
+    "roll": { "min": 22, "max": 22 },
+    "type": "injury",
+    "text": "Decrease the fighter's Move characteristic by 1.",
+    "effects": [{ "kind": "stat", "characteristic": "move", "bonus": -1 }]
+  },
+  {
+    "id": "fractured-arm",
+    "name": "Fractured Arm",
+    "roll": { "min": 23, "max": 23 },
+    "type": "injury",
+    "text": "Decrease the fighter's Fight and Shoot characteristics by 1.",
+    "effects": [
+      { "kind": "stat", "characteristic": "fight", "bonus": -1 },
+      { "kind": "stat", "characteristic": "shoot", "bonus": -1 }
+    ]
+  },
+  {
+    "id": "devastated-eye",
+    "name": "Devastated Eye",
+    "roll": { "min": 24, "max": 24 },
+    "type": "injury",
+    "text": "Reduce the range of any weapons equipped by this fighter by half (to a minimum of 1\").",
+    "effects": [{ "kind": "range", "factor": 0.5, "floor": 1 }]
+  },
+  {
+    "id": "festering-wound",
+    "name": "Festering Wound",
+    "roll": { "min": 25, "max": 25 },
+    "type": "injury",
+    "text": "Decrease the fighter's Health characteristic by 4.",
+    "effects": [{ "kind": "stat", "characteristic": "health", "bonus": -4 }]
+  },
+  {
+    "id": "nervous-tick",
+    "name": "Nervous Tick",
+    "roll": { "min": 26, "max": 26 },
+    "type": "injury",
+    "text": "Decrease the fighter's Bravery characteristic by 1.",
+    "effects": [{ "kind": "stat", "characteristic": "bravery", "bonus": 1 }]
+  },
+  {
+    "id": "stupidity",
+    "name": "Stupidity",
+    "roll": { "min": 31, "max": 31 },
+    "type": "injury",
+    "text": "Unless activated within 3\" of a visible friendly `HERO` or enemy fighter, roll a D6. On a 1-4, this fighter makes a Wait action. On a 5+, this fighter may activate as normal.",
+    "effects": []
+  },
+  {
+    "id": "hallucinations",
+    "name": "Hallucinations",
+    "roll": { "min": 32, "max": 32 },
+    "type": "injury",
+    "text": "This fighter must pass a Bravery test whenever they are activated within 1\" of an enemy fighter, or become panicked.",
+    "effects": []
+  },
+  {
+    "id": "claustrophobia",
+    "name": "Claustrophobia",
+    "roll": { "min": 33, "max": 33 },
+    "type": "injury",
+    "text": "Whenever this fighter ends a move action or is activated underneath a platform, it must pass a Bravery test or become panicked.",
+    "effects": []
+  },
+  {
+    "id": "amnesia",
+    "name": "Alcoholic",
+    "roll": { "min": 34, "max": 34 },
+    "type": "injury",
+    "text": "This fighter cannot make reactions.",
+    "effects": [{ "kind": "forbid", "ability_type": "reaction" }]
+  },
+  {
+    "id": "kleptomania",
+    "name": "Kleptomania",
+    "roll": { "min": 35, "max": 35 },
+    "type": "injury",
+    "text": "Reduce all income by 10gc.",
+    "effects": [{ "kind": "income", "amount": -10 }]
+  },
+  {
+    "id": "paranoia",
+    "name": "Paranoia",
+    "roll": { "min": 36, "max": 36 },
+    "type": "injury",
+    "text": "This fighter counts as panicked while within 1\" of friendly fighters.",
+    "effects": []
+  },
+  {
+    "id": "flesh-wound",
+    "name": "Flesh Wound",
+    "roll": { "min": 41, "max": 56 },
+    "type": null,
+    "text": "The fighter suffers no lasting effects.",
+    "effects": []
+  },
+  {
+    "id": "robbed",
+    "name": "Robbed",
+    "roll": { "min": 61, "max": 61 },
+    "type": null,
+    "outcome": "robbed",
+    "text": "All equipment carried by this fighter is lost.",
+    "effects": []
+  },
+  {
+    "id": "captured",
+    "name": "Captured",
+    "roll": { "min": 62, "max": 62 },
+    "type": null,
+    "outcome": "captured",
+    "text": "The fighter is captured by your opponent's warband. You must offer your opponent half of the fighter's recruitment cost, or concede 1 favour to get them back.",
+    "effects": []
+  },
+  {
+    "id": "hatred",
+    "name": "Hatred",
+    "roll": { "min": 63, "max": 63 },
+    "type": null,
+    "text": "This fighter hates the enemy fighter that took them out of action, and may turn a hit into a critical hit when making attack actions against that enemy fighter.",
+    "effects": []
+  },
+  {
+    "id": "hardened",
+    "name": "Hardened",
+    "roll": { "min": 64, "max": 64 },
+    "type": null,
+    "text": "Increase the Bravery characteristic of this fighter by 1.",
+    "effects": [{ "kind": "stat", "characteristic": "bravery", "bonus": -1 }]
+  },
+  {
+    "id": "terrible-scars",
+    "name": "Terrible Scars",
+    "roll": { "min": 65, "max": 65 },
+    "type": "trait",
+    "text": "This fighter gains the `TERRIFYING` keyword.",
+    "effects": [{ "kind": "keyword", "keyword": "terrifying" }]
+  },
+  {
+    "id": "against-all-odds",
+    "name": "Against All Odds",
+    "roll": { "min": 66, "max": 66 },
+    "type": null,
+    "outcome": "renown",
+    "text": "This fighter earns a level of Renown.",
+    "effects": []
+  }
+]
