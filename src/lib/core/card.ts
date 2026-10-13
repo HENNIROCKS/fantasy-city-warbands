@@ -261,7 +261,17 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			key: game.health,
 			value: statLayers.get(game.health)?.reduce((sum, layer) => sum + layer.amount, 0) ?? 0
 		},
-		campaign: [{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) }],
+		/* As on the Warband Deck's card: what the fighter carries out of a game
+		   rather than into one, where the game keeps a campaign. */
+		campaign: [
+			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) },
+			...(game.campaign
+				? [
+						{ key: 'xp', label: 'Experience Points', value: String(instance.xp ?? 0) },
+						...game.campaign.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) }))
+					]
+				: [])
+		],
 		weapons,
 		sections,
 		fluff: instance.fluff?.trim() ?? '',

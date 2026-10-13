@@ -57,7 +57,8 @@ It does not yet roll injuries or know Black Death City's campaign.
   where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
-  for each fighter with its profile, weapons and rules. In Wyrdcry a
+  for each fighter with its profile, its cost – in Wyrdcry beside its
+  experience and renown – its weapons and rules. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown and its armour, and
   tapped it says how it adds up and what a situation can still change, marked
   with a star
