@@ -43,7 +43,7 @@
 			</p>
 			<button
 				type="button"
-				class="flex size-11 shrink-0 items-center justify-center rounded text-lg transition hover:bg-black/10 focus-visible:bg-black/10"
+				class="flex size-11 shrink-0 items-center justify-center rounded text-lg transition hover:bg-[var(--ui-sel-border)] focus-visible:bg-[var(--ui-sel-border)]"
 				aria-label="Dismiss"
 				onclick={dismiss}>×</button
 			>
