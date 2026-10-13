@@ -139,7 +139,8 @@
 			built: coverage(s.game, s.factions),
 			available: true
 		})),
-		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], built: null, available: false }))
+		/* A game still to come shows its ring with every area open, faint with the disabled tile. */
+		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], built: areas.map(() => false), available: false }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	/** One of `count` equal pieces of a ring from radius 8 to 20 around 22,22, the first starting at twelve o'clock. */
