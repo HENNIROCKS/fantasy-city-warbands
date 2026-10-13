@@ -342,6 +342,10 @@ export interface Wargear {
 	rules?: Rule[];
 	/** How many fighters of a warband may carry it at the same time, such as Black Death City's Rare 0-1. */
 	rare?: number;
+	/** What has to be found at the table before it is bought, such as Wyrdcry's `a Rarity roll of 6+`; the builder asks for it. */
+	found?: string;
+	/** A heading of its own in the builder's list, such as Wyrdcry's Trading Post; without it the piece stands under its kind. */
+	group?: string;
 	/** What it adds whenever it is carried, such as Heavy Armour's +3 Armour and −1 Move. */
 	effects?: StatEffect[];
 	/** What it adds in one situation only, such as the Shield's Fight against a melee attack. */

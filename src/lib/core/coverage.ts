@@ -23,8 +23,12 @@ export const areas: Area[] = [
 	{ label: 'Tracking a battle', built: () => true },
 	{ label: 'The aftermath of a battle', built: (game) => !!game.aftermath },
 	{ label: 'Advancement', built: (game) => !!game.advancement },
-	/* The system has no field to read for these, so they count as open for every game. */
-	{ label: 'The stash and the trading post', built: () => false },
+	/* The stash is the core's; a game carries this area once it sells from it and has a list of its own beside the factions', as Wyrdcry's Trading Post. */
+	{
+		label: 'The stash and the trading post',
+		built: (game, factions) => !!game.salePrice && factions.some((f) => f.wargear.some((w) => w.group))
+	},
+	/* The system has no field to read for this, so it counts as open for every game. */
 	{ label: 'Injuries', built: () => false }
 ];
 

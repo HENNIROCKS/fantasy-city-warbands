@@ -66,7 +66,10 @@ It does not yet roll injuries or know Black Death City's campaign.
   fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device.
   The back also hands what the fighter bought to the stash and takes pieces
-  from it, each checked as the builder checks it, and not during a battle.
+  from it, each checked as the builder checks it, and not during a battle;
+  buying is in the builder, which the back links to. In Wyrdcry the builder
+  offers the Trading Post to every fighter that takes equipment, one of each
+  piece, and asks before a rare one whether a Rarity roll of 6+ found it
   In Wyrdcry the back also corrects experience and renown by hand – the fourth
   point of experience is a level of renown, and renown does not go below a
   level already spent; a BEAST or THRALL has neither. The warband's favour is

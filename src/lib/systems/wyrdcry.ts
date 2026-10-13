@@ -310,6 +310,9 @@ function range({ min, max }: { min: number; max: number }): string {
 	return min ? `${min}–${max}"` : `${max}"`;
 }
 
+/* The Trading Post's two lists, under the Warband Deck's headings. */
+const TRADING_POST: Record<string, string> = { miscellaneous: 'Trading Post', 'single-use': 'Trading Post – single use' };
+
 /**
  * Every weapon and item by its prefixed id, as `equipment.json` names them. An
  * item whose cost is a surcharge on a weapon, such as `"+100"`, has no price of
@@ -340,7 +343,9 @@ const catalogue = new Map<string, Wargear>([
 							text: i.text,
 							...(i.effects.length ? { effects: i.effects.map((e) => ({ stat: e.characteristic, bonus: e.bonus })) } : {}),
 							...(conditionsBy.has(`item:${i.id}`) ? { conditions: conditionsBy.get(`item:${i.id}`) } : {}),
-							...(grantsBy.has(`item:${i.id}`) ? { grants: grantsBy.get(`item:${i.id}`) } : {})
+							...(grantsBy.has(`item:${i.id}`) ? { grants: grantsBy.get(`item:${i.id}`) } : {}),
+							...(i.rarity === 'rare' ? { found: 'a Rarity roll of 6+' } : {}),
+							...(i.type in TRADING_POST ? { group: TRADING_POST[i.type] } : {})
 						}
 					]
 				]
@@ -358,6 +363,19 @@ const catalogue = new Map<string, Wargear>([
 
 const MELEE_SLOTS = 2;
 const RANGED_SLOTS = 1;
+
+/*
+ * The Trading Post, open to every faction and every fighter who takes
+ * equipment at all, as the Warband Deck has it – one of each piece per
+ * fighter. The Master-Wrought Weapon raises a weapon's cost rather than being
+ * a piece of its own, so the catalogue has no price for it and it stays out.
+ */
+const postOrder = (w: Wargear) => Object.values(TRADING_POST).indexOf(w.group ?? '');
+const tradingPost = [...catalogue.values()]
+	.filter((w) => w.group)
+	.sort((a, b) => postOrder(a) - postOrder(b))
+	.map((w) => w.id);
+const fromTradingPost = new Set(tradingPost);
 
 const weaponOf = new Map(weapons.map((w) => [`weapon:${w.id}`, w]));
 const itemOf = new Map(items.map((i) => [`item:${i.id}`, i]));
@@ -426,6 +444,7 @@ function refuse(raw: RawFighter, equipment: Allowance[], held: string[], id: str
 		if (item.slot === 'hand' && free.melee < 1) return same('No hand free');
 		return null;
 	}
+	if (fromTradingPost.has(id) && carried) return same('One of each per fighter');
 	if (!weapon) return null;
 
 	if (weapon.type === 'ranged' && raw.abilities.includes('penitent')) {
@@ -532,7 +551,7 @@ function build(
 			}),
 			/* Offered whether the fighter may take it or not: a player looking for a
 			   Handgun needs to read that it is for HEROes, not to find it missing. */
-			wargear: takesNothing(f) ? [] : equipment.map((e) => e.id),
+			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost])],
 			unequipped: takesNothing(f),
 			gear: f.gear,
 			choice: choiceOf(f.choose, rules, ability)
@@ -542,6 +561,7 @@ function build(
 		wargear: [
 			...new Set([
 				...equipment.map((e) => e.id),
+				...tradingPost,
 				...fighters.flatMap((f) => f.gear),
 				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
 			])

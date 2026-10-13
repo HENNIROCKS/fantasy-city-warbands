@@ -451,6 +451,12 @@
 		outline-offset: -2px;
 	}
 
+	/* The question before a piece found only at the table, under its row. */
+	.check-ask {
+		flex-basis: 100%;
+		margin: 0 12px 12px;
+	}
+
 	/* What the fighter could never take, in a line under the list rather than a row each. */
 	.check-hint {
 		margin-top: 4px;

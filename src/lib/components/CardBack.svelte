@@ -24,6 +24,8 @@
 		carried: string[];
 		/** `draft.stash` in its order, each with why the fighter cannot take it. */
 		stash: { name: string; refused: string | null }[];
+		/** Where the fighter buys, in the builder: what it may carry is decided there. */
+		buy: string;
 	}
 
 	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
@@ -301,6 +303,9 @@
 					{:else}
 						<p class="hint">The stash is empty.</p>
 					{/if}
+					{#if !equipment.takesNothing}
+						<a class="buy" href={equipment.buy}>Buy in the builder ›</a>
+					{/if}
 				{/if}
 			</section>
 		{/if}
@@ -449,5 +454,15 @@
 
 	.remove:disabled {
 		color: var(--card-ink-muted);
+	}
+
+	.buy {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		min-height: 40px;
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		color: var(--card-link);
 	}
 </style>

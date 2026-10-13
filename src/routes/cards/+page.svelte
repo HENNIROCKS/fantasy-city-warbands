@@ -151,7 +151,8 @@
 				? "This fighter is not in the app's own rules, so what it may carry cannot be checked."
 				: null;
 		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
-		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [] };
+		const buy = resolve('/build') + `?id=${warband.id}&step=fighters#fighter-${instance.instanceId}`;
+		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [], buy };
 		const moved = (wargear: string[], stash: string[]): Warband => ({
 			...($state.snapshot(warband) as Warband),
 			stash,
@@ -166,7 +167,8 @@
 			stash: draft.stash.map((id, i) => {
 				const after = moved([...draft.wargear, id], draft.stash.filter((_, j) => j !== i));
 				return { name: nameOf(id), refused: newExcess(before, after, system.game, faction)?.short ?? null };
-			})
+			}),
+			buy
 		};
 	});
 

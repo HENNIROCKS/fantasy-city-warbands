@@ -59,11 +59,44 @@
 		return [...byReason].map(([reason, names]) => `${reason}: ${names.length > 3 ? `${names.length} more` : names.join(', ')}`);
 	}
 
+	/* The groups of the list: a piece under its kind, unless it has a heading of
+	   its own, such as Wyrdcry's Trading Post – those after the kinds, in the
+	   order the faction lists them. */
+	const groups = $derived.by(() => {
+		if (!fighter) return [];
+		const sold = faction.wargear.filter((w) => fighter.wargear.includes(w.id));
+		const own = [...new Set(sold.flatMap((w) => (w.group ? [w.group] : [])))];
+		return [
+			...KINDS.map(({ kind, label }) => ({ label, sold: sold.filter((w) => w.kind === kind && !w.group) })),
+			...own.map((label) => ({ label, sold: sold.filter((w) => w.group === label) }))
+		].filter((g) => g.sold.length);
+	});
+
+	/* A piece found only at the table, by a Rarity roll, is asked about on the
+	   first tap, as the Warband Deck asks before it sells one. */
+	let finding = $state<string | null>(null);
+
 	/* Ticking takes one; unticking puts down every copy. */
-	function toggle(id: string) {
+	function toggle(id: string, event?: Event) {
+		const found = faction.wargear.find((w) => w.id === id)?.found;
+		if (!countOf(id) && found && finding !== id) {
+			if (event?.currentTarget instanceof HTMLInputElement) event.currentTarget.checked = false;
+			finding = id;
+			return;
+		}
+		finding = null;
 		if (countOf(id)) instance.wargear = instance.wargear.filter((w) => w !== id);
 		else instance.wargear.push(id);
 	}
+
+	/* Not found: back to the row it was asked about. */
+	async function notFound(id: string) {
+		finding = null;
+		await tick();
+		document.getElementById(checkId(id))?.focus();
+	}
+
+	const checkId = (id: string) => `wargear-${instance.instanceId}-${id}`;
 
 	/* A second of the same piece, where the game's carrying rules allow one: two
 	   swords to dual wield, a pair of pistols. */
@@ -249,8 +282,7 @@
 				>
 				{#if adding}
 					<div id="wargear-{instance.instanceId}" class="mt-3 space-y-3">
-						{#each KINDS as { kind, label: group } (kind)}
-							{@const sold = faction.wargear.filter((w) => w.kind === kind && fighter.wargear.includes(w.id))}
+						{#each groups as { label: group, sold } (group)}
 							{@const options = sold.filter((w) => !never.has(w.id) || countOf(w.id))}
 							{@const left = sold.filter((w) => !options.includes(w)).map((w) => w.id)}
 							{#if sold.length}
@@ -266,11 +298,12 @@
 											<li class="check-row">
 												<label class="check-label">
 													<input
+														id={checkId(w.id)}
 														type="checkbox"
 														class="h-4 w-4 shrink-0 rounded accent-[#16754A]"
 														checked={count > 0}
 														disabled={!!block}
-														onchange={() => toggle(w.id)}
+														onchange={(event) => toggle(w.id, event)}
 													/>
 													<span class="check-name">{w.name}</span>
 													<span class="check-cost">{w.cost}&nbsp;{game.currency}</span>
@@ -284,7 +317,20 @@
 														onclick={() => pair(w.id)}>×2</button
 													>
 												{/if}
-												{#if block}<span class="check-why">{block.short}</span>{/if}
+												{#if block}<span class="check-why">{block.short}</span>
+												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
+												{#if finding === w.id}
+													<!-- On the row's own surface, as the question for a rolled option. -->
+													<div class="check-ask" role="group" aria-labelledby="find-{checkId(w.id)}">
+														<p id="find-{checkId(w.id)}" class="font-semibold">Found {w.name} with {w.found}?</p>
+														<div class="sheet-actions">
+															<button type="button" class="btn" onclick={() => notFound(w.id)}>Not found</button>
+															<button type="button" class="btn" onclick={() => toggle(w.id)} use:focusOnMount
+																>Found – buy for {w.cost}&nbsp;{game.currency}</button
+															>
+														</div>
+													</div>
+												{/if}
 											</li>
 										{/each}
 									</ul>{/if}
