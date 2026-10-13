@@ -94,7 +94,8 @@ im hellen Modus dunkel. Für eine neue Zink-Klasse, auch als `hover:` oder
 Die Karten folgen dem Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`):
 Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, WarbandBack,
 AftermathBack, BattleBar, MenuButton, ValueTable, WeaponTable, Explanation,
-fit-text) sind dort übernommen und gekürzt. Eine Änderung am Kartenaufbau wird
+RenownSheet, LevelPicker – im Deck TalentPicker –, fit-text) sind dort
+übernommen und gekürzt. Eine Änderung am Kartenaufbau wird
 zuerst am Deck verglichen.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
