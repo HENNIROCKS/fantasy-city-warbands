@@ -8,9 +8,12 @@ export type ShareResult = 'shared' | 'downloaded' | 'cancelled';
 /**
  * The file goes alone: iOS shares a title as a text of its own, and AirDrop
  * delivers it as a second file beside the first.
+ *
+ * The share sheet is used only under a finger. On a Mac, Safari and Arc open
+ * one too, but it offers AirDrop, Mail and Messages and nowhere to save.
  */
 export async function shareFile(file: File): Promise<ShareResult> {
-	if (navigator.canShare?.({ files: [file] })) {
+	if (matchMedia('(pointer: coarse)').matches && navigator.canShare?.({ files: [file] })) {
 		try {
 			await navigator.share({ files: [file] });
 			return 'shared';
