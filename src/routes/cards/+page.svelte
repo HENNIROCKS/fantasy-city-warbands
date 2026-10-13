@@ -134,6 +134,9 @@
 		editingId = instanceId;
 	}
 
+	/* Why a back changes no wargear while a battle goes on, as the Warband Deck says it. */
+	const IN_BATTLE = 'Not during a battle – end or cancel it first.';
+
 	/**
 	 * What the back may move between the fighter on it and the stash. A piece
 	 * from the stash is tried against the same checks as in the builder, on the
@@ -146,7 +149,7 @@
 		if (!instance) return null;
 		const profile = faction.fighters.find((f) => f.id === instance.fighterId);
 		const blocked = battle
-			? 'Not during a battle – end or cancel it first.'
+			? IN_BATTLE
 			: !profile
 				? "This fighter is not in the app's own rules, so what it may carry cannot be checked."
 				: null;
@@ -217,24 +220,23 @@
 		};
 	}
 
-	/* The warband as the back of its card would leave it, while that back is turned. */
-	const backResult = $derived(
-		warband && system && faction && editingId === warband.id
-			? applyBack($state.snapshot(warband) as Warband, system.game, faction, $state.snapshot(warbandDraft) as WarbandBackDraft)
-			: null
-	);
-	/* Nothing on the back takes the warband further, but Done is held to the same check as the builder. */
-	const backBlocked = $derived(
-		backResult && warband && system && faction ? newExcess(validate(warband, system.game, faction), backResult, system.game, faction) !== null : false
-	);
+	/* Nothing on the back of the warband card takes the warband further, but
+	   Done is held to the same check as the builder. A battle still being
+	   entered changes no limit, so it is left out of the check: Done gives it
+	   its id, not every keystroke. */
+	const backBlocked = $derived.by(() => {
+		if (!warband || !system || !faction || editingId !== warband.id) return false;
+		const draft = { ...($state.snapshot(warbandDraft) as WarbandBackDraft), pending: emptyPending('') };
+		const after = applyBack($state.snapshot(warband) as Warband, system.game, faction, draft);
+		return newExcess(validate(warband, system.game, faction), after, system.game, faction) !== null;
+	});
 
 	/* A failed write raises the storage warning; the card shows what was written either way. */
 	function done() {
 		if (!warband || !editingId) return;
 		if (editingId === warband.id) {
-			/* Read before the back closes: the result goes with it. */
-			const updated = backResult;
-			if (!updated || backBlocked) return;
+			if (!system || !faction || backBlocked) return;
+			const updated = applyBack($state.snapshot(warband) as Warband, system.game, faction, $state.snapshot(warbandDraft) as WarbandBackDraft);
 			editingId = null;
 			warband = updated;
 			saveWarband(updated);
@@ -468,7 +470,7 @@
 					{#if card.kind === 'warband' && aftermath && warband && system.game.aftermath}
 						<AftermathBack name={card.name} {warband} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
 					{:else if card.kind === 'warband' && warband}
-						<WarbandBack name={card.name} {warband} {faction} game={system.game} bind:draft={warbandDraft} />
+						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
 						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} equipment={backEquipment} />
 					{/if}

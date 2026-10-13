@@ -14,12 +14,15 @@
 		warband,
 		faction,
 		game,
+		blocked,
 		draft = $bindable()
 	}: {
 		name: string;
 		warband: Warband;
 		faction: Faction;
 		game: GameSystem;
+		/** Why nothing leaves the stash now, such as a battle going on; null where it can. */
+		blocked: string | null;
 		draft: WarbandBackDraft;
 	} = $props();
 
@@ -96,6 +99,7 @@
 
 			<p class="caption">Equipment</p>
 			{#if stash.length}
+				{#if blocked}<p class="hint">{blocked}</p>{/if}
 				<ul class="list">
 					{#each stash as id, i (i)}
 						{@const out = draft.stashOut.find((o) => o.index === i)}
@@ -107,7 +111,7 @@
 							</span>
 							{#if out}
 								<button class="remove" onclick={() => stashBack(i)}>Undo</button>
-							{:else}
+							{:else if !blocked}
 								{#if sale}
 									<button class="remove" onclick={() => stashOut(i, true)}>Sell {sale} {game.currency}</button>
 								{/if}
@@ -206,34 +210,9 @@
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
+	/* In a row of its own, at the right edge under the field it adds from. */
 	.add {
 		align-self: flex-end;
-		min-height: 40px;
-		padding: 0 calc(14 * var(--u));
-		border: 1px solid var(--card-green);
-		border-radius: 999px;
-		background: var(--card-green);
-		color: var(--card-paper);
-		font-family: 'Alegreya', serif;
-		font-size: calc(17 * var(--t));
-	}
-
-	/* Until there is something to add, an unpicked choice, set back. */
-	.add:disabled {
-		background: var(--card-field);
-		color: var(--card-green);
-		opacity: 0.5;
-	}
-
-	.remove {
-		flex: none;
-		min-height: 40px;
-		padding: 0 calc(6 * var(--u));
-		border: 0;
-		background: transparent;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		color: var(--card-link);
 	}
 
 	.when {

@@ -209,9 +209,10 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
 	/* A fighter with no melee weapon in hand fights with the game's Unarmed
-	   profile, at the head of the table where the melee weapons stand. */
+	   profile, at the head of the table where the melee weapons stand – where
+	   its profile is known, since only that says what it carries. */
 	const unarmed = game.unarmed;
-	if (unarmed && !carried.some(({ wargear }) => wargear.kind === 'melee') && !keywords.some((k) => unarmed.except.includes(k))) {
+	if (unarmed && fighter && !carried.some(({ wargear }) => wargear.kind === 'melee') && !keywords.some((k) => unarmed.except.includes(k))) {
 		weapons.unshift({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
 	}
 

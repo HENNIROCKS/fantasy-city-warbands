@@ -935,6 +935,40 @@
 	opacity: 0.5;
 }
 
+/* What a back adds, a green pill; what it takes away or moves, a word in the link's red. */
+.card.back .add {
+	min-height: 40px;
+	padding: 0 calc(14 * var(--u));
+	border: 1px solid var(--card-green);
+	border-radius: 999px;
+	background: var(--card-green);
+	color: var(--card-paper);
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+}
+
+/* Until there is something to add, an unpicked choice, set back. */
+.card.back .add:disabled {
+	background: var(--card-field);
+	color: var(--card-green);
+	opacity: 0.5;
+}
+
+.card.back .remove {
+	flex: none;
+	min-height: 40px;
+	padding: 0 calc(6 * var(--u));
+	border: 0;
+	background: transparent;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	color: var(--card-link);
+}
+
+.card.back .remove:disabled {
+	color: var(--card-ink-muted);
+}
+
 /* Names a list within a section, set like the counters' labels. */
 .card.back .caption {
 	margin: calc(6 * var(--u)) 0 0;

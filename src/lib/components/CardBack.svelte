@@ -430,31 +430,6 @@
 		color: var(--card-ink-muted);
 	}
 
-	.add {
-		min-height: 40px;
-		padding: 0 calc(14 * var(--u));
-		border: 1px solid var(--card-green);
-		border-radius: 999px;
-		background: var(--card-green);
-		color: var(--card-paper);
-		font-family: 'Alegreya', serif;
-		font-size: calc(17 * var(--t));
-	}
-
-	.remove {
-		flex: none;
-		min-height: 40px;
-		padding: 0 calc(6 * var(--u));
-		border: 0;
-		background: transparent;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		color: var(--card-link);
-	}
-
-	.remove:disabled {
-		color: var(--card-ink-muted);
-	}
 
 	.buy {
 		align-self: flex-start;

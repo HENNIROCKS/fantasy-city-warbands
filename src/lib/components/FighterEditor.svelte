@@ -278,7 +278,10 @@
 					class="wargear-add {fighter.gear.length || instance.wargear.length ? 'mt-2' : ''}"
 					aria-expanded={adding}
 					aria-controls={adding ? `wargear-${instance.instanceId}` : undefined}
-					onclick={() => (adding = !adding)}>{adding ? 'Done' : instance.wargear.length ? 'Change wargear' : '+ Add wargear'}</button
+					onclick={() => {
+						adding = !adding;
+						finding = null;
+					}}>{adding ? 'Done' : instance.wargear.length ? 'Change wargear' : '+ Add wargear'}</button
 				>
 				{#if adding}
 					<div id="wargear-{instance.instanceId}" class="mt-3 space-y-3">

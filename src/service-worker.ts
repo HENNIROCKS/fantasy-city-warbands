@@ -6,9 +6,10 @@
  *
  * Every file of a build is cached on install, under a name that carries the
  * build's version. Those files never change within a version, so they are
- * answered from the cache first. A page is asked of the network first and
- * taken from the cache only without one: the update bar's Reload has to reach
- * the new deploy, not the page this worker cached for the old one.
+ * answered from the cache first. A page is asked of the network first, so the
+ * update bar's Reload reaches the new deploy rather than the page this worker
+ * cached for the old one – but only for a few seconds: on a connection that
+ * hangs rather than fails, the cached page starts the app.
  */
 
 /// <reference types="@sveltejs/kit" />
@@ -28,6 +29,8 @@ const CACHE = `${PREFIX}${version}`;
    the whole install. */
 const served = files.filter((path) => !path.split('/').pop()?.startsWith('.'));
 const ASSETS = new Set([...build, ...served, ...prerendered]);
+/* How long a page waits for the network before the cached one is shown. */
+const PATIENCE = 3000;
 
 worker.addEventListener('install', (event) => {
 	event.waitUntil(
@@ -64,8 +67,16 @@ worker.addEventListener('fetch', (event) => {
 			   update bar asks for among them – goes to the network, and to the
 			   cache only without one. A page is found by its path: `?id=` is the
 			   app's to read, not part of the file. */
+			const network = fetch(event.request);
+			if (event.request.mode === 'navigate') {
+				const page = await cache.match(url.pathname);
+				if (page) {
+					const late = new Promise<null>((resolve) => setTimeout(() => resolve(null), PATIENCE));
+					return (await Promise.race([network.catch(() => null), late])) ?? page;
+				}
+			}
 			try {
-				return await fetch(event.request);
+				return await network;
 			} catch (error) {
 				const cached = (await cache.match(event.request)) ?? (await cache.match(url.pathname));
 				if (cached) return cached;
