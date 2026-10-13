@@ -209,7 +209,7 @@
 					{@const open = picked === result.id}
 					<button type="button" class="choice" aria-pressed={open} onclick={() => roll(id, result.id)}>
 						<span class="flex gap-3">
-							<span class="min-w-[3.5ch] tabular-nums">{result.roll}</span>
+							<span class="w-[5ch] shrink-0 tabular-nums">{result.roll}</span>
 							<span class="font-semibold">{result.name}</span>
 						</span>
 						{#if open && resolution}
@@ -221,58 +221,60 @@
 							{/if}
 						{/if}
 					</button>
+					<!-- What the result asks besides, right under it rather than under the whole table. -->
+					{#if open && resolution}
+						{@const outcome = resolution.result.outcome}
+						{@const cost = resolution.result.cost ?? 0}
+						{@const gold = goldLeft(warband, game, faction, draft, id)}
+						{@const surgeon = draft.surgeon[id]}
+						{@const dies = outcome === 'dead' || surgeon === 'none'}
+						{@const bought = roller.instance.wargear.map(wargearName)}
+						<div class="pb-2">
+							{#if outcome === 'surgeon'}
+								<p class="field-label mt-4" id="surgeon-{id}">Surgeon</p>
+								<div class="grid gap-2" role="group" aria-labelledby="surgeon-{id}">
+									<button type="button" class="choice" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
+									{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
+										<button
+											type="button"
+											class="choice"
+											aria-pressed={surgeon === option.answer}
+											disabled={gold < cost}
+											onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
+										>
+											Paid {cost} {game.currency}, {option.label}
+											{#if gold < cost}<span class="block text-zinc-400">Only {Math.max(0, gold)} {game.currency} left</span>{/if}
+										</button>
+									{/each}
+								</div>
+							{/if}
+							{#if dies && isLeader(roller.type)}
+								<p class="notice mt-3">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
+							{:else if dies}
+								<p class="field-label mt-4">Equipment</p>
+								{#if bought.length}
+									<button type="button" class="choice" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
+										Recovered on a 3+ – {bought.join(', ')} to the stash
+									</button>
+								{:else}
+									<p class="text-zinc-400">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
+								{/if}
+							{:else if outcome === 'robbed'}
+								<p class="notice mt-3">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
+							{:else if outcome === 'captured'}
+								<p class="notice mt-3">
+									Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
+									{game.currency}, or 1 favour – on the back of its card.
+								</p>
+							{:else if outcome === 'miss-next-battle'}
+								<p class="notice mt-3">Marked as missing the next battle, until that battle ends.</p>
+							{:else if outcome === 'renown'}
+								<p class="notice mt-3">One more level of renown, to spend after Apply.</p>
+							{/if}
+						</div>
+					{/if}
 				{/each}
 			</div>
-
-			{#if resolution}
-				{@const outcome = resolution.result.outcome}
-				{@const cost = resolution.result.cost ?? 0}
-				{@const gold = goldLeft(warband, game, faction, draft, id)}
-				{@const surgeon = draft.surgeon[id]}
-				{@const dies = outcome === 'dead' || surgeon === 'none'}
-				{@const bought = roller.instance.wargear.map(wargearName)}
-				{#if outcome === 'surgeon'}
-					<p class="field-label mt-4" id="surgeon-{id}">Surgeon</p>
-					<div class="grid gap-2" role="group" aria-labelledby="surgeon-{id}">
-						<button type="button" class="choice" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
-						{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
-							<button
-								type="button"
-								class="choice"
-								aria-pressed={surgeon === option.answer}
-								disabled={gold < cost}
-								onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
-							>
-								Paid {cost} {game.currency}, {option.label}
-								{#if gold < cost}<span class="block text-zinc-400">Only {Math.max(0, gold)} {game.currency} left</span>{/if}
-							</button>
-						{/each}
-					</div>
-				{/if}
-				{#if dies && isLeader(roller.type)}
-					<p class="notice mt-3">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
-				{:else if dies}
-					<p class="field-label mt-4">Equipment</p>
-					{#if bought.length}
-						<button type="button" class="choice" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
-							Recovered on a 3+ – {bought.join(', ')} to the stash
-						</button>
-					{:else}
-						<p class="text-zinc-400">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
-					{/if}
-				{:else if outcome === 'robbed'}
-					<p class="notice mt-3">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
-				{:else if outcome === 'captured'}
-					<p class="notice mt-3">
-						Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
-						{game.currency}, or 1 favour – on the back of its card.
-					</p>
-				{:else if outcome === 'miss-next-battle'}
-					<p class="notice mt-3">Marked as missing the next battle, until that battle ends.</p>
-				{:else if outcome === 'renown'}
-					<p class="notice mt-3">One more level of renown, to spend after Apply.</p>
-				{/if}
-			{/if}
 
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
