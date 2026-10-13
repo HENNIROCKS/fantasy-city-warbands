@@ -75,7 +75,7 @@
 		{
 			question: 'Can I print a warband?',
 			answer:
-				'Yes, as a roster in PDF, from the page icon beside the warband on the start page: the warband, a row for each fighter with its profile, abilities and weapons, then every rule of the warband, its fighters and their gear once, with the fighters that carry it. It is a first version and will change; each game is to get the sheet it prints itself, and Black Death City’s playtest has none yet.'
+				'Yes, as a roster in PDF, from the page icon beside the warband on the start page: the warband, in Wyrdcry with its battles won, drawn and lost, a row for each fighter with its profile, in Wyrdcry its experience and renown, its abilities, weapons and notes, then every rule of the warband, its fighters and their gear once, with the fighters that carry it. It is a first version and will change; each game is to get the sheet it prints itself, and Black Death City’s playtest has none yet.'
 		},
 		{
 			question: 'Which rules does the app follow?',

@@ -47,8 +47,14 @@ export function opponent(record: BattleRecord): string {
 	return warband ? `${warband} (${player})` : `(${player})`;
 }
 
+/** Won, drawn and lost. */
+export function results(records: BattleRecord[]): [number, number, number] {
+	const count = (result: BattleRecord['result']) => records.filter((r) => r.result === result).length;
+	return [count('win'), count('draw'), count('loss')];
+}
+
 /** `2 won · 1 drawn · 0 lost`. */
 export function tally(records: BattleRecord[]): string {
-	const count = (result: BattleRecord['result']) => records.filter((r) => r.result === result).length;
-	return `${count('win')} won · ${count('draw')} drawn · ${count('loss')} lost`;
+	const [won, drawn, lost] = results(records);
+	return `${won} won · ${drawn} drawn · ${lost} lost`;
 }

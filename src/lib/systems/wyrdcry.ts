@@ -38,7 +38,8 @@ export const game: GameSystem = {
 	roster: {
 		title: 'Wyrdcry Warband Roster',
 		stats: ['M', 'F', 'S', 'A', 'H', 'B'],
-		weapons: ['Rng', 'Att', 'Dmg']
+		weapons: ['Rng', 'Att', 'Dmg'],
+		campaign: ['XP', 'Ren']
 	},
 	roles: ['leader', 'hero', 'henchman'],
 	defaultRole: 'henchman',

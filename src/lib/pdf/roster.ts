@@ -19,6 +19,7 @@ import { safeName } from '$lib/share';
 const MARGIN = 28.35;
 const MARGIN_FOOT = 39.7;
 
+const HAIR = 0.4;
 const THIN = 0.75;
 const THICK = 1.5;
 
@@ -35,33 +36,20 @@ function th(cell: string | ContentText): ContentText {
 
 /**
  * The ruled tables: a frame, a heavier rule under the header, a rule between
- * the rows and none between the columns. `tight` names columns that get by on
- * less padding, the figures; `bare` one that holds a table of its own.
+ * the rows and a finer one between the columns. `tight` names columns
+ * that get by on less padding, the figures.
  */
-function ruled(tight: number[] = [], bare: number[] = []): CustomTableLayout {
-	const side = (i: number) => (bare.includes(i) ? 0 : tight.includes(i) ? 3.5 : 6);
+function ruled(tight: number[] = []): CustomTableLayout {
+	const side = (i: number) => (tight.includes(i) ? 3.5 : 6);
 	return {
 		hLineWidth: (i, node) => (i !== 0 && i === node.table.headerRows ? THICK : THIN),
-		vLineWidth: (i, node) => (i === 0 || i === node.table.body[0].length ? THIN : 0),
+		vLineWidth: (i, node) => (i === 0 || i === node.table.body[0].length ? THIN : HAIR),
 		paddingLeft: side,
 		paddingRight: side,
 		paddingTop: () => 4.5,
 		paddingBottom: () => 4.5
 	};
 }
-
-/* The weapon profiles inside a fighter's row, and their header above: the name,
-   then one narrow column per value the game prints. */
-const weaponWidths = (roster: Roster) => ['*', ...roster.weaponLabels.map(() => 26)];
-
-const profileLayout: CustomTableLayout = {
-	hLineWidth: () => 0,
-	vLineWidth: () => 0,
-	paddingLeft: (i) => (i === 0 ? 6 : 2),
-	paddingRight: (i) => (i === 0 ? 6 : 2),
-	paddingTop: (i) => (i === 0 ? 0 : 2.5),
-	paddingBottom: () => 0
-};
 
 /** Rules text: bold and italic as marked, keywords in capitals, line breaks kept. */
 function rich(text: string): Content[] {
@@ -101,49 +89,55 @@ function warbandTable(roster: Roster): Content {
 	};
 }
 
-function profiles(fighter: RosterFighter, roster: Roster): TableCell {
-	const span = 1 + roster.weaponLabels.length;
-	const rows: TableCell[][] = fighter.weapons.map((weapon) => [weapon.name, ...weapon.values.map(figure)]);
-	if (fighter.items) rows.push([{ text: fighter.items, colSpan: span }, ...Array.from({ length: span - 1 }, () => '')]);
-	if (!rows.length) return '–';
-	return { table: { widths: weaponWidths(roster), body: rows }, layout: profileLayout };
+/* A weapon's line and the line of each of its values, a little apart from the
+   one above. Each column is a stack of its own, so a weapon's values stay level
+   with its name only while the name keeps to one line. */
+const line = (cell: ContentText, i: number): ContentText => ({ ...cell, margin: [0, i === 0 ? 0 : 2.5, 0, 0] });
+
+/* The weapons with their profiles in the game's columns, the name first, then
+   armour and items under the names in one line, since they have no profile. */
+function profiles(fighter: RosterFighter, roster: Roster): TableCell[] {
+	const names: ContentText[] = fighter.weapons.map((weapon) => ({ text: weapon.name }));
+	if (fighter.items) names.push({ text: fighter.items });
+	return [
+		names.length ? { stack: names.map(line) } : '–',
+		...roster.weaponLabels.map((_, column) => ({ stack: fighter.weapons.map((weapon, i) => line(figure(weapon.values[column] ?? ''), i)) }))
+	];
 }
 
 function fighterTable(roster: Roster): Content {
-	/* The figure columns, counted from 0: the stats, then the cost. */
-	const figures = Array.from({ length: roster.statLabels.length + 1 }, (_, i) => i + 1);
-	const weaponColumn = figures.length + 3;
+	/* The figure columns, counted from 0: the stats, the campaign's counters,
+	   the cost – then, after keywords, abilities and the weapon's name, its profile. */
+	const figures = Array.from({ length: roster.statLabels.length + roster.campaignLabels.length + 1 }, (_, i) => i + 1);
+	const profile = roster.weaponLabels.map((_, i) => figures.length + 4 + i);
 
 	const head: TableCell[] = [
 		th({ text: 'Name / Type', noWrap: true }),
-		...[...roster.statLabels, roster.currency].map((text) => th(figure(text))),
+		...[...roster.statLabels, ...roster.campaignLabels, roster.currency].map((text) => th(figure(text))),
 		th('Keywords'),
 		th('Abilities'),
-		{
-			table: {
-				widths: weaponWidths(roster),
-				body: [[th('Weapons & Equipment'), ...roster.weaponLabels.map((text) => th(figure(text)))]]
-			},
-			layout: profileLayout
-		}
+		th({ text: 'Weapons & Equipment', noWrap: true }),
+		...roster.weaponLabels.map((text) => th(figure(text))),
+		th('Notes')
 	];
 
 	const rows = roster.fighters.map((fighter): TableCell[] => [
 		nameCell(fighter.name, fighter.type),
-		...[...fighter.stats, fighter.cost].map(figure),
+		...[...fighter.stats, ...fighter.campaign, fighter.cost].map(figure),
 		{ text: fighter.keywords.toUpperCase(), fontSize: 8 },
 		fighter.abilities.length ? { stack: fighter.abilities } : '–',
-		profiles(fighter, roster)
+		...profiles(fighter, roster),
+		fighter.notes.length ? { stack: fighter.notes.map((note) => ({ text: rich(note) })) } : '–'
 	]);
 
 	return {
 		table: {
 			headerRows: 1,
 			dontBreakRows: true,
-			widths: ['*', ...figures.map(() => 'auto'), 85, 110, 240],
+			widths: ['*', ...figures.map(() => 'auto'), 85, 100, 110, ...profile.map(() => 'auto'), 70],
 			body: [head, ...rows]
 		},
-		layout: ruled(figures, [weaponColumn])
+		layout: ruled([...figures, ...profile])
 	};
 }
 

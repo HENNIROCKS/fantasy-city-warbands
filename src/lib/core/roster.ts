@@ -8,6 +8,7 @@
  */
 
 import { fighterCard, warbandCard, type CardEntry, type FighterCardData, type WarbandCardData } from './card';
+import { results } from './history';
 import type { Faction, GameSystem, Warband } from './types';
 
 export interface RosterFighter {
@@ -16,13 +17,17 @@ export interface RosterFighter {
 	/** In the order of the game's stats, spelled as the card spells them. */
 	stats: string[];
 	cost: string;
+	/** The campaign's counters after the cost, as the card has them: experience, then renown. */
+	campaign: string[];
 	keywords: string;
-	/** The fighter's own rules, labelled as on the card: `[Triple] Murder-Stab`. */
+	/** The fighter's own rules and those an item gives, labelled as on the card: `[Triple] Murder-Stab`. */
 	abilities: string[];
 	/** Each with its values in the order of the game's weapon columns. */
 	weapons: { name: string; values: string[] }[];
 	/** Armour and items – no profile, so they share one line. */
 	items: string;
+	/** The player's own notes from the back of the card. */
+	notes: string[];
 }
 
 export interface RosterRule {
@@ -43,10 +48,12 @@ export interface Roster {
 	name: string;
 	/** `Wyrdcry • Clan Eshin`. */
 	subtitle: string;
-	/** The warband card's figures, each a heading and its value. */
+	/** The warband card's figures, each a heading and its value, and the battles won, drawn and lost where the game keeps a campaign. */
 	figures: { label: string; value: string }[];
 	statLabels: string[];
 	weaponLabels: string[];
+	/** The headings over the fighters' campaign counters, none where the game keeps no campaign. */
+	campaignLabels: string[];
 	/** The heading over the cost column: `gc`, `silver`. */
 	currency: string;
 	fighters: RosterFighter[];
@@ -68,18 +75,28 @@ function entries(card: FighterCardData, kind: string): CardEntry[] {
 	return card.sections.filter((s) => s.kind === kind).flatMap((s) => s.entries);
 }
 
+/** An entry whose label names its type, `[Trait] Stealthy`. */
+const isTyped = (entry: CardEntry) => entry.label.startsWith('[');
+
 function toFighter(card: FighterCardData): RosterFighter {
+	const equipment = entries(card, 'equipment');
 	return {
 		name: card.name,
 		type: card.subtitle,
 		stats: card.stats.map((s) => s.value),
 		cost: card.campaign.find((v) => v.key === 'cost')?.value ?? '',
+		campaign: card.campaign.filter((v) => v.key !== 'cost').map((v) => v.value),
 		keywords: card.keywords.join(', '),
-		abilities: entries(card, 'fighter').map((e) => e.label),
+		/* A rule an item gives stands under the item on the card, and with the
+		   abilities here, as on the Warband Deck's roster: it is what the fighter
+		   can do, not what it carries. */
+		abilities: [...entries(card, 'fighter'), ...equipment.filter(isTyped)].map((e) => e.label),
 		weapons: card.weapons.map((w) => ({ name: w.name, values: w.values })),
-		items: entries(card, 'equipment')
+		items: equipment
+			.filter((e) => !isTyped(e))
 			.map((e) => e.label)
-			.join(', ')
+			.join(', '),
+		notes: entries(card, 'notes').map((e) => e.text)
 	};
 }
 
@@ -135,9 +152,13 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		/* The faction's name stands in, as the file is named after it too. */
 		name: card.unnamed ? faction.name : card.name,
 		subtitle: card.subtitle,
-		figures: card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
+		figures: [
+			...card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
+			...(game.campaign ? [{ label: 'Won / Drawn / Lost', value: results(warband.history ?? []).join(' / ') }] : [])
+		],
 		statLabels: game.roster.stats,
 		weaponLabels: game.roster.weapons,
+		campaignLabels: game.campaign ? (game.roster.campaign ?? []) : [],
 		currency: game.currency,
 		fighters: fighters.map(toFighter),
 		rules: collectRules(fighters)

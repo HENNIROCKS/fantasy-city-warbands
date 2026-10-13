@@ -54,11 +54,12 @@ export interface GameSystem {
 	/** The key of the stat that damage counts down: `health`, `life`. */
 	health: string;
 	/**
-	 * How the roster PDF heads its columns, in the order of `stats` and
-	 * `weaponStats`, and what it is called. A game whose sheet differs in more
-	 * than its columns gets its own layout here.
+	 * How the roster PDF heads its columns, in the order of `stats`,
+	 * `weaponStats` and a fighter's campaign counters – the experience first,
+	 * then `campaign.fighter` – and what it is called. A game whose sheet
+	 * differs in more than its columns gets its own layout here.
 	 */
-	roster: { title: string; stats: string[]; weapons: string[] };
+	roster: { title: string; stats: string[]; weapons: string[]; campaign?: string[] };
 	/**
 	 * The keywords that name a fighter's role, first match wins: a Wyrdcry
 	 * Captain is both `leader` and `hero` and reads as a leader.

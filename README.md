@@ -95,9 +95,10 @@ It does not yet roll injuries or know Black Death City's campaign.
   campaign included; the sheet says what is carried over differently, such as
   pending purchases taken as bought and custom abilities moved into the notes
 - Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
-  warband, a row per fighter with profile, abilities and weapons in the game's
-  own columns, then every rule of the warband, its fighters and their gear
-  once, with the fighters that carry it
+  warband, a row per fighter with profile, abilities, weapons and notes in the
+  game's own columns – in Wyrdcry with the battles won, drawn and lost and each
+  fighter's experience and renown – then every rule of the warband, its
+  fighters and their gear once, with the fighters that carry it
 - Delete a warband after a question that says what is lost and offers the
   export first
 - Dark and light mode
