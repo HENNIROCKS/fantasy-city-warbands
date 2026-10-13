@@ -1,6 +1,7 @@
 /**
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
- * then who earned experience, then the line in the battle history – answered
+ * then the injuries of who was taken out of action, then who earned
+ * experience, then the line in the battle history – answered
  * on the back of the warband card and written into the warband in one go. What
  * each answer is worth is the game's (`GameSystem.aftermath`).
  */
@@ -8,7 +9,7 @@
 import { stateOf, type BattleState } from './battle';
 import { today } from './history';
 import { newId } from './warband';
-import type { Aftermath, BattleRecord, GameSystem, Warband } from './types';
+import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from './types';
 
 /** A fighter asked for its experience, with its answers as the battle left them. */
 export interface AftermathRow {
@@ -20,6 +21,13 @@ export interface AftermathRow {
 
 export interface AftermathDraft {
 	rows: AftermathRow[];
+	/**
+	 * Who the battle left out of action, by instance id. The injury rolls and
+	 * the experience question that asks after it both read this one list.
+	 */
+	out: string[];
+	/** The result each of them rolled, by instance id: an id on the game's injury table. */
+	injuries: Record<string, string>;
 	/** Who never earns experience, named under the rows. */
 	excluded: string[];
 	/** The one fighter given the bonus point, if any. */
@@ -69,6 +77,8 @@ export function startAftermath(
 			)
 		})),
 		excluded: fighters.filter((f) => !earns(f)).map((f) => f.name),
+		out: fighters.filter((f) => stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
+		injuries: {},
 		bonus: null,
 		result: null,
 		shards: 0,
@@ -77,6 +87,19 @@ export function startAftermath(
 		opponentPlayer: '',
 		recorded
 	};
+}
+
+/**
+ * Takes a fighter out of action or back, for the injuries and the experience
+ * alike: the question that starts from the battle's state follows, and a
+ * fighter brought back drops the result it was given.
+ */
+export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: string) {
+	const out = !draft.out.includes(instanceId);
+	draft.out = out ? [...draft.out, instanceId] : draft.out.filter((id) => id !== instanceId);
+	if (!out) delete draft.injuries[instanceId];
+	const row = draft.rows.find((r) => r.instanceId === instanceId);
+	for (const question of rules.questions) if (row && question.start === 'not-out') row.answers[question.key] = !out;
 }
 
 /** The points a row earns: one for each answer that holds, one more for the bonus. */
@@ -96,8 +119,8 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
 	};
 }
 
-/** The warband with the battle's experience, income and history line written in. */
-export function applyAftermath(warband: Warband, game: GameSystem, draft: AftermathDraft, at = new Date()): Warband {
+/** The warband with the battle's injuries, experience, income and history line written in. */
+export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
 	if (!rules) return warband;
 	const earned = rules.income(warband, game, draft.result, draft.shards);
@@ -108,7 +131,11 @@ export function applyAftermath(warband: Warband, game: GameSystem, draft: Afterm
 		gold: earned.gold,
 		tally: earned.tally,
 		...(record ? { history: [...(warband.history ?? []), record] } : {}),
-		fighters: warband.fighters.map((fighter) => {
+		fighters: warband.fighters.map((before) => {
+			/* The injury first, as the aftermath rolls it first: a level of renown it brings is there before the experience. */
+			const rolled = draft.out.includes(before.instanceId) ? draft.injuries[before.instanceId] : undefined;
+			const type = faction.fighters.find((f) => f.id === before.fighterId);
+			const fighter = rolled && type && game.injuries ? game.injuries.apply(before, type, faction, rolled) : before;
 			const row = rows.get(fighter.instanceId);
 			const points = row ? xpEarned(row, draft.bonus) : 0;
 			return points > 0 ? rules.gainXp(fighter, points) : fighter;

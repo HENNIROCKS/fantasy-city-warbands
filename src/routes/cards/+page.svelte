@@ -363,8 +363,8 @@
 	/* The warband first: only once it is stored does the battle go, so a failed
 	   write – which raises the storage warning – loses neither. */
 	async function applyEnd() {
-		if (!warband || !system || !aftermath) return;
-		const updated = applyAftermath($state.snapshot(warband) as Warband, system.game, $state.snapshot(aftermath));
+		if (!warband || !system || !faction || !aftermath) return;
+		const updated = applyAftermath($state.snapshot(warband) as Warband, system.game, faction, $state.snapshot(aftermath));
 		if (!(await saveWarband(updated))) return;
 		warband = updated;
 		aftermath = null;
@@ -497,8 +497,8 @@
 				{photos}
 			>
 				{#snippet back(card)}
-					{#if card.kind === 'warband' && aftermath && warband && system.game.aftermath}
-						<AftermathBack name={card.name} {warband} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
+					{#if card.kind === 'warband' && aftermath && warband && faction && system.game.aftermath}
+						<AftermathBack name={card.name} {warband} {faction} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
 					{:else if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
