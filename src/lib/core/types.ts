@@ -75,6 +75,8 @@ export interface GameSystem {
 	groups: GroupLimit[];
 	/** The fighter card's heading over the cost: `Gold Coins`, `Silver`. */
 	costLabel: string;
+	/** What a piece of the stash sells for, from its price. Without it, a piece only leaves the stash thrown away. */
+	salePrice?: (cost: number) => number;
 	/** The columns of the fighter card's weapon table after the name, in order; keys of `Wargear.profile`. */
 	weaponStats: { key: string; label: string }[];
 	/** Abilities every fighter carrying `keyword` has, `any` for all of them. */

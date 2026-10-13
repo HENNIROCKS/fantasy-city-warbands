@@ -83,7 +83,7 @@
 		doneDisabled?: boolean;
 		/** The back of the card on top, shown while `editing`. */
 		back?: Snippet<[DeckCard]>;
-		/** Asks for the fighter's card on top to be turned over. */
+		/** Asks for the card on top to be turned over, by its instanceId – the warband's id for the warband card. */
 		onedit?: (instanceId: string) => void;
 		ondone?: () => void;
 		oncancel?: () => void;
@@ -413,7 +413,7 @@
 		{editing}
 		{doneLabel}
 		{doneDisabled}
-		onedit={() => topFighter && onedit?.(topFighter.instanceId)}
+		onedit={() => onedit?.(cards[current].instanceId)}
 		{ondone}
 		{oncancel}
 	/>

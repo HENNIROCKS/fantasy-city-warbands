@@ -50,13 +50,13 @@
 - [x] 🛠️ Correct a fighter's experience and renown by hand, on the back of its card
 - [x] 📄 The roster as the Warband Deck's: experience, renown, battles won, drawn and lost, and notes
 - [x] 📈 Campaign: correct the warband's favour by hand, in the finish step
+- [x] 📈 Campaign: gold added, the stash sold or thrown away, and battles added or struck, on the back of the warband card
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🛠️ Edit a fighter after the build: dismissal, recruiting between battles
-- [ ] 📈 Campaign: the stash, gold to add and the trading post
+- [ ] 📈 Campaign: the trading post, and pieces moved between a fighter and the stash
 - [ ] 📈 Campaign: injuries
-- [ ] 📈 Campaign: add or strike a battle in the history by hand
 - [ ] 🃏 Wyrdcry: the rolled mutation written out under Ascended and Anointed, and the Unarmed line
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] ⚙️ Work offline once installed

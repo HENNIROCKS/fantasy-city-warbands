@@ -33,3 +33,4 @@ Transcribed from the Playtest v1.01, where the Fighters List, the scrolls, the A
 - [ ] Blighted Cloister: Priesthood of Sorcerers names the Fortified Keep instead of the Secluded Scriptorium
 - [ ] Blighted Cloister: The Anointed One asks for a "Knight-Abbot Noble" and allows Rot Walkers, which the faction does not have
 - [ ] Blighted Cloister: Blessed Rabble has the same leader as Priesthood of Sorcerers
+- [ ] Selling from the stash: the playtest has no campaign chapter yet, so a piece only leaves the stash thrown away

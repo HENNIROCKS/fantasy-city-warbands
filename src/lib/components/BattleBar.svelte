@@ -86,7 +86,7 @@
 		doneLabel?: string;
 		/** Holds the button back while the turned card still lacks an answer. */
 		doneDisabled?: boolean;
-		/** Turns the fighter's card on top over. */
+		/** Turns the card on top over, the warband's as a fighter's. */
 		onedit?: () => void;
 		ondone?: () => void;
 		oncancel?: () => void;
@@ -229,6 +229,9 @@
 						{/if}
 					{/if}
 				</MenuButton>
+				<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+				</button>
 			</div>
 		{/if}
 	</div>

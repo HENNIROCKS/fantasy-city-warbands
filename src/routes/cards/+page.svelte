@@ -7,14 +7,18 @@
 	import AftermathBack from '$lib/components/AftermathBack.svelte';
 	import CardBack, { type BackCampaign, type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
+	import WarbandBack from '$lib/components/WarbandBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { adjustCounter, allocate, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
+	import { today } from '$lib/core/history';
+	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
+	import { newExcess, validate } from '$lib/core/validate';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { systems } from '$lib/systems';
 
@@ -35,6 +39,8 @@
 	let editingId = $state<string | null>(null);
 	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {} });
 	let backCampaign = $state<BackCampaign | null>(null);
+	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
+	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
 	/* The photo apart from the draft: the warband is written as a whole and has
 	   to stay free of the bytes. */
 	let photoDraft = $state<BackPhoto>({ photo: null, changed: false });
@@ -107,6 +113,12 @@
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
 	function edit(instanceId: string) {
+		if (warband && instanceId === warband.id) {
+			const history = ($state.snapshot(warband.history) ?? []) as WarbandBackDraft['history'];
+			warbandDraft = { goldAdded: [], stashOut: [], history, removed: [], pending: emptyPending(today()) };
+			editingId = instanceId;
+			return;
+		}
 		const fighter = warband?.fighters.find((f) => f.instanceId === instanceId);
 		if (!fighter) return;
 		draft = { fluff: fighter.fluff ?? '', notes: fighter.notes ?? '', xp: fighter.xp ?? 0, tally: { ...fighter.tally } };
@@ -159,9 +171,29 @@
 		};
 	}
 
+	/* The warband as the back of its card would leave it, while that back is turned. */
+	const backResult = $derived(
+		warband && system && faction && editingId === warband.id
+			? applyBack($state.snapshot(warband) as Warband, system.game, faction, $state.snapshot(warbandDraft) as WarbandBackDraft)
+			: null
+	);
+	/* Nothing on the back takes the warband further, but Done is held to the same check as the builder. */
+	const backBlocked = $derived(
+		backResult && warband && system && faction ? newExcess(validate(warband, system.game, faction), backResult, system.game, faction) !== null : false
+	);
+
 	/* A failed write raises the storage warning; the card shows what was written either way. */
 	function done() {
 		if (!warband || !editingId) return;
+		if (editingId === warband.id) {
+			/* Read before the back closes: the result goes with it. */
+			const updated = backResult;
+			if (!updated || backBlocked) return;
+			editingId = null;
+			warband = updated;
+			saveWarband(updated);
+			return;
+		}
 		const targetId = editingId;
 		const values = $state.snapshot(draft);
 		const updated = $state.snapshot(warband) as Warband;
@@ -373,7 +405,7 @@
 				onlevels={() => (spending = true)}
 				editing={editingId !== null || aftermath !== null}
 				doneLabel={aftermath ? 'Apply' : 'Done'}
-				doneDisabled={aftermath !== null && !aftermath.result}
+				doneDisabled={(aftermath !== null && !aftermath.result) || backBlocked}
 				onedit={edit}
 				ondone={aftermath ? applyEnd : done}
 				oncancel={() => {
@@ -385,6 +417,8 @@
 				{#snippet back(card)}
 					{#if card.kind === 'warband' && aftermath && warband && system.game.aftermath}
 						<AftermathBack name={card.name} {warband} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
+					{:else if card.kind === 'warband' && warband}
+						<WarbandBack name={card.name} {warband} {faction} game={system.game} bind:draft={warbandDraft} />
 					{:else}
 						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} />
 					{/if}

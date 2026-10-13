@@ -61,6 +61,8 @@ export const game: GameSystem = {
 		}
 	},
 	carry,
+	/* As the Warband Deck sells: half the price, rounded down to 5 gc, never below 5 gc. */
+	salePrice: (cost) => Math.max(5, Math.floor(cost / 2 / 5) * 5),
 	campaign: {
 		warband: [{ key: 'favour', label: 'Favour' }],
 		fighter: [{ key: 'renown', label: 'Renown' }],

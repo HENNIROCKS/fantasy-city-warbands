@@ -69,6 +69,10 @@ It does not yet roll injuries or know Black Death City's campaign.
   point of experience is a level of renown, and renown does not go below a
   level already spent; a BEAST or THRALL has neither. The warband's favour is
   set by hand in the finish step, with the standing and reputation it comes to
+- Turn the warband card over with the pencil under it to add gold, sell or
+  throw away what lies in the stash, and add or strike battles – all kept
+  apart until Done. Wyrdcry sells a piece for half its price, rounded down to
+  5 gc and never below 5 gc; Black Death City's playtest has no rule for it yet
 - Track a battle at the table: Battle on the warband card starts it, counts
   the rounds with one step back, and ends it after asking; the bar under a
   fighter's card takes Health down a point at a time, the card fills with
