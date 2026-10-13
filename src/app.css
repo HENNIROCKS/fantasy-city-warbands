@@ -1077,6 +1077,108 @@ html {
 	color: var(--card-ink);
 }
 
+/* A sentence of the rules on a light patch of the paper. */
+.card.back .note {
+	margin: 0;
+	padding: calc(10 * var(--u)) calc(12 * var(--u));
+	border-radius: calc(6 * var(--u));
+	background: var(--card-field);
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	line-height: 1.4;
+	color: var(--card-ink);
+}
+
+.card.back .back-link {
+	align-self: flex-start;
+	min-height: 40px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+	color: var(--card-link);
+}
+
+.card.back .tabs {
+	display: flex;
+	border-bottom: 1px solid var(--card-green);
+}
+
+.card.back .tabs button {
+	flex: 1;
+	min-height: 44px;
+	padding: 0 calc(8 * var(--u));
+	border: 0;
+	border-bottom: 3px solid transparent;
+	margin-bottom: -1px;
+	background: transparent;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	color: var(--card-ink-muted);
+}
+
+.card.back .tabs button.on {
+	border-bottom-color: var(--card-green);
+	color: var(--card-ink);
+	font-weight: 600;
+}
+
+.card.back .options {
+	display: flex;
+	flex-direction: column;
+	gap: calc(10 * var(--u));
+	margin-top: calc(6 * var(--u));
+}
+
+/* A characteristic to raise is a pill like every other button on the back,
+   the whole width of the card and set as large as its fields. */
+.card.back .option {
+	display: flex;
+	align-items: center;
+	gap: calc(8 * var(--u));
+	min-height: 48px;
+	padding: calc(6 * var(--u)) calc(18 * var(--u));
+	border: 1px solid var(--card-green);
+	border-radius: 999px;
+	background: var(--card-field);
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	line-height: 1.25;
+	color: var(--card-ink);
+	text-align: left;
+}
+
+.card.back .option:active:not(:disabled) {
+	background: var(--card-green);
+	color: var(--card-paper);
+}
+
+.card.back .option:active:not(:disabled) .change {
+	color: inherit;
+}
+
+.card.back .option:disabled {
+	border-color: color-mix(in srgb, var(--card-green) 35%, transparent);
+	color: var(--card-ink-muted);
+}
+
+.card.back .option .line {
+	flex: 1;
+	min-width: 0;
+	color: inherit;
+}
+
+.card.back .change {
+	flex: none;
+	color: var(--card-green);
+	font-variant-numeric: lining-nums tabular-nums;
+}
+
+.card.back .option:disabled .change {
+	color: inherit;
+}
+
 /* What became of a line, or why it cannot be had, under it. */
 .card.back .why {
 	display: block;

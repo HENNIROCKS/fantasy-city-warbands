@@ -135,7 +135,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		];
 	});
 
-	if (branch !== 'hero' && branch !== 'promotion') return { stats, rules: [], rulesLabel: 'Heroic Talents' };
+	if (branch !== 'hero' && branch !== 'promotion') return { stats, rules: [], rulesLabel: 'Heroic Talents', rulesNote: null };
 
 	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) ? [talentOf(a.rule)!] : []));
 	const specializations = new Set(held.map((t) => t.specialization));
@@ -177,7 +177,8 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 	return {
 		stats,
 		rules: [...(abilities.length ? [{ heading: 'Magical abilities', options: abilities }] : []), ...groups],
-		rulesLabel: 'Heroic Talents'
+		rulesLabel: 'Heroic Talents',
+		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} specializations.`
 	};
 }
 
@@ -210,7 +211,27 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 	return result;
 }
 
-export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects };
+/** A characteristic from the figure the advances before it left to the one it made, a rule by name. */
+function describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number): string {
+	const advances = instance.advances ?? [];
+	const advance = advances[index];
+	if (!advance) return '';
+	if (advance.stat) {
+		const start = profileOf(instance, fighter)[advance.stat];
+		if (typeof start !== 'number') return LABEL[advance.stat] ?? advance.stat;
+		const from = advances.slice(0, index).filter((a) => a.stat === advance.stat).reduce((sum, a) => sum + (a.bonus ?? 0), start);
+		const to = from + (advance.bonus ?? 0);
+		return `${LABEL[advance.stat] ?? advance.stat} ${figure(advance.stat, from)} → ${figure(advance.stat, to)}`;
+	}
+	if (advance.rule) {
+		const name = talentOf(advance.rule)?.name ?? fighter.choice?.options.find((o) => o.id === advance.rule)?.name ?? advance.rule;
+		const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
+		return weapon ? `${name} (${weapon.name})` : name;
+	}
+	return 'used up';
+}
+
+export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects, describe };
 
 /** Levels a file brings without a record of what they were spent on, written as used up so none stands open. */
 export function usedUp(instance: FighterInstance): Advance[] {

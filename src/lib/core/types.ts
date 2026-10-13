@@ -220,6 +220,8 @@ export interface Advancement {
 	keywords(instance: FighterInstance, keywords: string[]): string[];
 	/** What the spent levels add to the card besides characteristics: rules, keywords, a weapon's figures. */
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): AdvanceEffects;
+	/** What the fighter's advance at `index` was spent on, in a line: `Fight 4 → 5`, `Fearsome`, `used up`. */
+	describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number): string;
 }
 
 export interface OpenLevel {
@@ -242,6 +244,8 @@ export interface LevelOffer {
 	rules: { heading: string; options: LevelRule[] }[];
 	/** The tab the rules sit under: `Heroic Talents`. */
 	rulesLabel: string;
+	/** What limits the rules, in a sentence above them; null where nothing. */
+	rulesNote: string | null;
 }
 
 export interface LevelRule {

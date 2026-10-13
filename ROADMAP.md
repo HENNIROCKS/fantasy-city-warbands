@@ -55,6 +55,7 @@
 - [x] 📈 Wyrdcry: the Trading Post in the builder, a rare piece bought once a Rarity roll found it
 - [x] 🃏 Wyrdcry: the Unarmed line on the card of a fighter without a melee weapon
 - [x] ⚙️ Work offline once opened, the roster included
+- [x] 📈 Campaign: spend renown on the back of a fighter's card, the levels spent listed with Undo
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
@@ -67,6 +68,7 @@
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
 - [ ] 📚 Mordheim
+- [ ] 📚 Necropolis
 
 ## Ideas
 

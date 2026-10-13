@@ -73,8 +73,11 @@ It does not yet roll injuries or know Black Death City's campaign.
   piece, and asks before a rare one whether a Rarity roll of 6+ found it
   In Wyrdcry the back also corrects experience and renown by hand – the fourth
   point of experience is a level of renown, and renown does not go below a
-  level already spent; a BEAST or THRALL has neither. The warband's favour is
-  set by hand in the finish step, with the standing and reputation it comes to
+  level already spent; a BEAST or THRALL has neither. Spend renown turns the
+  back to a page for the next open level, as the Warband Deck does, and lists
+  the levels spent, the last with Undo – kept until Done like the rest. The
+  warband's favour is set by hand in the finish step, with the standing and
+  reputation it comes to
 - Turn the warband card over with the pencil under it to add gold, sell or
   throw away what lies in the stash, and add or strike battles – all kept
   apart until Done. Wyrdcry sells a piece for half its price, rounded down to

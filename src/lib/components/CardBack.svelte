@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import type { Advance, LevelOffer, OpenLevel } from '$lib/core/types';
 	import type { StoredPhoto } from '$lib/photo';
 
 	/** What the back of a fighter's card writes with Done. */
@@ -12,6 +13,8 @@
 		wargear: string[];
 		/** The warband's stash, which the fighter hands pieces to and takes them from. */
 		stash: string[];
+		/** What the fighter's levels were spent on, in order, those spent on this back included. */
+		advances: Advance[];
 	}
 
 	/** What the back may move between the fighter and the stash, worked out by the page from the draft. */
@@ -34,12 +37,22 @@
 		xp: boolean;
 		/** One more point of experience, with whatever level it brings. */
 		addXp: (xp: number, tally: Record<string, number>) => { xp: number; tally: Record<string, number> };
-		/**
-		 * `floor` is the lowest the counter may go: no level already spent is
-		 * taken away. Without `raise` it only comes down, for a fighter that
-		 * never gains it and has some from a file.
-		 */
-		counters: { key: string; label: string; floor: number; raise: boolean }[];
+		/** Without `raise` a counter only comes down, for a fighter that never gains it and has some from a file. */
+		counters: { key: string; label: string; raise: boolean }[];
+		/** The counter the levels are counted in, which never goes below a level spent; null where none. */
+		levels: string | null;
+	}
+
+	/** The levels of the fighter on this back, worked out by the page from the draft. */
+	export interface BackRenown {
+		/** What a level is called: `Renown`. */
+		label: string;
+		/** The first level still open, and what it can be spent on. */
+		next: { level: OpenLevel; offer: LevelOffer } | null;
+		/** Every level still open, `next` included. */
+		waiting: number;
+		/** `draft.advances` in a line each, in its order. */
+		spent: { level: number; text: string }[];
 	}
 
 	/** The fighter's photo as it stands on the back; `changed` says whether Done has to write it. */
@@ -50,7 +63,8 @@
 </script>
 
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { tick, untrack } from 'svelte';
+	import LevelPicker from '$lib/components/LevelPicker.svelte';
 	import { grow } from '$lib/grow';
 	import { imageFieldMask } from '$lib/image-field-mask';
 	import { CENTRE, MAX_ZOOM, PhotoError, panCrop, photoLayout, readPhoto, zoomCrop, type PhotoCrop } from '$lib/photo';
@@ -66,12 +80,14 @@
 		draft = $bindable(),
 		photo = $bindable(),
 		campaign,
+		renown,
 		equipment
 	}: {
 		name: string;
 		draft: BackDraft;
 		photo: BackPhoto;
 		campaign: BackCampaign | null;
+		renown: BackRenown | null;
 		equipment: BackEquipment | null;
 	} = $props();
 
@@ -97,6 +113,42 @@
 
 	function step(key: string, by: number) {
 		draft.tally = { ...draft.tally, [key]: (draft.tally[key] ?? 0) + by };
+	}
+
+	/* No level spent is taken away; one taken back with Undo frees the counter again. */
+	const spentTo = $derived(Math.max(0, ...draft.advances.map((a) => a.level)));
+	const floorOf = (key: string) => (key === campaign?.levels ? spentTo : 0);
+
+	/* The back has a second page for spending a level, as in the Warband Deck: it
+	   takes the card's place rather than opening a sheet over it, so the choice
+	   is part of the draft and Cancel drops it like everything else. */
+	let spending = $state(false);
+	let talking = $state(false);
+	let article: HTMLElement | undefined = $state();
+	let campaignSection: HTMLElement | undefined = $state();
+
+	const next = $derived(spending ? (renown?.next ?? null) : null);
+	const open = $derived(
+		next ? next.offer.stats.some((s) => s.blocked === null) || next.offer.rules.some((g) => g.options.some((o) => o.blocked === null)) : false
+	);
+
+	async function showSpending(on: boolean) {
+		spending = on;
+		talking = false;
+		await tick();
+		/* The page swapped under a finger that was halfway down the card. */
+		(on ? article : campaignSection)?.scrollIntoView({ block: 'start' });
+	}
+
+	function choose(pick: Omit<Advance, 'level'>) {
+		if (!next) return;
+		draft.advances = [...draft.advances, { level: next.level.level, ...pick }];
+		showSpending(false);
+	}
+
+	/** Only the last: the choices after a level were offered on the figures it left. */
+	function undoLast() {
+		draft.advances = draft.advances.slice(0, -1);
 	}
 
 	let photoInput: HTMLInputElement | undefined = $state();
@@ -163,159 +215,217 @@
 	}
 </script>
 
-<article class="card back">
+<article class="card back" bind:this={article}>
 	<h2 class="name">{name}</h2>
 
-	<div class="parchment">
-		<section>
-			<h3 class="heading"><span>Photo</span><span class="rule"></span></h3>
-			<input bind:this={photoInput} type="file" accept="image/*" hidden onchange={pickPhoto} />
-			{#if stored && layout}
-				<div
-					bind:this={preview}
-					class="preview"
-					style:background-image={previewUrl ? `url(${previewUrl})` : null}
-					style:background-size={layout.size}
-					style:background-position={layout.position}
-					style:mask-image={imageFieldMask}
-					style:-webkit-mask-image={imageFieldMask}
-					role="img"
-					aria-label="The photo as the card shows it. Drag to move it."
-					onpointerdown={startDrag}
-					onpointermove={drag}
-					onpointerup={endDrag}
-					onpointercancel={endDrag}
-				></div>
-				<div class="zoom">
-					<label for="back-zoom">Zoom</label>
-					<input
-						id="back-zoom"
-						type="range"
-						min="1"
-						max={MAX_ZOOM}
-						step="0.05"
-						value={stored.crop.zoom}
-						oninput={(e) => recrop((c) => zoomCrop(c, e.currentTarget.valueAsNumber))}
-					/>
-					<button type="button" class="remove" onclick={() => recrop(() => ({ ...CENTRE }))}>Reset</button>
-				</div>
-				<div class="photo-actions">
-					<button type="button" class="add" onclick={() => photoInput?.click()}>Replace photo</button>
-					<button type="button" class="remove" onclick={() => (photo = { photo: null, changed: true })}>Remove photo</button>
-				</div>
-			{:else}
-				<div class="photo-row">
-					<div class="thumb" role="img" aria-label="No photo chosen"><span>No photo</span></div>
-					<div class="photo-actions">
-						<button type="button" class="add" onclick={() => photoInput?.click()}>Choose photo</button>
-					</div>
-				</div>
-			{/if}
-			{#if photoError}<p class="callout">{photoError}</p>{/if}
-			<p class="hint">Photos stay on this device and are not part of the export.</p>
-		</section>
-
-		<section>
-			<label class="heading" for="back-fluff"><span>Fluff</span><span class="rule"></span></label>
-			<textarea id="back-fluff" class="fluff" rows="2" placeholder="A line or two of story" bind:value={draft.fluff} use:grow
-			></textarea>
-		</section>
-
-		{#if campaign}
-			<!-- As the Warband Deck has it, for what the aftermath did not count: a
-			     battle played elsewhere, a point given by mistake. -->
+	{#if next && renown}
+		<div class="parchment">
 			<section>
-				<h3 class="heading"><span>Campaign</span><span class="rule"></span></h3>
-				{#if campaign.xp}
-					<div class="counter">
-						<span class="label" id="back-xp">XP</span>
-						<div class="stepper" role="group" aria-labelledby="back-xp">
-							<button class="segment" aria-label="Less XP" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
-							<output class="figure">{draft.xp}</output>
-							<button class="segment" aria-label="More XP" onclick={moreXp}>+</button>
+				<button class="back-link" onclick={() => showSpending(false)}>‹ Back</button>
+				<h3 class="heading"><span>{renown.label} {next.level.level}</span><span class="rule"></span></h3>
+				<p class="note">{next.level.note}</p>
+
+				{#if next.offer.rules.length}
+					<div class="tabs" role="group" aria-label="What to spend the level on">
+						<button aria-pressed={!talking} class:on={!talking} onclick={() => (talking = false)}>Characteristics</button>
+						<button aria-pressed={talking} class:on={talking} onclick={() => (talking = true)}>{next.offer.rulesLabel}</button>
+					</div>
+				{/if}
+
+				{#if talking && next.offer.rules.length}
+					<LevelPicker offer={next.offer} onpick={choose} />
+				{:else}
+					<div class="options">
+						{#each next.offer.stats as option (option.stat)}
+							<button class="option" disabled={option.blocked !== null} onclick={() => choose({ stat: option.stat, bonus: option.bonus })}>
+								<span class="line">
+									{option.label}
+									{#if option.blocked}<span class="why">{option.blocked}</span>{/if}
+								</span>
+								<span class="change">{option.blocked ? option.from : `${option.from} → ${option.to}`}</span>
+							</button>
+						{/each}
+					</div>
+					{#if next.offer.rules.length && !next.offer.stats.some((s) => s.blocked === null)}
+						<p class="note">No characteristic can be raised – choose under {next.offer.rulesLabel}.</p>
+					{/if}
+					{#if !open}
+						<button class="add" onclick={() => choose({})}>Use up this level</button>
+					{/if}
+				{/if}
+			</section>
+		</div>
+	{:else}
+		<div class="parchment">
+			<section>
+				<h3 class="heading"><span>Photo</span><span class="rule"></span></h3>
+				<input bind:this={photoInput} type="file" accept="image/*" hidden onchange={pickPhoto} />
+				{#if stored && layout}
+					<div
+						bind:this={preview}
+						class="preview"
+						style:background-image={previewUrl ? `url(${previewUrl})` : null}
+						style:background-size={layout.size}
+						style:background-position={layout.position}
+						style:mask-image={imageFieldMask}
+						style:-webkit-mask-image={imageFieldMask}
+						role="img"
+						aria-label="The photo as the card shows it. Drag to move it."
+						onpointerdown={startDrag}
+						onpointermove={drag}
+						onpointerup={endDrag}
+						onpointercancel={endDrag}
+					></div>
+					<div class="zoom">
+						<label for="back-zoom">Zoom</label>
+						<input
+							id="back-zoom"
+							type="range"
+							min="1"
+							max={MAX_ZOOM}
+							step="0.05"
+							value={stored.crop.zoom}
+							oninput={(e) => recrop((c) => zoomCrop(c, e.currentTarget.valueAsNumber))}
+						/>
+						<button type="button" class="remove" onclick={() => recrop(() => ({ ...CENTRE }))}>Reset</button>
+					</div>
+					<div class="photo-actions">
+						<button type="button" class="add" onclick={() => photoInput?.click()}>Replace photo</button>
+						<button type="button" class="remove" onclick={() => (photo = { photo: null, changed: true })}>Remove photo</button>
+					</div>
+				{:else}
+					<div class="photo-row">
+						<div class="thumb" role="img" aria-label="No photo chosen"><span>No photo</span></div>
+						<div class="photo-actions">
+							<button type="button" class="add" onclick={() => photoInput?.click()}>Choose photo</button>
 						</div>
 					</div>
 				{/if}
-				{#each campaign.counters as counter (counter.key)}
-					{@const value = draft.tally[counter.key] ?? 0}
-					<div class="counter">
-						<span class="label" id="back-{counter.key}">{counter.label}</span>
-						<div class="stepper" role="group" aria-labelledby="back-{counter.key}">
-							<button
-								class="segment"
-								aria-label="Less {counter.label.toLowerCase()}"
-								disabled={value <= Math.max(0, counter.floor)}
-								onclick={() => step(counter.key, -1)}>−</button
-							>
-							<output class="figure">{value}</output>
-							<button
-								class="segment"
-								aria-label="More {counter.label.toLowerCase()}"
-								disabled={!counter.raise}
-								onclick={() => step(counter.key, 1)}>+</button
-							>
-						</div>
-					</div>
-					{#if counter.floor > 0 && value <= counter.floor}
-						<p class="hint">Not below a level already spent.</p>
-					{/if}
-				{/each}
+				{#if photoError}<p class="callout">{photoError}</p>{/if}
+				<p class="hint">Photos stay on this device and are not part of the export.</p>
 			</section>
-		{/if}
 
-		{#if equipment}
-			<!-- As the Warband Deck has it: what the fighter bought goes to the
-			     stash and comes back, each piece checked as the builder checks it. -->
 			<section>
-				<h3 class="heading"><span>Equipment</span><span class="rule"></span></h3>
-				{#if equipment.blocked}
-					<p class="hint">{equipment.blocked}</p>
-				{:else}
-					<p class="caption">Carried</p>
-					{#if equipment.carried.length}
-						<ul class="list">
-							{#each equipment.carried as piece, i (i)}
-								<li>
-									<span class="line">{piece}</span>
-									<button class="remove" onclick={() => toStash(i)}>To stash</button>
-								</li>
-							{/each}
-						</ul>
-					{:else}
-						<p class="hint">Nothing bought – what the profile brings stays with the fighter.</p>
-					{/if}
+				<label class="heading" for="back-fluff"><span>Fluff</span><span class="rule"></span></label>
+				<textarea id="back-fluff" class="fluff" rows="2" placeholder="A line or two of story" bind:value={draft.fluff} use:grow
+				></textarea>
+			</section>
 
-					<p class="caption">In the stash</p>
-					{#if equipment.takesNothing}
-						<p class="hint">{equipment.takesNothing}.</p>
-					{:else if equipment.stash.length}
+			{#if campaign}
+				<!-- As the Warband Deck has it, for what the aftermath did not count: a
+				     battle played elsewhere, a point given by mistake. -->
+				<section bind:this={campaignSection}>
+					<h3 class="heading"><span>Campaign</span><span class="rule"></span></h3>
+					{#if campaign.xp}
+						<div class="counter">
+							<span class="label" id="back-xp">XP</span>
+							<div class="stepper" role="group" aria-labelledby="back-xp">
+								<button class="segment" aria-label="Less XP" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
+								<output class="figure">{draft.xp}</output>
+								<button class="segment" aria-label="More XP" onclick={moreXp}>+</button>
+							</div>
+						</div>
+					{/if}
+					{#each campaign.counters as counter (counter.key)}
+						{@const value = draft.tally[counter.key] ?? 0}
+						<div class="counter">
+							<span class="label" id="back-{counter.key}">{counter.label}</span>
+							<div class="stepper" role="group" aria-labelledby="back-{counter.key}">
+								<button
+									class="segment"
+									aria-label="Less {counter.label.toLowerCase()}"
+									disabled={value <= floorOf(counter.key)}
+									onclick={() => step(counter.key, -1)}>−</button
+								>
+								<output class="figure">{value}</output>
+								<button
+									class="segment"
+									aria-label="More {counter.label.toLowerCase()}"
+									disabled={!counter.raise}
+									onclick={() => step(counter.key, 1)}>+</button
+								>
+							</div>
+						</div>
+						{#if floorOf(counter.key) > 0 && value <= floorOf(counter.key)}
+							<p class="hint">Not below a level already spent.</p>
+						{/if}
+					{/each}
+
+					{#if renown?.spent.length}
 						<ul class="list">
-							{#each equipment.stash as piece, i (i)}
+							{#each renown.spent as spent, i (i)}
 								<li>
 									<span class="line">
-										{piece.name}
-										{#if piece.refused}<span class="why">{piece.refused}</span>{/if}
+										<span class="when">{spent.level ? `${renown.label} ${spent.level}` : 'Warband file'}</span>
+										{spent.text}
 									</span>
-									<button class="remove" disabled={piece.refused !== null} onclick={() => take(i)}>Take</button>
+									{#if i === renown.spent.length - 1 && spent.level > 0}
+										<button class="remove" onclick={undoLast}>Undo</button>
+									{/if}
 								</li>
 							{/each}
 						</ul>
-					{:else}
-						<p class="hint">The stash is empty.</p>
 					{/if}
-					{#if !equipment.takesNothing}
-						<a class="buy" href={equipment.buy}>Buy in the builder ›</a>
+					{#if renown?.next}
+						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})</button>
 					{/if}
-				{/if}
-			</section>
-		{/if}
+				</section>
+			{/if}
 
-		<section>
-			<label class="heading" for="back-notes"><span>Notes</span><span class="rule"></span></label>
-			<textarea id="back-notes" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
-			></textarea>
-		</section>
-	</div>
+			{#if equipment}
+				<!-- As the Warband Deck has it: what the fighter bought goes to the
+				     stash and comes back, each piece checked as the builder checks it. -->
+				<section>
+					<h3 class="heading"><span>Equipment</span><span class="rule"></span></h3>
+					{#if equipment.blocked}
+						<p class="hint">{equipment.blocked}</p>
+					{:else}
+						<p class="caption">Carried</p>
+						{#if equipment.carried.length}
+							<ul class="list">
+								{#each equipment.carried as piece, i (i)}
+									<li>
+										<span class="line">{piece}</span>
+										<button class="remove" onclick={() => toStash(i)}>To stash</button>
+									</li>
+								{/each}
+							</ul>
+						{:else}
+							<p class="hint">Nothing bought – what the profile brings stays with the fighter.</p>
+						{/if}
+
+						<p class="caption">In the stash</p>
+						{#if equipment.takesNothing}
+							<p class="hint">{equipment.takesNothing}.</p>
+						{:else if equipment.stash.length}
+							<ul class="list">
+								{#each equipment.stash as piece, i (i)}
+									<li>
+										<span class="line">
+											{piece.name}
+											{#if piece.refused}<span class="why">{piece.refused}</span>{/if}
+										</span>
+										<button class="remove" disabled={piece.refused !== null} onclick={() => take(i)}>Take</button>
+									</li>
+								{/each}
+							</ul>
+						{:else}
+							<p class="hint">The stash is empty.</p>
+						{/if}
+						{#if !equipment.takesNothing}
+							<a class="buy" href={equipment.buy}>Buy in the builder ›</a>
+						{/if}
+					{/if}
+				</section>
+			{/if}
+
+			<section>
+				<label class="heading" for="back-notes"><span>Notes</span><span class="rule"></span></label>
+				<textarea id="back-notes" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
+				></textarea>
+			</section>
+		</div>
+	{/if}
 </article>
 
 <style>
@@ -426,6 +536,16 @@
 		color: var(--card-ink-muted);
 	}
 
+
+	/* In a row of its own, at the right edge under what it adds to. */
+	section > .add {
+		align-self: flex-end;
+	}
+
+	.when {
+		margin-right: 0.3em;
+		font-variant-numeric: lining-nums tabular-nums;
+	}
 
 	.buy {
 		align-self: flex-start;

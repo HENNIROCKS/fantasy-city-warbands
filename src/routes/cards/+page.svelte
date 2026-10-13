@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathBack from '$lib/components/AftermathBack.svelte';
-	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackPhoto } from '$lib/components/CardBack.svelte';
+	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackPhoto, type BackRenown } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import WarbandBack from '$lib/components/WarbandBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
@@ -37,7 +37,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [] });
+	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [] });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
@@ -127,7 +127,8 @@
 			xp: fighter.xp ?? 0,
 			tally: { ...fighter.tally },
 			wargear: [...fighter.wargear],
-			stash: [...(warband?.stash ?? [])]
+			stash: [...(warband?.stash ?? [])],
+			advances: [...(fighter.advances ?? [])]
 		};
 		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
@@ -187,10 +188,9 @@
 		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === fighter.instanceId);
 		const keywords = card?.kind === 'fighter' ? card.keywordIds : [];
 		const earns = !game.aftermath?.noXp.some((k) => keywords.includes(k));
-		const spent = Math.max(0, ...(fighter.advances ?? []).map((a) => a.level));
 		const counters = game.campaign.fighter
 			.filter((c) => earns || (fighter.tally?.[c.key] ?? 0) > 0)
-			.map((c) => ({ ...c, floor: c.key === game.advancement?.counter ? spent : 0, raise: earns }));
+			.map((c) => ({ ...c, raise: earns }));
 		if (!earns && !counters.length) return null;
 		return {
 			xp: earns,
@@ -198,17 +198,46 @@
 				const raised = game.aftermath?.gainXp({ ...fighter, xp, tally }, 1);
 				return raised ? { xp: raised.xp ?? 0, tally: raised.tally ?? {} } : { xp: xp + 1, tally };
 			},
-			counters
+			counters,
+			levels: game.advancement?.counter ?? null
 		};
 	}
+
+	/**
+	 * The levels of the fighter on the back, on the fighter as the draft leaves
+	 * it: a level spent or a point of renown added there opens or closes one at
+	 * once, as in the Warband Deck.
+	 */
+	const backRenown = $derived.by((): BackRenown | null => {
+		const advancement = system?.game.advancement;
+		if (!warband || !faction || !advancement || !backCampaign || !editingId || editingId === warband.id) return null;
+		const instance = warband.fighters.find((f) => f.instanceId === editingId);
+		const profile = instance && faction.fighters.find((f) => f.id === instance.fighterId);
+		if (!instance || !profile) return null;
+		const values = $state.snapshot(draft);
+		const now: FighterInstance = {
+			...($state.snapshot(instance) as FighterInstance),
+			xp: values.xp,
+			tally: values.tally,
+			wargear: values.wargear,
+			advances: values.advances
+		};
+		const open = advancement.open(now, profile);
+		return {
+			label: advancement.label,
+			next: open[0] ? { level: open[0], offer: advancement.offer(now, profile, faction, open[0]) } : null,
+			waiting: open.length,
+			spent: values.advances.map((a, i) => ({ level: a.level, text: advancement.describe(now, profile, faction, i) }))
+		};
+	});
 
 	/**
 	 * The fighter with the back's text and campaign; a field left blank is left
 	 * out, as it is on a fighter never written on, and so are experience and
 	 * counters at none where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear }: BackDraft): FighterInstance {
-		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, ...rest } = fighter;
+	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
 			...rest,
@@ -216,6 +245,7 @@
 			...(notes.trim() ? { notes: notes.trim() } : {}),
 			...(xp || fighter.xp !== undefined ? { xp } : {}),
 			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
+			...(advances.length || fighter.advances ? { advances } : {}),
 			wargear
 		};
 	}
@@ -472,7 +502,7 @@
 					{:else if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} equipment={backEquipment} />
+						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} equipment={backEquipment} />
 					{/if}
 				{/snippet}
 			</Deck>
