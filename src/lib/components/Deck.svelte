@@ -39,7 +39,6 @@
 		levelLabel = '',
 		onlevels,
 		editing = false,
-		doneLabel = 'Done',
 		doneDisabled = false,
 		back,
 		onedit,
@@ -77,8 +76,6 @@
 		onlevels?: () => void;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
-		/** What finishing the turned card does, on its button. */
-		doneLabel?: string;
 		/** Holds that button back while the turned card still lacks an answer. */
 		doneDisabled?: boolean;
 		/** The back of the card on top, shown while `editing`. */
@@ -411,7 +408,6 @@
 		{levelLabel}
 		{onlevels}
 		{editing}
-		{doneLabel}
 		{doneDisabled}
 		onedit={() => onedit?.(cards[current].instanceId)}
 		{ondone}

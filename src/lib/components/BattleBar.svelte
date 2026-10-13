@@ -36,7 +36,6 @@
 		levelLabel = '',
 		onlevels,
 		editing = false,
-		doneLabel = 'Done',
 		doneDisabled = false,
 		onedit,
 		ondone,
@@ -82,8 +81,6 @@
 		onlevels?: () => void;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
-		/** What finishing the turned card does, on its button. */
-		doneLabel?: string;
 		/** Holds the button back while the turned card still lacks an answer. */
 		doneDisabled?: boolean;
 		/** Turns the card on top over, the warband's as a fighter's. */
@@ -111,7 +108,7 @@
 				<button
 					class="min-h-11 rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
 					disabled={doneDisabled}
-					onclick={() => ondone?.()}>{doneLabel}</button
+					onclick={() => ondone?.()}>Done</button
 				>
 			</div>
 		{:else if fighter}

@@ -916,33 +916,6 @@ html {
 	color: var(--card-ink-muted);
 }
 
-.card.back .toggles {
-	display: flex;
-	flex-wrap: wrap;
-	gap: calc(8 * var(--u));
-}
-
-/* Each answer or step a pill of its own, set in green once it holds. */
-.card.back .toggle {
-	min-height: 44px;
-	padding: 0 calc(14 * var(--u));
-	border: 1px solid var(--card-green);
-	border-radius: 999px;
-	background: var(--card-field);
-	font-family: 'Alegreya', serif;
-	font-size: calc(17 * var(--t));
-	color: var(--card-green);
-}
-
-.card.back .toggle[aria-pressed='true'] {
-	background: var(--card-green);
-	color: var(--card-paper);
-}
-
-.card.back .toggle:disabled {
-	opacity: 0.5;
-}
-
 .card.back .results,
 .card.back .stepper {
 	display: flex;

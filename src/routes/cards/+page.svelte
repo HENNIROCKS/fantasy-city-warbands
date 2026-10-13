@@ -4,7 +4,7 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
-	import AftermathBack from '$lib/components/AftermathBack.svelte';
+	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
 	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackPhoto, type BackRenown } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import WarbandBack from '$lib/components/WarbandBack.svelte';
@@ -349,7 +349,7 @@
 		setBattle(null);
 	}
 
-	/* The aftermath while it is answered on the back of the warband card. Who is
+	/* The aftermath while it is answered in its sheet over the deck. Who is
 	   asked is read once, as the battle starts ending. */
 	let aftermath = $state<AftermathDraft | null>(null);
 
@@ -485,21 +485,15 @@
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
 				onlevels={() => (spending = true)}
-				editing={editingId !== null || aftermath !== null}
-				doneLabel={aftermath ? 'Apply' : 'Done'}
-				doneDisabled={(aftermath !== null && !aftermath.result) || backBlocked}
+				editing={editingId !== null}
+				doneDisabled={backBlocked}
 				onedit={edit}
-				ondone={aftermath ? applyEnd : done}
-				oncancel={() => {
-					editingId = null;
-					aftermath = null;
-				}}
+				ondone={done}
+				oncancel={() => (editingId = null)}
 				{photos}
 			>
 				{#snippet back(card)}
-					{#if card.kind === 'warband' && aftermath && warband && faction && system.game.aftermath}
-						<AftermathBack name={card.name} {warband} {faction} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
-					{:else if card.kind === 'warband' && warband}
+					{#if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
 						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} equipment={backEquipment} />
@@ -509,6 +503,18 @@
 		</main>
 	{/if}
 </div>
+
+{#if aftermath && warband && faction && system?.game.aftermath}
+	<AftermathSheet
+		{warband}
+		{faction}
+		game={system.game}
+		rules={system.game.aftermath}
+		bind:draft={aftermath}
+		onapply={applyEnd}
+		onclose={() => (aftermath = null)}
+	/>
+{/if}
 
 {#if spending && levels.length && system?.game.advancement}
 	{@const next = levels[0]}
