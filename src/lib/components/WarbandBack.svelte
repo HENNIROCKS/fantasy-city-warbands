@@ -206,15 +206,6 @@
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
-	/* Names a list within a section, set like the counters' labels. */
-	.caption {
-		margin: calc(6 * var(--u)) 0 0;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		font-weight: 700;
-		color: var(--card-ink);
-	}
-
 	.add {
 		align-self: flex-end;
 		min-height: 40px;
@@ -245,54 +236,19 @@
 		color: var(--card-link);
 	}
 
-	/* As on the front: a solid rule above the log, a dashed one under each row. */
-	.list {
-		margin: calc(6 * var(--u)) 0 0;
-		padding: 0;
-		list-style: none;
-		border-top: 1.5px solid #000;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.3;
-	}
-
-	.list li {
-		display: flex;
-		align-items: center;
-		gap: calc(8 * var(--u));
-		padding: calc(4 * var(--u)) 0;
-		border-bottom: 1px dashed #000;
-	}
-
-	.line {
-		flex: 1;
-		min-width: 0;
-		margin: 0;
-		overflow-wrap: anywhere;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		color: var(--card-ink);
-	}
-
 	.when {
 		margin-right: 0.3em;
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
-	.removed .line,
-	.gone .line {
+	li.removed .line,
+	li.gone .line {
 		color: var(--card-ink-muted);
 	}
 
 	/* A piece leaving the stash is struck out; what becomes of it is not. */
-	.removed .line,
-	.gone .piece {
+	li.removed .line,
+	li.gone .piece {
 		text-decoration: line-through;
-	}
-
-	.why {
-		display: block;
-		font-size: calc(18 * var(--t));
-		font-style: italic;
 	}
 </style>

@@ -65,6 +65,8 @@ It does not yet roll injuries or know Black Death City's campaign.
 - Turn a fighter's card over with the pencil under it to write the fighter's
   fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device.
+  The back also hands what the fighter bought to the stash and takes pieces
+  from it, each checked as the builder checks it, and not during a battle.
   In Wyrdcry the back also corrects experience and renown by hand – the fourth
   point of experience is a level of renown, and renown does not go below a
   level already spent; a BEAST or THRALL has neither. The warband's favour is

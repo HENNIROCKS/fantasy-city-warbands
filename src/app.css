@@ -929,6 +929,51 @@
 	opacity: 0.5;
 }
 
+/* Names a list within a section, set like the counters' labels. */
+.card.back .caption {
+	margin: calc(6 * var(--u)) 0 0;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	font-weight: 700;
+	color: var(--card-ink);
+}
+
+/* As on the front: a solid rule above the log, a dashed one under each row. */
+.card.back .list {
+	margin: calc(6 * var(--u)) 0 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1.5px solid #000;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	line-height: 1.3;
+}
+
+.card.back .list li {
+	display: flex;
+	align-items: center;
+	gap: calc(8 * var(--u));
+	padding: calc(4 * var(--u)) 0;
+	border-bottom: 1px dashed #000;
+}
+
+.card.back .line {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	overflow-wrap: anywhere;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	color: var(--card-ink);
+}
+
+/* What became of a line, or why it cannot be had, under it. */
+.card.back .why {
+	display: block;
+	font-size: calc(18 * var(--t));
+	font-style: italic;
+}
+
 /* A figure between its − and + buttons, as wide as one of them. */
 .card.back .count {
 	display: flex;

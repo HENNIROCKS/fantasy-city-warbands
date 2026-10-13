@@ -8,6 +8,22 @@
 		xp: number;
 		/** The game's campaign counters for the fighter, such as renown, by key. */
 		tally: Record<string, number>;
+		/** What the fighter has bought, as stored – what its profile brings is not in here. */
+		wargear: string[];
+		/** The warband's stash, which the fighter hands pieces to and takes them from. */
+		stash: string[];
+	}
+
+	/** What the back may move between the fighter and the stash, worked out by the page from the draft. */
+	export interface BackEquipment {
+		/** Why nothing can change hands here, such as a battle going on; null where it can. */
+		blocked: string | null;
+		/** Why the fighter takes no wargear at all, as its profile says; null where it takes some. */
+		takesNothing: string | null;
+		/** The names of `draft.wargear`, in its order. */
+		carried: string[];
+		/** `draft.stash` in its order, each with why the fighter cannot take it. */
+		stash: { name: string; refused: string | null }[];
 	}
 
 	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
@@ -47,13 +63,30 @@
 		name,
 		draft = $bindable(),
 		photo = $bindable(),
-		campaign
+		campaign,
+		equipment
 	}: {
 		name: string;
 		draft: BackDraft;
 		photo: BackPhoto;
 		campaign: BackCampaign | null;
+		equipment: BackEquipment | null;
 	} = $props();
+
+	/* A piece changes hands within the draft; no gold moves, in the builder neither. */
+	function toStash(index: number) {
+		const id = draft.wargear[index];
+		if (id === undefined) return;
+		draft.wargear = draft.wargear.filter((_, i) => i !== index);
+		draft.stash = [...draft.stash, id];
+	}
+
+	function take(index: number) {
+		const id = draft.stash[index];
+		if (id === undefined) return;
+		draft.stash = draft.stash.filter((_, i) => i !== index);
+		draft.wargear = [...draft.wargear, id];
+	}
 
 	function moreXp() {
 		if (!campaign) return;
@@ -228,6 +261,50 @@
 			</section>
 		{/if}
 
+		{#if equipment}
+			<!-- As the Warband Deck has it: what the fighter bought goes to the
+			     stash and comes back, each piece checked as the builder checks it. -->
+			<section>
+				<h3 class="heading"><span>Equipment</span><span class="rule"></span></h3>
+				{#if equipment.blocked}
+					<p class="hint">{equipment.blocked}</p>
+				{:else}
+					<p class="caption">Carried</p>
+					{#if equipment.carried.length}
+						<ul class="list">
+							{#each equipment.carried as piece, i (i)}
+								<li>
+									<span class="line">{piece}</span>
+									<button class="remove" onclick={() => toStash(i)}>To stash</button>
+								</li>
+							{/each}
+						</ul>
+					{:else}
+						<p class="hint">Nothing bought – what the profile brings stays with the fighter.</p>
+					{/if}
+
+					<p class="caption">In the stash</p>
+					{#if equipment.takesNothing}
+						<p class="hint">{equipment.takesNothing}.</p>
+					{:else if equipment.stash.length}
+						<ul class="list">
+							{#each equipment.stash as piece, i (i)}
+								<li>
+									<span class="line">
+										{piece.name}
+										{#if piece.refused}<span class="why">{piece.refused}</span>{/if}
+									</span>
+									<button class="remove" disabled={piece.refused !== null} onclick={() => take(i)}>Take</button>
+								</li>
+							{/each}
+						</ul>
+					{:else}
+						<p class="hint">The stash is empty.</p>
+					{/if}
+				{/if}
+			</section>
+		{/if}
+
 		<section>
 			<label class="heading" for="back-notes"><span>Notes</span><span class="rule"></span></label>
 			<textarea id="back-notes" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
@@ -368,5 +445,9 @@
 		font-family: 'Alegreya', serif;
 		font-size: calc(18 * var(--t));
 		color: var(--card-link);
+	}
+
+	.remove:disabled {
+		color: var(--card-ink-muted);
 	}
 </style>

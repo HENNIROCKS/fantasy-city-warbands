@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathBack from '$lib/components/AftermathBack.svelte';
-	import CardBack, { type BackCampaign, type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
+	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackPhoto } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import WarbandBack from '$lib/components/WarbandBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
@@ -37,7 +37,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {} });
+	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [] });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
@@ -121,11 +121,54 @@
 		}
 		const fighter = warband?.fighters.find((f) => f.instanceId === instanceId);
 		if (!fighter) return;
-		draft = { fluff: fighter.fluff ?? '', notes: fighter.notes ?? '', xp: fighter.xp ?? 0, tally: { ...fighter.tally } };
+		draft = {
+			fluff: fighter.fluff ?? '',
+			notes: fighter.notes ?? '',
+			xp: fighter.xp ?? 0,
+			tally: { ...fighter.tally },
+			wargear: [...fighter.wargear],
+			stash: [...(warband?.stash ?? [])]
+		};
 		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
 		editingId = instanceId;
 	}
+
+	/**
+	 * What the back may move between the fighter on it and the stash. A piece
+	 * from the stash is tried against the same checks as in the builder, on the
+	 * warband as the draft leaves it; nothing moves while a battle is on, as in
+	 * the Warband Deck.
+	 */
+	const backEquipment = $derived.by((): BackEquipment | null => {
+		if (!warband || !system || !faction || !editingId || editingId === warband.id) return null;
+		const instance = warband.fighters.find((f) => f.instanceId === editingId);
+		if (!instance) return null;
+		const profile = faction.fighters.find((f) => f.id === instance.fighterId);
+		const blocked = battle
+			? 'Not during a battle – end or cancel it first.'
+			: !profile
+				? "This fighter is not in the app's own rules, so what it may carry cannot be checked."
+				: null;
+		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [] };
+		const moved = (wargear: string[], stash: string[]): Warband => ({
+			...($state.snapshot(warband) as Warband),
+			stash,
+			fighters: warband!.fighters.map((f) => (f.instanceId === editingId ? { ...($state.snapshot(f) as FighterInstance), wargear } : ($state.snapshot(f) as FighterInstance)))
+		});
+		const now = moved(draft.wargear, draft.stash);
+		const before = validate(now, system.game, faction);
+		return {
+			blocked: null,
+			takesNothing: profile.wargear.length ? null : (profile.unequipped ?? 'Takes no wargear'),
+			carried: draft.wargear.map(nameOf),
+			stash: draft.stash.map((id, i) => {
+				const after = moved([...draft.wargear, id], draft.stash.filter((_, j) => j !== i));
+				return { name: nameOf(id), refused: newExcess(before, after, system.game, faction)?.short ?? null };
+			})
+		};
+	});
 
 	/**
 	 * What the back may correct of the fighter's campaign, as the game keeps it.
@@ -159,7 +202,7 @@
 	 * out, as it is on a fighter never written on, and so are experience and
 	 * counters at none where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { fluff, notes, xp, tally }: BackDraft): FighterInstance {
+	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear }: BackDraft): FighterInstance {
 		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
@@ -167,7 +210,8 @@
 			...(fluff.trim() ? { fluff: fluff.trim() } : {}),
 			...(notes.trim() ? { notes: notes.trim() } : {}),
 			...(xp || fighter.xp !== undefined ? { xp } : {}),
-			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {})
+			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
+			wargear
 		};
 	}
 
@@ -198,6 +242,10 @@
 		const values = $state.snapshot(draft);
 		const updated = $state.snapshot(warband) as Warband;
 		updated.fighters = updated.fighters.map((f) => (f.instanceId === targetId ? written(f, values) : f));
+		/* The stash is the draft's copy from when the card was turned: written only
+		   when something moved, so a back that moved nothing leaves it as it is. */
+		const before = warband.fighters.find((f) => f.instanceId === targetId)?.wargear ?? [];
+		if (values.wargear.join() !== before.join()) updated.stash = values.stash;
 		editingId = null;
 		warband = updated;
 		saveWarband(updated);
@@ -420,7 +468,7 @@
 					{:else if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} />
+						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} equipment={backEquipment} />
 					{/if}
 				{/snippet}
 			</Deck>
