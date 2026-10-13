@@ -144,7 +144,9 @@ this one browser. No account, no server, no sync. Clearing the site's data
 removes them. Export a warband to keep a copy; Import warband brings it back,
 here or on another device. Add the app to the home screen: Safari can remove
 the data of a site not opened for seven days, and keeps it for good mostly for
-an installed app. The about page says how. A battle in progress stays on the device and is not
+an installed app. The about page says how. Once opened with a network, the app
+starts without one: a service worker keeps every file of the build, the game
+data and the roster's PDF library included. A battle in progress stays on the device and is not
 part of the export.
 
 Photos of the painted models are kept in the same database, reduced to a copy of

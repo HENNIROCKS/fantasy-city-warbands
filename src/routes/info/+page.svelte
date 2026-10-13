@@ -150,7 +150,8 @@
 		<p>
 			Safari can remove the data of a site that has not been opened for seven days, and grants the
 			request to keep it mostly to the app on the home screen. Installed, the app also opens full
-			screen, without the browser bars.
+			screen, without the browser bars. Once it has been opened with a network, it also starts
+			without one, the roster included; a new version comes with the next start online.
 		</p>
 		<ul class="list-disc space-y-1 pl-5">
 			<li><strong>iPhone, iPad:</strong> Share, then “Add to Home Screen”.</li>

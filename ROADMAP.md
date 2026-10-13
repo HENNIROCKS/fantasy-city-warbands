@@ -54,6 +54,7 @@
 - [x] 📈 Campaign: pieces moved between a fighter and the stash, on the back of its card
 - [x] 📈 Wyrdcry: the Trading Post in the builder, a rare piece bought once a Rarity roll found it
 - [x] 🃏 Wyrdcry: the Unarmed line on the card of a fighter without a melee weapon
+- [x] ⚙️ Work offline once opened, the roster included
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
@@ -61,7 +62,6 @@
 - [ ] 📈 Campaign: injuries
 - [ ] 🃏 Wyrdcry: the rolled mutation written out under Ascended and Anointed
 - [ ] 📄 The roster per game, as each game's own sheet has it
-- [ ] ⚙️ Work offline once installed
 - [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
