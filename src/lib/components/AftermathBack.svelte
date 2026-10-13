@@ -140,45 +140,6 @@
 		color: var(--card-ink-muted);
 	}
 
-	.toggles {
-		display: flex;
-		flex-wrap: wrap;
-		gap: calc(8 * var(--u));
-	}
-
-	/* Each answer a pill of its own, set in green once it holds. */
-	.toggle {
-		min-height: 44px;
-		padding: 0 calc(14 * var(--u));
-		border: 1px solid var(--card-green);
-		border-radius: 999px;
-		background: var(--card-field);
-		font-family: 'Alegreya', serif;
-		font-size: calc(17 * var(--t));
-		color: var(--card-green);
-	}
-
-	.toggle[aria-pressed='true'] {
-		background: var(--card-green);
-		color: var(--card-paper);
-	}
-
-	.toggle:disabled {
-		opacity: 0.5;
-	}
-
-	/* The shards between their two buttons, as wide as one of them. */
-	.count {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 44px;
-		font-family: 'Alegreya', serif;
-		font-size: calc(20 * var(--t));
-		font-variant-numeric: lining-nums tabular-nums;
-		color: var(--card-ink);
-	}
-
 	/* What the result and the shards come to, a line for each. */
 	.sum {
 		margin: 0;

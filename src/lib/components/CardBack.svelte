@@ -5,6 +5,23 @@
 	export interface BackDraft {
 		fluff: string;
 		notes: string;
+		xp: number;
+		/** The game's campaign counters for the fighter, such as renown, by key. */
+		tally: Record<string, number>;
+	}
+
+	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
+	export interface BackCampaign {
+		/** False for a fighter that never earns experience, such as a BEAST. */
+		xp: boolean;
+		/** One more point of experience, with whatever level it brings. */
+		addXp: (xp: number, tally: Record<string, number>) => { xp: number; tally: Record<string, number> };
+		/**
+		 * `floor` is the lowest the counter may go: no level already spent is
+		 * taken away. Without `raise` it only comes down, for a fighter that
+		 * never gains it and has some from a file.
+		 */
+		counters: { key: string; label: string; floor: number; raise: boolean }[];
 	}
 
 	/** The fighter's photo as it stands on the back; `changed` says whether Done has to write it. */
@@ -29,12 +46,23 @@
 	let {
 		name,
 		draft = $bindable(),
-		photo = $bindable()
+		photo = $bindable(),
+		campaign
 	}: {
 		name: string;
 		draft: BackDraft;
 		photo: BackPhoto;
+		campaign: BackCampaign | null;
 	} = $props();
+
+	function moreXp() {
+		if (!campaign) return;
+		({ xp: draft.xp, tally: draft.tally } = campaign.addXp(draft.xp, draft.tally));
+	}
+
+	function step(key: string, by: number) {
+		draft.tally = { ...draft.tally, [key]: (draft.tally[key] ?? 0) + by };
+	}
 
 	let photoInput: HTMLInputElement | undefined = $state();
 	let photoError = $state<string | null>(null);
@@ -158,6 +186,48 @@
 			></textarea>
 		</section>
 
+		{#if campaign}
+			<!-- As the Warband Deck has it, for what the aftermath did not count: a
+			     battle played elsewhere, a point given by mistake. -->
+			<section>
+				<h3 class="heading"><span>Campaign</span><span class="rule"></span></h3>
+				{#if campaign.xp}
+					<div class="counter">
+						<span class="label" id="back-xp">Experience Points</span>
+						<div class="toggles" role="group" aria-labelledby="back-xp">
+							<button class="toggle" aria-label="Less experience" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
+							<output class="count">{draft.xp}</output>
+							<button class="toggle" aria-label="More experience" onclick={moreXp}>+</button>
+						</div>
+					</div>
+				{/if}
+				{#each campaign.counters as counter (counter.key)}
+					{@const value = draft.tally[counter.key] ?? 0}
+					<div class="counter">
+						<span class="label" id="back-{counter.key}">{counter.label}</span>
+						<div class="toggles" role="group" aria-labelledby="back-{counter.key}">
+							<button
+								class="toggle"
+								aria-label="Less {counter.label.toLowerCase()}"
+								disabled={value <= Math.max(0, counter.floor)}
+								onclick={() => step(counter.key, -1)}>−</button
+							>
+							<output class="count">{value}</output>
+							<button
+								class="toggle"
+								aria-label="More {counter.label.toLowerCase()}"
+								disabled={!counter.raise}
+								onclick={() => step(counter.key, 1)}>+</button
+							>
+						</div>
+					</div>
+					{#if counter.floor > 0 && value <= counter.floor}
+						<p class="hint">Not below a level already spent.</p>
+					{/if}
+				{/each}
+			</section>
+		{/if}
+
 		<section>
 			<label class="heading" for="back-notes"><span>Notes</span><span class="rule"></span></label>
 			<textarea id="back-notes" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
@@ -198,6 +268,24 @@
 
 	.fluff {
 		font-style: italic;
+	}
+
+	/* The figure's name on the left, its steps on the right. */
+	.counter {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: calc(12 * var(--u));
+	}
+
+	.counter .label {
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		color: var(--card-ink);
+	}
+
+	.counter .toggles {
+		flex-wrap: nowrap;
 	}
 
 	.photo-row {

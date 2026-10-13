@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathBack from '$lib/components/AftermathBack.svelte';
-	import CardBack, { type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
+	import CardBack, { type BackCampaign, type BackDraft, type BackPhoto } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -33,7 +33,8 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '' });
+	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {} });
+	let backCampaign = $state<BackCampaign | null>(null);
 	/* The photo apart from the draft: the warband is written as a whole and has
 	   to stay free of the bytes. */
 	let photoDraft = $state<BackPhoto>({ photo: null, changed: false });
@@ -108,15 +109,54 @@
 	function edit(instanceId: string) {
 		const fighter = warband?.fighters.find((f) => f.instanceId === instanceId);
 		if (!fighter) return;
-		draft = { fluff: fighter.fluff ?? '', notes: fighter.notes ?? '' };
+		draft = { fluff: fighter.fluff ?? '', notes: fighter.notes ?? '', xp: fighter.xp ?? 0, tally: { ...fighter.tally } };
+		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
 		editingId = instanceId;
 	}
 
-	/** The fighter with the back's text; a field left blank is left out, as it is on a fighter never written on. */
-	function written(fighter: FighterInstance, { fluff, notes }: BackDraft): FighterInstance {
-		const { fluff: _fluff, notes: _notes, ...rest } = fighter;
-		return { ...rest, ...(fluff.trim() ? { fluff: fluff.trim() } : {}), ...(notes.trim() ? { notes: notes.trim() } : {}) };
+	/**
+	 * What the back may correct of the fighter's campaign, as the game keeps it.
+	 * A fighter that never earns experience gains no levels either, as Wyrdcry's
+	 * BEAST and THRALL: it gets no section, or only the counters a file brought
+	 * it, to take down.
+	 */
+	function campaignOf(fighter: FighterInstance): BackCampaign | null {
+		const game = system?.game;
+		if (!game?.campaign) return null;
+		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === fighter.instanceId);
+		const keywords = card?.kind === 'fighter' ? card.keywordIds : [];
+		const earns = !game.aftermath?.noXp.some((k) => keywords.includes(k));
+		const spent = Math.max(0, ...(fighter.advances ?? []).map((a) => a.level));
+		const counters = game.campaign.fighter
+			.filter((c) => earns || (fighter.tally?.[c.key] ?? 0) > 0)
+			.map((c) => ({ ...c, floor: c.key === game.advancement?.counter ? spent : 0, raise: earns }));
+		if (!earns && !counters.length) return null;
+		return {
+			xp: earns,
+			addXp: (xp, tally) => {
+				const raised = game.aftermath?.gainXp({ ...fighter, xp, tally }, 1);
+				return raised ? { xp: raised.xp ?? 0, tally: raised.tally ?? {} } : { xp: xp + 1, tally };
+			},
+			counters
+		};
+	}
+
+	/**
+	 * The fighter with the back's text and campaign; a field left blank is left
+	 * out, as it is on a fighter never written on, and so are experience and
+	 * counters at none where the fighter had none.
+	 */
+	function written(fighter: FighterInstance, { fluff, notes, xp, tally }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, ...rest } = fighter;
+		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
+		return {
+			...rest,
+			...(fluff.trim() ? { fluff: fluff.trim() } : {}),
+			...(notes.trim() ? { notes: notes.trim() } : {}),
+			...(xp || fighter.xp !== undefined ? { xp } : {}),
+			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {})
+		};
 	}
 
 	/* A failed write raises the storage warning; the card shows what was written either way. */
@@ -346,7 +386,7 @@
 					{#if card.kind === 'warband' && aftermath && warband && system.game.aftermath}
 						<AftermathBack name={card.name} {warband} game={system.game} rules={system.game.aftermath} bind:draft={aftermath} />
 					{:else}
-						<CardBack name={card.name} bind:draft bind:photo={photoDraft} />
+						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} />
 					{/if}
 				{/snippet}
 			</Deck>

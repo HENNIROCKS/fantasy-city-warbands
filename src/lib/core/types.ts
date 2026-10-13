@@ -201,6 +201,8 @@ export interface Aftermath {
 export interface Advancement {
 	/** What a level is called: `Renown`. */
 	label: string;
+	/** The fighter's campaign counter the levels are counted in: `renown`. */
+	counter: string;
 	/** The fighter's levels earned and not yet spent, lowest first. */
 	open(instance: FighterInstance, fighter: Fighter): OpenLevel[];
 	/** What one of those levels can be spent on, each with the reason where it cannot. */

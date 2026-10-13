@@ -64,7 +64,10 @@ It does not yet roll injuries or know Black Death City's campaign.
   with a star
 - Turn a fighter's card over with the pencil under it to write the fighter's
   fluff and notes, which the card then shows, and to put a photo of the painted
-  model in its image field, moved and zoomed there; the photo stays on the device
+  model in its image field, moved and zoomed there; the photo stays on the device.
+  In Wyrdcry the back also corrects experience and renown by hand – the fourth
+  point of experience is a level of renown, and renown does not go below a
+  level already spent; a BEAST or THRALL has neither
 - Track a battle at the table: Battle on the warband card starts it, counts
   the rounds with one step back, and ends it after asking; the bar under a
   fighter's card takes Health down a point at a time, the card fills with

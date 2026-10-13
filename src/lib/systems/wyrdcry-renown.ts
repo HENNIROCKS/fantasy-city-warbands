@@ -210,7 +210,7 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 	return result;
 }
 
-export const advancement: Advancement = { label: 'Renown', open, offer, keywords, effects };
+export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects };
 
 /** Levels a file brings without a record of what they were spent on, written as used up so none stands open. */
 export function usedUp(instance: FighterInstance): Advance[] {
