@@ -46,6 +46,7 @@
 - [x] 📈 Campaign: spend renown on a characteristic or a henchman's promotion
 - [x] 📈 Campaign: heroic traits, what a HERO picks instead of a characteristic
 - [x] 🎨 How much of each game the app carries, as a ring on the game's tile
+- [x] 🎨 When the app was last updated, in a bar on the start page with a link to what is new
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card

@@ -25,6 +25,8 @@ It does not yet roll injuries or know Black Death City's campaign.
 - See how much of each game the app carries before picking it: a ring on the
   game's tile with one piece per area, such as carrying limits, battle,
   aftermath or advancement, filled where it is built
+- See on the start page when the app was last updated, with a link to the
+  roadmap; dismissed, the bar stays away until the next update
 - See a faction before picking it: its fighters with their costs and limits,
   its choice and its rules
 - Recruit fighters and give them wargear from what their faction allows them,

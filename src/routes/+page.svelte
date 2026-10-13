@@ -4,6 +4,7 @@
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import ReleaseBar from '$lib/components/ReleaseBar.svelte';
 	import { toRoster } from '$lib/core/roster';
 	import {
 		deleteWarband,
@@ -270,6 +271,7 @@
 <!-- Out of reach while the sheet asks, so the keyboard and a screen reader stay in it. -->
 <div inert={condemned !== null || candidate !== null}>
 	<PageHeader title={APP_NAME} badge={STAGE} />
+	<ReleaseBar />
 
 	<main class="mx-auto max-w-2xl space-y-6 p-5 text-sm">
 		<div class="grid grid-cols-2 gap-2">

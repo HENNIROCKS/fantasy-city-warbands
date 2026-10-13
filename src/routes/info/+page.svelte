@@ -1,24 +1,9 @@
 <script lang="ts">
-	import { version as build } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
+	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
 	import { areas } from '$lib/core/coverage';
 	import { planned, systems } from '$lib/systems';
-
-	const REPO = 'https://github.com/HENNIROCKS/fantasy-city-warbands';
-
-	/*
-	 * `version` from SvelteKit is the timestamp of the build. It answers whether
-	 * the page is today's state, which a version number that stands still for
-	 * months cannot. Spelled out rather than left to toLocaleDateString, whose
-	 * month abbreviations differ between engines.
-	 */
-	const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	const built = new Date(Number(build));
-	const buildDate = Number.isNaN(built.getTime())
-		? null
-		: `${built.getDate()} ${MONTHS[built.getMonth()]} ${built.getFullYear()}`;
 
 	/** Each game's own site and where its rules come from, by game id. */
 	const SITES: Record<string, string> = {
@@ -148,7 +133,7 @@
 			{/if}
 		</h2>
 		<p class="text-zinc-400">
-			{['by Hendrik Berends', `Version ${__APP_VERSION__}`, buildDate ? `Build ${buildDate}` : null].filter(Boolean).join(' · ')}
+			{['by Hendrik Berends', `Version ${__APP_VERSION__}`, BUILD_DATE ? `Build ${BUILD_DATE}` : null].filter(Boolean).join(' · ')}
 		</p>
 		<p>
 			Build a warband for a skirmish game set in a fantasy city, step by step, with the budget and
