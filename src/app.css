@@ -338,6 +338,49 @@
 		cursor: not-allowed;
 	}
 
+	/* A counter the player sets by hand, such as favour: −, the figure, +. */
+	.tally-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.tally-step {
+		width: 44px;
+		height: 44px;
+		background: var(--ui-surface);
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		color: var(--ui-text);
+		font-size: 1.25rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: border-color 0.15s;
+	}
+
+	.tally-step:hover:not(:disabled),
+	.tally-step:focus-visible {
+		border-color: var(--ui-text-subtle);
+	}
+
+	.tally-step:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.tally-step:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.tally-count {
+		min-width: 3ch;
+		text-align: center;
+		font-size: 1.125rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--ui-text);
+	}
+
 	/*
 	 * Wargear on offer as a checklist, one piece to a row as the Warband Deck's
 	 * sheet has it, the rows divided by rules rather than boxed apart. A full

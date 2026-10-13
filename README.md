@@ -67,7 +67,8 @@ It does not yet roll injuries or know Black Death City's campaign.
   model in its image field, moved and zoomed there; the photo stays on the device.
   In Wyrdcry the back also corrects experience and renown by hand – the fourth
   point of experience is a level of renown, and renown does not go below a
-  level already spent; a BEAST or THRALL has neither
+  level already spent; a BEAST or THRALL has neither. The warband's favour is
+  set by hand in the finish step, with the standing and reputation it comes to
 - Track a battle at the table: Battle on the warband card starts it, counts
   the rounds with one step back, and ends it after asking; the bar under a
   fighter's card takes Health down a point at a time, the card fills with

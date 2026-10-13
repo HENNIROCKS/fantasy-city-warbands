@@ -45,7 +45,7 @@
 		{
 			question: 'Can I change a warband later?',
 			answer:
-				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first. A fighter’s fluff, notes and photo are written on the back of its card: the pencil under the card turns it over. In Wyrdcry its experience and renown are corrected there too, for a battle the app did not count; renown does not go below a level already spent.'
+				'Yes, every step stays open: tap the warband on the start page and go to the step you want. Changing the faction removes its fighters and its choice, and asks first. A fighter’s fluff, notes and photo are written on the back of its card: the pencil under the card turns it over. In Wyrdcry its experience and renown are corrected there too, for a battle the app did not count; renown does not go below a level already spent. The warband’s favour is set the same way in the Finish step, with the standing and reputation it comes to beside it.'
 		},
 		{
 			question: 'Can I bring a warband over from the Warband Deck?',

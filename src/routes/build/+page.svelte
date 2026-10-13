@@ -89,6 +89,12 @@
 		document.getElementById(`warband-${field}`)?.focus();
 	}
 
+	/** A campaign counter of the warband's one up or down, never below 0. */
+	function stepTally(key: string, by: number) {
+		if (!warband) return;
+		warband.tally = { ...warband.tally, [key]: Math.max(0, (warband.tally?.[key] ?? 0) + by) };
+	}
+
 	/* A card's `Unnamed` leads to a name field, which then takes the focus. The
 	   warband is read in only after the navigation, so this waits for it, and
 	   does it once per arrival. */
@@ -566,6 +572,40 @@
 				<p class="mt-2" style="color: var(--ui-warn-text)">White type on this colour is hard to read on the cards.</p>
 			{/if}
 		</section>
+
+		<!-- The warband's campaign counters, such as Wyrdcry's favour, for what the
+		     aftermath did not count, as the Warband Deck has it in its finish step;
+		     under them what the warband card works out from them. -->
+		{#if system.game.campaign}
+			{@const campaign = system.game.campaign}
+			{@const own = new Set(campaign.warband.map((c) => c.key))}
+			{@const derived = (campaign.values?.(warband) ?? []).filter((v) => !own.has(v.key))}
+			{#each campaign.warband as counter (counter.key)}
+				{@const value = warband.tally?.[counter.key] ?? 0}
+				<section>
+					<p class="field-label" id="tally-{counter.key}">{counter.label}</p>
+					<div class="tally-row" role="group" aria-labelledby="tally-{counter.key}">
+						<button
+							type="button"
+							class="tally-step"
+							aria-label="Less {counter.label.toLowerCase()}"
+							disabled={value <= 0}
+							onclick={() => stepTally(counter.key, -1)}>−</button
+						>
+						<output class="tally-count">{value}</output>
+						<button
+							type="button"
+							class="tally-step"
+							aria-label="More {counter.label.toLowerCase()}"
+							onclick={() => stepTally(counter.key, 1)}>+</button
+						>
+					</div>
+					{#if derived.length}
+						<p class="mt-2 text-zinc-400">{derived.map((v) => `${v.label} ${v.value}`).join(' · ')}</p>
+					{/if}
+				</section>
+			{/each}
+		{/if}
 
 		<!-- Fluff and notes for the warband card. Empty, each is a button; once
 		     opened or written in, a field that grows with its text. -->
