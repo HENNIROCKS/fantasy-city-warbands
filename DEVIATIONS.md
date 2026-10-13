@@ -13,10 +13,13 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 - [ ] Clan Eshin and Mercenaries: the allowances weeping-blades and wawr point at no weapon and are left out
 - [ ] Unarmed: the weapon profile the site repo's weapon data carries (1", 2 attacks, 1/2), which the hand-kept weapons leave out
 - [ ] Unholy Relic: rare, a Rarity roll of 6+ before it is bought, as the hand-kept items have it, where the site repo's item data has it common
+- [ ] Devastated Eye: halves only the longest reach of a weapon, never below 1", and keeps where its reach starts – a bow's 3–18" becomes 3–9"
+- [ ] Injuries: a second Hatred, Hardened or Terrible Scars counts as a Flesh Wound, as a repeated [Injury] does, where the rules say so only of results marked [Injury]
 
 ### Open upstream
 
 - [x] Pierce: one rule, Pierce X, in place of Pierce 1 and Pierce 2
+- [ ] Injury 34: named Alcoholic with the id amnesia, where its text "cannot make reactions" fits neither name
 - [ ] Hero costs: in the 0.9 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 
 ## Black Death City
