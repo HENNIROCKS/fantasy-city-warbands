@@ -19,7 +19,8 @@ export const areas: Area[] = [
 	{ label: 'What a fighter may carry', built: (game) => !!game.carry },
 	{ label: "The fighters' special rules as text", built: (_, factions) => fighters(factions).some((f) => f.rules.length > 0) },
 	{ label: 'Choices on recruitment', built: (_, factions) => fighters(factions).some((f) => !!f.choice) },
-	{ label: 'Tracking a battle', built: (game) => !!game.battle },
+	/* Counting damage, states and rounds is the core's; `game.battle` only adds a game's own states. */
+	{ label: 'Tracking a battle', built: () => true },
 	{ label: 'The aftermath of a battle', built: (game) => !!game.aftermath },
 	{ label: 'Advancement', built: (game) => !!game.advancement },
 	/* The system has no field to read for these, so they count as open for every game. */
