@@ -3,6 +3,7 @@
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, STAGE } from '$lib/app';
+	import { areas } from '$lib/core/coverage';
 	import { planned, systems } from '$lib/systems';
 
 	const REPO = 'https://github.com/HENNIROCKS/fantasy-city-warbands';
@@ -214,6 +215,15 @@
 						<p class="mt-2">{SOURCES[game.id]}</p>
 					{/if}
 				</li>
+			{/each}
+		</ul>
+		<p>
+			The ring beside a game when you pick it is a rough count of how much of the game the app carries:
+			one piece for each of these, filled where it is built.
+		</p>
+		<ul class="list-disc space-y-1 pl-5">
+			{#each areas as area (area.label)}
+				<li>{area.label}</li>
 			{/each}
 		</ul>
 	</section>

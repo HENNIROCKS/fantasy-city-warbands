@@ -11,6 +11,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
+	import { areas, coverage } from '$lib/core/coverage';
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
@@ -129,10 +130,20 @@
 				`${s.factions.length} faction${s.factions.length === 1 ? '' : 's'}`,
 				`${s.game.budget} ${s.game.currencyName ?? s.game.currency}`
 			],
+			built: coverage(s.game, s.factions),
 			available: true
 		})),
-		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], available: false }))
+		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], built: null, available: false }))
 	].sort((a, b) => a.name.localeCompare(b.name));
+
+	/** One of `count` equal pieces of a ring from radius 8 to 20 around 22,22, the first starting at twelve o'clock. */
+	function slice(i: number, count: number): string {
+		const at = (n: number, r: number) => {
+			const angle = (n / count) * 2 * Math.PI - Math.PI / 2;
+			return `${(22 + r * Math.cos(angle)).toFixed(2)} ${(22 + r * Math.sin(angle)).toFixed(2)}`;
+		};
+		return `M${at(i, 20)}A20 20 0 0 1 ${at(i + 1, 20)}L${at(i + 1, 8)}A8 8 0 0 0 ${at(i, 8)}Z`;
+	}
 
 	function url(params: Record<string, string>): string {
 		return resolve('/build') + '?' + new URLSearchParams(params).toString();
@@ -326,10 +337,35 @@
 			<p class="field-label">Pick a game</p>
 			<div class="space-y-2">
 				{#each tiles as tile (tile.id)}
-					<button type="button" class="choice px-4 py-5" disabled={!tile.available} onclick={() => pickGame(tile.id)}>
-						<span class="block text-base font-semibold">{tile.name}</span>
-						<span class="block text-zinc-400">by {tile.author}</span>
-						<span class="block text-zinc-400">{tile.details.join(' · ')}</span>
+					<button
+						type="button"
+						class="choice flex items-center gap-3 px-4 py-5"
+						disabled={!tile.available}
+						onclick={() => pickGame(tile.id)}
+					>
+						<span class="min-w-0 flex-1">
+							<span class="block text-base font-semibold">{tile.name}</span>
+							<span class="block text-zinc-400">by {tile.author}</span>
+							<span class="block text-zinc-400">{tile.details.join(' · ')}</span>
+						</span>
+						{#if tile.built}
+							<svg
+								class="size-9 shrink-0"
+								viewBox="0 0 44 44"
+								role="img"
+								aria-label="{tile.built.filter(Boolean).length} of {areas.length} areas built"
+							>
+								{#each tile.built as built, i (i)}
+									<path
+										d={slice(i, tile.built.length)}
+										fill={built ? 'var(--ui-text)' : 'var(--ui-surface-2)'}
+										stroke="var(--ui-surface)"
+										stroke-width="1.5"
+										stroke-linejoin="round"
+									/>
+								{/each}
+							</svg>
+						{/if}
 					</button>
 				{/each}
 			</div>

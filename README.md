@@ -22,6 +22,9 @@ It does not yet roll injuries or know Black Death City's campaign.
 
 - Build a warband in five steps: game, faction, the choice the whole warband
   makes (State Pride in Wyrdcry, Origin in Black Death City), fighters, finish
+- See how much of each game the app carries before picking it: a ring on the
+  game's tile with one piece per area, such as carrying limits, battle,
+  aftermath or advancement, filled where it is built
 - See a faction before picking it: its fighters with their costs and limits,
   its choice and its rules
 - Recruit fighters and give them wargear from what their faction allows them,
