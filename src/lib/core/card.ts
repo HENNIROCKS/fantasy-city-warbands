@@ -6,7 +6,7 @@
  */
 
 import type { Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
-import { RESULT_LABELS, displayDate, newestFirst, opponent, tally } from './history';
+import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
 
@@ -376,6 +376,8 @@ export interface WarbandCardData {
 	battles: { id: string; date: string; opponent: string; result: string }[];
 	/** `2 won · 1 drawn · 0 lost`. */
 	tally: string;
+	/** The same as figures: won, drawn and lost. */
+	results: [number, number, number];
 }
 
 export type DeckCard = WarbandCardData | FighterCardData;
@@ -461,6 +463,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 			opponent: opponent(record),
 			result: RESULT_LABELS[record.result]
 		})),
-		tally: tally(warband.history ?? [])
+		tally: tally(warband.history ?? []),
+		results: results(warband.history ?? [])
 	};
 }

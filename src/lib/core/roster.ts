@@ -8,7 +8,6 @@
  */
 
 import { fighterCard, warbandCard, type CardEntry, type FighterCardData, type WarbandCardData } from './card';
-import { results } from './history';
 import type { Faction, GameSystem, Warband } from './types';
 
 export interface RosterFighter {
@@ -17,7 +16,7 @@ export interface RosterFighter {
 	/** In the order of the game's stats, spelled as the card spells them. */
 	stats: string[];
 	cost: string;
-	/** The campaign's counters after the cost, as the card has them: experience, then renown. */
+	/** Experience, then the game's own counters, as the card has them. */
 	campaign: string[];
 	keywords: string;
 	/** The fighter's own rules and those an item gives, labelled as on the card: `[Triple] Murder-Stab`. */
@@ -154,11 +153,13 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		subtitle: card.subtitle,
 		figures: [
 			...card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
-			...(game.campaign ? [{ label: 'Won / Drawn / Lost', value: results(warband.history ?? []).join(' / ') }] : [])
+			...(game.campaign ? [{ label: 'Won / Drawn / Lost', value: card.results.join(' / ') }] : [])
 		],
 		statLabels: game.roster.stats,
 		weaponLabels: game.roster.weapons,
-		campaignLabels: game.campaign ? (game.roster.campaign ?? []) : [],
+		/* One heading per counter the card carries; where the game names no short
+		   ones, the card's own labels stand in. */
+		campaignLabels: game.campaign ? (game.roster.campaign ?? ['XP', ...game.campaign.fighter.map((c) => c.label)]) : [],
 		currency: game.currency,
 		fighters: fighters.map(toFighter),
 		rules: collectRules(fighters)
