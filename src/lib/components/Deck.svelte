@@ -76,7 +76,7 @@
 		onlevels?: () => void;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
-		/** Holds that button back while the turned card still lacks an answer. */
+		/** Holds that button back while what the turned card holds would break the warband's limits. */
 		doneDisabled?: boolean;
 		/** The back of the card on top, shown while `editing`. */
 		back?: Snippet<[DeckCard]>;

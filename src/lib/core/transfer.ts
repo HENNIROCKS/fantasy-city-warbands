@@ -18,8 +18,10 @@ export const FORMAT = 'fantasy-city-warbands';
 /**
  * Raised whenever the shape of `warband` changes in a way an import has to know
  * about. 2 brought the campaign; a file of 1 reads as a warband without one.
+ * 3 brought a fighter's injuries and why it sits out, which an app reading 2
+ * would drop without a word.
  */
-export const VERSION = 2;
+export const VERSION = 3;
 
 export interface WarbandFile {
 	format: typeof FORMAT;

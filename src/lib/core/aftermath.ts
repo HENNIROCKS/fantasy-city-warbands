@@ -11,7 +11,8 @@
 import { stateOf, type BattleState } from './battle';
 import { LEADER } from './effects';
 import { today } from './history';
-import { purse } from './validate';
+import { priceOf } from './stash';
+import { purse, warbandCost } from './validate';
 import { newId } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband } from './types';
 
@@ -82,14 +83,16 @@ export function startAftermath(
 	const since = today(battle ? new Date(battle.startedAt) : undefined);
 	const recorded = history.filter((r) => r.date >= since).at(-1) ?? null;
 	return {
-		rows: fighters.filter(earns).map((f) => ({
-			instanceId: f.instanceId,
-			name: f.name,
-			answers: Object.fromEntries(
-				rules.questions.map((q) => [q.key, !f.away && (q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes')])
-			)
-		})),
-		excluded: fighters.filter((f) => !earns(f)).map((f) => f.name),
+		rows: fighters
+			.filter((f) => earns(f) && !f.away)
+			.map((f) => ({
+				instanceId: f.instanceId,
+				name: f.name,
+				answers: Object.fromEntries(
+					rules.questions.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
+				)
+			})),
+		excluded: fighters.filter((f) => !earns(f) && !f.away).map((f) => f.name),
 		out: fighters.filter((f) => !f.away && stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
 		injuries: {},
 		recovered: {},
@@ -132,8 +135,22 @@ export function injuryOf(draft: AftermathDraft, game: GameSystem, faction: Facti
 /** A leader that dies stays on the roster, marked dead, until another fighter can take its place – which the app cannot do yet. */
 export const isLeader = (type: Fighter) => type.keywords.includes(LEADER);
 
-/** Whether the warband's gold, before the battle's income, pays what an outcome costs. */
-export const affords = (warband: Warband, game: GameSystem, cost: number) => purse(warband, game) >= cost;
+/** What a fighter's result costs as answered, such as a surgeon paid for; 0 where nothing is paid. */
+function feeOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): number {
+	const resolution = injuryOf(draft, game, faction, instance);
+	const answer = draft.surgeon[instance.instanceId];
+	return resolution?.result.outcome === 'surgeon' && (answer === 'died' || answer === 'survived') ? (resolution.result.cost ?? 0) : 0;
+}
+
+/**
+ * The gold the warband has left before the battle's income – the purse less
+ * what the warband is worth – less what the answers already spend for every
+ * fighter but `instanceId`.
+ */
+export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, instanceId: string): number {
+	const spent = warband.fighters.reduce((sum, f) => sum + (f.instanceId === instanceId ? 0 : feeOf(draft, game, faction, f)), 0);
+	return purse(warband, game) - warbandCost(warband, faction) - spent;
+}
 
 /** The points a row earns: one for each answer that holds, one more for the bonus. */
 export function xpEarned(row: AftermathRow, bonus: string | null): number {
@@ -168,7 +185,10 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	const earned = rules.income(warband, game, draft.result, draft.shards);
 	const record = battleRecord(draft, at);
 	const rows = new Map(draft.rows.map((r) => [r.instanceId, r]));
-	let fees = 0;
+	/* What leaves the warband's worth – a fighter, what it carried – leaves the
+	   purse with it, so the gold left stays where it was; a fee comes off the
+	   gold left. */
+	let spent = 0;
 	const stash = [...(warband.stash ?? [])];
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
@@ -178,16 +198,22 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		if (resolution && type && game.injuries) {
 			const id = fighter.instanceId;
 			fighter = game.injuries.apply(fighter, type, faction, draft.injuries[id]);
-			const { outcome, cost = 0 } = resolution.result;
+			const { outcome } = resolution.result;
 			const surgeon = outcome === 'surgeon' ? draft.surgeon[id] : undefined;
-			if (surgeon === 'died' || surgeon === 'survived') fees += cost;
+			spent += feeOf(draft, game, faction, before);
 			const dies = outcome === 'dead' || surgeon === 'none' || surgeon === 'died';
+			const carried = fighter.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
 			if (dies && isLeader(type)) return [{ ...fighter, away: 'dead' }];
 			if (dies) {
-				if (surgeon === 'died' || draft.recovered[id]) stash.push(...fighter.wargear);
+				const kept = surgeon === 'died' || draft.recovered[id];
+				if (kept) stash.push(...fighter.wargear);
+				spent += type.cost + (kept ? 0 : carried);
 				return [];
 			}
-			if (outcome === 'robbed') fighter = { ...fighter, wargear: [] };
+			if (outcome === 'robbed') {
+				spent += carried;
+				fighter = { ...fighter, wargear: [] };
+			}
 			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
 		}
 		const row = rows.get(fighter.instanceId);
@@ -196,7 +222,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	});
 	return {
 		...warband,
-		gold: earned.gold - fees,
+		gold: earned.gold - spent,
 		tally: earned.tally,
 		...(stash.length || warband.stash ? { stash } : {}),
 		...(record ? { history: [...(warband.history ?? []), record] } : {}),

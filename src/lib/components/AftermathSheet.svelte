@@ -1,10 +1,8 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { affords, isLeader, toggleOut, xpEarned, type AftermathDraft, type SurgeonAnswer } from '$lib/core/aftermath';
+	import { goldLeft, isLeader, toggleOut, xpEarned, type AftermathDraft, type SurgeonAnswer } from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
-	import { purse } from '$lib/core/validate';
-	import { fighterCost } from '$lib/core/warband';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 
 	/*
@@ -133,7 +131,7 @@
 			<p class="count">Aftermath · {at + 1} of {pages.length}</p>
 
 			<p class="field-label" id="aftermath-result">Result</p>
-			<div class="joined" role="group" aria-labelledby="aftermath-result">
+			<div class="joined flex" role="group" aria-labelledby="aftermath-result">
 				{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
 					<button type="button" class="choice" aria-pressed={draft.result === key} onclick={() => pick(key as BattleRecord['result'])}>
 						{label}
@@ -148,7 +146,7 @@
 				<button type="button" class="tally-step" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
 			</div>
 			{#if draft.result}
-				<ul class="earned">
+				<ul class="mt-2 list-none p-0 text-zinc-400">
 					{#each earned.lines as line (line.gain)}
 						<li><span class="font-semibold">{line.gain}</span> {line.why}</li>
 					{/each}
@@ -211,7 +209,7 @@
 					{@const open = picked === result.id}
 					<button type="button" class="choice" aria-pressed={open} onclick={() => roll(id, result.id)}>
 						<span class="flex gap-3">
-							<span class="roll tabular-nums">{result.roll}</span>
+							<span class="min-w-[3.5ch] tabular-nums">{result.roll}</span>
 							<span class="font-semibold">{result.name}</span>
 						</span>
 						{#if open && resolution}
@@ -229,7 +227,7 @@
 			{#if resolution}
 				{@const outcome = resolution.result.outcome}
 				{@const cost = resolution.result.cost ?? 0}
-				{@const gold = purse(warband, game)}
+				{@const gold = goldLeft(warband, game, faction, draft, id)}
 				{@const surgeon = draft.surgeon[id]}
 				{@const dies = outcome === 'dead' || surgeon === 'none'}
 				{@const bought = roller.instance.wargear.map(wargearName)}
@@ -242,11 +240,11 @@
 								type="button"
 								class="choice"
 								aria-pressed={surgeon === option.answer}
-								disabled={!affords(warband, game, cost)}
+								disabled={gold < cost}
 								onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
 							>
 								Paid {cost} {game.currency}, {option.label}
-								{#if !affords(warband, game, cost)}<span class="block text-zinc-400">Only {gold} {game.currency} in the stash</span>{/if}
+								{#if gold < cost}<span class="block text-zinc-400">Only {Math.max(0, gold)} {game.currency} left</span>{/if}
 							</button>
 						{/each}
 					</div>
@@ -266,7 +264,7 @@
 					<p class="notice mt-3">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
 				{:else if outcome === 'captured'}
 					<p class="notice mt-3">
-						Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(fighterCost(roller.instance, faction) / 2)}
+						Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
 						{game.currency}, or 1 favour – on the back of its card.
 					</p>
 				{:else if outcome === 'miss-next-battle'}
@@ -278,7 +276,7 @@
 
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
-				<button type="button" class={PRIMARY} onclick={() => step(1)}>{picked ? 'Next' : 'Skip'}</button>
+				<button type="button" class={PRIMARY} onclick={() => step(1)} use:focusOnMount>{picked ? 'Next' : 'Skip'}</button>
 			</div>
 		{:else}
 			<h2 id="aftermath-title">Experience</h2>
@@ -309,6 +307,9 @@
 			{#if draft.excluded.length}
 				<p class="mt-3 text-zinc-400">Never earn experience: {draft.excluded.join(', ')}</p>
 			{/if}
+			{#if sittingOut.length}
+				<p class="mt-3 text-zinc-400">Sitting this one out: {sittingOut.join(', ')}</p>
+			{/if}
 
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
@@ -337,10 +338,6 @@
 	}
 
 	/* The result as one pill of three, as the battles on the back of the warband card. */
-	.joined {
-		display: flex;
-	}
-
 	.joined .choice {
 		flex: 1;
 		text-align: center;
@@ -360,19 +357,8 @@
 		margin-left: -1px;
 	}
 
+	/* The picked one's frame lies over its neighbours'. */
 	.joined .choice[aria-pressed='true'] {
 		position: relative;
-	}
-
-	.earned {
-		margin: 8px 0 0;
-		padding: 0;
-		list-style: none;
-		color: var(--ui-text-muted);
-	}
-
-	/* The rolls in a column of their own, so the names line up. */
-	.roll {
-		min-width: 3.5ch;
 	}
 </style>

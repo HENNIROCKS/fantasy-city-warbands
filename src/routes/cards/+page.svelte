@@ -388,13 +388,13 @@
 
 	/* The levels the fighters have open, in the order the warband keeps them, each
 	   lowest first: spent one after the other in a sheet, after a battle or from
-	   the Battle menu. */
+	   the Battle menu. A dead leader, still on the roster, spends none. */
 	const levels = $derived.by(() => {
 		const advancement = system?.game.advancement;
 		if (!warband || !faction || !advancement) return [];
 		return warband.fighters.flatMap((instance) => {
 			const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
-			if (!fighter) return [];
+			if (!fighter || instance.away === 'dead') return [];
 			return advancement.open(instance, fighter).map((level) => ({ instance, fighter, level }));
 		});
 	});
@@ -462,7 +462,7 @@
 	}}
 />
 
-<div class="flex h-dvh flex-col" inert={asking !== null || (spending && levels.length > 0)}>
+<div class="flex h-dvh flex-col" inert={asking !== null || aftermath !== null || (spending && levels.length > 0)}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}

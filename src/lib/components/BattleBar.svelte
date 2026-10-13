@@ -81,7 +81,7 @@
 		onlevels?: () => void;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
-		/** Holds the button back while the turned card still lacks an answer. */
+		/** Holds the button back while what the turned card holds would break the warband's limits. */
 		doneDisabled?: boolean;
 		/** Turns the card on top over, the warband's as a fighter's. */
 		onedit?: () => void;

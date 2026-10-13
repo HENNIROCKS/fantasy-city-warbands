@@ -25,7 +25,7 @@ export interface RosterFighter {
 	weapons: { name: string; values: string[] }[];
 	/** Armour and items – no profile, so they share one line. */
 	items: string;
-	/** The player's own notes from the back of the card. */
+	/** Why the fighter sits out, if it does, then the player's own notes from the back of the card. */
 	notes: string[];
 }
 
@@ -95,7 +95,8 @@ function toFighter(card: FighterCardData): RosterFighter {
 			.filter((e) => !isTyped(e))
 			.map((e) => e.label)
 			.join(', '),
-		notes: entries(card, 'notes').map((e) => e.text)
+		/* Why the fighter sits out, as the band across its card says it, ahead of the player's own notes. */
+		notes: [...(card.away ? [card.away] : []), ...entries(card, 'notes').map((e) => e.text)]
 	};
 }
 

@@ -28,7 +28,9 @@ export const areas: Area[] = [
 		label: 'The stash and the trading post',
 		built: (game, factions) => !!game.salePrice && factions.some((f) => f.wargear.some((w) => w.group))
 	},
-	{ label: 'Injuries', built: (game) => !!game.injuries }
+	{ label: 'Injuries', built: (game) => !!game.injuries },
+	/* The system has no field to read for this, so it counts as open for every game. */
+	{ label: 'Hired swords', built: () => false }
 ];
 
 /** Which of the areas the game has, in the order of `areas`. */

@@ -15,6 +15,7 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 - [ ] Unholy Relic: rare, a Rarity roll of 6+ before it is bought, as the hand-kept items have it, where the site repo's item data has it common
 - [ ] Devastated Eye: halves only the longest reach of a weapon, never below 1", and keeps where its reach starts – a bow's 3–18" becomes 3–9"
 - [ ] Injuries: a second Hatred, Hardened or Terrible Scars counts as a Flesh Wound, as a repeated [Injury] does, where the rules say so only of results marked [Injury]
+- [ ] Captured: the ransom named is half the fighter's own cost, without what it bought, where the rules say only "half of the fighter's recruitment cost"
 
 ### Open upstream
 
