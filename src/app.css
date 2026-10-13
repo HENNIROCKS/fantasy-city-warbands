@@ -935,6 +935,68 @@
 	opacity: 0.5;
 }
 
+.card.back .results,
+.card.back .stepper {
+	display: flex;
+}
+
+/* Words or steps to tap, joined into one pill; the one picked is set in the
+   banderole's green. */
+.card.back .segment {
+	min-height: 40px;
+	padding: 0 calc(10 * var(--u));
+	border: 1px solid var(--card-green);
+	border-radius: 0;
+	background: var(--card-field);
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+	color: var(--card-green);
+}
+
+.card.back .segment:first-child {
+	border-radius: 999px 0 0 999px;
+}
+
+.card.back .segment:last-child {
+	border-radius: 0 999px 999px 0;
+}
+
+/* Two neighbouring frames share one line instead of doubling it. */
+.card.back .segment + .segment {
+	margin-left: -1px;
+}
+
+.card.back .segment[aria-pressed='true'] {
+	background: var(--card-green);
+	color: var(--card-paper);
+}
+
+.card.back .stepper .segment {
+	min-width: 44px;
+	font-size: calc(20 * var(--t));
+}
+
+/* The figure sits inside the pill, framed above and below by the same green. */
+.card.back .figure {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	border-top: 1px solid var(--card-green);
+	border-bottom: 1px solid var(--card-green);
+	background: var(--card-field);
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	font-variant-numeric: lining-nums tabular-nums;
+	color: var(--card-ink);
+}
+
+/* Only the sign fades: the frame is also the figure's edge, and the pill
+   keeps its outline whichever end is out of reach. */
+.card.back .stepper .segment:disabled {
+	color: color-mix(in srgb, var(--card-green) 35%, transparent);
+}
+
 /* What a back adds, a green pill; what it takes away or moves, a word in the link's red. */
 .card.back .add {
 	min-height: 40px;

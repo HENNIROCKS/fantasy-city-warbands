@@ -228,11 +228,11 @@
 				<h3 class="heading"><span>Campaign</span><span class="rule"></span></h3>
 				{#if campaign.xp}
 					<div class="counter">
-						<span class="label" id="back-xp">Experience Points</span>
-						<div class="toggles" role="group" aria-labelledby="back-xp">
-							<button class="toggle" aria-label="Less experience" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
-							<output class="count">{draft.xp}</output>
-							<button class="toggle" aria-label="More experience" onclick={moreXp}>+</button>
+						<span class="label" id="back-xp">XP</span>
+						<div class="stepper" role="group" aria-labelledby="back-xp">
+							<button class="segment" aria-label="Less XP" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
+							<output class="figure">{draft.xp}</output>
+							<button class="segment" aria-label="More XP" onclick={moreXp}>+</button>
 						</div>
 					</div>
 				{/if}
@@ -240,16 +240,16 @@
 					{@const value = draft.tally[counter.key] ?? 0}
 					<div class="counter">
 						<span class="label" id="back-{counter.key}">{counter.label}</span>
-						<div class="toggles" role="group" aria-labelledby="back-{counter.key}">
+						<div class="stepper" role="group" aria-labelledby="back-{counter.key}">
 							<button
-								class="toggle"
+								class="segment"
 								aria-label="Less {counter.label.toLowerCase()}"
 								disabled={value <= Math.max(0, counter.floor)}
 								onclick={() => step(counter.key, -1)}>−</button
 							>
-							<output class="count">{value}</output>
+							<output class="figure">{value}</output>
 							<button
-								class="toggle"
+								class="segment"
 								aria-label="More {counter.label.toLowerCase()}"
 								disabled={!counter.raise}
 								onclick={() => step(counter.key, 1)}>+</button
@@ -364,10 +364,6 @@
 		font-family: 'Alegreya', serif;
 		font-size: calc(18 * var(--t));
 		color: var(--card-ink);
-	}
-
-	.counter .toggles {
-		flex-wrap: nowrap;
 	}
 
 	.photo-row {

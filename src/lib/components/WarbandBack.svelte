@@ -127,13 +127,15 @@
 
 		<section>
 			<h3 class="heading"><span>Battles</span><span class="rule"></span></h3>
-			<input class="date" type="date" aria-label="Date" bind:value={draft.pending.date} />
-			<div class="toggles" role="group" aria-label="Result">
-				{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
-					<button class="toggle" aria-pressed={draft.pending.result === key} onclick={() => pick(key as BattleRecord['result'])}>
-						{label}
-					</button>
-				{/each}
+			<div class="entry-row">
+				<input class="date" type="date" aria-label="Date" bind:value={draft.pending.date} />
+				<div class="results" role="group" aria-label="Result">
+					{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
+						<button class="segment" aria-pressed={draft.pending.result === key} onclick={() => pick(key as BattleRecord['result'])}>
+							{label}
+						</button>
+					{/each}
+				</div>
 			</div>
 			<input
 				type="text"
