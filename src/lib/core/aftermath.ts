@@ -1,15 +1,22 @@
 /**
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
  * then the injuries of who was taken out of action, then who earned
- * experience, then the line in the battle history – answered
- * on the back of the warband card and written into the warband in one go. What
- * each answer is worth is the game's (`GameSystem.aftermath`).
+ * experience, then the line in the battle history – answered in the aftermath's
+ * sheet and written into the warband in one go. What each answer is worth is
+ * the game's (`GameSystem.aftermath`, `GameSystem.injuries`); what an injury
+ * does once – a death, a surgeon, a missed battle, a robbery, a capture – is
+ * the same in every game and carried out here.
  */
 
 import { stateOf, type BattleState } from './battle';
+import { LEADER } from './effects';
 import { today } from './history';
+import { purse } from './validate';
 import { newId } from './warband';
-import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from './types';
+import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband } from './types';
+
+/** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
+export type SurgeonAnswer = 'none' | 'died' | 'survived';
 
 /** A fighter asked for its experience, with its answers as the battle left them. */
 export interface AftermathRow {
@@ -28,6 +35,10 @@ export interface AftermathDraft {
 	out: string[];
 	/** The result each of them rolled, by instance id: an id on the game's injury table. */
 	injuries: Record<string, string>;
+	/** For a fighter that dies, whether the roll for its equipment recovered it, by instance id. Missing reads as lost. */
+	recovered: Record<string, boolean>;
+	/** For a fighter whose result needs a surgeon, what came of it, by instance id. Missing changes nothing. */
+	surgeon: Record<string, SurgeonAnswer>;
 	/** Who never earns experience, named under the rows. */
 	excluded: string[];
 	/** The one fighter given the bonus point, if any. */
@@ -51,6 +62,8 @@ export interface AftermathFighter {
 	instanceId: string;
 	name: string;
 	keywordIds: string[];
+	/** Whether an injury keeps it out of the battle, such as a capture: it is asked nothing and starts as not taking part. */
+	away?: boolean;
 }
 
 /**
@@ -73,12 +86,14 @@ export function startAftermath(
 			instanceId: f.instanceId,
 			name: f.name,
 			answers: Object.fromEntries(
-				rules.questions.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
+				rules.questions.map((q) => [q.key, !f.away && (q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes')])
 			)
 		})),
 		excluded: fighters.filter((f) => !earns(f)).map((f) => f.name),
-		out: fighters.filter((f) => stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
+		out: fighters.filter((f) => !f.away && stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
 		injuries: {},
+		recovered: {},
+		surgeon: {},
 		bonus: null,
 		result: null,
 		shards: 0,
@@ -97,10 +112,28 @@ export function startAftermath(
 export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: string) {
 	const out = !draft.out.includes(instanceId);
 	draft.out = out ? [...draft.out, instanceId] : draft.out.filter((id) => id !== instanceId);
-	if (!out) delete draft.injuries[instanceId];
+	if (!out) {
+		delete draft.injuries[instanceId];
+		delete draft.recovered[instanceId];
+		delete draft.surgeon[instanceId];
+	}
 	const row = draft.rows.find((r) => r.instanceId === instanceId);
 	for (const question of rules.questions) if (row && question.start === 'not-out') row.answers[question.key] = !out;
 }
+
+/** What the result a fighter was given comes to, as the game resolves it; null where it was given none or rolls none. */
+export function injuryOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): InjuryResolution | null {
+	const rolled = draft.out.includes(instance.instanceId) ? draft.injuries[instance.instanceId] : undefined;
+	const type = faction.fighters.find((f) => f.id === instance.fighterId);
+	if (!rolled || !type || !game.injuries?.table(instance, type, faction)) return null;
+	return game.injuries.resolve(instance, type, faction, rolled);
+}
+
+/** A leader that dies stays on the roster, marked dead, until another fighter can take its place – which the app cannot do yet. */
+export const isLeader = (type: Fighter) => type.keywords.includes(LEADER);
+
+/** Whether the warband's gold, before the battle's income, pays what an outcome costs. */
+export const affords = (warband: Warband, game: GameSystem, cost: number) => purse(warband, game) >= cost;
 
 /** The points a row earns: one for each answer that holds, one more for the bonus. */
 export function xpEarned(row: AftermathRow, bonus: string | null): number {
@@ -119,26 +152,54 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
 	};
 }
 
-/** The warband with the battle's injuries, experience, income and history line written in. */
+/**
+ * The warband with the battle's injuries, experience, income and history line
+ * written in. A fighter that missed this battle with an injury is back for the
+ * next. The injury comes first, as the aftermath rolls it first: a level of
+ * renown it brings is there before the experience, and a fighter that dies
+ * earns none. A dead fighter leaves the roster, its bought wargear going to the
+ * stash where the roll recovered it – or, dying at the surgeon's, always; a
+ * dead leader stays, marked dead. A surgeon's fee comes off the gold, robbery
+ * takes what the fighter bought, and a capture or a missed battle marks it.
+ */
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
 	if (!rules) return warband;
 	const earned = rules.income(warband, game, draft.result, draft.shards);
 	const record = battleRecord(draft, at);
 	const rows = new Map(draft.rows.map((r) => [r.instanceId, r]));
+	let fees = 0;
+	const stash = [...(warband.stash ?? [])];
+	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
+		const { away, ...back } = before;
+		let fighter: FighterInstance = away === 'miss-next-battle' ? back : before;
+		const type = faction.fighters.find((f) => f.id === before.fighterId);
+		const resolution = injuryOf(draft, game, faction, fighter);
+		if (resolution && type && game.injuries) {
+			const id = fighter.instanceId;
+			fighter = game.injuries.apply(fighter, type, faction, draft.injuries[id]);
+			const { outcome, cost = 0 } = resolution.result;
+			const surgeon = outcome === 'surgeon' ? draft.surgeon[id] : undefined;
+			if (surgeon === 'died' || surgeon === 'survived') fees += cost;
+			const dies = outcome === 'dead' || surgeon === 'none' || surgeon === 'died';
+			if (dies && isLeader(type)) return [{ ...fighter, away: 'dead' }];
+			if (dies) {
+				if (surgeon === 'died' || draft.recovered[id]) stash.push(...fighter.wargear);
+				return [];
+			}
+			if (outcome === 'robbed') fighter = { ...fighter, wargear: [] };
+			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
+		}
+		const row = rows.get(fighter.instanceId);
+		const points = row ? xpEarned(row, draft.bonus) : 0;
+		return [points > 0 ? rules.gainXp(fighter, points) : fighter];
+	});
 	return {
 		...warband,
-		gold: earned.gold,
+		gold: earned.gold - fees,
 		tally: earned.tally,
+		...(stash.length || warband.stash ? { stash } : {}),
 		...(record ? { history: [...(warband.history ?? []), record] } : {}),
-		fighters: warband.fighters.map((before) => {
-			/* The injury first, as the aftermath rolls it first: a level of renown it brings is there before the experience. */
-			const rolled = draft.out.includes(before.instanceId) ? draft.injuries[before.instanceId] : undefined;
-			const type = faction.fighters.find((f) => f.id === before.fighterId);
-			const fighter = rolled && type && game.injuries ? game.injuries.apply(before, type, faction, rolled) : before;
-			const row = rows.get(fighter.instanceId);
-			const points = row ? xpEarned(row, draft.bonus) : 0;
-			return points > 0 ? rules.gainXp(fighter, points) : fighter;
-		})
+		fighters
 	};
 }

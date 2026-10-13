@@ -29,6 +29,7 @@ interface RawResult {
 	roll: { min: number; max: number };
 	type: string | null;
 	outcome?: string;
+	cost?: number;
 	text: string;
 	effects: RawEffect[];
 }
@@ -58,6 +59,7 @@ function result(raw: RawResult): InjuryResult {
 		text: raw.text,
 		...(raw.type ? { type: raw.type } : {}),
 		...(raw.outcome ? { outcome: raw.outcome as InjuryOutcome } : {}),
+		...(raw.cost ? { cost: raw.cost } : {}),
 		lasting: isLasting(raw)
 	};
 }
@@ -72,6 +74,11 @@ export function injuryBonus(instance: FighterInstance, stat: string): number {
 	return held(instance)
 		.flatMap((r) => r.effects)
 		.reduce((sum, e) => sum + (e.kind === 'stat' && e.characteristic === stat ? (e.bonus ?? 0) : 0), 0);
+}
+
+/** What the fighter's injuries take off the warband's income, each by the result's name. */
+export function injuryIncome(instance: FighterInstance): { amount: number; source: string }[] {
+	return held(instance).flatMap((r) => r.effects.flatMap((e) => (e.kind === 'income' ? [{ amount: e.amount ?? 0, source: r.name }] : [])));
 }
 
 /** A reach as the card prints it, `12"` or `3–18"`, cut by `factor` but never below `floor`. Null where it reads otherwise. */

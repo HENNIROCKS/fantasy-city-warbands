@@ -5,10 +5,17 @@
  * formatted once, so the card and the roster print read the same.
  */
 
-import type { Faction, Fighter, FighterInstance, GameSystem, InjuryEffects, Rule, StatFormat, Wargear, Warband } from './types';
+import type { AwayReason, Faction, Fighter, FighterInstance, GameSystem, InjuryEffects, Rule, StatFormat, Wargear, Warband } from './types';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
+
+/** Why a fighter sits out, as its card's band and the back of its card say it. */
+export const AWAY_LABELS: Record<AwayReason, string> = {
+	'miss-next-battle': 'Misses the next battle',
+	captured: 'Captured',
+	dead: 'Dead'
+};
 
 /** One column of a value table: the label above, its value below. */
 export interface CardValue {
@@ -114,6 +121,8 @@ export interface FighterCardData {
 	sections: CardSection[];
 	/** The player's own background text, empty where there is none. */
 	fluff: string;
+	/** Why the fighter sits out, for the band across its card; null where it does not. */
+	away: string | null;
 	/** Set where the faction no longer has the fighter's type. */
 	unknown: boolean;
 }
@@ -299,6 +308,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		weapons,
 		sections,
 		fluff: instance.fluff?.trim() ?? '',
+		away: instance.away ? AWAY_LABELS[instance.away] : null,
 		unknown: !fighter
 	};
 }

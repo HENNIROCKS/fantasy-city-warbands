@@ -16,9 +16,7 @@ a file, imports it again and prints its roster as a PDF, all in a first
 version. In Wyrdcry, ending a battle brings experience, favour and income,
 rolls injuries and adds it to the warband's history, and renown is spent on a
 characteristic or a heroic talent. It imports the Warband Deck's and the
-Warband Builder's files. It does not yet carry out what an injury does once –
-death, a surgeon, a missed battle, robbery, capture – or know Black Death
-City's campaign.
+Warband Builder's files. It does not yet know Black Death City's campaign.
 
 ## What it does
 
@@ -79,7 +77,8 @@ City's campaign.
   level already spent; a BEAST or THRALL has neither. Spend renown turns the
   back to a page for the next open level, as the Warband Deck does, and lists
   the levels spent, the last with Undo, and the injuries the fighter keeps,
-  each to remove – kept until Done like the rest. The
+  each to remove, and why it sits out – Captured with Got back – kept until
+  Done like the rest. The
   warband's favour is set by hand in the finish step, with the standing and
   reputation it comes to
 - Turn the warband card over with the pencil under it to add gold, sell or
@@ -100,7 +99,12 @@ City's campaign.
   history; who was taken out of action, and for each of them the injury table
   to tap what the dice rolled – an injury it already has counts as a Flesh
   Wound, a fourth kills a HERO without Nine Lives, Unbending Will rolls none;
-  then each fighter's experience. Apply writes it into the warband and the
+  then each fighter's experience. Apply carries out what an injury does once:
+  a dead fighter leaves the roster, its equipment going to the stash on a 3+
+  (a dead leader stays, marked Dead, until the app can pick another), a surgeon
+  costs 15 gc, robbery takes what the fighter bought, and a captured fighter or
+  one that misses the next battle carries a band; Kleptomania takes 10 gc off
+  the income. Apply writes it all into the warband and the
   battle history, which the warband card shows with its favour, standing and
   reputation
 - Spend each level of renown in a sheet, after the battle or from the Battle

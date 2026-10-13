@@ -14,6 +14,7 @@
     "roll": { "min": 12, "max": 13 },
     "type": null,
     "outcome": "surgeon",
+    "cost": 15,
     "text": "The fighter will die unless you take them to a surgeon. You may remove 15gc from the warband stash to roll a D6. On a 1-2, the fighter dies (but you retain their equipment!). On a 3+, the fighter survives.",
     "effects": []
   },

@@ -39,8 +39,9 @@
 
 	/* The card names the state, the bar changes it – one band, the worst of the
 	   three, because a fighter out of action is neither waiting nor to be read as
-	   having merely acted. */
-	const band = $derived(state.out ? 'Out of Action' : state.waiting ? 'Waiting' : state.activated ? 'Activated' : '');
+	   having merely acted. Without one, the band says why an injury keeps the
+	   fighter out, such as Captured. */
+	const band = $derived(state.out ? 'Out of Action' : state.waiting ? 'Waiting' : state.activated ? 'Activated' : (card.away ?? ''));
 
 	/* How high the blood stands in the image field: a fighter at half its Health is
 	   red to half its height. */

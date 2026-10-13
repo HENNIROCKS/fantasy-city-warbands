@@ -8,7 +8,7 @@
 import type { ChoiceEffect, Faction, Fighter, Span, Warband } from './types';
 
 /** Both games mark the fighter that leads a warband with this keyword. */
-const LEADER = 'leader';
+export const LEADER = 'leader';
 
 export interface ActiveEffect {
 	/** The option's name, for the message that names the reason. */

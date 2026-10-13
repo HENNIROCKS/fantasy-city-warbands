@@ -312,9 +312,17 @@ export interface InjuryResult {
 	/** As the rules name it in brackets: `injury`, `trait`. */
 	type?: string;
 	outcome?: InjuryOutcome;
+	/** What the outcome costs the warband's gold where it is taken up, such as a surgeon's fee. */
+	cost?: number;
 	/** Whether the fighter keeps it and the card shows it. */
 	lasting: boolean;
 }
+
+/**
+ * Why a fighter sits out, as an injury left it: it misses the next battle, is
+ * held by the enemy, or – a leader – lies dead until another takes its place.
+ */
+export type AwayReason = 'miss-next-battle' | 'captured' | 'dead';
 
 export interface InjuryResolution {
 	result: InjuryResult;
@@ -529,6 +537,8 @@ export interface FighterInstance {
 	advances?: Advance[];
 	/** The ids of the injury results the fighter keeps, in the order they came. */
 	injuries?: string[];
+	/** Why the fighter sits out; missing where it does not. */
+	away?: AwayReason;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
 }

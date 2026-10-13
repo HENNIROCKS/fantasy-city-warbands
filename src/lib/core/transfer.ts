@@ -11,7 +11,7 @@
  * two states is newer.
  */
 
-import type { Advance, BattleRecord, FighterInstance, Warband } from './types';
+import type { Advance, AwayReason, BattleRecord, FighterInstance, Warband } from './types';
 import { sameWarband } from './warband';
 
 export const FORMAT = 'fantasy-city-warbands';
@@ -78,6 +78,7 @@ function readAdvance(raw: unknown): Advance | null {
 }
 
 const RESULTS: BattleRecord['result'][] = ['win', 'draw', 'loss'];
+const AWAY: AwayReason[] = ['miss-next-battle', 'captured', 'dead'];
 
 function readRecord(raw: unknown): BattleRecord | null {
 	if (!isObject(raw)) return null;
@@ -103,10 +104,11 @@ function readAll<T>(raw: unknown, read: (entry: unknown) => T | null): T[] | nul
 
 function readFighter(raw: unknown): FighterInstance | null {
 	if (!isObject(raw)) return null;
-	const { instanceId, fighterId, name, wargear, picks, fluff, notes, xp, advances, injuries, tally } = raw;
+	const { instanceId, fighterId, name, wargear, picks, fluff, notes, xp, advances, injuries, away, tally } = raw;
 	if (typeof instanceId !== 'string' || typeof fighterId !== 'string' || typeof name !== 'string' || !isStrings(wargear)) return null;
 	if (picks !== undefined && !isStrings(picks)) return null;
 	if (injuries !== undefined && !isStrings(injuries)) return null;
+	if (away !== undefined && !AWAY.includes(away as AwayReason)) return null;
 	for (const text of [fluff, notes]) if (text !== undefined && typeof text !== 'string') return null;
 	if (xp !== undefined && !isNumber(xp)) return null;
 	if (tally !== undefined && !isTally(tally)) return null;
@@ -123,6 +125,7 @@ function readFighter(raw: unknown): FighterInstance | null {
 		...(xp !== undefined ? { xp } : {}),
 		...(spent !== undefined ? { advances: spent } : {}),
 		...(injuries !== undefined ? { injuries } : {}),
+		...(away !== undefined ? { away: away as AwayReason } : {}),
 		...(tally !== undefined ? { tally } : {})
 	};
 }

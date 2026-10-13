@@ -1,7 +1,10 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { toggleOut, xpEarned, type AftermathDraft } from '$lib/core/aftermath';
+	import { affords, isLeader, toggleOut, xpEarned, type AftermathDraft, type SurgeonAnswer } from '$lib/core/aftermath';
+	import { AWAY_LABELS } from '$lib/core/card';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
+	import { purse } from '$lib/core/validate';
+	import { fighterCost } from '$lib/core/warband';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 
 	/*
@@ -78,11 +81,24 @@
 		draft.result = draft.result === result ? null : result;
 	}
 
-	/* A tap picks the result; a tap on the picked one takes it back. */
+	/* A tap picks the result; a tap on the picked one takes it back, and with it what was answered after it. */
 	function roll(instanceId: string, id: string) {
 		if (draft.injuries[instanceId] === id) delete draft.injuries[instanceId];
 		else draft.injuries[instanceId] = id;
+		delete draft.recovered[instanceId];
+		delete draft.surgeon[instanceId];
 	}
+
+	function setSurgeon(instanceId: string, answer: SurgeonAnswer) {
+		if (draft.surgeon[instanceId] === answer) delete draft.surgeon[instanceId];
+		else draft.surgeon[instanceId] = answer;
+	}
+
+	const wargearName = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+
+	/* Who an injury keeps out of this battle, such as a capture: not in the list of who was taken out of action. */
+	const present = $derived(warband.fighters.filter((f) => !f.away));
+	const sittingOut = $derived(warband.fighters.flatMap((f) => (f.away ? [`${nameOf(f.instanceId)} (${AWAY_LABELS[f.away]})`] : [])));
 
 	/* One fighter at most: a tap moves the point, a second tap takes it back. */
 	function toggleBonus(instanceId: string) {
@@ -166,12 +182,15 @@
 			<p class="notice">Who rolls for injuries. Set from the battle; tap to correct it.</p>
 
 			<div class="mt-3 grid gap-2" role="group" aria-label="Taken out of action">
-				{#each warband.fighters as fighter (fighter.instanceId)}
+				{#each present as fighter (fighter.instanceId)}
 					<button type="button" class="choice" aria-pressed={draft.out.includes(fighter.instanceId)} onclick={() => toggleOut(draft, rules, fighter.instanceId)}>
 						{nameOf(fighter.instanceId)}
 					</button>
 				{/each}
 			</div>
+			{#if sittingOut.length}
+				<p class="mt-2 text-zinc-400">Sitting this one out: {sittingOut.join(', ')}</p>
+			{/if}
 			{#if exempt.length}
 				<p class="mt-2 text-zinc-400">Never roll for injuries: {exempt.join(', ')}</p>
 			{/if}
@@ -206,6 +225,56 @@
 					</button>
 				{/each}
 			</div>
+
+			{#if resolution}
+				{@const outcome = resolution.result.outcome}
+				{@const cost = resolution.result.cost ?? 0}
+				{@const gold = purse(warband, game)}
+				{@const surgeon = draft.surgeon[id]}
+				{@const dies = outcome === 'dead' || surgeon === 'none'}
+				{@const bought = roller.instance.wargear.map(wargearName)}
+				{#if outcome === 'surgeon'}
+					<p class="field-label mt-4" id="surgeon-{id}">Surgeon</p>
+					<div class="grid gap-2" role="group" aria-labelledby="surgeon-{id}">
+						<button type="button" class="choice" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
+						{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
+							<button
+								type="button"
+								class="choice"
+								aria-pressed={surgeon === option.answer}
+								disabled={!affords(warband, game, cost)}
+								onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
+							>
+								Paid {cost} {game.currency}, {option.label}
+								{#if !affords(warband, game, cost)}<span class="block text-zinc-400">Only {gold} {game.currency} in the stash</span>{/if}
+							</button>
+						{/each}
+					</div>
+				{/if}
+				{#if dies && isLeader(roller.type)}
+					<p class="notice mt-3">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
+				{:else if dies}
+					<p class="field-label mt-4">Equipment</p>
+					{#if bought.length}
+						<button type="button" class="choice" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
+							Recovered on a 3+ – {bought.join(', ')} to the stash
+						</button>
+					{:else}
+						<p class="text-zinc-400">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
+					{/if}
+				{:else if outcome === 'robbed'}
+					<p class="notice mt-3">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
+				{:else if outcome === 'captured'}
+					<p class="notice mt-3">
+						Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(fighterCost(roller.instance, faction) / 2)}
+						{game.currency}, or 1 favour – on the back of its card.
+					</p>
+				{:else if outcome === 'miss-next-battle'}
+					<p class="notice mt-3">Marked as missing the next battle, until that battle ends.</p>
+				{:else if outcome === 'renown'}
+					<p class="notice mt-3">One more level of renown, to spend after Apply.</p>
+				{/if}
+			{/if}
 
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>

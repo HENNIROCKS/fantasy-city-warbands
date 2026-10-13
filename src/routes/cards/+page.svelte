@@ -37,7 +37,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [] });
+	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
@@ -129,7 +129,8 @@
 			wargear: [...fighter.wargear],
 			stash: [...(warband?.stash ?? [])],
 			advances: [...(fighter.advances ?? [])],
-			injuries: [...(fighter.injuries ?? [])]
+			injuries: [...(fighter.injuries ?? [])],
+			away: fighter.away ?? null
 		};
 		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
@@ -245,8 +246,8 @@
 	 * out, as it is on a fighter never written on, and so are experience and
 	 * counters at none where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances, injuries }: BackDraft): FighterInstance {
-		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, injuries: _injuries, ...rest } = fighter;
+	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, injuries: _injuries, away: _away, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
 			...rest,
@@ -256,6 +257,7 @@
 			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
 			...(advances.length || fighter.advances ? { advances } : {}),
 			...(injuries.length || fighter.injuries ? { injuries } : {}),
+			...(away ? { away } : {}),
 			wargear
 		};
 	}
@@ -366,7 +368,9 @@
 	function endBattle(out: number) {
 		const rules = system?.game.aftermath;
 		if (!rules || !warband) return ask('end', out);
-		const fighters = cards.flatMap((c) => (c.kind === 'fighter' ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds }] : []));
+		const fighters = cards.flatMap((c) =>
+			c.kind === 'fighter' ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds, away: c.away !== null }] : []
+		);
 		aftermath = startAftermath(rules, fighters, battle, warband.history ?? []);
 	}
 

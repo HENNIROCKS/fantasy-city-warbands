@@ -7,7 +7,7 @@
 import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
-import { wyrdcryInjuries } from './wyrdcry-injuries';
+import { injuryIncome, wyrdcryInjuries } from './wyrdcry-injuries';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -166,21 +166,25 @@ function gainXp(fighter: FighterInstance, points: number): FighterInstance {
 
 /**
  * Step 4 of the aftermath: a favour for each shard and one more for a win, then
- * the income of the standing the warband now holds, so a rise counts at once.
- * The gold goes into the purse, which counts the warband's value in.
+ * the income of the standing the warband now holds, so a rise counts at once,
+ * less what a fighter's Kleptomania takes – never below nothing. The gold goes
+ * into the purse, which counts the warband's value in.
  */
 function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number) {
 	const before = warband.tally?.favour ?? 0;
 	const favour = shards + (result === 'win' ? 1 : 0);
 	const tier = tierFor(before + favour);
-	const gold = tier.income + tier.per_shard * shards;
+	const earned = tier.income + tier.per_shard * shards;
+	const cuts = warband.fighters.flatMap((f) => injuryIncome(f).map((c) => ({ ...c, who: f.name.trim() || 'Unnamed fighter' })));
+	const gold = Math.max(0, earned + cuts.reduce((sum, c) => sum + c.amount, 0));
+	const less = cuts.map((c) => `, ${-c.amount} gc less for ${c.source} (${c.who})`).join('');
 	const rises = tier.label !== tierFor(before).label;
 	return {
 		tally: { ...warband.tally, favour: before + favour },
 		gold: purse(warband, game) + gold,
 		lines: [
 			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}` },
-			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
+			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}${less}` }
 		]
 	};
 }

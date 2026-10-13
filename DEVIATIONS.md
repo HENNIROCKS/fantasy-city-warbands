@@ -20,6 +20,8 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 
 - [x] Pierce: one rule, Pierce X, in place of Pierce 1 and Pierce 2
 - [ ] Injury 34: named Alcoholic with the id amnesia, where its text "cannot make reactions" fits neither name
+- [ ] Deep Wound: whether "the fighter survives" on a 3+ means no lasting effect, and whether the 15gc come from the warband's gold – read here as both
+- [ ] Robbed: whether "all equipment carried" includes items, or only weapons and armour – read here as everything the fighter bought
 - [ ] Hero costs: in the 0.9 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 
 ## Black Death City

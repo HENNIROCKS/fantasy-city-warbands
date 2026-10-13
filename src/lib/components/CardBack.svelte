@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { Advance, LevelOffer, OpenLevel } from '$lib/core/types';
+	import type { Advance, AwayReason, LevelOffer, OpenLevel } from '$lib/core/types';
 	import type { StoredPhoto } from '$lib/photo';
 
 	/** What the back of a fighter's card writes with Done. */
@@ -17,6 +17,8 @@
 		advances: Advance[];
 		/** The ids of the injury results the fighter keeps, in order, less those removed on this back. */
 		injuries: string[];
+		/** Why an injury keeps the fighter out, null where nothing does or it was cleared on this back. */
+		away: AwayReason | null;
 	}
 
 	/** What the back may move between the fighter and the stash, worked out by the page from the draft. */
@@ -67,6 +69,7 @@
 <script lang="ts">
 	import { tick, untrack } from 'svelte';
 	import LevelPicker from '$lib/components/LevelPicker.svelte';
+	import { AWAY_LABELS } from '$lib/core/card';
 	import { grow } from '$lib/grow';
 	import { imageFieldMask } from '$lib/image-field-mask';
 	import { CENTRE, MAX_ZOOM, PhotoError, panCrop, photoLayout, readPhoto, zoomCrop, type PhotoCrop } from '$lib/photo';
@@ -377,10 +380,19 @@
 				</section>
 			{/if}
 
-			{#if injuries?.length}
-				<!-- What the aftermath wrote in, to take back a result tapped by mistake. -->
+			{#if injuries && (injuries.length || draft.away)}
+				<!-- What the aftermath wrote in, to take back a result tapped by mistake,
+				     and why the fighter sits out, cleared once it is back. -->
 				<section>
 					<h3 class="heading"><span>Injuries</span><span class="rule"></span></h3>
+					{#if draft.away}
+						<ul class="list">
+							<li>
+								<span class="line">{AWAY_LABELS[draft.away]}</span>
+								<button class="remove" onclick={() => (draft.away = null)}>{draft.away === 'captured' ? 'Got back' : 'Clear'}</button>
+							</li>
+						</ul>
+					{/if}
 					<ul class="list">
 						{#each injuries as injury, i (i)}
 							<li>
