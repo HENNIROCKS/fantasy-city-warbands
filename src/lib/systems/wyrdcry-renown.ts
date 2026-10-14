@@ -196,7 +196,7 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 		if (talent) {
 			const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 			result.rules.push({ name: weapon ? `${talent.name} (${weapon.name})` : talent.name, text: talent.text, type: talent.type });
-			for (const effect of talent.effects as { kind: string; keyword?: string; bonus?: number }[]) {
+			for (const effect of (talent.effects ?? []) as { kind: string; keyword?: string; bonus?: number }[]) {
 				if (effect.kind === 'keyword' && effect.keyword) result.keywords.push(effect.keyword);
 				const damage = weapon?.profile?.damage;
 				if (effect.kind === 'crit' && weapon && damage) {
