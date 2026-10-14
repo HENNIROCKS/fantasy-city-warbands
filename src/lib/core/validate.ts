@@ -21,8 +21,8 @@ function describe(span: Span): string {
 
 /**
  * What a fighter's choice asks for, named so it does not read as the fighter
- * itself missing: `choose one of Soulfire or Words of Healing`, or for a roll
- * the table it is rolled on.
+ * itself missing: `choose one magical ability`, or for a roll the table it is
+ * rolled on.
  */
 function asked(choice: FighterChoice, tooMany: boolean): string {
 	const count = choice.pick === 1 ? 'one' : String(choice.pick);
@@ -30,9 +30,8 @@ function asked(choice: FighterChoice, tooMany: boolean): string {
 		const results = choice.pick === 1 ? 'result' : 'results';
 		return `enter ${tooMany ? `only ${count}` : choice.pick === 1 ? 'the' : count} ${results} rolled on the ${choice.roll}`;
 	}
-	const names = choice.options.map((o) => o.name);
-	const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} or ${names.at(-1)}` : names.join('');
-	return `choose ${tooMany ? 'only ' : ''}${count} of ${list}${choice.source ? ` for ${choice.source}` : ''}`;
+	const noun = choice.noun ?? { one: 'option', many: 'options' };
+	return `choose ${tooMany ? 'only ' : ''}${count} ${choice.pick === 1 ? noun.one : noun.many}`;
 }
 
 /** Whether a count falls short of a span, exceeds it, or neither. */

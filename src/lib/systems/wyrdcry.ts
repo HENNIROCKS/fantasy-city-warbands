@@ -511,7 +511,7 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 			const a = ability.get(id);
 			return a ? [{ id, name: a.name, text: a.text, type: a.type }] : [];
 		});
-		return { ...base, options, ...(raw.instead_of_talent ? { later: raw.instead_of_talent } : {}) };
+		return { ...base, options, noun: { one: 'magical ability', many: 'magical abilities' }, ...(raw.instead_of_talent ? { later: raw.instead_of_talent } : {}) };
 	}
 	if (raw.kind === 'stat') {
 		const bonus = raw.bonus ?? 0;
@@ -521,7 +521,7 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 			text: '',
 			bonus: { [key]: bonus }
 		}));
-		return { ...base, options };
+		return { ...base, options, noun: { one: 'characteristic', many: 'characteristics' } };
 	}
 	if (raw.kind === 'roll') {
 		const table = rules.find((r) => r.id === raw.table);

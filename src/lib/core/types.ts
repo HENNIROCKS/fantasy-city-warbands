@@ -466,6 +466,8 @@ export interface FighterChoice {
 	source?: string;
 	pick: number;
 	options: FighterChoiceOption[];
+	/** What one option is called, in the singular and plural: `magical ability`. */
+	noun?: { one: string; many: string };
 	/** How many more of the options it may learn later in place of a level's other reward, such as a wizard's spell for a heroic talent. */
 	later?: number;
 	/**
