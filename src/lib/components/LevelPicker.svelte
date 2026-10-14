@@ -40,8 +40,8 @@
 		<h4 class="group">{group.heading}</h4>
 		{#each group.options as option (option.id)}
 			{@const open = selected?.id === option.id}
-			<div class="item" class:open>
-				<button class="head" aria-expanded={open} disabled={option.blocked !== null} onclick={() => select(option.id)}>
+			<div class="unfold" class:open>
+				<button class="unfold-head" aria-expanded={open} disabled={option.blocked !== null} onclick={() => select(option.id)}>
 					<span class="line">
 						{option.name}
 						{#if option.blocked}<span class="why">{option.blocked}</span>{/if}
@@ -49,8 +49,8 @@
 					{#if option.type}<span class="kind">{option.type}</span>{/if}
 				</button>
 				{#if open}
-					<div class="detail">
-						<p class="text"><RuleText text={option.text} /></p>
+					<div class="unfold-detail">
+						<p class="unfold-text"><RuleText text={option.text} /></p>
 						{#if option.weapons}
 							<div class="weapons" role="group" aria-label="Weapon">
 								{#each option.weapons as w (w.id)}
@@ -99,51 +99,8 @@
 		text-align: left;
 	}
 
-	/* A talent is a pill until it is opened; opened, the same outline holds its
-	   text and the choices and becomes a box. */
-	.item {
-		border: 1px solid var(--card-green);
-		border-radius: 999px;
-		background: var(--card-field);
-		overflow: hidden;
-	}
-
-	.item.open {
-		border-radius: calc(24 * var(--u));
-	}
-
-	.head {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		width: 100%;
-		min-height: 44px;
-		padding: 8px 14px;
-		border: 0;
-		background: transparent;
-		color: var(--card-ink);
-		font: inherit;
-		font-size: calc(18 * var(--t));
-		text-align: left;
-	}
-
-	.item:has(.head:disabled) {
-		border-color: color-mix(in srgb, var(--card-green) 35%, transparent);
-	}
-
-	.head:disabled {
-		color: var(--card-ink-muted);
-	}
-
 	.weapon.on {
 		box-shadow: inset 0 0 0 1px var(--card-green);
-	}
-
-	/* The back's own lines are set in its ink; a disabled head greys its own. */
-	.head .line {
-		flex: 1;
-		min-width: 0;
-		color: inherit;
 	}
 
 	.kind {
@@ -153,25 +110,12 @@
 		text-transform: capitalize;
 	}
 
-	.head:disabled .kind {
+	.unfold-head:disabled .kind {
 		color: inherit;
 	}
 
 	.why {
 		display: block;
-		margin: 0;
-		font-size: calc(18 * var(--t));
-		color: var(--card-ink);
-	}
-
-	.detail {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 0 14px 14px;
-	}
-
-	.text {
 		margin: 0;
 		font-size: calc(18 * var(--t));
 		color: var(--card-ink);

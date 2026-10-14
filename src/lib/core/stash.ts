@@ -1,8 +1,9 @@
 /**
- * What the back of the warband card writes, as the Wyrdcry Warband Deck keeps
- * it there: the name, fluff, notes and colour, the campaign counters, gold
- * added, pieces of the stash sold or thrown away, and battles added or struck. The draft is held apart from the warband until Done writes
- * it in one go; Cancel lets it fall.
+ * What the back of the warband card writes: gold added, pieces of the stash
+ * sold or thrown away, battles added or struck and the colour, as the Wyrdcry
+ * Warband Deck keeps them there, and the name, fluff, notes and campaign
+ * counters, as the back of a fighter's card has them. The draft is held apart
+ * from the warband until Done writes it in one go; Cancel lets it fall.
  *
  * `gold` is the whole purse – what the warband is worth together with what it
  * has left – so a piece leaving the stash takes its price out of the purse

@@ -222,8 +222,8 @@
 						<div class="results-table" role="group" aria-label="{roller.table.table} for {nameOf(id)}">
 							{#each roller.table.results as result (result.id)}
 								{@const open = picked === result.id}
-								<div class="item" class:open>
-									<button class="head" aria-pressed={open} onclick={() => roll(id, result.id)}>
+								<div class="unfold" class:open>
+									<button class="unfold-head" aria-pressed={open} onclick={() => roll(id, result.id)}>
 										<span class="roll">{result.roll}</span>
 										<span class="line">{result.name}</span>
 									</button>
@@ -235,12 +235,12 @@
 										{@const surgeon = draft.surgeon[id]}
 										{@const dies = outcome === 'dead' || surgeon === 'none'}
 										{@const bought = roller.instance.wargear.map(wargearName)}
-										<div class="detail">
+										<div class="unfold-detail">
 											{#if resolution.note}
-												<p class="text">{resolution.note}</p>
-												<p class="text"><strong>{resolution.result.name}:</strong> <RichText text={resolution.result.text} /></p>
+												<p class="unfold-text">{resolution.note}</p>
+												<p class="unfold-text"><strong>{resolution.result.name}:</strong> <RichText text={resolution.result.text} /></p>
 											{:else}
-												<p class="text"><RichText text={result.text} /></p>
+												<p class="unfold-text"><RichText text={result.text} /></p>
 											{/if}
 
 											{#if outcome === 'surgeon'}
@@ -258,10 +258,10 @@
 														</button>
 													{/each}
 												</div>
-												{#if gold < cost}<p class="text">Only {Math.max(0, gold)} {game.currency} left for a surgeon.</p>{/if}
+												{#if gold < cost}<p class="unfold-text">Only {Math.max(0, gold)} {game.currency} left for a surgeon.</p>{/if}
 											{/if}
 											{#if dies && isLeader(roller.type)}
-												<p class="text">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
+												<p class="unfold-text">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
 											{:else if dies}
 												<p class="caption">Equipment</p>
 												{#if bought.length}
@@ -271,19 +271,19 @@
 														</button>
 													</div>
 												{:else}
-													<p class="text">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
+													<p class="unfold-text">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
 												{/if}
 											{:else if outcome === 'robbed'}
-												<p class="text">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
+												<p class="unfold-text">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
 											{:else if outcome === 'captured'}
-												<p class="text">
+												<p class="unfold-text">
 													Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
 													{game.currency}, or 1 favour – on the back of its card.
 												</p>
 											{:else if outcome === 'miss-next-battle'}
-												<p class="text">Marked as missing the next battle, until that battle ends.</p>
+												<p class="unfold-text">Marked as missing the next battle, until that battle ends.</p>
 											{:else if outcome === 'renown'}
-												<p class="text">One more level of renown, to spend after Apply.</p>
+												<p class="unfold-text">One more level of renown, to spend after Apply.</p>
 											{/if}
 										</div>
 									{/if}
@@ -374,63 +374,11 @@
 		gap: calc(10 * var(--u));
 	}
 
-	/* A result is a pill until it is picked; picked, the same outline holds what
-	   it does and asks and becomes a box, as a talent opens on a fighter's back. */
-	.item {
-		border: 1px solid var(--card-green);
-		border-radius: 999px;
-		background: var(--card-field);
-		overflow: hidden;
-	}
-
-	.item.open {
-		border-radius: calc(24 * var(--u));
-		box-shadow: inset 0 0 0 1px var(--card-green);
-	}
-
-	.head {
-		display: flex;
-		align-items: center;
-		gap: calc(12 * var(--u));
-		width: 100%;
-		min-height: 44px;
-		padding: calc(6 * var(--u)) calc(18 * var(--u));
-		border: 0;
-		background: transparent;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		color: var(--card-ink);
-		text-align: left;
-	}
-
-	.head .line {
-		color: inherit;
-	}
-
-	.open .head .line {
-		font-weight: 700;
-	}
-
 	/* Wide enough for 41–56, so the names start in one column. */
 	.roll {
 		flex: none;
 		width: 5ch;
 		color: var(--card-green);
 		font-variant-numeric: lining-nums tabular-nums;
-	}
-
-	.detail {
-		display: flex;
-		flex-direction: column;
-		gap: calc(10 * var(--u));
-		padding: 0 calc(18 * var(--u)) calc(18 * var(--u));
-	}
-
-	.text {
-		margin: 0;
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.4;
-		color: var(--card-ink);
 	}
 </style>

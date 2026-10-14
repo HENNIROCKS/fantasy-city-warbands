@@ -7,11 +7,12 @@
 	import { purse, warbandCost } from '$lib/core/validate';
 
 	/*
-	 * The back of the warband card, turned over to be written on, as the Wyrdcry
-	 * Warband Deck has it, in the order of the fighter's back: the name, the
-	 * fluff and the campaign counters, the gold and what lies in the stash, the
-	 * battles, the notes, and last the colour of the deck, which the deck takes
-	 * on as it is picked. The builder's finish step writes the same fields.
+	 * The back of the warband card, turned over to be written on, in the order
+	 * of the fighter's back: the name, the fluff and the campaign counters, the
+	 * gold and what lies in the stash, the battles, the notes, and last the
+	 * colour of the deck, which the deck takes on as it is picked. Stash,
+	 * battles and colour are as the Wyrdcry Warband Deck has them there; the
+	 * builder's finish step writes the same fields.
 	 */
 	let {
 		name,

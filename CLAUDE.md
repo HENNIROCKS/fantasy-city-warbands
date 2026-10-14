@@ -96,7 +96,9 @@ Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, WarbandBack,
 BattleBar, MenuButton, ValueTable, WeaponTable, Explanation, RenownSheet,
 LevelPicker – im Deck TalentPicker –, fit-text) sind dort übernommen und
 gekürzt. Eine Änderung am Kartenaufbau wird
-zuerst am Deck verglichen.
+zuerst am Deck verglichen. Abweichend vom Deck sind die Sheets über dem Deck
+(AftermathSheet, RenownSheet) als Kartenrückseite gesetzt (`.card.back.sheet`),
+nicht im Stil der App; das ist gewollt und wird nicht ans Deck angeglichen.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
