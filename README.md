@@ -94,9 +94,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   blood, and a fighter at none is out of action – with the Wilhelm scream,
   which can be switched off. State marks a fighter activated or waiting, and
   in Wyrdcry in cover, panicked or with its heroic reaction used, on the card
-  and in the strokes over the deck. A wavering warband asks each fighter for
-  its Bravery test, and the Witch Hunters count Zeal into every fighter's
-  figures
+  and in the strokes over the deck. A Wyrdcry warband with more than half its
+  fighters out of action asks each fighter for its Bravery test in the round
+  after, and the Witch Hunters count Zeal into every fighter's figures
 - End a Wyrdcry battle in pages over the deck, each set as the back of a card
   with its answers at the foot: the result, the
   shards delivered with what they bring in favour and gold, and the battle
@@ -140,7 +140,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Game | Rules the data follows | Factions |
 | --- | --- | --- |
 | Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
-| Wyrdcry | 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
+| Wyrdcry | 0.9, core rules 1.0 WIP | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
 | Mordheim | – | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the

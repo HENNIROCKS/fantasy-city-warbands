@@ -16,6 +16,8 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 - [ ] Devastated Eye: halves only the longest reach of a weapon, never below 1", and keeps where its reach starts – a bow's 3–18" becomes 3–9"
 - [ ] Injuries: a second Hatred, Hardened or Terrible Scars counts as a Flesh Wound, as a repeated [Injury] does, where the rules say so only of results marked [Injury]
 - [ ] Captured: the ransom named is half the fighter's own cost, without what it bought, where the rules say only "half of the fighter's recruitment cost"
+- [ ] Respite and Onslaught as page 29 of the core rules 1.0 has them – Respite a [Triple] removing D3+3, Onslaught a [Double] for the next melee attack action – where the reference card on page 48 has Respite a [Double] removing (X) and Onslaught a [Triple] for every melee attack action of the activation
+- [ ] Strike them down is made when an enemy fighter makes a Retreat action, where the core rules 1.0 say "disengage action", an action they name nowhere else
 
 ### Open upstream
 
@@ -23,6 +25,8 @@ The data is the Warband Deck's hand-kept ruleset, which differs from the site re
 - [ ] Injury 34: named Alcoholic with the id amnesia, where its text "cannot make reactions" fits neither name
 - [ ] Deep Wound: whether "the fighter survives" on a 3+ means no lasting effect, and whether the 15gc come from the warband's gold – read here as both
 - [ ] Robbed: whether "all equipment carried" includes items, or only weapons and armour – read here as everything the fighter bought
+- [ ] Core rules 1.0: page 29 and the reference card on page 48 disagree on Respite, Onslaught and whether Rampage moves up to (X)"
+- [ ] Core rules 1.0: whether Strike them down's "disengage action" is the Retreat action
 - [ ] Hero costs: in the 0.9 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 
 ## Black Death City

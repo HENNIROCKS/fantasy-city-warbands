@@ -3,7 +3,7 @@
 	import ValueTable from '$lib/components/ValueTable.svelte';
 	import WeaponTable from '$lib/components/WeaponTable.svelte';
 	import { FRESH, type BattleCondition, type BattleLayer, type FighterBattleState } from '$lib/core/battle';
-	import type { CardEntry, CardSection, CardValue, FighterCardData, StatLayer } from '$lib/core/card';
+	import { floored, type CardEntry, type CardSection, type CardValue, type FighterCardData, type StatLayer } from '$lib/core/card';
 	import { formatStat } from '$lib/core/warband';
 	import { imageFieldMask } from '$lib/image-field-mask';
 	import type { PhotoView } from '$lib/photo';
@@ -48,9 +48,9 @@
 	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
 
 	/* Each figure as the Warband Deck's card reads it: the layers the card was
-	   built with, then the battle's own – the damage Health counts down, so the
-	   table reads the same figure as the bar below the deck, and what a mark or a
-	   stage of the faction's count adds. A figure made of more than the profile,
+	   built with, then the battle's own – what a mark or a stage of the faction's
+	   count adds, kept above the game's floor, and last the damage Health counts
+	   down, so the table reads the same figure as the bar below the deck. A figure made of more than the profile,
 	   or one a situation can still change, opens its explanation when tapped; the
 	   star says the latter, which a tag alone would not. */
 	const stats = $derived(
@@ -58,9 +58,11 @@
 			if (!stat.layers || stat.amount === undefined || !stat.format) return stat;
 			const damage = stat.key === card.health.key ? Math.min(state.damage, stat.amount) : 0;
 			const all: StatLayer[] = [
-				...stat.layers,
-				...(damage ? [{ kind: 'damage' as const, source: 'Damage', amount: -damage }] : []),
-				...layers.filter((l) => l.stat === stat.key).map((l) => ({ kind: 'battle' as const, source: l.source, amount: l.amount }))
+				...floored(
+					[...stat.layers, ...layers.filter((l) => l.stat === stat.key).map((l) => ({ kind: 'battle' as const, source: l.source, amount: l.amount }))],
+					stat.floor
+				),
+				...(damage ? [{ kind: 'damage' as const, source: 'Damage', amount: -damage }] : [])
 			];
 			const situations = [...(stat.conditions ?? []), ...conditions.filter((c) => c.stat === stat.key).map((c) => ({ source: c.source, name: c.name, text: c.text, amount: c.bonus }))];
 			const shown = formatStat({ key: stat.key, label: stat.label, format: stat.format }, all.reduce((sum, l) => sum + l.amount, 0));

@@ -35,6 +35,8 @@ export const game: GameSystem = {
 		{ key: 'bravery', label: 'Bravery', format: 'target' }
 	],
 	health: 'health',
+	/* "Modifiers ... can never reduce a characteristic to less than 1" (core rules 1.0, p. 12). */
+	statFloor: 1,
 	/* The Warband Deck's roster. */
 	roster: {
 		title: 'Wyrdcry Warband Roster',
@@ -107,8 +109,8 @@ export const game: GameSystem = {
 		keywords: advancement.keywords
 	}),
 	/* As the Warband Deck tracks them. Cover changes no figure of the fighter's:
-	   it raises the difficulty rating of a ranged attack against it, a number on
-	   the attacker's side. */
+	   it takes 1 off the Shoot of whoever shoots at it, a figure on the
+	   attacker's side (core rules 1.0, p. 24). */
 	battle: {
 		waiting: true,
 		marks: [
@@ -121,16 +123,17 @@ export const game: GameSystem = {
 					{
 						stat: 'defense',
 						name: 'In Cover',
-						text: 'A ranged attack action against this fighter has its difficulty rating (DR) increased by 1.'
+						text: "A ranged attack action against this fighter decreases the attacker's Shoot characteristic by 1."
 					}
 				]
 			},
 			{ key: 'panicked', label: 'Panicked', lasts: 'round', bonus: { fight: -1, shoot: -1 } }
 		],
-		/* Half the warband out of action, rounding up: each fighter takes a
-		   Bravery test when first activated in a round, and a fail panics it
-		   until the round ends. */
-		wavering: { threshold: (size) => Math.ceil(size / 2), test: 'Bravery test', failed: 'panicked' }
+		/* More than half the warband out of action, rounding up, in the morale
+		   phase that ends a round: each fighter takes a Bravery test, and a fail
+		   panics it until the next morale phase – the next round clears it, as
+		   it does any panic (core rules 1.0, p. 33). */
+		wavering: { threshold: (size) => Math.ceil(size / 2) + 1, test: 'Bravery test', failed: 'panicked' }
 	}
 };
 

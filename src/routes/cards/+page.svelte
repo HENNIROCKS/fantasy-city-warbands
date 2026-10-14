@@ -11,7 +11,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { adjustCounter, allocate, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
+	import { adjustCounter, allocate, isWavering, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
@@ -116,6 +116,14 @@
 	function nameField(card: DeckCard): string {
 		const at = resolve('/build') + `?id=${warband?.id}`;
 		return card.kind === 'warband' ? `${at}&step=finish#warband-name` : `${at}&step=fighters#fighter-name-${card.instanceId}`;
+	}
+
+	/* The morale phase at the end of the round: whether the warband wavers as it ends. */
+	function wavers(): boolean {
+		const morale = system?.game.battle?.wavering;
+		if (!morale) return false;
+		const ids = cards.flatMap((c) => (c.kind === 'fighter' ? [c.instanceId] : []));
+		return isWavering(battle, ids, morale.threshold);
 	}
 
 	/* The marks the next round clears. */
@@ -526,7 +534,7 @@
 				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key))}
 				oncount={(delta) => setBattle(adjustCounter(battle, delta))}
 				onstart={() => setBattle(start())}
-				onnext={() => battle && setBattle(nextRound(battle, roundMarks))}
+				onnext={() => battle && setBattle(nextRound(battle, roundMarks, wavers()))}
 				onundo={() => battle && setBattle(undoRound(battle))}
 				onend={endBattle}
 				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}

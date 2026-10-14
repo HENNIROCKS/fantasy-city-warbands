@@ -60,6 +60,8 @@
 - [x] 🛠️ The back of the warband card as a fighter's: name, fluff, favour, notes and the colour of the deck, picked live
 - [x] 🛠️ The fighter's name on the back of its card
 - [x] 🃏 The aftermath and spending renown set as the back of a card
+- [x] 📚 Wyrdcry: the core rules 1.0 – cover at −1 Shoot, Take cover, Rampage for heroes, the weapon rules, wavering past half and the morale test at the round's end
+- [x] 🃏 Wyrdcry: no modifier takes a characteristic below 1
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
@@ -68,6 +70,7 @@
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] 📚 Black Death City: the fighters' special rules as text
+- [ ] 📚 Wyrdcry: Shield, Lantern and Shield Wall without the difficulty rating, once the 1.0 Campaign Book is out
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
@@ -84,3 +87,6 @@ Nothing promised, nothing planned.
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 🎨 Virtual tuck box for each deck
+- ⚔️ Wyrdcry: Wounded at half Health as a band on the card
+- ⚔️ Wyrdcry: a reminder in round 4 that a dice decides on a fifth
+- 📚 Wyrdcry: Channel Magic and the wizards' own abilities, once the 1.0 rulebook fills them in

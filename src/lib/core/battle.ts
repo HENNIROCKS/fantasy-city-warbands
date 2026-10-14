@@ -46,6 +46,12 @@ export interface BattleRound {
 	 * a record written before a field existed reads as that field's default.
 	 */
 	fighters: Record<string, Partial<FighterBattleState>>;
+	/**
+	 * Whether the warband wavered in the morale phase that ended the round
+	 * before: every fighter takes the game's test in this one. Missing in a
+	 * record written before the field existed, and in the first round.
+	 */
+	morale?: boolean;
 }
 
 export interface BattleState extends BattleRound {
@@ -78,6 +84,7 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		round: stored.round ?? 1,
 		counter: stored.counter ?? 0,
 		fighters: stored.fighters ?? {},
+		morale: stored.morale ?? false,
 		undo: stored.undo ?? null
 	};
 }
@@ -143,15 +150,23 @@ export function allocate(battle: BattleState | null, instanceId: string, delta: 
  * The next round clears what belongs to a round and keeps what belongs to the
  * battle: the wounds, whoever is out of action and the marks that last the
  * battle carry over. `roundMarks` are the keys of the marks the round clears.
+ * `wavered` is the morale phase between the two rounds: whether the warband
+ * wavered as the round ended, so that the new one asks every fighter's test.
  */
-export function nextRound(battle: BattleState, roundMarks: string[] = []): BattleState {
+export function nextRound(battle: BattleState, roundMarks: string[] = [], wavered = false): BattleState {
 	const fighters: Record<string, FighterBattleState> = {};
 	for (const [id, state] of Object.entries(battle.fighters)) {
 		const marks = { ...state.marks };
 		for (const key of roundMarks) delete marks[key];
 		fighters[id] = { ...FRESH, ...state, activated: false, waiting: false, marks };
 	}
-	return { ...battle, round: battle.round + 1, fighters, undo: { round: battle.round, fighters: battle.fighters } };
+	return {
+		...battle,
+		round: battle.round + 1,
+		fighters,
+		morale: wavered,
+		undo: { round: battle.round, fighters: battle.fighters, morale: battle.morale ?? false }
+	};
 }
 
 /**
@@ -160,7 +175,7 @@ export function nextRound(battle: BattleState, roundMarks: string[] = []): Battl
  */
 export function undoRound(battle: BattleState): BattleState {
 	if (!battle.undo) return battle;
-	return { ...battle, round: battle.undo.round, fighters: battle.undo.fighters, undo: null };
+	return { ...battle, round: battle.undo.round, fighters: battle.undo.fighters, morale: battle.undo.morale ?? false, undo: null };
 }
 
 /**

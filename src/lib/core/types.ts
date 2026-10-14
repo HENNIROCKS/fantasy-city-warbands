@@ -54,6 +54,12 @@ export interface GameSystem {
 	/** The key of the stat that damage counts down: `health`, `life`. */
 	health: string;
 	/**
+	 * Where the game says modifiers never take a characteristic below a figure,
+	 * that figure. A profile that starts below it, such as Armour 0, keeps its
+	 * own; damage is no modifier.
+	 */
+	statFloor?: number;
+	/**
 	 * How the roster PDF heads its columns, in the order of `stats`,
 	 * `weaponStats` and a fighter's campaign counters – the experience first,
 	 * then `campaign.fighter` – and what it is called. A game whose sheet
@@ -127,13 +133,14 @@ export interface GameSystem {
 		marks: BattleMark[];
 		/**
 		 * When the warband's morale breaks, and what it asks of each fighter then.
-		 * Worked out rather than latched, so taking back a mistaken wound takes the
-		 * warband back out of it as well.
+		 * Whether it wavers now is worked out rather than latched, so taking back
+		 * a mistaken wound takes the warband back out of it as well; the test is
+		 * asked in the round after a morale phase in which it wavered.
 		 */
 		wavering?: {
 			/** How many fighters out of action make the warband waver, from its size. */
 			threshold: (size: number) => number;
-			/** What each fighter has to do before it acts, on its card: `Bravery test`. */
+			/** What each fighter has to do in that round, on its card: `Bravery test`. */
 			test: string;
 			/** The mark failing it sets, which also ends the question. */
 			failed: string;

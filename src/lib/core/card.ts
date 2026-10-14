@@ -29,6 +29,8 @@ export interface CardValue {
 	format?: StatFormat;
 	/** What the figure is made of, the profile first. Only on a fighter's characteristics. */
 	layers?: StatLayer[];
+	/** The game's `statFloor`, for whoever adds the battle's layers on top. */
+	floor?: number;
 	/** What changes the figure in one situation only, beside it rather than in it. */
 	conditions?: CardCondition[];
 	/** Opened when the value is tapped. */
@@ -41,10 +43,25 @@ export interface CardValue {
  * it adds; `damage` and `battle` are the battle's own.
  */
 export interface StatLayer {
-	kind: 'base' | 'permanent' | 'equipment' | 'damage' | 'battle';
+	kind: 'base' | 'permanent' | 'equipment' | 'damage' | 'battle' | 'floor';
 	/** Named the way the card names it: `Profile`, `Heavy Armour`, `Renown 2`. */
 	source: string;
 	amount: number;
+}
+
+/**
+ * The layers with the game's floor kept: where they take a characteristic
+ * below it, a layer of its own makes up the difference, so the explanation
+ * still adds up. A floor layer already among them is worked out anew, and a
+ * profile that starts below the floor keeps its own figure. Damage belongs
+ * after this, not in it.
+ */
+export function floored(layers: StatLayer[], floor: number | undefined): StatLayer[] {
+	const rest = layers.filter((l) => l.kind !== 'floor');
+	const base = rest.find((l) => l.kind === 'base')?.amount ?? 0;
+	const total = rest.reduce((sum, l) => sum + l.amount, 0);
+	if (floor === undefined || base < floor || total >= floor) return rest;
+	return [...rest, { kind: 'floor', source: `Not below ${floor}`, amount: floor - total }];
 }
 
 /** A rule that can change a characteristic without being counted into it, by what it hangs on. */
@@ -275,8 +292,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
 		keywordIds: keywords,
 		stats: game.stats.map((s) => {
-			const layers = statLayers.get(s.key);
-			if (!layers) return { key: s.key, label: s.label, short: s.short, value: formatStat(s, profile?.[s.key]) };
+			const raw = statLayers.get(s.key);
+			if (!raw) return { key: s.key, label: s.label, short: s.short, value: formatStat(s, profile?.[s.key]) };
+			const layers = floored(raw, game.statFloor);
 			const amount = layers.reduce((sum, layer) => sum + layer.amount, 0);
 			return {
 				key: s.key,
@@ -286,13 +304,14 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 				amount,
 				format: s.format,
 				layers,
+				floor: game.statFloor,
 				conditions: statConditions.get(s.key) ?? []
 			};
 		}),
 		/* With its levels and wargear, as the table counts it, so damage counts down from the same figure. */
 		health: {
 			key: game.health,
-			value: statLayers.get(game.health)?.reduce((sum, layer) => sum + layer.amount, 0) ?? 0
+			value: floored(statLayers.get(game.health) ?? [], game.statFloor).reduce((sum, layer) => sum + layer.amount, 0)
 		},
 		/* As on the Warband Deck's card: what the fighter carries out of a game
 		   rather than into one, where the game keeps a campaign. */

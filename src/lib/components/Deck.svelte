@@ -145,9 +145,10 @@
 	function inBattle(card: FighterCardData) {
 		const state = stateOf(battle, card.instanceId);
 		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], { label: counter?.label ?? '', value: battle?.counter ?? 0 }, card.keywordIds);
-		/* Due until the fighter has acted or waited – it rolled then – or failed it. */
+		/* Asked in the round after a morale phase in which the warband wavered, and
+		   due until the fighter has acted or waited – it rolled then – or failed it. */
 		const morale = rules?.wavering;
-		const due = morale && wavering && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
+		const due = morale && battle?.morale && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
 		return { state, ...effects, test: due ? morale.test : null };
 	}
 

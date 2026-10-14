@@ -38,7 +38,7 @@
 		"id": "rampage",
 		"name": "Rampage",
 		"type": "quad",
-		"keyword": "any",
+		"keyword": "hero",
 		"text": "This fighter makes a bonus move action up to (X)\". Then, they can make a bonus attack action."
 	},
 	{
@@ -49,11 +49,11 @@
 		"text": "Use this reaction when targeted by a melee attack action but before the hit rolls are made. If one or more hit rolls from that attack action misses, allocate 2 damage points to the attacking fighter. If any hit rolls from that attack action results in a 1, allocate 3 damage points to the attacking fighter instead."
 	},
 	{
-		"id": "hunker-down",
-		"name": "Hunker Down",
+		"id": "take-cover",
+		"name": "Take Cover",
 		"type": "reaction",
 		"keyword": "any",
-		"text": "A fighter that is in cover can make this reaction after they are targeted by a ranged attack action but before the hit rolls are made. For that attack action, increase the difficulty rating (DR) granted by the cover by 1 (for a total of 2)."
+		"text": "A fighter that is in cover can make this reaction after they are targeted by a ranged attack action but before the hit rolls are made. Count one critical hit from that attack action as a hit instead."
 	},
 	{
 		"id": "strike-them-down",

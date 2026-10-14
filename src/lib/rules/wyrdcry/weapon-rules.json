@@ -2,46 +2,26 @@
   {
     "id": "blast",
     "name": "BLAST",
-    "text": "When making a hit roll with this weapon, for each roll of 6, allocate 2 damage points to another visible fighter within 1\" of the target of the attack action.",
+    "text": "When making an attack action with this weapon, for each hit roll of 6, allocate 2 damage points to another visible fighter within 1\" of the target of the attack action.",
     "effect": null
   },
   {
     "id": "blessed",
     "name": "BLESSED",
-    "text": "When making attack actions against a `VAMPIRE`, `DAEMON` or `THRALL`, increase the Critical Damage characteristic by 1.",
+    "text": "When making an attack action against a `VAMPIRE`, `DAEMON` or `THRALL`, increase the Critical Damage characteristic of this weapon by 1.",
     "effect": null
   },
   {
     "id": "brace",
     "name": "BRACE",
-    "text": "When determining how many ranged weapons a fighter is equipped with, two weapons with this special rule count as one.",
+    "text": "When determining how many ranged weapons the bearer is equipped with, two weapons with this special rule count as one.",
     "effect": null
   },
   {
     "id": "cumbersome",
     "name": "CUMBERSOME",
-    "text": "When a fighter armed with this weapon is the target of a melee attack action, decrease its Fight characteristic by 1.",
+    "text": "When the bearer is the target of a melee attack action, decrease their Fight characteristic by 1.",
     "effect": null
-  },
-  {
-    "id": "mighty-1",
-    "name": "MIGHTY 1",
-    "text": "When a fighter makes an attack action with this weapon, increase their Fight characteristic by 1 if it is a melee weapon, or their Shoot characteristic by 1 if it is a ranged weapon.",
-    "effect": {
-      "characteristic": "attack",
-      "bonus": 1,
-      "applies": "when-attacking"
-    }
-  },
-  {
-    "id": "mighty-2",
-    "name": "MIGHTY 2",
-    "text": "When a fighter makes an attack action with this weapon, increase their Fight characteristic by 2 if it is a melee weapon, or their Shoot characteristic by 2 if it is a ranged weapon.",
-    "effect": {
-      "characteristic": "attack",
-      "bonus": 2,
-      "applies": "when-attacking"
-    }
   },
   {
     "id": "one-use",
@@ -61,20 +41,26 @@
   },
   {
     "id": "pierce-1",
-    "name": "PIERCE 1",
-    "text": "When making an attack action with this weapon against an enemy fighter, reduce the target's Armour characteristic by 1 (to a minimum of 0).",
+    "name": "PIERCING 1",
+    "text": "When making an attack action with this weapon, reduce the target's Armour characteristic by 1 (to a minimum of 0).",
     "effect": null
   },
   {
     "id": "pierce-2",
-    "name": "PIERCE 2",
-    "text": "When making an attack action with this weapon against an enemy fighter, reduce the target's Armour characteristic by 2 (to a minimum of 0).",
+    "name": "PIERCING 2",
+    "text": "When making an attack action with this weapon, reduce the target's Armour characteristic by 2 (to a minimum of 0).",
     "effect": null
   },
   {
     "id": "pierce-3",
-    "name": "PIERCE 3",
-    "text": "When making an attack action with this weapon against an enemy fighter, reduce the target's Armour characteristic by 3 (to a minimum of 0).",
+    "name": "PIERCING 3",
+    "text": "When making an attack action with this weapon, reduce the target's Armour characteristic by 3 (to a minimum of 0).",
+    "effect": null
+  },
+  {
+    "id": "point-blank",
+    "name": "POINT-BLANK",
+    "text": "This weapon may be used for melee attack actions. Use the bearer's Shoot characteristic (decreased by 1) instead of their Fight characteristic for the hit rolls.",
     "effect": null
   },
   {
@@ -86,7 +72,7 @@
   {
     "id": "two-handed",
     "name": "TWO HANDED",
-    "text": "This weapon counts as two hand weapons for the sake of equipment restrictions.",
+    "text": "When determining how many melee weapons the bearer is equipped with, this weapon counts as two.",
     "effect": null
   },
   {
@@ -98,7 +84,7 @@
   {
     "id": "whipcrack",
     "name": "WHIPCRACK",
-    "text": "When this weapon is selected as the main-hand weapon for a melee attack action, the target cannot make reactions.",
+    "text": "When making an attack action with this weapon, unless used as an off-hand weapon, the target cannot make reactions.",
     "effect": null
   }
 ]
