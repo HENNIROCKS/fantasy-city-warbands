@@ -4,6 +4,8 @@
 
 	/** What the back of a fighter's card writes with Done. */
 	export interface BackDraft {
+		/** Blank for a fighter not yet named. */
+		name: string;
 		fluff: string;
 		notes: string;
 		xp: number;
@@ -82,6 +84,7 @@
 	 */
 	let {
 		name,
+		placeholder,
 		draft = $bindable(),
 		photo = $bindable(),
 		campaign,
@@ -90,6 +93,8 @@
 		equipment
 	}: {
 		name: string;
+		/** What the name field offers while it is blank. */
+		placeholder: string;
 		draft: BackDraft;
 		photo: BackPhoto;
 		campaign: BackCampaign | null;
@@ -266,6 +271,11 @@
 	{:else}
 		<div class="parchment">
 			<section>
+				<label class="heading" for="back-name"><span>Name</span><span class="rule"></span></label>
+				<input id="back-name" class="field" type="text" autocomplete="off" {placeholder} bind:value={draft.name} />
+			</section>
+
+			<section>
 				<h3 class="heading"><span>Photo</span><span class="rule"></span></h3>
 				<input bind:this={photoInput} type="file" accept="image/*" hidden onchange={pickPhoto} />
 				{#if stored && layout}
@@ -315,7 +325,7 @@
 
 			<section>
 				<label class="heading" for="back-fluff"><span>Fluff</span><span class="rule"></span></label>
-				<textarea id="back-fluff" class="fluff" rows="2" placeholder="A line or two of story" bind:value={draft.fluff} use:grow
+				<textarea id="back-fluff" class="field fluff" rows="2" placeholder="A line or two of story" bind:value={draft.fluff} use:grow
 				></textarea>
 			</section>
 
@@ -453,7 +463,7 @@
 
 			<section>
 				<label class="heading" for="back-notes"><span>Notes</span><span class="rule"></span></label>
-				<textarea id="back-notes" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
+				<textarea id="back-notes" class="field" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
 				></textarea>
 			</section>
 		</div>
@@ -461,51 +471,8 @@
 </article>
 
 <style>
-	/* A lighter patch of the paper rather than a box: no frame and no line,
-	   brighter and edged in green while the field is being written in. */
-	textarea {
-		width: 100%;
-		margin: 0;
-		padding: calc(6 * var(--u)) calc(10 * var(--u));
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		line-height: 1.4;
-		color: var(--card-ink);
-		background: var(--card-field);
-		border: 0;
-		border-radius: calc(6 * var(--u));
-		outline: none;
-		appearance: none;
-		resize: none;
-		overflow: hidden;
-	}
-
-	textarea:focus {
-		background: rgb(255 255 255 / 0.7);
-		box-shadow: inset 0 0 0 1px var(--card-green);
-	}
-
-	::placeholder {
-		color: var(--card-ink-muted);
-		font-style: italic;
-	}
-
 	.fluff {
 		font-style: italic;
-	}
-
-	/* The figure's name on the left, its steps on the right. */
-	.counter {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: calc(12 * var(--u));
-	}
-
-	.counter .label {
-		font-family: 'Alegreya', serif;
-		font-size: calc(18 * var(--t));
-		color: var(--card-ink);
 	}
 
 	.photo-row {

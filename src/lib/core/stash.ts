@@ -1,7 +1,7 @@
 /**
  * What the back of the warband card writes, as the Wyrdcry Warband Deck keeps
- * it there: gold added, pieces of the stash sold or thrown away, and battles
- * added or struck. The draft is held apart from the warband until Done writes
+ * it there: the name, fluff, notes and colour, the campaign counters, gold
+ * added, pieces of the stash sold or thrown away, and battles added or struck. The draft is held apart from the warband until Done writes
  * it in one go; Cancel lets it fall.
  *
  * `gold` is the whole purse – what the warband is worth together with what it
@@ -30,6 +30,14 @@ export interface PendingBattle {
 }
 
 export interface WarbandBackDraft {
+	/** Blank, or the faction's own name, for a warband not yet named. */
+	name: string;
+	fluff: string;
+	notes: string;
+	/** The deck's colour, null for the card green. */
+	colour: string | null;
+	/** The game's campaign counters for the warband, such as favour, by key. */
+	tally: Record<string, number>;
 	/** Sums of gold added, in order; Done writes their total. */
 	goldAdded: number[];
 	stashOut: StashOut[];
@@ -85,8 +93,17 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 	const pending = toRecord(draft.pending);
 	const history = [...draft.history.filter((r) => !draft.removed.includes(r.id)), ...(pending ? [pending] : [])];
 	const changed = draft.goldAdded.length > 0 || gone.size > 0;
+	const { fluff: _fluff, notes: _notes, ...rest } = warband;
+	const fluff = draft.fluff.trim();
+	const notes = draft.notes.trim();
+	const counted = Object.fromEntries(Object.entries(draft.tally).filter(([key, value]) => value !== 0 || warband.tally?.[key] !== undefined));
 	return {
-		...warband,
+		...rest,
+		name: draft.name.trim(),
+		...(fluff ? { fluff } : {}),
+		...(notes ? { notes } : {}),
+		...(draft.colour || warband.colour !== undefined ? { colour: draft.colour } : {}),
+		...(Object.keys(counted).length || warband.tally ? { tally: counted } : {}),
 		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed } : {}),
 		...(gone.size ? { stash: stash.filter((_, i) => !gone.has(i)) } : {}),
 		...(history.length || warband.history ? { history } : {})

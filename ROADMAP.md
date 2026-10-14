@@ -57,10 +57,14 @@
 - [x] ⚙️ Work offline once opened, the roster included
 - [x] 📈 Campaign: spend renown on the back of a fighter's card, the levels spent listed with Undo
 - [x] 📈 Campaign: Wyrdcry's injuries – rolled in the aftermath, kept on the card, death, surgeon, capture and the rest carried out
+- [x] 🛠️ The back of the warband card as a fighter's: name, fluff, favour, notes and the colour of the deck, picked live
+- [x] 🛠️ The fighter's name on the back of its card
+- [x] 🃏 The aftermath and spending renown set as the back of a card
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
-- [ ] 🛠️ Edit a fighter after the build: dismissal, recruiting between battles
+- [ ] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
+- [ ] 🛠️ Recruit between battles
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] 📚 Black Death City: the fighters' special rules as text

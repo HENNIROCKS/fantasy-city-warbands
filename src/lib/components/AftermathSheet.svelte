@@ -11,7 +11,8 @@
 	 * of action; one page for each of them that rolls for injuries; then who
 	 * earned experience. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
-	 * first drops the answers and goes back to the battle.
+	 * first drops the answers and goes back to the battle. Each page is the back
+	 * of a card, as a fighter's back is written on, with its answers at its foot.
 	 */
 	let {
 		warband,
@@ -119,248 +120,317 @@
 	function focusOnMount(node: HTMLElement) {
 		node.focus();
 	}
-
-	const PRIMARY =
-		'min-h-11 flex-1 rounded bg-[#125E3C] px-4 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50';
 </script>
 
 <div class="sheet-backdrop">
-	<div class="bottom-sheet aftermath" role="dialog" aria-modal="true" aria-labelledby="aftermath-title">
+	<div class="card back sheet" role="dialog" aria-modal="true" aria-labelledby="aftermath-title">
 		{#if current === 'battle'}
-			<h2 id="aftermath-title">End the battle</h2>
-			<p class="count">Aftermath · {at + 1} of {pages.length}</p>
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">End the battle</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<h3 class="heading"><span id="aftermath-result">Result</span><span class="rule"></span></h3>
+						<div class="results" role="group" aria-labelledby="aftermath-result">
+							{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
+								<button class="segment" aria-pressed={draft.result === key} onclick={() => pick(key as BattleRecord['result'])}>{label}</button>
+							{/each}
+						</div>
+					</section>
 
-			<p class="field-label" id="aftermath-result">Result</p>
-			<div class="joined flex" role="group" aria-labelledby="aftermath-result">
-				{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
-					<button type="button" class="choice" aria-pressed={draft.result === key} onclick={() => pick(key as BattleRecord['result'])}>
-						{label}
-					</button>
-				{/each}
-			</div>
+					<section>
+						<h3 class="heading"><span>Income</span><span class="rule"></span></h3>
+						<div class="counter">
+							<span class="label" id="aftermath-shards">Shards delivered</span>
+							<div class="stepper" role="group" aria-labelledby="aftermath-shards">
+								<button class="segment" aria-label="One shard less" disabled={draft.shards <= 0} onclick={() => (draft.shards -= 1)}>−</button>
+								<output class="figure">{draft.shards}</output>
+								<button class="segment" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
+							</div>
+						</div>
+						{#if draft.result}
+							<ul class="list">
+								{#each earned.lines as line (line.gain)}
+									<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
+								{/each}
+							</ul>
+						{:else}
+							<p class="hint">What the battle brings in, once the result is picked.</p>
+						{/if}
+					</section>
 
-			<p class="field-label mt-4" id="aftermath-shards">Shards delivered</p>
-			<div class="tally-row" role="group" aria-labelledby="aftermath-shards">
-				<button type="button" class="tally-step" aria-label="One shard less" disabled={draft.shards <= 0} onclick={() => (draft.shards -= 1)}>−</button>
-				<output class="tally-count">{draft.shards}</output>
-				<button type="button" class="tally-step" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
-			</div>
-			{#if draft.result}
-				<ul class="mt-2 list-none p-0 text-zinc-400">
-					{#each earned.lines as line (line.gain)}
-						<li><span class="font-semibold">{line.gain}</span> {line.why}</li>
-					{/each}
-				</ul>
-			{/if}
-
-			<p class="field-label mt-4">Battle history</p>
-			<button type="button" class="choice" aria-pressed={draft.record} disabled={!draft.result} onclick={() => (draft.record = !draft.record)}>
-				Add to the battle history
-			</button>
-			{#if draft.recorded}
-				{@const r = draft.recorded}
-				<p class="mt-1 text-zinc-400">Already in the history: {displayDate(r.date)} {opponent(r)} – {RESULT_LABELS[r.result]}</p>
-			{/if}
-			{#if draft.result && draft.record}
-				<div class="mt-2 grid gap-2">
-					<input class="field-input" type="text" placeholder="Opponent's warband" aria-label="Opponent's warband" autocomplete="off" bind:value={draft.opponentWarband} />
-					<input class="field-input" type="text" placeholder="Opponent's name" aria-label="Opponent's name" autocomplete="off" bind:value={draft.opponentPlayer} />
+					<section>
+						<h3 class="heading"><span>Battle history</span><span class="rule"></span></h3>
+						<div class="toggles">
+							<button class="toggle" aria-pressed={draft.record} disabled={!draft.result} onclick={() => (draft.record = !draft.record)}>
+								Add to the battle history
+							</button>
+						</div>
+						{#if draft.recorded}
+							{@const r = draft.recorded}
+							<p class="note">Already in the history: {displayDate(r.date)} {opponent(r)} – {RESULT_LABELS[r.result]}</p>
+						{/if}
+						{#if draft.result && draft.record}
+							<input class="field" type="text" placeholder="Opponent's warband" aria-label="Opponent's warband" autocomplete="off" bind:value={draft.opponentWarband} />
+							<input class="field" type="text" placeholder="Opponent's name" aria-label="Opponent's name" autocomplete="off" bind:value={draft.opponentPlayer} />
+						{/if}
+					</section>
 				</div>
-			{/if}
+			</div>
 
-			<div class="sheet-actions">
-				<button type="button" class="btn" onclick={onclose} use:focusOnMount>Keep playing</button>
-				<button type="button" class={PRIMARY} disabled={!draft.result} onclick={() => step(1)}>
-					{draft.result ? 'Next' : 'Pick the result'}
-				</button>
+			<div class="foot">
+				<button class="plain" onclick={onclose} use:focusOnMount>Keep playing</button>
+				<button class="add" disabled={!draft.result} onclick={() => step(1)}>{draft.result ? 'Next' : 'Pick the result'}</button>
 			</div>
 		{:else if current === 'out'}
-			<h2 id="aftermath-title">Taken out of action</h2>
-			<p class="count">Aftermath · {at + 1} of {pages.length}</p>
-			<p class="notice">Who rolls for injuries. Set from the battle; tap to correct it.</p>
-
-			<div class="mt-3 grid gap-2" role="group" aria-label="Taken out of action">
-				{#each present as fighter (fighter.instanceId)}
-					<button type="button" class="choice" aria-pressed={draft.out.includes(fighter.instanceId)} onclick={() => toggleOut(draft, rules, fighter.instanceId)}>
-						{nameOf(fighter.instanceId)}
-					</button>
-				{/each}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">Taken out of action</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">Who rolls for injuries. Set from the battle; tap to correct it.</p>
+						<div class="toggles" role="group" aria-label="Taken out of action">
+							{#each present as fighter (fighter.instanceId)}
+								<button class="toggle" aria-pressed={draft.out.includes(fighter.instanceId)} onclick={() => toggleOut(draft, rules, fighter.instanceId)}>
+									{nameOf(fighter.instanceId)}
+								</button>
+							{/each}
+						</div>
+						{#if sittingOut.length}
+							<p class="hint">Sitting this one out: {sittingOut.join(', ')}</p>
+						{/if}
+						{#if exempt.length}
+							<p class="hint">Never roll for injuries: {exempt.join(', ')}</p>
+						{/if}
+					</section>
+				</div>
 			</div>
-			{#if sittingOut.length}
-				<p class="mt-2 text-zinc-400">Sitting this one out: {sittingOut.join(', ')}</p>
-			{/if}
-			{#if exempt.length}
-				<p class="mt-2 text-zinc-400">Never roll for injuries: {exempt.join(', ')}</p>
-			{/if}
 
-			<div class="sheet-actions">
-				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
-				<button type="button" class={PRIMARY} onclick={() => step(1)} use:focusOnMount>Next</button>
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
 			</div>
 		{:else if roller}
 			{@const id = roller.instance.instanceId}
 			{@const picked = draft.injuries[id]}
 			{@const resolution = picked && injuries ? injuries.resolve(roller.instance, roller.type, faction, picked) : null}
-			<h2 id="aftermath-title">{nameOf(id)}</h2>
-			<p class="count">{roller.table.table} · {roller.table.dice} · {at + 1} of {pages.length}</p>
-
-			<div class="grid gap-2" role="group" aria-label="{roller.table.table} for {nameOf(id)}">
-				{#each roller.table.results as result (result.id)}
-					{@const open = picked === result.id}
-					<button type="button" class="choice" aria-pressed={open} onclick={() => roll(id, result.id)}>
-						<span class="flex gap-3">
-							<span class="w-[5ch] shrink-0 tabular-nums">{result.roll}</span>
-							<span class="font-semibold">{result.name}</span>
-						</span>
-						{#if open && resolution}
-							{#if resolution.note}
-								<span class="mt-1 block">{resolution.note}</span>
-								<span class="mt-1 block"><strong>{resolution.result.name}:</strong> <RichText text={resolution.result.text} /></span>
-							{:else}
-								<span class="mt-1 block"><RichText text={result.text} /></span>
-							{/if}
-						{/if}
-					</button>
-					<!-- What the result asks besides, right under it rather than under the whole table. -->
-					{#if open && resolution}
-						{@const outcome = resolution.result.outcome}
-						{@const cost = resolution.result.cost ?? 0}
-						{@const gold = goldLeft(warband, game, faction, draft, id)}
-						{@const surgeon = draft.surgeon[id]}
-						{@const dies = outcome === 'dead' || surgeon === 'none'}
-						{@const bought = roller.instance.wargear.map(wargearName)}
-						<div class="pb-2">
-							{#if outcome === 'surgeon'}
-								<p class="field-label mt-4" id="surgeon-{id}">Surgeon</p>
-								<div class="grid gap-2" role="group" aria-labelledby="surgeon-{id}">
-									<button type="button" class="choice" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
-									{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
-										<button
-											type="button"
-											class="choice"
-											aria-pressed={surgeon === option.answer}
-											disabled={gold < cost}
-											onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
-										>
-											Paid {cost} {game.currency}, {option.label}
-											{#if gold < cost}<span class="block text-zinc-400">Only {Math.max(0, gold)} {game.currency} left</span>{/if}
-										</button>
-									{/each}
-								</div>
-							{/if}
-							{#if dies && isLeader(roller.type)}
-								<p class="notice mt-3">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
-							{:else if dies}
-								<p class="field-label mt-4">Equipment</p>
-								{#if bought.length}
-									<button type="button" class="choice" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
-										Recovered on a 3+ – {bought.join(', ')} to the stash
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">{nameOf(id)}</h2>
+				<p class="page-count">{roller.table.table} · {roller.table.dice} · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<div class="results-table" role="group" aria-label="{roller.table.table} for {nameOf(id)}">
+							{#each roller.table.results as result (result.id)}
+								{@const open = picked === result.id}
+								<div class="item" class:open>
+									<button class="head" aria-pressed={open} onclick={() => roll(id, result.id)}>
+										<span class="roll">{result.roll}</span>
+										<span class="line">{result.name}</span>
 									</button>
-								{:else}
-									<p class="text-zinc-400">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
-								{/if}
-							{:else if outcome === 'robbed'}
-								<p class="notice mt-3">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
-							{:else if outcome === 'captured'}
-								<p class="notice mt-3">
-									Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
-									{game.currency}, or 1 favour – on the back of its card.
-								</p>
-							{:else if outcome === 'miss-next-battle'}
-								<p class="notice mt-3">Marked as missing the next battle, until that battle ends.</p>
-							{:else if outcome === 'renown'}
-								<p class="notice mt-3">One more level of renown, to spend after Apply.</p>
-							{/if}
+									<!-- What the result does and asks besides, right under it rather than under the whole table. -->
+									{#if open && resolution}
+										{@const outcome = resolution.result.outcome}
+										{@const cost = resolution.result.cost ?? 0}
+										{@const gold = goldLeft(warband, game, faction, draft, id)}
+										{@const surgeon = draft.surgeon[id]}
+										{@const dies = outcome === 'dead' || surgeon === 'none'}
+										{@const bought = roller.instance.wargear.map(wargearName)}
+										<div class="detail">
+											{#if resolution.note}
+												<p class="text">{resolution.note}</p>
+												<p class="text"><strong>{resolution.result.name}:</strong> <RichText text={resolution.result.text} /></p>
+											{:else}
+												<p class="text"><RichText text={result.text} /></p>
+											{/if}
+
+											{#if outcome === 'surgeon'}
+												<p class="caption" id="surgeon-{id}">Surgeon</p>
+												<div class="toggles stacked" role="group" aria-labelledby="surgeon-{id}">
+													<button class="toggle" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
+													{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
+														<button
+															class="toggle"
+															aria-pressed={surgeon === option.answer}
+															disabled={gold < cost}
+															onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
+														>
+															Paid {cost} {game.currency}, {option.label}
+														</button>
+													{/each}
+												</div>
+												{#if gold < cost}<p class="text">Only {Math.max(0, gold)} {game.currency} left for a surgeon.</p>{/if}
+											{/if}
+											{#if dies && isLeader(roller.type)}
+												<p class="text">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
+											{:else if dies}
+												<p class="caption">Equipment</p>
+												{#if bought.length}
+													<div class="toggles stacked">
+														<button class="toggle" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
+															Recovered on a 3+ – {bought.join(', ')} to the stash
+														</button>
+													</div>
+												{:else}
+													<p class="text">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
+												{/if}
+											{:else if outcome === 'robbed'}
+												<p class="text">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
+											{:else if outcome === 'captured'}
+												<p class="text">
+													Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
+													{game.currency}, or 1 favour – on the back of its card.
+												</p>
+											{:else if outcome === 'miss-next-battle'}
+												<p class="text">Marked as missing the next battle, until that battle ends.</p>
+											{:else if outcome === 'renown'}
+												<p class="text">One more level of renown, to spend after Apply.</p>
+											{/if}
+										</div>
+									{/if}
+								</div>
+							{/each}
 						</div>
-					{/if}
-				{/each}
+					</section>
+				</div>
 			</div>
 
-			<div class="sheet-actions">
-				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
-				<button type="button" class={PRIMARY} onclick={() => step(1)} use:focusOnMount>{picked ? 'Next' : 'Skip'}</button>
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>{picked ? 'Next' : 'Skip'}</button>
 			</div>
 		{:else}
-			<h2 id="aftermath-title">Experience</h2>
-			<p class="count">Aftermath · {at + 1} of {pages.length}</p>
-
-			{#each draft.rows as row (row.instanceId)}
-				{@const points = xpEarned(row, draft.bonus)}
-				<p class="field-label mt-4 flex justify-between">
-					<span>{row.name}</span><span class="tabular-nums">+{points} XP</span>
-				</p>
-				<div class="grid grid-cols-2 gap-2" role="group" aria-label="Experience for {row.name}">
-					{#each rules.questions as question (question.key)}
-						<button
-							type="button"
-							class="choice"
-							aria-pressed={row.answers[question.key] ?? false}
-							onclick={() =>
-								question.start === 'not-out' ? toggleOut(draft, rules, row.instanceId) : (row.answers[question.key] = !row.answers[question.key])}
-						>
-							{question.label}
-						</button>
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">Experience</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					{#each draft.rows as row (row.instanceId)}
+						{@const points = xpEarned(row, draft.bonus)}
+						<section>
+							<h3 class="heading">
+								<span>{row.name}</span><span class="rule"></span>
+								<span class="gain" class:none={points === 0}>+{points} XP</span>
+							</h3>
+							<div class="toggles" role="group" aria-label="Experience for {row.name}">
+								{#each rules.questions as question (question.key)}
+									<button
+										class="toggle"
+										aria-pressed={row.answers[question.key] ?? false}
+										onclick={() =>
+											question.start === 'not-out' ? toggleOut(draft, rules, row.instanceId) : (row.answers[question.key] = !row.answers[question.key])}
+									>
+										{question.label}
+									</button>
+								{/each}
+								{#if rules.bonus}
+									<button class="toggle" aria-pressed={draft.bonus === row.instanceId} onclick={() => toggleBonus(row.instanceId)}>Bonus</button>
+								{/if}
+							</div>
+						</section>
 					{/each}
-					{#if rules.bonus}
-						<button type="button" class="choice" aria-pressed={draft.bonus === row.instanceId} onclick={() => toggleBonus(row.instanceId)}>Bonus</button>
+					{#if draft.excluded.length || sittingOut.length}
+						<section>
+							{#if draft.excluded.length}
+								<p class="hint">Never earn experience: {draft.excluded.join(', ')}</p>
+							{/if}
+							{#if sittingOut.length}
+								<p class="hint">Sitting this one out: {sittingOut.join(', ')}</p>
+							{/if}
+						</section>
 					{/if}
 				</div>
-			{/each}
-			{#if draft.excluded.length}
-				<p class="mt-3 text-zinc-400">Never earn experience: {draft.excluded.join(', ')}</p>
-			{/if}
-			{#if sittingOut.length}
-				<p class="mt-3 text-zinc-400">Sitting this one out: {sittingOut.join(', ')}</p>
-			{/if}
+			</div>
 
-			<div class="sheet-actions">
-				<button type="button" class="btn" onclick={() => step(-1)}>Back</button>
-				<button type="button" class={PRIMARY} disabled={busy} onclick={apply} use:focusOnMount>Apply</button>
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" disabled={busy} onclick={apply} use:focusOnMount>Apply</button>
 			</div>
 		{/if}
 	</div>
 </div>
 
 <style>
-	/* Tall with a table or a full roster: the sheet scrolls rather than the page
-	   behind it, and its answers stay at its foot. */
-	.aftermath {
-		max-height: calc(100dvh - 24px - env(safe-area-inset-bottom));
-		overflow-y: auto;
-		padding-bottom: 0;
-	}
-
-	.aftermath .sheet-actions {
-		position: sticky;
-		bottom: 0;
-		margin-inline: -16px;
-		padding: 12px 16px 16px;
-		background: var(--ui-surface);
-		border-top: 1px solid var(--ui-border);
-	}
-
-	/* The result as one pill of three, as the battles on the back of the warband card. */
-	.joined .choice {
+	/* The result as one pill of three across the card, as on the back of the warband card. */
+	.results .segment {
 		flex: 1;
-		text-align: center;
-		border-radius: 0;
 	}
 
-	.joined .choice:first-child {
-		border-radius: 6px 0 0 6px;
+	/* What a row earns, in the green the card marks a gain with; a row that
+	   earns nothing keeps the place, so the rule does not jump as it is answered. */
+	.gain {
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		letter-spacing: 0;
+		color: var(--card-green);
+		font-variant-numeric: lining-nums tabular-nums;
 	}
 
-	.joined .choice:last-child {
-		border-radius: 0 6px 6px 0;
+	.gain.none {
+		color: var(--card-ink-muted);
 	}
 
-	/* Two neighbouring frames share one line instead of doubling it. */
-	.joined .choice + .choice {
-		margin-left: -1px;
+	.results-table {
+		display: flex;
+		flex-direction: column;
+		gap: calc(10 * var(--u));
 	}
 
-	/* The picked one's frame lies over its neighbours'. */
-	.joined .choice[aria-pressed='true'] {
-		position: relative;
+	/* A result is a pill until it is picked; picked, the same outline holds what
+	   it does and asks and becomes a box, as a talent opens on a fighter's back. */
+	.item {
+		border: 1px solid var(--card-green);
+		border-radius: 999px;
+		background: var(--card-field);
+		overflow: hidden;
+	}
+
+	.item.open {
+		border-radius: calc(24 * var(--u));
+		box-shadow: inset 0 0 0 1px var(--card-green);
+	}
+
+	.head {
+		display: flex;
+		align-items: center;
+		gap: calc(12 * var(--u));
+		width: 100%;
+		min-height: 44px;
+		padding: calc(6 * var(--u)) calc(18 * var(--u));
+		border: 0;
+		background: transparent;
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		color: var(--card-ink);
+		text-align: left;
+	}
+
+	.head .line {
+		color: inherit;
+	}
+
+	.open .head .line {
+		font-weight: 700;
+	}
+
+	/* Wide enough for 41–56, so the names start in one column. */
+	.roll {
+		flex: none;
+		width: 5ch;
+		color: var(--card-green);
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	.detail {
+		display: flex;
+		flex-direction: column;
+		gap: calc(10 * var(--u));
+		padding: 0 calc(18 * var(--u)) calc(18 * var(--u));
+	}
+
+	.text {
+		margin: 0;
+		font-family: 'Alegreya', serif;
+		font-size: calc(18 * var(--t));
+		line-height: 1.4;
+		color: var(--card-ink);
 	}
 </style>

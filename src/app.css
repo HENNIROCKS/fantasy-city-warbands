@@ -916,6 +916,62 @@ html {
 	color: var(--card-ink-muted);
 }
 
+/* A field to write in: a lighter patch of the paper rather than a box, no
+   frame and no line, brighter and edged in green while written in. */
+.card.back .field {
+	width: 100%;
+	margin: 0;
+	padding: calc(6 * var(--u)) calc(10 * var(--u));
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	line-height: 1.4;
+	color: var(--card-ink);
+	background: var(--card-field);
+	border: 0;
+	border-radius: calc(6 * var(--u));
+	outline: none;
+	appearance: none;
+}
+
+.card.back textarea.field {
+	resize: none;
+	overflow: hidden;
+}
+
+.card.back .field:focus {
+	background: rgb(255 255 255 / 0.7);
+	box-shadow: inset 0 0 0 1px var(--card-green);
+}
+
+.card.back .field::placeholder {
+	color: var(--card-ink-muted);
+	font-style: italic;
+}
+
+/* A counter's name on the left, its steps on the right. */
+.card.back .counter {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: calc(12 * var(--u));
+}
+
+.card.back .counter .label {
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	color: var(--card-ink);
+}
+
+/* The palette as the builder has it, ringed in the card's ink rather than the app's. */
+.card.back .swatch {
+	box-shadow: 0 0 0 1px var(--card-ink-muted);
+}
+
+.card.back .swatch[aria-pressed='true'],
+.card.back .swatch.custom.on {
+	box-shadow: 0 0 0 2px var(--card-ink);
+}
+
 .card.back .results,
 .card.back .stepper {
 	display: flex;
@@ -1169,4 +1225,127 @@ html {
 	font-size: calc(20 * var(--t));
 	font-variant-numeric: lining-nums tabular-nums;
 	color: var(--card-ink);
+}
+
+/*
+ * A flow over the deck – the aftermath, a level to spend – raised from the
+ * foot of the screen as a card turned over: the back's paper, its name and
+ * sections, and under them the answers, which stay in view while the page
+ * scrolls.
+ */
+.card.back.sheet {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 420px;
+	min-height: 0;
+	max-height: calc(100dvh - 24px - env(safe-area-inset-bottom));
+	box-shadow: 0 8px 32px rgb(0 0 0 / 0.45);
+}
+
+.card.back.sheet .scroll {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.card.back.sheet .name {
+	padding-top: calc(30 * var(--u));
+}
+
+/* Where the page stands in the flow, under its name. */
+.card.back .page-count {
+	margin: calc(6 * var(--u)) 0 0;
+	padding: 0 calc(30 * var(--u));
+	text-align: center;
+	font-family: 'Alegreya', serif;
+	font-size: calc(18 * var(--t));
+	font-variant-numeric: lining-nums tabular-nums;
+	color: var(--card-ink-muted);
+}
+
+.card.back.sheet .parchment {
+	flex: none;
+	gap: calc(44 * var(--u));
+	padding-bottom: calc(28 * var(--u));
+}
+
+/* The answers on a lighter strip of the paper, set off by the rule the lists open with. */
+.card.back .foot {
+	flex: none;
+	display: flex;
+	gap: calc(10 * var(--u));
+	padding: calc(14 * var(--u)) calc(30 * var(--u)) calc(22 * var(--u));
+	border-top: 1.5px solid #000;
+	background: var(--card-wash);
+}
+
+.card.back .foot > * {
+	flex: 1;
+	min-height: 44px;
+}
+
+/* What steps back or away: the outline of a pill without its fill. */
+.card.back .plain {
+	min-height: 40px;
+	padding: 0 calc(14 * var(--u));
+	border: 1px solid var(--card-green);
+	border-radius: 999px;
+	background: var(--card-field);
+	color: var(--card-green);
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+}
+
+.card.back .plain:disabled {
+	opacity: 0.5;
+}
+
+/* Answers that hold or not, each a pill of its own, set in green once it holds. */
+.card.back .toggles {
+	display: flex;
+	flex-wrap: wrap;
+	gap: calc(8 * var(--u));
+}
+
+.card.back .toggles.stacked {
+	flex-direction: column;
+}
+
+.card.back .toggle {
+	min-height: 40px;
+	padding: calc(4 * var(--u)) calc(14 * var(--u));
+	border: 1px solid var(--card-green);
+	border-radius: 999px;
+	background: var(--card-field);
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+	line-height: 1.25;
+	color: var(--card-green);
+}
+
+.card.back .toggles.stacked .toggle {
+	border-radius: calc(20 * var(--u));
+	text-align: left;
+}
+
+.card.back .toggle[aria-pressed='true'] {
+	background: var(--card-green);
+	color: var(--card-paper);
+}
+
+.card.back .toggle:disabled {
+	opacity: 0.5;
+}
+
+/* A characteristic picked in a sheet, before the foot confirms it. */
+.card.back .option[aria-pressed='true'] {
+	background: var(--card-green);
+	color: var(--card-paper);
+}
+
+.card.back .option[aria-pressed='true'] .change {
+	color: inherit;
 }

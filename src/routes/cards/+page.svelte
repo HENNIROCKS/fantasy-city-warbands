@@ -37,10 +37,21 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
+	let draft = $state<BackDraft>({ name: '', fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
-	let warbandDraft = $state<WarbandBackDraft>({ goldAdded: [], stashOut: [], history: [], removed: [], pending: emptyPending(today()) });
+	let warbandDraft = $state<WarbandBackDraft>({
+		name: '',
+		fluff: '',
+		notes: '',
+		colour: null,
+		tally: {},
+		goldAdded: [],
+		stashOut: [],
+		history: [],
+		removed: [],
+		pending: emptyPending(today())
+	});
 	/* The photo apart from the draft: the warband is written as a whole and has
 	   to stay free of the bytes. */
 	let photoDraft = $state<BackPhoto>({ photo: null, changed: false });
@@ -115,13 +126,27 @@
 	function edit(instanceId: string) {
 		if (warband && instanceId === warband.id) {
 			const history = ($state.snapshot(warband.history) ?? []) as WarbandBackDraft['history'];
-			warbandDraft = { goldAdded: [], stashOut: [], history, removed: [], pending: emptyPending(today()) };
+			/* A name that is only the faction's is no name of the warband's, as in the builder. */
+			const name = warband.name === faction?.name ? '' : warband.name;
+			warbandDraft = {
+				name,
+				fluff: warband.fluff ?? '',
+				notes: warband.notes ?? '',
+				colour: warband.colour ?? null,
+				tally: { ...warband.tally },
+				goldAdded: [],
+				stashOut: [],
+				history,
+				removed: [],
+				pending: emptyPending(today())
+			};
 			editingId = instanceId;
 			return;
 		}
 		const fighter = warband?.fighters.find((f) => f.instanceId === instanceId);
 		if (!fighter) return;
 		draft = {
+			name: fighter.name,
 			fluff: fighter.fluff ?? '',
 			notes: fighter.notes ?? '',
 			xp: fighter.xp ?? 0,
@@ -234,6 +259,13 @@
 		};
 	});
 
+	/* What the name field on a fighter's back offers while it is blank, as the builder words it. */
+	const backPlaceholder = $derived.by(() => {
+		const instance = warband?.fighters.find((f) => f.instanceId === editingId);
+		const type = instance && faction?.fighters.find((f) => f.id === instance.fighterId);
+		return `Name your ${type?.name ?? instance?.fighterId ?? 'fighter'}`;
+	});
+
 	/* The names of the injuries the fighter on the back keeps, as the draft leaves them. */
 	const backInjuries = $derived.by(() => {
 		const injuries = system?.game.injuries;
@@ -246,11 +278,12 @@
 	 * out, as it is on a fighter never written on, and so are experience and
 	 * counters at none where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { fluff, notes, xp, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
+	function written(fighter: FighterInstance, { name, fluff, notes, xp, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
 		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, injuries: _injuries, away: _away, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
 			...rest,
+			name: name.trim(),
 			...(fluff.trim() ? { fluff: fluff.trim() } : {}),
 			...(notes.trim() ? { notes: notes.trim() } : {}),
 			...(xp || fighter.xp !== undefined ? { xp } : {}),
@@ -426,9 +459,11 @@
 	}
 
 	/* The deck's own colour stands in for the card green on the root, where the
-	   explanation overlay reads it too. Left again, the green. */
+	   explanation overlay reads it too. Left again, the green. While the back of
+	   the warband card is turned, the colour picked there, so it is not picked
+	   blind; Cancel brings back the one stored. */
 	$effect(() => {
-		const colour = warband?.colour;
+		const colour = warband && editingId === warband.id ? warbandDraft.colour : warband?.colour;
 		const root = document.documentElement.style;
 		if (colour) root.setProperty('--card-green', colour);
 		else root.removeProperty('--card-green');
@@ -510,7 +545,7 @@
 					{#if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} equipment={backEquipment} />
+						<CardBack name={card.name} placeholder={backPlaceholder} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} equipment={backEquipment} />
 					{/if}
 				{/snippet}
 			</Deck>

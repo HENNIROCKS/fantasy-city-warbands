@@ -52,7 +52,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   first when fighters or a choice would be lost
 - Star one warband to keep it at the top of the list, which otherwise runs A
   to Z; the star stays on the device and out of the export
-- Name the warband, pick the colour of its cards and write its fluff and notes;
+- Name the warband, pick the colour of its cards and write its fluff and notes,
+  in the finish step or on the back of the warband card;
   a card without a name says Unnamed warband or Unnamed fighter and leads to
   where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
@@ -65,7 +66,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   change, marked with a star. An injury the fighter keeps stands among its
   rules, with the keyword, the shorter reach or the bar on reactions it brings
 - Turn a fighter's card over with the pencil under it to write the fighter's
-  fluff and notes, which the card then shows, and to put a photo of the painted
+  name, fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device.
   The back also hands what the fighter bought to the stash and takes pieces
   from it, each checked as the builder checks it, and not during a battle;
@@ -79,11 +80,13 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   the levels spent, the last with Undo, and the injuries the fighter keeps,
   each to remove, and why it sits out – Captured with Got back – kept until
   Done like the rest. The
-  warband's favour is set by hand in the finish step, with the standing and
-  reputation it comes to
-- Turn the warband card over with the pencil under it to add gold, sell or
-  throw away what lies in the stash, and add or strike battles – all kept
-  apart until Done. Wyrdcry sells a piece for half its price, rounded down to
+  warband's favour is set by hand in the finish step and on the back of the
+  warband card, with the standing and reputation it comes to
+- Turn the warband card over with the pencil under it to write its name,
+  fluff and notes as a fighter's back has them, set its favour, pick the
+  colour of its cards – the deck takes it on at once, Cancel brings back the
+  old one –, add gold, sell or throw away what lies in the stash, and add or
+  strike battles – all kept apart until Done. Wyrdcry sells a piece for half its price, rounded down to
   5 gc and never below 5 gc; Black Death City's playtest has no rule for it yet
 - Track a battle at the table: Battle on the warband card starts it, counts
   the rounds with one step back, and ends it after asking; the bar under a
@@ -94,7 +97,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   and in the strokes over the deck. A wavering warband asks each fighter for
   its Bravery test, and the Witch Hunters count Zeal into every fighter's
   figures
-- End a Wyrdcry battle in a sheet of pages over the deck: the result, the
+- End a Wyrdcry battle in pages over the deck, each set as the back of a card
+  with its answers at the foot: the result, the
   shards delivered with what they bring in favour and gold, and the battle
   history; who was taken out of action, and for each of them the injury table
   to tap what the dice rolled – an injury it already has counts as a Flesh
@@ -107,7 +111,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   the income. Apply writes it all into the warband and the
   battle history, which the warband card shows with its favour, standing and
   reputation
-- Spend each level of renown in a sheet, after the battle or from the Battle
+- Spend each level of renown in a sheet set as the back of the fighter's card, after the battle or from the Battle
   menu: a characteristic within the fighter's racial limit, and for a hero a
   heroic talent – a henchman's fourth level makes it a HERO, on its card and
   among the warband's heroes
