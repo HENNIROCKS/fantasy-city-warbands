@@ -66,6 +66,10 @@ Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
 `~/Sites/wyrdcry`. Ob sich das Regelwerk bewegt hat, zeigt der Skill
 `wyrdcry-rules-watch`; übertragen wird von Hand. Eine Bravery-Verbesserung ist
 ein negativer Bonus: Bravery ist ein Wurfziel.
+Die Kernregeln – Deckung, Moral, Universal Abilities und Reactions,
+Waffenregeln – folgen dem Rulebook 1.0 WIP unter `_works/Rulebooks/`, wo
+immer die aktuellen PDFs liegen; Fraktionen, Ausrüstung, Talente und
+Kampagne bleiben auf 0.9, bis das Campaign Book da ist.
 
 **Black Death City** ist von Hand aus dem Playtest v1.01 übertragen
 (`~/Spiele/+ Games Workshop/Mordheim Fanac [1e] - Black Death City Playtest v1.01.pdf`).
