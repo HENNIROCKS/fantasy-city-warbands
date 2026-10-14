@@ -11,12 +11,28 @@
  */
 
 import { activeEffects, isGrouped, limitOf } from './effects';
-import type { Faction, Fighter, GameSystem, Issue, Span, Warband } from './types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
 	if (span.max === null) return `at least ${span.min}`;
 	if (span.min === span.max) return `exactly ${span.min}`;
 	return `${span.min}-${span.max}`;
+}
+
+/**
+ * What a fighter's choice asks for, named so it does not read as the fighter
+ * itself missing: `choose one of Soulfire or Words of Healing`, or for a roll
+ * the table it is rolled on.
+ */
+function asked(choice: FighterChoice, tooMany: boolean): string {
+	const count = choice.pick === 1 ? 'one' : String(choice.pick);
+	if (choice.roll) {
+		const results = choice.pick === 1 ? 'result' : 'results';
+		return `enter ${tooMany ? `only ${count}` : choice.pick === 1 ? 'the' : count} ${results} rolled on the ${choice.roll}`;
+	}
+	const names = choice.options.map((o) => o.name);
+	const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} or ${names.at(-1)}` : names.join('');
+	return `choose ${tooMany ? 'only ' : ''}${count} of ${list}${choice.source ? ` for ${choice.source}` : ''}`;
 }
 
 /** Whether a count falls short of a span, exceeds it, or neither. */
@@ -122,7 +138,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 				issues.push({
 					code: 'fighter-choice',
 					kind: tooMany ? 'excess' : 'missing',
-					message: `${fighter.name}: pick ${choice.pick}, ${valid.size} picked.`,
+					message: `${fighter.name}: ${asked(choice, tooMany)}.`,
 					short: tooMany ? `Pick ${choice.pick} only` : 'Choice open',
 					instanceId: instance.instanceId
 				});
