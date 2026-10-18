@@ -115,6 +115,10 @@ export const game: GameSystem = {
 		gainLevels: (fighter, levels) => ({ ...fighter, tally: { ...fighter.tally, renown: (fighter.tally?.renown ?? 0) + levels } }),
 		shardNotes: (warband) =>
 			warband.fighters.flatMap((f) => shardRolls(f).map((name) => `${name} (${f.name.trim() || 'Unnamed fighter'}): on a 1–3 one shard fewer – count it in.`)),
+		/* Crimson Shade (Campaign Book, p. 29): on a 1–2 the 'Kleptomania' lasting injury, which the table calls Sticky Fingers. */
+		afterUse: [
+			{ wargear: 'item:crimson-shade', label: 'Crimson Shade roll', hit: '1–2 – Sticky Fingers', miss: '3–6 – nothing', injury: 'kleptomania' }
+		],
 		income
 	},
 	advancement,
@@ -376,7 +380,8 @@ const catalogue = new Map<string, Wargear>([
 							...(conditionsBy.has(`item:${i.id}`) ? { conditions: conditionsBy.get(`item:${i.id}`) } : {}),
 							...(grantsBy.has(`item:${i.id}`) ? { grants: grantsBy.get(`item:${i.id}`) } : {}),
 							...(i.rarity === 'rare' ? { found: 'a Rarity roll of 6+' } : {}),
-							...(i.type in TRADING_POST ? { group: TRADING_POST[i.type] } : {})
+							...(i.type in TRADING_POST ? { group: TRADING_POST[i.type] } : {}),
+							...(i.type === 'single-use' ? { singleUse: true as const } : {})
 						}
 					]
 				]

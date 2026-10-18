@@ -66,13 +66,13 @@
 - [x] 🛠️ The list of warbands shows each one's campaign figures – Wyrdcry's favour with its standing, and the reputation
 - [x] 📚 Wyrdcry: the Campaign Book 0.9 – favour tiers and income, the renown roll in place of experience, a characteristic on every level and a talent on every odd one, promotion at the third, legendary abilities, the new heroic talents, lasting injuries and Trading Post, and the 0.9 weapon and Ghoul updates
 - [x] 📈 Wyrdcry: talents that change the aftermath counted there – Bootlicker's favour, Drillmaster's second mark for greatness
+- [x] 📈 Wyrdcry: single-use items used up in a battle, and Crimson Shade's roll for Sticky Fingers in the aftermath
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
-- [ ] 📈 Wyrdcry: single-use items used up in a battle, and Crimson Shade's roll for Kleptomania in the aftermath
 - [ ] 📈 Wyrdcry: a dead or dismissed leader hands the LEADER keyword to a HERO
 - [ ] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
 - [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
@@ -100,4 +100,5 @@ Nothing promised, nothing planned.
 - 🎨 Virtual tuck box for each deck
 - ⚔️ Wyrdcry: Wounded at half Health as a band on the card
 - ⚔️ Wyrdcry: a reminder in round 4 that a dice decides on a fifth
+- ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
 - 📚 Wyrdcry: Channel Magic and the wizards' own abilities, once the 1.0 rulebook fills them in

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import {
+		diesOf,
 		extraMarksOf,
 		goldLeft,
 		isLeader,
@@ -9,8 +10,11 @@
 		marksOf,
 		rollsOf,
 		scoreNeeded,
+		singleUseOf,
 		survivorsOf,
 		toggleOut,
+		toggleUsed,
+		usedKey,
 		type AftermathDraft,
 		type AftermathRow,
 		type SurgeonAnswer
@@ -22,7 +26,8 @@
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
 	 * result, the shards and the line in the battle history; who was taken out
-	 * of action; one page for each of them that rolls for injuries; then the
+	 * of action; one page for each of them that rolls for injuries; the
+	 * single-use pieces used up, where a fighter carries any; then the
 	 * roll each fighter makes for renown. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
 	 * first drops the answers and goes back to the battle. Each page is the back
@@ -80,10 +85,14 @@
 			: []
 	);
 
+	/* Who carries a single-use piece, asked after the injuries, so a fighter that dies is known not to roll for one. */
+	const carrying = $derived(singleUseOf(warband, faction));
+
 	/* Pages come and go as fighters are taken out of action or brought back; a page is held by its key, not its place. */
 	const pages = $derived([
 		'battle',
 		...(injuries ? ['out', ...rolling.map((r) => `roll:${r.instance.instanceId}`)] : []),
+		...(carrying.length ? ['items'] : []),
 		'renown'
 	]);
 	let page = $state('battle');
@@ -108,6 +117,12 @@
 	function setSurgeon(instanceId: string, answer: SurgeonAnswer) {
 		if (draft.surgeon[instanceId] === answer) delete draft.surgeon[instanceId];
 		else draft.surgeon[instanceId] = answer;
+	}
+
+	/* A tap picks what the roll came to; a tap on the picked answer takes it back. */
+	function setAfterUse(key: string, hit: boolean) {
+		if (draft.afterUse[key] === hit) delete draft.afterUse[key];
+		else draft.afterUse[key] = hit;
 	}
 
 	const wargearName = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
@@ -336,6 +351,53 @@
 			<div class="foot">
 				<button class="plain" onclick={() => step(-1)}>Back</button>
 				<button class="add" onclick={() => step(1)} use:focusOnMount>{picked ? 'Next' : 'Skip'}</button>
+			</div>
+		{:else if current === 'items'}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">Single-use items</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">What was used up in the battle. It is struck from the fighter's equipment.</p>
+					</section>
+					{#each carrying as { instance, pieces } (instance.instanceId)}
+						{@const id = instance.instanceId}
+						{@const dies = diesOf(draft, game, faction, instance)}
+						<section>
+							<h3 class="heading"><span>{nameOf(id)}</span><span class="rule"></span></h3>
+							<div class="toggles" role="group" aria-label="Single-use items of {nameOf(id)}">
+								{#each pieces as { index, wargear } (index)}
+									<button class="toggle" aria-pressed={draft.used[id]?.includes(index) ?? false} onclick={() => toggleUsed(draft, id, index)}>
+										{wargear.name} used
+									</button>
+								{/each}
+							</div>
+							{#each pieces as { index, wargear } (index)}
+								{@const after = rules.afterUse?.find((r) => r.wargear === wargear.id)}
+								{@const key = usedKey(id, index)}
+								{#if after && draft.used[id]?.includes(index)}
+									{#if dies}
+										<p class="hint">{nameOf(id)} dies, so there is no {after.label}.</p>
+									{:else}
+										<p class="note" id="after-{key}">{after.label}</p>
+										<div class="results" role="group" aria-labelledby="after-{key}">
+											{#each [{ hit: true, label: after.hit }, { hit: false, label: after.miss }] as option (option.label)}
+												<button class="segment" aria-pressed={draft.afterUse[key] === option.hit} onclick={() => setAfterUse(key, option.hit)}>
+													{option.label}
+												</button>
+											{/each}
+										</div>
+									{/if}
+								{/if}
+							{/each}
+						</section>
+					{/each}
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
 			</div>
 		{:else}
 			<div class="scroll">

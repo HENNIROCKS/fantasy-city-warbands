@@ -220,6 +220,12 @@ export interface Aftermath {
 	/** What to keep in mind while counting the shards, such as a fighter whose injury may take one, a line each. */
 	shardNotes?: (warband: Warband) => string[];
 	/**
+	 * A roll a single-use piece asks for once used, such as Wyrdcry's Crimson
+	 * Shade: the piece by its wargear id, the roll's name, its two answers, and
+	 * the injury result id the fighter gains on `hit`.
+	 */
+	afterUse?: { wargear: string; label: string; hit: string; miss: string; injury: string }[];
+	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
 	 * `survivors` are the fighters that took part and were not taken out of
@@ -470,6 +476,8 @@ export interface Wargear {
 	conditions?: StatCondition[];
 	/** Rules the bearer has while carrying it, such as the Elven Cloak's Stealthy. */
 	grants?: Rule[];
+	/** Whether it is used up once used, such as Wyrdcry's drugs and poisons: the aftermath asks who used one and strikes it. */
+	singleUse?: true;
 }
 
 /** One of the options a fighter's own choice offers: a spell, a characteristic, a row of a table. */

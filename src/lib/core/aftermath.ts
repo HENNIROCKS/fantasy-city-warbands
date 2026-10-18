@@ -14,7 +14,7 @@ import { today } from './history';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { newId } from './warband';
-import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband } from './types';
+import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
 export type SurgeonAnswer = 'none' | 'died' | 'survived';
@@ -46,6 +46,10 @@ export interface AftermathDraft {
 	recovered: Record<string, boolean>;
 	/** For a fighter whose result needs a surgeon, what came of it, by instance id. Missing changes nothing. */
 	surgeon: Record<string, SurgeonAnswer>;
+	/** The single-use pieces used up in the battle, by instance id: the place of each in the fighter's wargear. */
+	used: Record<string, number[]>;
+	/** What the roll a used piece asks for came to, by `usedKey`: true for the result that brings the injury. Missing is not yet rolled and changes nothing. */
+	afterUse: Record<string, boolean>;
 	/** Who never rolls, named under the rows. */
 	excluded: string[];
 	/** The fighters marked to roll twice, in the order they were marked. */
@@ -106,6 +110,8 @@ export function startAftermath(
 		injuries: {},
 		recovered: {},
 		surgeon: {},
+		used: {},
+		afterUse: {},
 		marked: [],
 		result: null,
 		shards: 0,
@@ -139,6 +145,37 @@ export function injuryOf(draft: AftermathDraft, game: GameSystem, faction: Facti
 	const type = faction.fighters.find((f) => f.id === instance.fighterId);
 	if (!rolled || !type || !game.injuries?.table(instance, type, faction)) return null;
 	return game.injuries.resolve(instance, type, faction, rolled);
+}
+
+/** Whether the result a fighter was given, as answered, kills it: dead on the table, or no surgeon, or a surgeon who failed. */
+export function diesOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): boolean {
+	const outcome = injuryOf(draft, game, faction, instance)?.result.outcome;
+	const surgeon = outcome === 'surgeon' ? draft.surgeon[instance.instanceId] : undefined;
+	return outcome === 'dead' || surgeon === 'none' || surgeon === 'died';
+}
+
+/** The key of one piece of a fighter's wargear, for the roll it asks for once used. */
+export const usedKey = (instanceId: string, index: number) => `${instanceId}:${index}`;
+
+/** The single-use pieces each fighter at the battle carries, with their place in its wargear; fighters without any are left out. */
+export function singleUseOf(warband: Warband, faction: Faction): { instance: FighterInstance; pieces: { index: number; wargear: Wargear }[] }[] {
+	return warband.fighters.flatMap((instance) => {
+		if (instance.away) return [];
+		const pieces = instance.wargear.flatMap((id, index) => {
+			const wargear = faction.wargear.find((w) => w.id === id);
+			return wargear?.singleUse ? [{ index, wargear }] : [];
+		});
+		return pieces.length ? [{ instance, pieces }] : [];
+	});
+}
+
+/** Marks a piece as used up or takes it back, and with it what its roll came to. */
+export function toggleUsed(draft: AftermathDraft, instanceId: string, index: number) {
+	const used = draft.used[instanceId] ?? [];
+	if (used.includes(index)) {
+		draft.used[instanceId] = used.filter((i) => i !== index);
+		delete draft.afterUse[usedKey(instanceId, index)];
+	} else draft.used[instanceId] = [...used, index];
 }
 
 /** A leader that dies stays on the roster, marked dead, until another fighter can take its place – which the app cannot do yet. */
@@ -235,6 +272,9 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * stash where the roll recovered it – or, dying at the surgeon's, always; a
  * dead leader stays, marked dead. A surgeon's fee comes off the gold, robbery
  * takes what the fighter bought, and a capture or a missed battle marks it.
+ * A single-use piece used up is struck before any of it, so a dead fighter
+ * leaves none to the stash; a roll it asked for that brought an injury adds
+ * that injury to a fighter that lives, unless it has it already.
  */
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
@@ -251,15 +291,20 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
 		let fighter: FighterInstance = away === 'miss-next-battle' ? back : before;
+		const id = fighter.instanceId;
+		const used = draft.used[id] ?? [];
+		if (used.length) {
+			spent += used.reduce((sum, index) => sum + priceOf(fighter.wargear[index], faction), 0);
+			fighter = { ...fighter, wargear: fighter.wargear.filter((_, index) => !used.includes(index)) };
+		}
 		const type = faction.fighters.find((f) => f.id === before.fighterId);
 		const resolution = injuryOf(draft, game, faction, fighter);
 		if (resolution && type && game.injuries) {
-			const id = fighter.instanceId;
 			fighter = game.injuries.apply(fighter, type, faction, draft.injuries[id]);
 			const { outcome } = resolution.result;
 			const surgeon = outcome === 'surgeon' ? draft.surgeon[id] : undefined;
 			spent += feeOf(draft, game, faction, before);
-			const dies = outcome === 'dead' || surgeon === 'none' || surgeon === 'died';
+			const dies = diesOf(draft, game, faction, before);
 			const carried = fighter.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
 			if (dies && isLeader(type)) return [{ ...fighter, away: 'dead' }];
 			if (dies) {
@@ -273,6 +318,11 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 				fighter = { ...fighter, wargear: [] };
 			}
 			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
+		}
+		for (const index of used) {
+			const roll = rules.afterUse?.find((r) => r.wargear === before.wargear[index]);
+			const held = fighter.injuries ?? [];
+			if (roll && draft.afterUse[usedKey(id, index)] && !held.includes(roll.injury)) fighter = { ...fighter, injuries: [...held, roll.injury] };
 		}
 		const row = rows.get(fighter.instanceId);
 		const levels = row ? levelsEarned(row, marks) : 0;

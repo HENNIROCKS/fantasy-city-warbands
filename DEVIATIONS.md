@@ -30,6 +30,7 @@ The data is the Warband Deck's hand-kept ruleset, brought up to the core rules 1
 - [ ] Core rules 1.0: page 29 and the reference card on page 48 disagree on Respite, Onslaught and whether Rampage moves up to (X)"
 - [ ] Core rules 1.0: whether Strike them down's "disengage action" is the Retreat action
 - [ ] Campaign Book 0.9: Crimson Shade gives the 'Kleptomania' lasting injury, which the Lasting Injury Table now calls Sticky Fingers
+- [ ] Campaign Book 0.9: the Lucky Charm reads "once per battle" but is listed as single use – used up here, as the list says
 - [ ] Campaign Book 0.9: Superior Blackpowder removes a "blackpowder" special rule that no weapon rule is called
 - [ ] Campaign Book 0.9: Oppressor lets the fighter make a "Cut Them Down" reaction, which the core rules 1.0 call Strike them down
 - [ ] Hired Swords: the Campaign Book lists eight at its own fees (Rat Ogre 90gc), the 0.9 data ten, the Thief among them (Rat Ogre 80gc)
