@@ -52,6 +52,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   first when fighters or a choice would be lost
 - Star one warband to keep it at the top of the list, which otherwise runs A
   to Z; the star stays on the device and out of the export
+- See each warband's campaign figures in the list, such as Wyrdcry's favour
+  with its standing and the reputation
 - Name the warband, pick the colour of its cards and write its fluff and notes,
   in the finish step or on the back of the warband card;
   a card without a name says Unnamed warband or Unnamed fighter and leads to

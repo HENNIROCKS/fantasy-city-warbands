@@ -115,6 +115,11 @@ export interface GameSystem {
 		fighter: Counter[];
 		/** Figures the warband card shows beside its size, such as Wyrdcry's favour. */
 		values?: (warband: Warband) => { key: string; label: string; value: string }[];
+		/**
+		 * The figures the list of warbands shows, shorter than the card's, each
+		 * with a short label for the phone. Without it, the list shows `values`.
+		 */
+		brief?: (warband: Warband) => Figure[];
 	};
 	/**
 	 * What ending a battle asks and writes into the warband. Without it, ending a
@@ -342,6 +347,13 @@ export interface InjuryEffects extends AdvanceEffects {
 	stats: { stat: string; bonus: number; source: string }[];
 	/** Types of ability the fighter cannot use, such as `reaction`, each by the result's name. */
 	forbid: { type: string; source: string }[];
+}
+
+/** A figure in the list of warbands, with the label a phone shows instead. */
+export interface Figure {
+	label: string;
+	short: string;
+	value: string;
 }
 
 /** A number a game's campaign counts up and down, such as favour. */

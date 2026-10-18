@@ -76,16 +76,22 @@ export const game: GameSystem = {
 	campaign: {
 		warband: [{ key: 'favour', label: 'Favour' }],
 		fighter: [{ key: 'renown', label: 'Renown' }],
-		/* As on the Warband Deck's card. Reputation is every fighter's renown and
-		   the favour, as the builder counts it. */
+		/* As on the Warband Deck's card. */
 		values: (warband) => {
-			const favour = warband.tally?.favour ?? 0;
-			const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour);
+			const { favour, standing, reputation } = figures(warband);
 			return [
 				{ key: 'favour', label: 'Favour', value: String(favour) },
 				/* Between the two it is read as what the favour buys, which is what it is. */
-				{ key: 'standing', label: 'Standing', value: tierFor(favour).label },
+				{ key: 'standing', label: 'Standing', value: standing },
 				{ key: 'reputation', label: 'Reputation', value: String(reputation) }
+			];
+		},
+		/* The standing in brackets after the favour it is read off. */
+		brief: (warband) => {
+			const { favour, standing, reputation } = figures(warband);
+			return [
+				{ label: 'Favour', short: 'Fav.', value: `${favour} (${standing})` },
+				{ label: 'Reputation', short: 'Rep.', value: String(reputation) }
 			];
 		}
 	},
@@ -138,6 +144,13 @@ export const game: GameSystem = {
 };
 
 type FavourTier = (typeof campaign.favour_tiers)[number];
+
+/** The warband's favour, the standing it buys, and its reputation: every fighter's renown and the favour, as the builder counts it. */
+function figures(warband: Warband) {
+	const favour = warband.tally?.favour ?? 0;
+	const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour);
+	return { favour, standing: tierFor(favour).label, reputation };
+}
 
 /**
  * The standing a favour score is in, off the income page's four tiers rather

@@ -63,6 +63,7 @@
 - [x] 📚 Wyrdcry: the core rules 1.0 – cover at −1 Shoot, Take cover, Rampage for heroes, the weapon rules, wavering past half and the morale test at the round's end
 - [x] 🃏 Wyrdcry: no modifier takes a characteristic below 1
 - [x] 🛠️ The check names what a fighter still has to choose on recruitment – the spells, characteristics or table it picks from
+- [x] 🛠️ The list of warbands shows each one's campaign figures – Wyrdcry's favour with its standing, and the reputation
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text

@@ -16,7 +16,7 @@
 		saveWarband
 	} from '$lib/core/storage.svelte';
 	import { fileName, judge, readWarbandFile, toFile, type Known, type Verdict } from '$lib/core/transfer';
-	import type { Warband } from '$lib/core/types';
+	import type { Figure, Warband } from '$lib/core/types';
 	import { purse, warbandCost, validate } from '$lib/core/validate';
 	import { rosterPdf } from '$lib/pdf/roster';
 	import { safeName, shareFile, type ShareResult } from '$lib/share';
@@ -247,12 +247,14 @@
 		const s = systems[w.game];
 		const f = s?.factions.find((x) => x.id === w.factionId);
 		const fighters = `${w.fighters.length} ${w.fighters.length === 1 ? 'fighter' : 'fighters'}`;
-		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', fighters, cost: '', status: 'missing', known: false };
+		if (!s || !f) return { title: w.name || 'Warband', label: 'Unknown faction', values: [] as Figure[], fighters, cost: '', status: 'missing', known: false };
 		const issues = validate(w, s.game, f);
 		return {
 			/* A warband saved without a name goes by its faction's. */
 			title: w.name.trim() || f.name,
 			label: `${s.game.name} • ${f.name}`,
+			/* The campaign's figures; a game without a campaign has none. */
+			values: s.game.campaign?.brief?.(w) ?? (s.game.campaign?.values?.(w) ?? []).map((v) => ({ ...v, short: v.label })),
 			fighters,
 			cost: `${warbandCost(w, f)} / ${purse(w, s.game)} ${s.game.currency}`,
 			/* Past its limits is not the same as unfinished: an import or a corrected
@@ -333,6 +335,18 @@
 							>
 								<span class="block truncate text-base font-semibold text-zinc-200">{s.title}</span>
 								<span class="block truncate text-zinc-400">{s.label}</span>
+								<!-- Short labels on a phone, and a break between the figures, never inside one. -->
+								{#if s.values.length}
+									<span class="block text-zinc-400">
+										{#each s.values as value, i (i)}
+											<span class="whitespace-nowrap"
+												><span class="hidden sm:inline">{value.label}</span><span class="sm:hidden" aria-hidden="true">{value.short}</span
+												><span class="sr-only sm:hidden">{value.label}</span>
+												{value.value}{i < s.values.length - 1 ? ' •' : ''}</span
+											>{' '}
+										{/each}
+									</span>
+								{/if}
 								<span class="block text-zinc-400">{[s.fighters, s.cost].filter(Boolean).join(' · ')}</span>
 								<!-- Only what still needs doing takes a colour; the row's own is its deck's. -->
 								{#if s.status === 'valid'}
