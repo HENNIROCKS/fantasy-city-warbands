@@ -37,7 +37,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ name: '', fluff: '', notes: '', xp: 0, tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
+	let draft = $state<BackDraft>({ name: '', fluff: '', notes: '', tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({
@@ -157,7 +157,6 @@
 			name: fighter.name,
 			fluff: fighter.fluff ?? '',
 			notes: fighter.notes ?? '',
-			xp: fighter.xp ?? 0,
 			tally: { ...fighter.tally },
 			wargear: [...fighter.wargear],
 			stash: [...(warband?.stash ?? [])],
@@ -213,26 +212,20 @@
 
 	/**
 	 * What the back may correct of the fighter's campaign, as the game keeps it.
-	 * A fighter that never earns experience gains no levels either, as Wyrdcry's
-	 * BEAST and THRALL: it gets no section, or only the counters a file brought
-	 * it, to take down.
+	 * A fighter that never rolls for levels gains none, as Wyrdcry's BEAST and
+	 * THRALL: it gets no section, or only the counters a file brought it, to take down.
 	 */
 	function campaignOf(fighter: FighterInstance): BackCampaign | null {
 		const game = system?.game;
 		if (!game?.campaign) return null;
 		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === fighter.instanceId);
 		const keywords = card?.kind === 'fighter' ? card.keywordIds : [];
-		const earns = !game.aftermath?.noXp.some((k) => keywords.includes(k));
+		const earns = !game.aftermath?.excluded.some((k) => keywords.includes(k));
 		const counters = game.campaign.fighter
 			.filter((c) => earns || (fighter.tally?.[c.key] ?? 0) > 0)
 			.map((c) => ({ ...c, raise: earns }));
 		if (!earns && !counters.length) return null;
 		return {
-			xp: earns,
-			addXp: (xp, tally) => {
-				const raised = game.aftermath?.gainXp({ ...fighter, xp, tally }, 1);
-				return raised ? { xp: raised.xp ?? 0, tally: raised.tally ?? {} } : { xp: xp + 1, tally };
-			},
 			counters,
 			levels: game.advancement?.counter ?? null
 		};
@@ -252,7 +245,6 @@
 		const values = $state.snapshot(draft);
 		const now: FighterInstance = {
 			...($state.snapshot(instance) as FighterInstance),
-			xp: values.xp,
 			tally: values.tally,
 			wargear: values.wargear,
 			advances: values.advances,
@@ -261,7 +253,7 @@
 		const open = advancement.open(now, profile);
 		return {
 			label: advancement.label,
-			next: open[0] ? { level: open[0], offer: advancement.offer(now, profile, faction, open[0]) } : null,
+			next: open[0] ? { level: open[0], offer: advancement.offer(now, profile, faction, open[0], warband) } : null,
 			waiting: open.length,
 			spent: values.advances.map((a, i) => ({ level: a.level, text: advancement.describe(now, profile, faction, i) }))
 		};
@@ -283,18 +275,17 @@
 
 	/**
 	 * The fighter with the back's text and campaign; a field left blank is left
-	 * out, as it is on a fighter never written on, and so are experience and
-	 * counters at none where the fighter had none.
+	 * out, as it is on a fighter never written on, and so are counters at none
+	 * where the fighter had none.
 	 */
-	function written(fighter: FighterInstance, { name, fluff, notes, xp, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
-		const { fluff: _fluff, notes: _notes, xp: _xp, tally: _tally, advances: _advances, injuries: _injuries, away: _away, ...rest } = fighter;
+	function written(fighter: FighterInstance, { name, fluff, notes, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
+		const { fluff: _fluff, notes: _notes, tally: _tally, advances: _advances, injuries: _injuries, away: _away, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
 		return {
 			...rest,
 			name: name.trim(),
 			...(fluff.trim() ? { fluff: fluff.trim() } : {}),
 			...(notes.trim() ? { notes: notes.trim() } : {}),
-			...(xp || fighter.xp !== undefined ? { xp } : {}),
 			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
 			...(advances.length || fighter.advances ? { advances } : {}),
 			...(injuries.length || fighter.injuries ? { injuries } : {}),
@@ -579,7 +570,7 @@
 		name={next.instance.name.trim() || 'Unnamed fighter'}
 		label={system.game.advancement.label}
 		level={next.level}
-		offer={system.game.advancement.offer(next.instance, next.fighter, faction!, next.level)}
+		offer={system.game.advancement.offer(next.instance, next.fighter, faction!, next.level, warband!)}
 		waiting={levels.length - 1}
 		onspend={spendLevel}
 		onclose={() => (spending = false)}
@@ -594,7 +585,7 @@
 			<p class="count">Round {battle.round}{#if askedOut > 0}{' '}· {askedOut} out of action{/if}</p>
 			<p class="notice">
 				Wounds, activations and who is out of action are dropped{asking === 'cancel'
-					? ', and nobody earns experience'
+					? ', and nobody rolls for renown'
 					: ''}. The warband itself does not change.
 			</p>
 			<div class="sheet-actions">

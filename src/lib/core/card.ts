@@ -5,7 +5,7 @@
  * formatted once, so the card and the roster print read the same.
  */
 
-import type { AwayReason, Faction, Fighter, FighterInstance, GameSystem, InjuryEffects, Rule, StatFormat, Wargear, Warband } from './types';
+import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
@@ -176,7 +176,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const type = fighter?.name ?? instance.fighterId;
 	const options = fighter ? chosenOptions(instance, fighter) : [];
 	/* What the fighter's spent levels bring besides characteristics. */
-	const advanced = fighter && game.advancement ? game.advancement.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [] };
+	const advanced = fighter && game.advancement ? game.advancement.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [], stats: [] };
 	/* What the injuries it keeps do to it. */
 	const injured = fighter && game.injuries ? game.injuries.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [], stats: [], forbid: [] };
 	const changed = [...advanced.weapons, ...injured.weapons];
@@ -280,7 +280,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	).filter((s) => s.entries.length);
 
 	const profile = fighter ? profileOf(instance, fighter) : undefined;
-	const statLayers = fighter ? layersOf(instance, fighter, faction, injured.stats) : new Map<string, StatLayer[]>();
+	const statLayers = fighter ? layersOf(instance, fighter, faction, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
 	const statConditions = conditionsOf(carried.map((c) => c.wargear), instance.wargear);
 
 	return {
@@ -317,12 +317,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		   rather than into one, where the game keeps a campaign. */
 		campaign: [
 			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) },
-			...(game.campaign
-				? [
-						{ key: 'xp', label: 'Experience Points', value: String(instance.xp ?? 0) },
-						...game.campaign.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) }))
-					]
-				: [])
+			...(game.campaign?.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
 		],
 		weapons,
 		sections,
@@ -334,11 +329,11 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 /**
  * How each numeric characteristic is made up, as the Warband Deck's card has it:
- * the profile, what the fighter's own pick, its levels and its injuries add,
- * then what its bought wargear adds whenever it is carried. Wargear on the profile is not
+ * the profile, what the fighter's own pick, its levels, its talents and its
+ * injuries add, then what its bought wargear adds whenever it is carried. Wargear on the profile is not
  * counted: the profile already carries it.
  */
-function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction, injuries: InjuryEffects['stats']): Map<string, StatLayer[]> {
+function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction, rules: AdvanceEffects['stats']): Map<string, StatLayer[]> {
 	const map = new Map<string, StatLayer[]>();
 	for (const [key, value] of Object.entries(fighter.profile)) {
 		if (typeof value === 'number') map.set(key, [{ kind: 'base', source: 'Profile', amount: value }]);
@@ -360,7 +355,7 @@ function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction,
 			amount: advance.bonus ?? 0
 		});
 	}
-	for (const injury of injuries) add(injury.stat, { kind: 'permanent', source: injury.source, amount: injury.bonus });
+	for (const rule of rules) add(rule.stat, { kind: 'permanent', source: rule.source, amount: rule.bonus });
 	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
 	for (const id of instance.wargear) {
 		const piece = wargear.get(id);

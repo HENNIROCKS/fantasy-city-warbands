@@ -160,7 +160,7 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		weaponLabels: game.roster.weapons,
 		/* One heading per counter the card carries; where the game names no short
 		   ones, the card's own labels stand in. */
-		campaignLabels: game.campaign ? (game.roster.campaign ?? ['XP', ...game.campaign.fighter.map((c) => c.label)]) : [],
+		campaignLabels: game.campaign ? (game.roster.campaign ?? game.campaign.fighter.map((c) => c.label)) : [],
 		currency: game.currency,
 		fighters: fighters.map(toFighter),
 		rules: collectRules(fighters)

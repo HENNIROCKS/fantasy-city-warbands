@@ -64,6 +64,7 @@
 - [x] 🃏 Wyrdcry: no modifier takes a characteristic below 1
 - [x] 🛠️ The check names what a fighter still has to choose on recruitment – the spells, characteristics or table it picks from
 - [x] 🛠️ The list of warbands shows each one's campaign figures – Wyrdcry's favour with its standing, and the reputation
+- [x] 📚 Wyrdcry: the Campaign Book 0.9 – favour tiers and income, the renown roll in place of experience, a characteristic on every level and a talent on every odd one, promotion at the third, legendary abilities, the new heroic talents, lasting injuries and Trading Post, and the 0.9 weapon and Ghoul updates
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
@@ -77,7 +78,10 @@
 - [ ] 🛠️ Recruit between battles
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 🛠️ Hire a Hired Sword for a single battle
-- [ ] 📚 Wyrdcry: Shield, Lantern and Shield Wall without the difficulty rating, once the 1.0 Campaign Book is out
+- [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls and the encounters
+- [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
+- [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
+- [ ] 📈 Wyrdcry: talents that change the aftermath counted there – Bootlicker, Drillmaster, Scout
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
 

@@ -74,7 +74,7 @@
 		"hit": 3,
 		"crit": 4,
 		"rules": ["two-handed", "cumbersome"],
-		"cost": 25
+		"cost": 15
 	},
 	{
 		"id": "warhammer",
@@ -107,7 +107,7 @@
 		"hit": 2,
 		"crit": 3,
 		"rules": ["parry", "two-handed", "pierce-1"],
-		"cost": 30
+		"cost": 25
 	},
 	{
 		"id": "weeping-blade",
@@ -118,7 +118,7 @@
 		"hit": 2,
 		"crit": 5,
 		"rules": ["parry", "pierce-1"],
-		"cost": 40
+		"cost": 30
 	},
 	{
 		"id": "staff",
@@ -246,11 +246,11 @@
 		"name": "Bow",
 		"type": "ranged",
 		"range": { "min": 3, "max": 18 },
-		"attacks": 3,
+		"attacks": 2,
 		"hit": 2,
 		"crit": 3,
 		"rules": [],
-		"cost": 25
+		"cost": 15
 	},
 	{
 		"id": "crossbow",
@@ -261,7 +261,7 @@
 		"hit": 3,
 		"crit": 6,
 		"rules": ["reload", "pierce-1"],
-		"cost": 40
+		"cost": 35
 	},
 	{
 		"id": "pistol",
@@ -271,8 +271,8 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 6,
-		"rules": ["reload", "unreliable", "brace", "pierce-2"],
-		"cost": 35
+		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
+		"cost": 30
 	},
 	{
 		"id": "crossbow-pistol",
@@ -281,20 +281,20 @@
 		"range": { "min": 0, "max": 6 },
 		"attacks": 2,
 		"hit": 3,
-		"crit": 6,
-		"rules": ["reload", "brace", "pierce-1"],
-		"cost": 25
+		"crit": 5,
+		"rules": ["reload", "brace", "pierce-1", "point-blank"],
+		"cost": 15
 	},
 	{
 		"id": "blunderbuss",
 		"name": "Blunderbuss",
 		"type": "ranged",
 		"range": { "min": 0, "max": 6 },
-		"attacks": 6,
-		"hit": 2,
+		"attacks": 5,
+		"hit": 1,
 		"crit": 3,
-		"rules": ["blast", "one-use"],
-		"cost": 40
+		"rules": ["blast", "one-use", "point-blank"],
+		"cost": 35
 	},
 	{
 		"id": "handgun",
@@ -305,29 +305,29 @@
 		"hit": 4,
 		"crit": 8,
 		"rules": ["reload", "unreliable", "pierce-2"],
-		"cost": 60
+		"cost": 55
 	},
 	{
 		"id": "sling",
 		"name": "Sling",
 		"type": "ranged",
 		"range": { "min": 3, "max": 12 },
-		"attacks": 3,
-		"hit": 1,
+		"attacks": 2,
+		"hit": 2,
 		"crit": 3,
 		"rules": [],
-		"cost": 5
+		"cost": 10
 	},
 	{
 		"id": "throwing-stars",
 		"name": "Throwing Stars",
 		"type": "ranged",
 		"range": { "min": 0, "max": 6 },
-		"attacks": 3,
+		"attacks": 2,
 		"hit": 2,
 		"crit": 4,
 		"rules": [],
-		"cost": 15
+		"cost": 5
 	},
 	{
 		"id": "warplock-pistol",
@@ -337,8 +337,8 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 7,
-		"rules": ["reload", "unreliable", "brace", "pierce-2"],
-		"cost": 40
+		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
+		"cost": 35
 	},
 	{
 		"id": "unarmed",

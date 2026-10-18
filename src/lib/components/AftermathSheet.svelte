@@ -1,6 +1,6 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { goldLeft, isLeader, toggleOut, xpEarned, type AftermathDraft, type SurgeonAnswer } from '$lib/core/aftermath';
+	import { goldLeft, isLeader, levelsEarned, rollsOf, scoreNeeded, toggleOut, type AftermathDraft, type AftermathRow, type SurgeonAnswer } from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
@@ -8,8 +8,8 @@
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
 	 * result, the shards and the line in the battle history; who was taken out
-	 * of action; one page for each of them that rolls for injuries; then who
-	 * earned experience. The dice are rolled at the table and the result tapped
+	 * of action; one page for each of them that rolls for injuries; then the
+	 * roll each fighter makes for renown. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
 	 * first drops the answers and goes back to the battle. Each page is the back
 	 * of a card, as a fighter's back is written on, with its answers at its foot.
@@ -67,7 +67,7 @@
 	const pages = $derived([
 		'battle',
 		...(injuries ? ['out', ...rolling.map((r) => `roll:${r.instance.instanceId}`)] : []),
-		'experience'
+		'renown'
 	]);
 	let page = $state('battle');
 	const at = $derived(Math.max(0, pages.indexOf(page)));
@@ -99,10 +99,23 @@
 	const present = $derived(warband.fighters.filter((f) => !f.away));
 	const sittingOut = $derived(warband.fighters.flatMap((f) => (f.away ? [`${nameOf(f.instanceId)} (${AWAY_LABELS[f.away]})`] : [])));
 
-	/* One fighter at most: a tap moves the point, a second tap takes it back. */
-	function toggleBonus(instanceId: string) {
-		draft.bonus = draft.bonus === instanceId ? null : instanceId;
+	/* One fighter at most: a tap moves the mark, a second tap takes it back. A level tapped for a second roll goes with it. */
+	function toggleMarked(row: AftermathRow) {
+		draft.marked = draft.marked === row.instanceId ? null : row.instanceId;
+		for (const r of draft.rows) r.levels = Math.min(r.levels, rollsOf(r, draft.marked));
 	}
+
+	/* A fighter that sat the battle out rolls nothing, and is not the one marked. */
+	function toggleTookPart(row: AftermathRow) {
+		row.tookPart = !row.tookPart;
+		if (!row.tookPart) {
+			row.levels = 0;
+			if (draft.marked === row.instanceId) draft.marked = null;
+		}
+	}
+
+	/* What each tap on the outcome says: for one roll whether it reached the score, for two how many did. */
+	const outcomes = (rolls: number) => (rolls === 2 ? ['No level', '1 level', '2 levels'] : ['Not reached', 'Reached']);
 
 	/* A second tap while the write is still running would write the battle twice. */
 	let busy = $state(false);
@@ -148,6 +161,9 @@
 								<button class="segment" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
 							</div>
 						</div>
+						{#each rules.shardNotes?.(warband) ?? [] as note (note)}
+							<p class="hint">{note}</p>
+						{/each}
 						{#if draft.result}
 							<ul class="list">
 								{#each earned.lines as line (line.gain)}
@@ -300,37 +316,51 @@
 			</div>
 		{:else}
 			<div class="scroll">
-				<h2 class="name" id="aftermath-title">Experience</h2>
+				<h2 class="name" id="aftermath-title">Renown</h2>
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					{#each draft.rows as row (row.instanceId)}
-						{@const points = xpEarned(row, draft.bonus)}
+						{@const levels = levelsEarned(row, draft.marked)}
+						{@const rolls = rollsOf(row, draft.marked)}
 						<section>
 							<h3 class="heading">
 								<span>{row.name}</span><span class="rule"></span>
-								<span class="gain" class:none={points === 0}>+{points} XP</span>
+								<span class="gain" class:none={levels === 0}>+{levels} {levels === 1 ? 'level' : 'levels'}</span>
 							</h3>
-							<div class="toggles" role="group" aria-label="Experience for {row.name}">
-								{#each rules.questions as question (question.key)}
-									<button
-										class="toggle"
-										aria-pressed={row.answers[question.key] ?? false}
-										onclick={() =>
-											question.start === 'not-out' ? toggleOut(draft, rules, row.instanceId) : (row.answers[question.key] = !row.answers[question.key])}
-									>
-										{question.label}
-									</button>
-								{/each}
-								{#if rules.bonus}
-									<button class="toggle" aria-pressed={draft.bonus === row.instanceId} onclick={() => toggleBonus(row.instanceId)}>Bonus</button>
+							<div class="toggles" role="group" aria-label="{rules.roll.label} of {row.name}">
+								<button class="toggle" aria-pressed={row.tookPart} onclick={() => toggleTookPart(row)}>Took part</button>
+								{#if row.tookPart}
+									{#each rules.modifiers as modifier (modifier.key)}
+										<button
+											class="toggle"
+											aria-pressed={row.answers[modifier.key] ?? false}
+											onclick={() =>
+												modifier.start === 'not-out' ? toggleOut(draft, rules, row.instanceId) : (row.answers[modifier.key] = !row.answers[modifier.key])}
+										>
+											{modifier.label}
+										</button>
+									{/each}
+									{#if rules.marked}
+										<button class="toggle" aria-pressed={draft.marked === row.instanceId} onclick={() => toggleMarked(row)}>{rules.marked}</button>
+									{/if}
 								{/if}
 							</div>
+							{#if rolls}
+								<p class="note" id="roll-{row.instanceId}">
+									{rules.roll.label}{rolls === 2 ? ', twice' : ''}: needs {scoreNeeded(row, rules)}+
+								</p>
+								<div class="results" role="group" aria-labelledby="roll-{row.instanceId}">
+									{#each outcomes(rolls) as label, n (label)}
+										<button class="segment" aria-pressed={row.levels === n} onclick={() => (row.levels = n)}>{label}</button>
+									{/each}
+								</div>
+							{/if}
 						</section>
 					{/each}
 					{#if draft.excluded.length || sittingOut.length}
 						<section>
 							{#if draft.excluded.length}
-								<p class="hint">Never earn experience: {draft.excluded.join(', ')}</p>
+								<p class="hint">Never roll for renown: {draft.excluded.join(', ')}</p>
 							{/if}
 							{#if sittingOut.length}
 								<p class="hint">Sitting this one out: {sittingOut.join(', ')}</p>
@@ -349,7 +379,7 @@
 </div>
 
 <style>
-	/* The result as one pill of three across the card, as on the back of the warband card. */
+	/* The result as one pill of three across the card, as on the back of the warband card; a roll's outcome likewise. */
 	.results .segment {
 		flex: 1;
 	}

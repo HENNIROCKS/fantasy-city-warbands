@@ -186,9 +186,15 @@ export function inRankOrder(fighters: FighterInstance[], faction: Faction, game:
 	return [...fighters].sort((a, b) => rankOf(a) - rankOf(b));
 }
 
-/** The recruit takes its place by role, and the warband falls into that order with it. */
+/**
+ * The recruit takes its place by role, and the warband falls into that order
+ * with it. It starts with the counters the game gives a fighter of its kind.
+ */
 export function withFighter(warband: Warband, fighterId: string, faction: Faction, game: GameSystem): Warband {
-	return { ...warband, fighters: inRankOrder([...warband.fighters, createFighter(fighterId)], faction, game) };
+	const type = faction.fighters.find((f) => f.id === fighterId);
+	const tally = type ? game.campaign?.recruited?.(type) : undefined;
+	const recruit = { ...createFighter(fighterId), ...(tally && Object.keys(tally).length ? { tally } : {}) };
+	return { ...warband, fighters: inRankOrder([...warband.fighters, recruit], faction, game) };
 }
 
 export function withInstance(warband: Warband, instance: FighterInstance, index: number): Warband {

@@ -8,7 +8,6 @@
 		name: string;
 		fluff: string;
 		notes: string;
-		xp: number;
 		/** The game's campaign counters for the fighter, such as renown, by key. */
 		tally: Record<string, number>;
 		/** What the fighter has bought, as stored – what its profile brings is not in here. */
@@ -39,10 +38,6 @@
 
 	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
 	export interface BackCampaign {
-		/** False for a fighter that never earns experience, such as a BEAST. */
-		xp: boolean;
-		/** One more point of experience, with whatever level it brings. */
-		addXp: (xp: number, tally: Record<string, number>) => { xp: number; tally: Record<string, number> };
 		/** Without `raise` a counter only comes down, for a fighter that never gains it and has some from a file. */
 		counters: { key: string; label: string; raise: boolean }[];
 		/** The counter the levels are counted in, which never goes below a level spent; null where none. */
@@ -119,11 +114,6 @@
 		draft.wargear = [...draft.wargear, id];
 	}
 
-	function moreXp() {
-		if (!campaign) return;
-		({ xp: draft.xp, tally: draft.tally } = campaign.addXp(draft.xp, draft.tally));
-	}
-
 	function step(key: string, by: number) {
 		draft.tally = { ...draft.tally, [key]: (draft.tally[key] ?? 0) + by };
 	}
@@ -141,6 +131,8 @@
 	let campaignSection: HTMLElement | undefined = $state();
 
 	const next = $derived(spending ? (renown?.next ?? null) : null);
+	/* A level that asks only for a talent opens on them; one that asks for no talent has none. */
+	const onRules = $derived(!!next && next.offer.rules.length > 0 && (next.offer.stats.length === 0 || talking));
 	const open = $derived(
 		next ? next.offer.stats.some((s) => s.blocked === null) || next.offer.rules.some((g) => g.options.some((o) => o.blocked === null)) : false
 	);
@@ -153,10 +145,14 @@
 		(on ? article : campaignSection)?.scrollIntoView({ block: 'start' });
 	}
 
-	function choose(pick: Omit<Advance, 'level'>) {
+	/* A level that asks for a characteristic and a talent stays on this page for the second part. */
+	async function choose(pick: Omit<Advance, 'level'>) {
 		if (!next) return;
-		draft.advances = [...draft.advances, { level: next.level.level, ...pick }];
-		showSpending(false);
+		const { level } = next.level;
+		draft.advances = [...draft.advances, { level, ...pick }];
+		talking = false;
+		await tick();
+		if (renown?.next?.level.level !== level) showSpending(false);
 	}
 
 	/** Only the last: the choices after a level were offered on the figures it left. */
@@ -238,14 +234,14 @@
 				<h3 class="heading"><span>{renown.label} {next.level.level}</span><span class="rule"></span></h3>
 				<p class="note">{next.level.note}</p>
 
-				{#if next.offer.rules.length}
+				{#if next.offer.rules.length && next.offer.stats.length}
 					<div class="tabs" role="group" aria-label="What to spend the level on">
 						<button aria-pressed={!talking} class:on={!talking} onclick={() => (talking = false)}>Characteristics</button>
 						<button aria-pressed={talking} class:on={talking} onclick={() => (talking = true)}>{next.offer.rulesLabel}</button>
 					</div>
 				{/if}
 
-				{#if talking && next.offer.rules.length}
+				{#if onRules}
 					<LevelPicker offer={next.offer} onpick={choose} />
 				{:else}
 					<div class="options">
@@ -334,16 +330,6 @@
 				     battle played elsewhere, a point given by mistake. -->
 				<section bind:this={campaignSection}>
 					<h3 class="heading"><span>Campaign</span><span class="rule"></span></h3>
-					{#if campaign.xp}
-						<div class="counter">
-							<span class="label" id="back-xp">XP</span>
-							<div class="stepper" role="group" aria-labelledby="back-xp">
-								<button class="segment" aria-label="Less XP" disabled={draft.xp <= 0} onclick={() => (draft.xp -= 1)}>−</button>
-								<output class="figure">{draft.xp}</output>
-								<button class="segment" aria-label="More XP" onclick={moreXp}>+</button>
-							</div>
-						</div>
-					{/if}
 					{#each campaign.counters as counter (counter.key)}
 						{@const value = draft.tally[counter.key] ?? 0}
 						<div class="counter">

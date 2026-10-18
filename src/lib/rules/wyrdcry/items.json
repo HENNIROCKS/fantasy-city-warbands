@@ -4,9 +4,9 @@
     "slot": null,
     "name": "Blessed Water",
     "type": "single-use",
-    "text": "Use this item in the 'Present Warbands' step. Select a weapon equipped by the bearer. Until the end of the battle, that weapon gains the blessed weapon rule.",
+    "text": "The bearer may use this item on one of their weapons as a free action. Until the end of the battle, that weapon gains the blessed weapon rule.",
     "effects": [],
-    "cost": 10,
+    "cost": 5,
     "rarity": "common"
   },
   {
@@ -14,9 +14,9 @@
     "slot": null,
     "name": "Crimson Shade",
     "type": "single-use",
-    "text": "Use this item in the 'Present Warbands' step. Until the end of the battle, increase this fighter's Move and Fight characteristics by 1. In the aftermath sequence, roll a dice. On a 1-2, the fighter gains the Kleptomania injury.",
+    "text": "The bearer may use this item as a free action. Until the end of the battle, increase the bearer's Move and Fight characteristics by 1. In the aftermath sequence, roll a dice. On a 1-2, the fighter gains the 'Kleptomania' lasting injury.",
     "effects": [],
-    "cost": 20,
+    "cost": 15,
     "rarity": "common"
   },
   {
@@ -24,17 +24,17 @@
     "slot": null,
     "name": "Dark Venom",
     "type": "single-use",
-    "text": "Use this item in the 'Present Warbands' step, and select one of this fighter's weapons. Until the end of the battle, add 1 to the damage points allocated to enemy fighters by each hit and critical hit from attack actions made with that weapon. If the fighter is dual-wielding, the venom is applied to both weapons.",
+    "text": "The bearer may use this item on one of their weapons as a free action. Until the end of the battle, add 1 to the damage points allocated to enemy fighters by each critical hit.",
     "effects": [],
-    "cost": 20,
-    "rarity": "common"
+    "cost": 10,
+    "rarity": "rare"
   },
   {
     "id": "elven-cloak",
     "slot": null,
     "name": "Elven Cloak",
     "type": "miscellaneous",
-    "text": "While wearing this cloak, a fighter is considered to have the 'Stealthy' trait.",
+    "text": "While wearing this cloak, the bearer is considered to have the 'Stealthy' talent.",
     "effects": [],
     "cost": 50,
     "rarity": "rare"
@@ -44,20 +44,30 @@
     "slot": null,
     "name": "Familiar",
     "type": "single-use",
-    "text": "A `WIZARD` may discard their Familiar to ignore the effects of a single roll on the magical calamity table. Declare this after making the calamity roll but before resolving its effects.",
+    "text": "A `WIZARD` may use this item to ignore the effects of a single roll on the magical calamity table. Declare this after making the roll but before resolving its effects.",
     "effects": [],
-    "cost": 40,
-    "rarity": "common"
+    "cost": 30,
+    "rarity": "rare"
+  },
+  {
+    "id": "grimoire",
+    "slot": null,
+    "name": "Grimoire",
+    "type": "miscellaneous",
+    "text": "If the bearer is a `WIZARD`, they may use one additional magical ability from the list in their fighter profile.",
+    "effects": [],
+    "cost": 60,
+    "rarity": "rare"
   },
   {
     "id": "healing-draught",
     "slot": null,
     "name": "Healing Draught",
     "type": "single-use",
-    "text": "Use this item when making a Wait action to immediately use the 'Respite' ability without needing or spending ability dice to do so.",
+    "text": "The bearer may use this item as a free action to immediately use the 'Respite' ability without needing or spending ability dice to do so.",
     "effects": [],
-    "cost": 40,
-    "rarity": "common"
+    "cost": 20,
+    "rarity": "rare"
   },
   {
     "id": "heavy-armour",
@@ -77,9 +87,9 @@
     "slot": null,
     "name": "Holy Relic",
     "type": "miscellaneous",
-    "text": "At the start of each battle, add 1 Wyrd Dice to your saved Wyrd Dice.",
+    "text": "Start each battle with one additional Wyrd Dice.",
     "effects": [],
-    "cost": 100,
+    "cost": 60,
     "rarity": "rare"
   },
   {
@@ -87,7 +97,7 @@
     "slot": null,
     "name": "Lantern",
     "type": "miscellaneous",
-    "text": "Friendly fighters may re-roll failed Bravery tests while within 3\" of this fighter. However, enemy fighters may decrease the Difficulty Rating by 1 when targeting this fighter with ranged attack actions.",
+    "text": "Friendly fighters may re-roll failed Bravery tests while within 3\" of this fighter. However, enemy fighters may increase their Shoot characteristic by 1 when targeting this fighter with ranged attack actions.",
     "effects": [],
     "cost": 20,
     "rarity": "common"
@@ -106,10 +116,10 @@
     "id": "lucky-charm",
     "slot": null,
     "name": "Lucky Charm",
-    "type": "miscellaneous",
-    "text": "Once per battle, when the bearer is targeted by an attack action and after hit rolls have been made, you may turn one critical hit into a hit.",
+    "type": "single-use",
+    "text": "Once per battle, when the bearer is targeted by an attack action and after hit rolls have been made, you may use this item to turn one critical hit into a hit.",
     "effects": [],
-    "cost": 25,
+    "cost": 20,
     "rarity": "common"
   },
   {
@@ -117,9 +127,9 @@
     "slot": null,
     "name": "Mad Cap Mushrooms",
     "type": "single-use",
-    "text": "Use this item in the 'Present Warbands' step. Until the end of the battle, increase this fighter's Fight characteristic by 3. It is also considered to have the Stupidity injury for the duration of the battle.",
+    "text": "The bearer may use this item as a free action. Until the end of the battle, increase this fighter's Fight characteristic by 3. It also gains the 'Stupidity' trait for the duration of the battle.",
     "effects": [],
-    "cost": 20,
+    "cost": 10,
     "rarity": "common"
   },
   {
@@ -127,7 +137,7 @@
     "slot": null,
     "name": "Master-Wrought Weapon",
     "type": "miscellaneous",
-    "text": "Purchase a weapon from the fighter's faction entry, and increase its gold coin cost by 100 gold coin. Then, add 1 to the hit and critical hit characteristics of that weapon.",
+    "text": "Purchase a weapon from the fighter's faction entry, and increase its gold coin cost by 100 gold coin. Then, increase its hit damage and critical damage characteristics by 1.",
     "effects": [],
     "cost": "+100",
     "rarity": "rare"
@@ -147,7 +157,7 @@
     "slot": null,
     "name": "Rope and Hook",
     "type": "miscellaneous",
-    "text": "When the bearer climbs during a move action, do not count the vertical distance as double.",
+    "text": "When the bearer climbs, the distance they move is not halved and always counts as climbing up or down a ladder.",
     "effects": [],
     "cost": 10,
     "rarity": "common"
@@ -157,17 +167,7 @@
     "slot": "hand",
     "name": "Shield",
     "type": "armour",
-    "text": "Increase the bearer's Fight characteristic by 1 when defending against a melee attack action. When defending against a ranged attack action, increase the Difficulty Rating by 1 instead.",
-    "effects": [],
-    "cost": 20,
-    "rarity": "common"
-  },
-  {
-    "id": "smoke-bomb",
-    "slot": null,
-    "name": "Smoke Bomb",
-    "type": "single-use",
-    "text": "A fighter may discard this item to make a free Retreat action. During that action, enemy fighters within 3\" of the bearer cannot make reactions.",
+    "text": "Increase the bearer's Fight characteristic by 1 when targeted by a melee attack action. When targeted by a ranged attack action, the bearer is considered to be in cover.",
     "effects": [],
     "cost": 20,
     "rarity": "common"
@@ -177,9 +177,9 @@
     "slot": null,
     "name": "Superior Blackpowder",
     "type": "single-use",
-    "text": "Use this item during the 'Present Warbands' step. Until the end of the battle, remove the Unreliable weapon rule from all equipped weapons.",
+    "text": "The bearer may use this item as a free action. Until the end of the battle, remove the blackpowder special rule from all equipped blackpowder weapons.",
     "effects": [],
-    "cost": 20,
+    "cost": 10,
     "rarity": "common"
   },
   {
@@ -187,9 +187,19 @@
     "slot": null,
     "name": "Unholy Relic",
     "type": "miscellaneous",
-    "text": "At the start of each battle, add 1 Wyrd Dice to your saved Wyrd Dice.",
+    "text": "Start each battle with one additional Wyrd Dice.",
     "effects": [],
-    "cost": 100,
+    "cost": 60,
+    "rarity": "rare"
+  },
+  {
+    "id": "wyrdstone-pendulum",
+    "slot": null,
+    "name": "Wyrdstone Pendulum",
+    "type": "miscellaneous",
+    "text": "After making an exploration roll in the aftermath sequence, if the bearer is in the search party, you may add or subtract 1 from one dice result.",
+    "effects": [],
+    "cost": 20,
     "rarity": "rare"
   }
 ]

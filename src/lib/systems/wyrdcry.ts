@@ -4,10 +4,10 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FactionCounter, Fighter, FighterChoice, FighterInstance, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
+import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
-import { injuryIncome, wyrdcryInjuries } from './wyrdcry-injuries';
+import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
 
 import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
@@ -42,7 +42,7 @@ export const game: GameSystem = {
 		title: 'Wyrdcry Warband Roster',
 		stats: ['M', 'F', 'S', 'A', 'H', 'B'],
 		weapons: ['Rng', 'Att', 'Dmg'],
-		campaign: ['XP', 'Ren']
+		campaign: ['Ren']
 	},
 	roles: ['leader', 'hero', 'henchman'],
 	defaultRole: 'henchman',
@@ -86,6 +86,8 @@ export const game: GameSystem = {
 				{ key: 'reputation', label: 'Reputation', value: String(reputation) }
 			];
 		},
+		/* The leader arrives with a level of renown to spend at once (Campaign Book, p. 7). */
+		recruited: (fighter): Record<string, number> => (fighter.keywords.includes('leader') ? { renown: 1 } : {}),
 		/* The standing in brackets after the favour it is read off. */
 		brief: (warband) => {
 			const { favour, standing, reputation } = figures(warband);
@@ -95,16 +97,19 @@ export const game: GameSystem = {
 			];
 		}
 	},
+	/* Step 2 of the aftermath, the renown roll (Campaign Book, p. 8). */
 	aftermath: {
-		questions: [
-			{ key: 'participated', label: 'Participated', start: 'yes' },
+		roll: { label: 'Renown roll', target: 6 },
+		modifiers: [
 			{ key: 'survived', label: 'Not taken out of action', start: 'not-out' },
 			{ key: 'enemy-out', label: 'Took an enemy out of action', start: 'no' }
 		],
-		bonus: true,
+		marked: 'Marked for greatness',
 		/* `keywords.json`: BEAST and THRALL both read "Never earn experience or gain renown". */
-		noXp: ['beast', 'thrall'],
-		gainXp,
+		excluded: ['beast', 'thrall'],
+		gainLevels: (fighter, levels) => ({ ...fighter, tally: { ...fighter.tally, renown: (fighter.tally?.renown ?? 0) + levels } }),
+		shardNotes: (warband) =>
+			warband.fighters.flatMap((f) => shardRolls(f).map((name) => `${name} (${f.name.trim() || 'Unnamed fighter'}): on a 1–3 one shard fewer – count it in.`)),
 		income
 	},
 	advancement,
@@ -153,8 +158,8 @@ function figures(warband: Warband) {
 }
 
 /**
- * The standing a favour score is in, off the income page's four tiers rather
- * than the campaign data's five (DEVIATIONS.md). The last tier is open at the top.
+ * The standing a favour score is in, off the Campaign Book's four tiers (p. 10).
+ * The last tier is open at the top.
  */
 function tierFor(favour: number): FavourTier {
 	const tiers = campaign.favour_tiers;
@@ -162,45 +167,22 @@ function tierFor(favour: number): FavourTier {
 }
 
 /**
- * As the Warband Builder's reducer has it (`SET_FIGHTER_XP`): on the point that
- * would make a fourth, experience goes back to 0 and renown rises by one. Applied
- * a point at a time, so a gain of several crosses the threshold as that many
- * single points would, more than one level included.
- */
-function gainXp(fighter: FighterInstance, points: number): FighterInstance {
-	let xp = fighter.xp ?? 0;
-	let renown = fighter.tally?.renown ?? 0;
-	for (let i = 0; i < points; i++) {
-		xp += 1;
-		if (xp > 3) {
-			xp = 0;
-			renown += 1;
-		}
-	}
-	return { ...fighter, xp, tally: { ...fighter.tally, renown } };
-}
-
-/**
  * Step 4 of the aftermath: a favour for each shard and one more for a win, then
- * the income of the standing the warband now holds, so a rise counts at once,
- * less what a fighter's Kleptomania takes – never below nothing. The gold goes
- * into the purse, which counts the warband's value in.
+ * the income of the standing the warband now holds, so a rise counts at once.
+ * The gold goes into the purse, which counts the warband's value in.
  */
 function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number) {
 	const before = warband.tally?.favour ?? 0;
 	const favour = shards + (result === 'win' ? 1 : 0);
 	const tier = tierFor(before + favour);
-	const earned = tier.income + tier.per_shard * shards;
-	const cuts = warband.fighters.flatMap((f) => injuryIncome(f).map((c) => ({ ...c, who: f.name.trim() || 'Unnamed fighter' })));
-	const gold = Math.max(0, earned + cuts.reduce((sum, c) => sum + c.amount, 0));
-	const less = cuts.map((c) => `, ${-c.amount} gc less for ${c.source} (${c.who})`).join('');
+	const gold = tier.income + tier.per_shard * shards;
 	const rises = tier.label !== tierFor(before).label;
 	return {
 		tally: { ...warband.tally, favour: before + favour },
 		gold: purse(warband, game) + gold,
 		lines: [
 			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}` },
-			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}${less}` }
+			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
 		]
 	};
 }
@@ -297,9 +279,9 @@ interface RawAbility {
  * What a weapon rule or an item adds in one situation only, and what an item
  * gives while carried, kept by hand as the Warband Deck keeps it: the game data
  * says it only in the text. Parry raises the defender's Fight when targeted in
- * melee; the Shield does the same, and against a ranged attack raises the
- * attacker's difficulty rating instead, which goes under Armour without a number,
- * since a +1 there would read as a point of Armour. `expect` is the wording each
+ * melee; the Shield does the same, and against a ranged attack puts the bearer
+ * in cover, which goes under Armour without a number, as the In cover mark does:
+ * it changes the attacker's Shoot, not the bearer's figures. `expect` is the wording each
  * entry was taken from: a development build says when the text has moved away
  * from it, which is the moment the entry is either wrong or no longer needed.
  */

@@ -1,14 +1,16 @@
 /**
- * Spending Wyrdcry's renown, as the Warband Deck's `renown.ts` does: which
+ * Spending Wyrdcry's renown as the Campaign Book 0.9 has it (pp. 11–15): which
  * levels a fighter has open, what each may raise or teach, and what a spent
- * level does to the card. A level spent is an `advance` on the fighter – a
- * characteristic with its bonus, a heroic talent or a magical ability by id,
- * with the weapon a talent was taken for, or neither where the level was used up.
+ * level does to the card. A level asks for one or two parts – a characteristic,
+ * and on some levels a heroic talent as well – and each part spent is an
+ * `advance` on the fighter: a characteristic with its bonus, a heroic talent or
+ * a magical ability by id, with the weapon a talent was taken for, or neither
+ * where the level was used up, which settles the whole level.
  */
 
 import { chosenOptions, profileOf } from '$lib/core/warband';
 import { injuryBonus } from './wyrdcry-injuries';
-import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, LevelOffer, LevelRule, OpenLevel, Rule } from '$lib/core/types';
+import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, Issue, LevelOffer, LevelRule, OpenLevel, Rule, Warband } from '$lib/core/types';
 
 import talents from '$lib/rules/wyrdcry/heroic-talents.json';
 import limits from '$lib/rules/wyrdcry/racial-limits.json';
@@ -34,16 +36,30 @@ function figure(stat: string, value: number): string {
 /** The most heroic talents a fighter can have, and the specializations they may come from. */
 const MAX_TALENTS = 5;
 const MAX_SPECIALIZATIONS = 2;
+/** The level from which a legendary ability can be picked. */
+const LEGENDARY_FROM = 5;
+/** The level that promotes a henchman to HERO. */
+const PROMOTION = 3;
 
 type Branch = 'henchman' | 'promotion' | 'hero' | 'none';
+type Part = 'stat' | 'rule';
 
-const NOTES: Record<Branch, string> = {
-	henchman: 'A henchman raises a characteristic, and never the same one twice.',
-	promotion:
-		'This level promotes the henchman to HERO – the card shows it already. A hero raises a characteristic or picks a Heroic Talent.',
-	hero: 'A hero raises a characteristic or picks a Heroic Talent.',
-	none: 'This fighter has neither the HERO nor the HENCHMAN keyword, so the rules do not say what its renown is worth. A characteristic can be raised.'
-};
+/** What the rules ask of a level: a characteristic always, a talent on a hero's odd levels and at the promotion. */
+function partsOf(branch: Branch, level: number): Part[] {
+	if (branch === 'promotion' || (branch === 'hero' && level % 2 === 1)) return ['stat', 'rule'];
+	return ['stat'];
+}
+
+/** What the sheet says above the choice, by what the level still asks for. */
+function noteFor(branch: Branch, level: number, needs: Part[]): string {
+	if (branch === 'none') return 'This fighter has neither the HERO nor the HENCHMAN keyword, so the rules do not say what its renown is worth. A characteristic can be raised.';
+	if (branch === 'henchman') return 'A henchman raises a characteristic, and never the same one twice.';
+	const both = partsOf(branch, level).length === 2;
+	const lead = branch === 'promotion' ? 'This level promotes the henchman to HERO – the card shows it already. ' : '';
+	if (!both) return `${lead}A hero raises a characteristic on every level, and picks a Heroic Talent on every odd one.`;
+	if (needs.length === 2) return `${lead}This level raises a characteristic and picks a Heroic Talent – one now, the other next.`;
+	return needs[0] === 'stat' ? `${lead}The Heroic Talent is picked – now the characteristic.` : `${lead}The characteristic is raised – now the Heroic Talent.`;
+}
 
 /** The keywords the fighter was recruited with: its type's and its pick's. */
 function recruited(instance: FighterInstance, fighter: Fighter): string[] {
@@ -52,34 +68,83 @@ function recruited(instance: FighterInstance, fighter: Fighter): string[] {
 
 /**
  * The rule a level falls under, read off the keywords the fighter was recruited
- * with. A henchman's fourth level is its promotion; from the fifth it is a hero.
+ * with. A henchman's third level is its promotion; from the fourth it is a hero.
  */
 function branchOf(keywords: string[], level: number): Branch {
 	if (keywords.includes('hero')) return 'hero';
-	if (keywords.includes('henchman')) return level < 4 ? 'henchman' : level === 4 ? 'promotion' : 'hero';
+	if (keywords.includes('henchman')) return level < PROMOTION ? 'henchman' : level === PROMOTION ? 'promotion' : 'hero';
 	return 'none';
 }
 
 const renownOf = (instance: FighterInstance) => instance.tally?.renown ?? 0;
 
 /**
- * A henchman with four levels of renown is a HERO, from the moment it has them
+ * A henchman with three levels of renown is a HERO, from the moment it has them
  * rather than from the moment the level is spent – worked out every time, as the
  * deck's card does. A fighter with neither keyword stays as it is.
  */
 function keywords(instance: FighterInstance, held: string[]): string[] {
-	if (renownOf(instance) < 4 || held.includes('hero') || !held.includes('henchman')) return held;
+	if (renownOf(instance) < PROMOTION || held.includes('hero') || !held.includes('henchman')) return held;
 	return held.map((k) => (k === 'henchman' ? 'hero' : k));
 }
 
+/**
+ * Whether an advance still holds as a rule taken: a heroic talent the rules
+ * still have – a legendary one only from its level on – or a magical ability the
+ * fighter was offered. A talent the rules no longer have counts as never taken.
+ */
+function ruleHolds(advance: Advance, fighter: Fighter): boolean {
+	if (!advance.rule) return false;
+	const talent = talentOf(advance.rule);
+	if (talent) return !talent.legendary || advance.level >= LEGENDARY_FROM;
+	return !!fighter.choice?.options.some((o) => o.id === advance.rule);
+}
+
+/**
+ * What a level still asks for, read off the advances spent on it as the rules
+ * stand now: a level spent under older rules opens again for the part it lacks.
+ * A level used up asks for nothing more.
+ */
+function needsOf(instance: FighterInstance, fighter: Fighter, level: number): Part[] {
+	const spent = (instance.advances ?? []).filter((a) => a.level === level);
+	if (spent.some((a) => !a.stat && !a.rule)) return [];
+	return partsOf(branchOf(recruited(instance, fighter), level), level).filter((part) =>
+		part === 'stat' ? !spent.some((a) => a.stat) : !spent.some((a) => ruleHolds(a, fighter))
+	);
+}
+
 function open(instance: FighterInstance, fighter: Fighter): OpenLevel[] {
-	const spent = new Set((instance.advances ?? []).map((a) => a.level));
 	const base = recruited(instance, fighter);
 	const levels: OpenLevel[] = [];
 	for (let level = 1; level <= renownOf(instance); level++) {
-		if (!spent.has(level)) levels.push({ level, note: NOTES[branchOf(base, level)] });
+		const needs = needsOf(instance, fighter, level);
+		if (needs.length) levels.push({ level, note: noteFor(branchOf(base, level), level, needs) });
 	}
 	return levels;
+}
+
+/** Who in the warband holds each legendary ability, by its id. */
+function legendaryHolders(warband: Warband, faction: Faction): Map<string, FighterInstance[]> {
+	const holders = new Map<string, FighterInstance[]>();
+	for (const instance of warband.fighters) {
+		const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+		if (!fighter) continue;
+		for (const advance of instance.advances ?? []) {
+			if (!advance.rule || !talentOf(advance.rule)?.legendary || !ruleHolds(advance, fighter)) continue;
+			holders.set(advance.rule, [...(holders.get(advance.rule) ?? []), instance]);
+		}
+	}
+	return holders;
+}
+
+/** A legendary ability is unique: no two fighters of a warband have the same one (p. 12). */
+function check(warband: Warband, faction: Faction): Issue[] {
+	return [...legendaryHolders(warband, faction)].flatMap(([id, held]) => {
+		if (held.length < 2) return [];
+		const name = talentOf(id)?.name ?? id;
+		const who = held.map((f) => f.name.trim() || 'Unnamed fighter').join(', ');
+		return [{ code: 'legendary', kind: 'excess', message: `${name} is held by ${held.length} fighters (${who}); one fighter per warband may have it.`, short: 'One per warband' } satisfies Issue];
+	});
 }
 
 /** The limit of the first of the fighter's keywords that names a race with one. */
@@ -105,9 +170,10 @@ function weaponsFor(kind: string, instance: FighterInstance, fighter: Fighter, f
 	});
 }
 
-function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel): LevelOffer {
+function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel, warband: Warband): LevelOffer {
 	const base = recruited(instance, fighter);
 	const branch = branchOf(base, level.level);
+	const needs = needsOf(instance, fighter, level.level);
 	const advances = instance.advances ?? [];
 	const profile = profileOf(instance, fighter);
 	const limit = limitFor(base);
@@ -136,9 +202,11 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		];
 	});
 
-	if (branch !== 'hero' && branch !== 'promotion') return { stats, rules: [], rulesLabel: 'Heroic Talents', rulesNote: null };
+	const offered = needs.includes('stat') ? stats : [];
+	if (!needs.includes('rule')) return { stats: offered, rules: [], rulesLabel: 'Heroic Talents', rulesNote: null };
 
-	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) ? [talentOf(a.rule)!] : []));
+	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) && ruleHolds(a, fighter) ? [talentOf(a.rule)!] : []));
+	const holders = legendaryHolders(warband, faction);
 	const specializations = new Set(held.map((t) => t.specialization));
 	const talentRule = (talent: Talent): LevelRule => ({
 		id: talent.id,
@@ -147,7 +215,11 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		type: talent.type,
 		blocked: held.some((t) => t.id === talent.id)
 			? 'Already taken'
-			: held.length >= MAX_TALENTS
+			: talent.legendary && level.level < LEGENDARY_FROM
+				? `From renown ${LEGENDARY_FROM}`
+				: talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)
+					? 'Another fighter of the warband has it'
+					: held.length >= MAX_TALENTS
 				? `Already ${MAX_TALENTS} talents`
 				: !specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS
 					? `Already ${MAX_SPECIALIZATIONS} specializations`
@@ -176,28 +248,29 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		: [];
 
 	return {
-		stats,
+		stats: offered,
 		rules: [...(abilities.length ? [{ heading: 'Magical abilities', options: abilities }] : []), ...groups],
 		rulesLabel: 'Heroic Talents',
-		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} specializations.`
+		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} specializations. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
 	};
 }
 
 /**
  * The talents and abilities the fighter's levels brought, as rules of its own,
- * with what they add: a keyword, or a point of critical damage on the weapon a
- * talent was taken for.
+ * with what they add: a keyword, a characteristic, or a point of critical damage
+ * on the weapon a talent was taken for. A talent that no longer holds adds nothing.
  */
 function effects(instance: FighterInstance, fighter: Fighter, faction: Faction): AdvanceEffects {
-	const result: AdvanceEffects = { rules: [], keywords: [], weapons: [] };
+	const result: AdvanceEffects = { rules: [], keywords: [], weapons: [], stats: [] };
 	for (const advance of instance.advances ?? []) {
-		if (!advance.rule) continue;
+		if (!advance.rule || !ruleHolds(advance, fighter)) continue;
 		const talent = talentOf(advance.rule);
 		if (talent) {
 			const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 			result.rules.push({ name: weapon ? `${talent.name} (${weapon.name})` : talent.name, text: talent.text, type: talent.type });
-			for (const effect of (talent.effects ?? []) as { kind: string; keyword?: string; bonus?: number }[]) {
+			for (const effect of (talent.effects ?? []) as { kind: string; keyword?: string; characteristic?: string; bonus?: number }[]) {
 				if (effect.kind === 'keyword' && effect.keyword) result.keywords.push(effect.keyword);
+				if (effect.kind === 'stat' && effect.characteristic) result.stats.push({ stat: effect.characteristic, bonus: effect.bonus ?? 0, source: talent.name });
 				const damage = weapon?.profile?.damage;
 				if (effect.kind === 'crit' && weapon && damage) {
 					const [hit, crit] = damage.split('/');
@@ -225,14 +298,21 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 		return `${LABEL[advance.stat] ?? advance.stat} ${figure(advance.stat, from)} → ${figure(advance.stat, to)}`;
 	}
 	if (advance.rule) {
-		const name = talentOf(advance.rule)?.name ?? fighter.choice?.options.find((o) => o.id === advance.rule)?.name ?? advance.rule;
+		const talent = talentOf(advance.rule);
+		/* A talent the rules no longer have is named from its id: `shield-wall` reads Shield Wall. */
+		const name =
+			talent?.name ??
+			fighter.choice?.options.find((o) => o.id === advance.rule)?.name ??
+			advance.rule.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 		const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
-		return weapon ? `${name} (${weapon.name})` : name;
+		const named = weapon ? `${name} (${weapon.name})` : name;
+		if (ruleHolds(advance, fighter)) return named;
+		return talent ? `${named} – not before renown ${LEGENDARY_FROM}` : `${named} – no longer a heroic talent`;
 	}
 	return 'used up';
 }
 
-export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects, describe };
+export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects, describe, check };
 
 /** Levels a file brings without a record of what they were spent on, written as used up so none stands open. */
 export function usedUp(instance: FighterInstance): Advance[] {

@@ -16,11 +16,8 @@ interface RawEffect {
 	kind: string;
 	characteristic?: string;
 	bonus?: number;
-	factor?: number;
-	floor?: number;
 	keyword?: string;
 	ability_type?: string;
-	amount?: number;
 }
 
 interface RawResult {
@@ -37,15 +34,14 @@ interface RawResult {
 const HERO = heroTable as RawResult[];
 const HENCHMAN = henchmanTable as RawResult[];
 
-/** A HERO dies of a fourth injury, unless Nine Lives lifts the limit. */
+/** A HERO dies of a fourth injury. */
 const LIMIT = 3;
-const NINE_LIVES = 'nine-lives';
 const UNBENDING_WILL = { id: 'unbending-will', name: 'Unbending Will' };
 const FLESH_WOUND = 'flesh-wound';
 const DEAD = 'dead';
 
-/** Hatred and Hardened carry no type in brackets, and stay with the fighter all the same. */
-const KEPT_UNTYPED = ['hatred', 'hardened'];
+/** Hardened carries no type in brackets, and stays with the fighter all the same. */
+const KEPT_UNTYPED = ['hardened'];
 
 const isLasting = (raw: RawResult) => raw.type !== null || KEPT_UNTYPED.includes(raw.id);
 const isInjury = (raw: RawResult) => raw.type === 'injury';
@@ -76,17 +72,9 @@ export function injuryBonus(instance: FighterInstance, stat: string): number {
 		.reduce((sum, e) => sum + (e.kind === 'stat' && e.characteristic === stat ? (e.bonus ?? 0) : 0), 0);
 }
 
-/** What the fighter's injuries take off the warband's income, each by the result's name. */
-export function injuryIncome(instance: FighterInstance): { amount: number; source: string }[] {
-	return held(instance).flatMap((r) => r.effects.flatMap((e) => (e.kind === 'income' ? [{ amount: e.amount ?? 0, source: r.name }] : [])));
-}
-
-/** A reach as the card prints it, `12"` or `3–18"`, cut by `factor` but never below `floor`. Null where it reads otherwise. */
-function cutRange(value: string, factor: number, floor: number): string | null {
-	const match = /^(?:(\d+(?:\.\d+)?)–)?(\d+(?:\.\d+)?)"$/.exec(value);
-	if (!match) return null;
-	const reach = Math.max(floor, Number(match[2]) * factor);
-	return match[1] ? `${match[1]}–${reach}"` : `${reach}"`;
+/** The fighter's injuries that roll before the shards are delivered, such as Sticky Fingers, by name. */
+export function shardRolls(instance: FighterInstance): string[] {
+	return held(instance).flatMap((r) => (r.effects.some((e) => e.kind === 'shard-roll') ? [r.name] : []));
 }
 
 interface Deps {
@@ -118,9 +106,10 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 
 	/**
 	 * An injury the fighter already has is a Flesh Wound instead; a fourth one
-	 * kills it, unless it has Nine Lives. Hatred, Hardened and Terrible Scars are
-	 * kept once as well, so a second of them leaves the fighter as a Flesh Wound
-	 * would. Only `[Injury]` results count towards the limit.
+	 * kills it. Hardened, Hatred and Horrible Scars are kept once as well, so a
+	 * second of them leaves the fighter as a Flesh Wound would. Only `[Injury]`
+	 * results count towards the limit. Nine Lives re-rolls at the table, before
+	 * the result is tapped.
 	 */
 	function resolve(instance: FighterInstance, fighter: Fighter, faction: Faction, id: string): InjuryResolution {
 		const found = rows(instance, fighter, faction);
@@ -130,8 +119,7 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 		if (isLasting(rolled) && kept.some((r) => r.id === rolled.id)) {
 			return { result: result(HERO.find((r) => r.id === FLESH_WOUND)!), note: `Already has ${rolled.name}, which counts as a Flesh Wound.` };
 		}
-		const nineLives = (instance.advances ?? []).some((a) => a.rule === NINE_LIVES);
-		if (isInjury(rolled) && !nineLives && kept.filter(isInjury).length >= LIMIT) {
+		if (isInjury(rolled) && kept.filter(isInjury).length >= LIMIT) {
 			return { result: result(HERO.find((r) => r.id === DEAD)!), note: `${rolled.name} would be a fourth injury, which kills a HERO.` };
 		}
 		return { result: result(rolled), note: null };
@@ -147,23 +135,15 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 		return instance;
 	}
 
-	/** Each result kept as a rule of the fighter's, with what it changes: a characteristic, a keyword, the reach of its weapons. */
-	function effects(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryEffects {
+	/** Each result kept as a rule of the fighter's, with what it changes: a characteristic, a keyword, the reactions it may make. */
+	function effects(instance: FighterInstance): InjuryEffects {
 		const found: InjuryEffects = { rules: [], keywords: [], weapons: [], stats: [], forbid: [] };
-		const carried = [...new Set([...fighter.gear, ...chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []), ...instance.wargear])];
 		for (const raw of held(instance)) {
 			found.rules.push({ name: raw.name, text: raw.text, ...(raw.type ? { type: raw.type } : {}) });
 			for (const effect of raw.effects) {
 				if (effect.kind === 'stat' && effect.characteristic) found.stats.push({ stat: effect.characteristic, bonus: effect.bonus ?? 0, source: raw.name });
 				if (effect.kind === 'keyword' && effect.keyword) found.keywords.push(effect.keyword);
 				if (effect.kind === 'forbid' && effect.ability_type) found.forbid.push({ type: effect.ability_type, source: raw.name });
-				if (effect.kind !== 'range') continue;
-				for (const id of carried) {
-					const piece = faction.wargear.find((w) => w.id === id);
-					const reach = piece?.profile?.range;
-					const cut = reach ? cutRange(reach, effect.factor ?? 1, effect.floor ?? 0) : null;
-					if (piece && cut) found.weapons.push({ wargear: piece.id, stat: 'range', value: cut, source: raw.name });
-				}
 			}
 		}
 		return found;

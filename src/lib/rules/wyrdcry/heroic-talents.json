@@ -8,11 +8,25 @@
     "effects": [{ "kind": "keyword", "keyword": "terrifying" }]
   },
   {
+    "id": "drillmaster",
+    "name": "Drillmaster",
+    "specialization": "strength",
+    "type": "trait",
+    "text": "When earning renown in the aftermath sequence, if this fighter wasn't taken out of action in the battle, you may select an additional `HENCHMAN` to be marked for greatness."
+  },
+  {
     "id": "oppressor",
     "name": "Oppressor",
     "specialization": "strength",
     "type": "trait",
-    "text": "Once per battle round, when an enemy fighter makes the 'Retreat' action, this fighter can make the 'Strike Them Down' reaction without having to forfeit an action to do so."
+    "text": "Once per battle round, when an enemy fighter makes the Retreat action, this fighter can make the 'Cut Them Down' reaction without having to forfeit an action to do so."
+  },
+  {
+    "id": "staggering-blows",
+    "name": "Staggering Blows",
+    "specialization": "strength",
+    "type": "trait",
+    "text": "Whenever this fighter scores a critical hit with a melee attack action, the target cannot use reactions or abilities for the rest of the battle round."
   },
   {
     "id": "weapon-master",
@@ -20,50 +34,59 @@
     "specialization": "strength",
     "type": "trait",
     "weapon": "melee",
-    "text": "Select a melee weapon type. When making attack actions with weapons of that type, increase the critical damage characteristic by 1.",
+    "text": "Select a melee weapon type. When making attack actions with weapons of that type, increase its critical damage characteristic by 1.",
     "effects": [{ "kind": "crit", "bonus": 1 }]
-  },
-  {
-    "id": "staggering-blows",
-    "name": "Staggering Blows",
-    "specialization": "strength",
-    "type": "double",
-    "text": "A fighter can use this ability after allocating damage points to an enemy fighter with a melee attack action. That enemy fighter cannot use reactions for the rest of the battle round. In addition, if the melee attack action allocated damage points from a critical hit, the target cannot use abilities for the rest of the battle round."
   },
   {
     "id": "shield-bash",
     "name": "Shield Bash",
     "specialization": "strength",
-    "type": "double",
-    "text": "This ability requires the fighter being equipped with a shield. Select an enemy fighter within 1\" of this fighter. That fighter makes a free retreat action directly away from this fighter. If it cannot move away from this fighter, allocate (X/2) damage points to that fighter instead."
+    "type": "trait",
+    "text": "This fighter can use a shield to make off-hand attacks. If the off-hand attack scores a hit or critical hit, the target makes a free Retreat action directly away from this fighter."
   },
   {
     "id": "maintain-momentum",
     "name": "Maintain Momentum",
     "specialization": "strength",
-    "type": "triple",
-    "text": "A fighter can only use this ability if an enemy fighter has been taken down by an attack action made by them this activation. This fighter makes a bonus move action or a bonus attack action."
+    "type": "trait",
+    "text": "When this fighter uses the Onslaught ability, it affects each melee attack action they make until the end of their activation, instead of only their next one."
   },
   {
-    "id": "indomitable",
-    "name": "Indomitable",
+    "id": "executioners-strike",
+    "name": "Executioner's Strike",
+    "specialization": "strength",
+    "type": "quad",
+    "legendary": true,
+    "text": "Legendary ability. This fighter makes a free attack action. Increase the Hit Damage and Critical Damage of that attack action by (X/2)."
+  },
+  {
+    "id": "second-wind",
+    "name": "Second Wind",
     "specialization": "toughness",
     "type": "trait",
-    "text": "Do not make injury rolls for this fighter while they are exploring a district in the aftermath sequence."
+    "text": "Each time this fighter is activated, if it is wounded, you can remove D3 damage points allocated to them."
   },
   {
     "id": "nine-lives",
     "name": "Nine Lives",
     "specialization": "toughness",
     "type": "trait",
-    "text": "When rolling for permanent injuries, this fighter can re-roll the first result of 11-12. The second result stands. In addition, there is no limit to the amount of permanent injuries this fighter may have."
+    "text": "When rolling for permanent injuries, this fighter can re-roll the first result of 11-12. The second result stands."
   },
   {
-    "id": "tough",
-    "name": "Tough",
+    "id": "tough-as-nails",
+    "name": "Tough as Nails",
     "specialization": "toughness",
     "type": "trait",
-    "text": "Each time an attack action scores any critical hits on this fighter, 1 of those critical hits becomes a hit instead."
+    "text": "Increase this fighter's Health characteristic by 4.",
+    "effects": [{ "kind": "stat", "characteristic": "health", "bonus": 4 }]
+  },
+  {
+    "id": "bulwark",
+    "name": "Bulwark",
+    "specialization": "toughness",
+    "type": "trait",
+    "text": "When equipped with a shield, friendly fighters within 1\" of this fighter are considered to be in cover."
   },
   {
     "id": "endure",
@@ -73,18 +96,19 @@
     "text": "A fighter can make this reaction after they are targeted by an attack action but before the hit rolls are made. Subtract 1 from the damage points allocated by each hit and critical hit (to a minimum of 1) from that attack action."
   },
   {
-    "id": "shield-wall",
-    "name": "Shield Wall",
-    "specialization": "toughness",
-    "type": "double",
-    "text": "This ability requires the fighter being equipped with a shield. Until the end of the battle round, ranged attack actions targeting friendly fighters within 1\" of this fighter have their difficulty rating (DR) increased by (X/2)."
-  },
-  {
     "id": "bodyguard",
     "name": "Bodyguard",
     "specialization": "toughness",
     "type": "double",
-    "text": "Select a friendly `HERO` within 1\" of this fighter. Until the end of the battle round, that `HERO` cannot be targeted while they are within 1\" of this fighter."
+    "text": "Select a friendly `HERO` within 1\" of this fighter. Until the end of the battle round, while that `HERO` remains within 1\" of this fighter, they cannot be targeted by attack actions."
+  },
+  {
+    "id": "indomitable",
+    "name": "Indomitable",
+    "specialization": "toughness",
+    "type": "quad",
+    "legendary": true,
+    "text": "Legendary ability. A fighter can only use this ability if an enemy fighter has been taken down by an attack action made by them this activation. Remove up to 10 damage points allocated to this fighter."
   },
   {
     "id": "duelist",
@@ -101,18 +125,18 @@
     "text": "When this fighter is set up on the battlefield, it may immediately make a free move action, as long as it ends that move action more than 6\" from enemy fighters."
   },
   {
-    "id": "stealthy",
-    "name": "Stealthy",
-    "specialization": "agility",
-    "type": "trait",
-    "text": "Whenever this fighter is targeted by an enemy fighter, it is considered to be in cover if both of the following are true:\n\n- It is more than 6\" from the enemy fighter.\n- It is within 1\" of an obstacle, or part of its base is underneath a vantage point."
-  },
-  {
     "id": "wall-runner",
     "name": "Wall-Runner",
     "specialization": "agility",
     "type": "trait",
     "text": "This fighter may ignore the first 3\" moved vertically when climbing or falling."
+  },
+  {
+    "id": "stealthy",
+    "name": "Stealthy",
+    "specialization": "agility",
+    "type": "trait",
+    "text": "When this fighter is targeted by a ranged attack action, it is considered to be in cover if it is more than 6\" away from the attacking fighter."
   },
   {
     "id": "step-aside",
@@ -129,25 +153,26 @@
     "text": "A fighter can only use this ability if they are within 1\" of an enemy fighter. This fighter makes a free Retreat action."
   },
   {
-    "id": "trip",
-    "name": "Trip",
+    "id": "rain-of-blows",
+    "name": "Rain of Blows",
     "specialization": "agility",
-    "type": "double",
-    "text": "After this fighter's next melee attack action in this activation, if at least 1 hit roll from that attack action results in a hit, the target must forfeit 1 of their actions in this battle round. If the target has already activated or if they have no more actions to forfeit, allocate (X/2) damage points to the target instead."
-  },
-  {
-    "id": "quick-shot",
-    "name": "Quick Shot",
-    "specialization": "agility",
-    "type": "triple",
-    "text": "This fighter makes a free ranged attack action."
+    "type": "quad",
+    "legendary": true,
+    "text": "Legendary ability. A fighter cannot use this ability if equipped with a two-handed melee weapon. Add 3 to the Attacks characteristic of melee attack actions made by this fighter until the end of their activation."
   },
   {
     "id": "eagle-eyes",
     "name": "Eagle Eyes",
     "specialization": "perception",
     "type": "trait",
-    "text": "When making an attack action using a bow, crossbow or handgun, this fighter may ignore the maximum range of the weapon, but if they do, they must reduce their Shoot characteristic by 1."
+    "text": "When making an attack action using a bow, crossbow or handgun, this fighter may ignore the maximum range of the weapon, but if they do, they must decrease their Shoot characteristic by 1."
+  },
+  {
+    "id": "reckless",
+    "name": "Reckless",
+    "specialization": "perception",
+    "type": "trait",
+    "text": "This fighter may target enemy fighters within 1\" of friendly fighters with ranged attack actions. If they do, after making the hit rolls, roll a dice. On a 1, allocate the damage to one of the friendly fighters instead of the target."
   },
   {
     "id": "rapid-reload",
@@ -157,12 +182,19 @@
     "text": "At the end of each battle round, you may reload one of this fighter's weapons with the Reload special rule."
   },
   {
+    "id": "scout",
+    "name": "Scout",
+    "specialization": "perception",
+    "type": "trait",
+    "text": "After making an exploration roll in the aftermath sequence, if the bearer is in the search party, you may resolve two encounters instead of one, even if one of the encounters is a mishap."
+  },
+  {
     "id": "surgical-precision",
     "name": "Surgical Precision",
     "specialization": "perception",
     "type": "trait",
     "weapon": "ranged",
-    "text": "Select a ranged weapon type. When making attack actions with weapons of that type, increase the Critical Damage characteristic by 1.",
+    "text": "Select a ranged weapon type. When making attack actions with weapons of that type, increase its Critical Damage characteristic by 1.",
     "effects": [{ "kind": "crit", "bonus": 1 }]
   },
   {
@@ -177,21 +209,22 @@
     "name": "Patient Hunter",
     "specialization": "perception",
     "type": "reaction",
-    "text": "When an enemy fighter ends a move action while visible to this fighter, this fighter can target that enemy fighter with a free ranged attack action. Reduce this fighter's Shoot characteristic by 1 for that attack action."
+    "text": "When an enemy fighter ends a move action visible to this fighter, this fighter can target that enemy fighter with a free ranged attack action. For that attack action, decrease this fighter's Shoot characteristic by 1."
   },
   {
-    "id": "reckless-shot",
-    "name": "Reckless Shot",
+    "id": "killing-shot",
+    "name": "Killing Shot",
     "specialization": "perception",
-    "type": "double",
-    "text": "For this fighter's next ranged attack action, it may target enemy fighters within 1\" of friendly fighters."
+    "type": "quad",
+    "legendary": true,
+    "text": "Legendary ability. For this fighter's next ranged attack action, increase its Shoot, Hit Damage and Critical Damage characteristics by (X/2)."
   },
   {
     "id": "bootlicker",
     "name": "Bootlicker",
     "specialization": "wits",
     "type": "trait",
-    "text": "When collecting income in the aftermath sequence, if this fighter was not taken out of action, your warband earns 1 favour."
+    "text": "When collecting income in the aftermath sequence, if this fighter was not taken out of action, your warband earns 1 additional favour."
   },
   {
     "id": "charismatic",
@@ -201,25 +234,18 @@
     "text": "Once per battle, this fighter can use the 'Inspiring Presence' ability without needing or spending ability dice to do so."
   },
   {
-    "id": "underground-contacts",
-    "name": "Underground Contacts",
-    "specialization": "wits",
-    "type": "trait",
-    "text": "When recruiting a Hired Sword, roll a D6. On a 4+, you may reduce the hiring fee by 50% (rounding up)."
-  },
-  {
-    "id": "magical-affinity",
-    "name": "Magical Affinity",
-    "specialization": "wits",
-    "type": "trait",
-    "text": "`WIZARD` only. This fighter learns another magical ability from their lore of magic. This talent can be taken multiple times."
-  },
-  {
     "id": "master-tactician",
     "name": "Master Tactician",
     "specialization": "wits",
     "type": "trait",
     "text": "`LEADER` only. When seizing the initiative in the initiative phase, if there is a tie, do not roll off. Instead the player controlling this fighter chooses which tied player has the initiative. If multiple warbands have this talent, the players of those warbands roll off, and the winner chooses which tied player has the initiative."
+  },
+  {
+    "id": "underground-contacts",
+    "name": "Well-Connected",
+    "specialization": "wits",
+    "type": "trait",
+    "text": "Once per battle when recruiting a `HIRED SWORD`, roll a dice. On a 4+, you may reduce the hiring fee by 50% (rounding up)."
   },
   {
     "id": "fall-back",
@@ -229,17 +255,18 @@
     "text": "A fighter can make this reaction after they have been allocated the total damage points by a melee attack action. This fighter makes a free Retreat action."
   },
   {
-    "id": "lead-the-charge",
-    "name": "Lead the Charge",
-    "specialization": "wits",
-    "type": "triple",
-    "text": "A fighter can use this ability after ending a move action within 1\" of an enemy fighter. Up to (X/2) friendly fighters within 6\" of this fighter can make a bonus move action, but must end that move action closer to this fighter."
-  },
-  {
     "id": "warcry",
     "name": "Warcry",
     "specialization": "wits",
     "type": "triple",
-    "text": "Friendly fighters within 6\" of this fighter are no longer panicked, and automatically pass any Bravery tests they are required to take until the end of the battle round."
+    "text": "Select each friendly fighter within 6\" of this fighter. Those fighters are no longer panicked, and do not have to take Bravery tests until the end of the battle round."
+  },
+  {
+    "id": "coordinated-assault",
+    "name": "Coordinated Assault",
+    "specialization": "wits",
+    "type": "quad",
+    "legendary": true,
+    "text": "Legendary ability. Select 3 friendly `HENCHMEN` within 6\" of this fighter. Each selected fighter makes either a free move action, a free retreat action, or a free attack action."
   }
 ]

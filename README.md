@@ -13,9 +13,9 @@ the Wyrdcry project, or Sam Pearson and Black Death City.
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
 a file, imports it again and prints its roster as a PDF, all in a first
-version. In Wyrdcry, ending a battle brings experience, favour and income,
-rolls injuries and adds it to the warband's history, and renown is spent on a
-characteristic or a heroic talent. It imports the Warband Deck's and the
+version. In Wyrdcry, ending a battle brings renown, favour and income, rolls
+injuries and adds it to the warband's history, and renown is spent on a
+characteristic and a heroic talent. It imports the Warband Deck's and the
 Warband Builder's files. It does not yet know Black Death City's campaign.
 
 ## What it does
@@ -60,13 +60,13 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
-  for each fighter with its profile, its cost – in Wyrdcry beside its
-  experience and renown – its weapons and rules; a Wyrdcry fighter without a
+  for each fighter with its profile, its cost – in Wyrdcry beside its renown –
+  its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its
-  rules, with the keyword, the shorter reach or the bar on reactions it brings
+  rules, with the characteristic, the keyword or the bar on reactions it brings
 - Turn a fighter's card over with the pencil under it to write the fighter's
   name, fluff and notes, which the card then shows, and to put a photo of the painted
   model in its image field, moved and zoomed there; the photo stays on the device.
@@ -75,9 +75,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   buying is in the builder, which the back links to. In Wyrdcry the builder
   offers the Trading Post to every fighter that takes equipment, one of each
   piece, and asks before a rare one whether a Rarity roll of 6+ found it
-  In Wyrdcry the back also corrects experience and renown by hand – the fourth
-  point of experience is a level of renown, and renown does not go below a
-  level already spent; a BEAST or THRALL has neither. Spend renown turns the
+  In Wyrdcry the back also corrects renown by hand – it does not go below a
+  level already spent; a BEAST or THRALL has none. Spend renown turns the
   back to a page for the next open level, as the Warband Deck does, and lists
   the levels spent, the last with Undo, and the injuries the fighter keeps,
   each to remove, and why it sits out – Captured with Got back – kept until
@@ -104,19 +103,22 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   shards delivered with what they bring in favour and gold, and the battle
   history; who was taken out of action, and for each of them the injury table
   to tap what the dice rolled – an injury it already has counts as a Flesh
-  Wound, a fourth kills a HERO without Nine Lives, Unbending Will rolls none;
-  then each fighter's experience. Apply carries out what an injury does once:
+  Wound, a fourth kills a HERO, Unbending Will rolls none; then each fighter's
+  renown roll – what adds to it, the score it needs, and whether it reached it,
+  twice for the one marked for greatness. Apply carries out what an injury does once:
   a dead fighter leaves the roster, its equipment going to the stash on a 3+
   (a dead leader stays, marked Dead, until the app can pick another), a surgeon
   costs 15 gc, robbery takes what the fighter bought, and a captured fighter or
-  one that misses the next battle carries a band; Kleptomania takes 10 gc off
-  the income. Apply writes it all into the warband and the
+  one that misses the next battle carries a band; Sticky Fingers is a reminder
+  under the shards. Apply writes it all into the warband and the
   battle history, which the warband card shows with its favour, standing and
   reputation
 - Spend each level of renown in a sheet set as the back of the fighter's card, after the battle or from the Battle
-  menu: a characteristic within the fighter's racial limit, and for a hero a
-  heroic talent – a henchman's fourth level makes it a HERO, on its card and
-  among the warband's heroes
+  menu: a characteristic within the fighter's racial limit on every level, and
+  for a hero a heroic talent on every odd one – a henchman's third level makes
+  it a HERO, on its card and among the warband's heroes; a legendary ability
+  from renown 5, one fighter per warband. A recruited leader starts with a level
+  to spend. A level spent under older rules opens again for what it lacks
 - Export a warband as a JSON file, to keep a copy outside the browser – through
   the share sheet on a phone, as a download on a desktop
 - Import such a file again, on this device or another: the app says whether it
@@ -125,11 +127,12 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   limits – it is imported as it is
 - Import a warband from the Wyrdcry Warband Deck or the Warband Builder, its
   campaign included; the sheet says what is carried over differently, such as
-  pending purchases taken as bought and custom abilities moved into the notes
+  pending purchases taken as bought and custom abilities moved into the notes;
+  experience is not carried over
 - Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
   warband, a row per fighter with profile, abilities, weapons and notes in the
   game's own columns – in Wyrdcry with the battles won, drawn and lost and each
-  fighter's experience and renown – then every rule of the warband, its
+  fighter's renown – then every rule of the warband, its
   fighters and their gear once, with the fighters that carry it
 - Delete a warband after a question that says what is lost and offers the
   export first
@@ -142,7 +145,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Game | Rules the data follows | Factions |
 | --- | --- | --- |
 | Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
-| Wyrdcry | 0.9, core rules 1.0 WIP | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
+| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
 | Mordheim | – | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the

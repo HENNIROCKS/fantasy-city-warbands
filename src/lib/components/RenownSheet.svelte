@@ -43,7 +43,8 @@
 	   the next level comes in. */
 	const at = $derived(`${name}:${level.level}`);
 	let tab = $state<{ at: string; rules: boolean }>({ at: '', rules: false });
-	const onRules = $derived(tab.at === at && tab.rules);
+	/* A level that asks only for a talent opens on them; one that asks for no talent has none. */
+	const onRules = $derived(offer.rules.length > 0 && (offer.stats.length === 0 || (tab.at === at && tab.rules)));
 	let picked = $state<{ at: string; stat: string } | null>(null);
 	const stat = $derived(offer.stats.find((s) => s.stat === (picked?.at === at ? picked.stat : null) && s.blocked === null) ?? null);
 
@@ -74,7 +75,7 @@
 				<section>
 					<p class="note">{level.note}</p>
 
-					{#if offer.rules.length}
+					{#if offer.rules.length && offer.stats.length}
 						<div class="tabs" role="group" aria-label="What to spend the level on">
 							<button aria-pressed={!onRules} class:on={!onRules} onclick={() => (tab = { at, rules: false })}>Characteristics</button>
 							<button aria-pressed={onRules} class:on={onRules} onclick={() => (tab = { at, rules: true })}>{offer.rulesLabel}</button>

@@ -63,6 +63,8 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 
 	let pending = 0;
 	let usedLevels = 0;
+	/* Fighters the file gives experience, which the Campaign Book no longer counts. */
+	let experienced = 0;
 	let overridden = 0;
 	const unexplained: string[] = [];
 
@@ -85,8 +87,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		if (own) instance.fluff = own;
 		const notes = text(raw.notes).trim();
 		if (notes) instance.notes = notes;
-		const xp = number(raw.xp);
-		if (xp) instance.xp = xp;
+		if (number(raw.xp)) experienced += 1;
 		const renown = number(raw.renown);
 		if (renown) instance.tally = { renown };
 
@@ -139,6 +140,9 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	if (overridden) hints.push(`The builder's own price for ${overridden} ${overridden === 1 ? 'fighter' : 'fighters'} is left out; the app prices them itself.`);
 	if (usedLevels) {
 		hints.push(`${usedLevels} renown ${usedLevels === 1 ? 'level' : 'levels'} without a record of what ${usedLevels === 1 ? 'it was' : 'they were'} spent on ${usedLevels === 1 ? 'counts' : 'count'} as spent.`);
+	}
+	if (experienced) {
+		hints.push(`Experience is not carried over – the Campaign Book counts renown only – for ${experienced} ${experienced === 1 ? 'fighter' : 'fighters'} that had some.`);
 	}
 	if (unexplained.length) hints.push(`Raised without a record of why, kept as such: ${unexplained.join(', ')}.`);
 	const unknown = fighters.filter((f) => !faction.fighters.some((x) => x.id === f.fighterId));

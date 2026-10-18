@@ -1,7 +1,7 @@
 /**
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
- * then the injuries of who was taken out of action, then who earned
- * experience, then the line in the battle history – answered in the aftermath's
+ * then the injuries of who was taken out of action, then the roll each fighter
+ * makes for a level, then the line in the battle history – answered in the aftermath's
  * sheet and written into the warband in one go. What each answer is worth is
  * the game's (`GameSystem.aftermath`, `GameSystem.injuries`); what an injury
  * does once – a death, a surgeon, a missed battle, a robbery, a capture – is
@@ -19,19 +19,23 @@ import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSy
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
 export type SurgeonAnswer = 'none' | 'died' | 'survived';
 
-/** A fighter asked for its experience, with its answers as the battle left them. */
+/** A fighter asked for its roll, with its answers as the battle left them. */
 export interface AftermathRow {
 	instanceId: string;
 	name: string;
-	/** By the key of each of the game's questions. */
+	/** Whether it took part in the battle; one that did not rolls nothing. */
+	tookPart: boolean;
+	/** By the key of each of the game's modifiers. */
 	answers: Record<string, boolean>;
+	/** The levels its roll – both rolls, when it is marked – came to, as tapped. */
+	levels: number;
 }
 
 export interface AftermathDraft {
 	rows: AftermathRow[];
 	/**
 	 * Who the battle left out of action, by instance id. The injury rolls and
-	 * the experience question that asks after it both read this one list.
+	 * the modifier that asks after it both read this one list.
 	 */
 	out: string[];
 	/** The result each of them rolled, by instance id: an id on the game's injury table. */
@@ -40,10 +44,10 @@ export interface AftermathDraft {
 	recovered: Record<string, boolean>;
 	/** For a fighter whose result needs a surgeon, what came of it, by instance id. Missing changes nothing. */
 	surgeon: Record<string, SurgeonAnswer>;
-	/** Who never earns experience, named under the rows. */
+	/** Who never rolls, named under the rows. */
 	excluded: string[];
-	/** The one fighter given the bonus point, if any. */
-	bonus: string | null;
+	/** The one fighter marked to roll twice, if any. */
+	marked: string | null;
 	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
@@ -79,7 +83,7 @@ export function startAftermath(
 	battle: BattleState | null,
 	history: BattleRecord[] = []
 ): AftermathDraft {
-	const earns = (f: AftermathFighter) => !f.keywordIds.some((k) => rules.noXp.includes(k));
+	const earns = (f: AftermathFighter) => !f.keywordIds.some((k) => rules.excluded.includes(k));
 	const since = today(battle ? new Date(battle.startedAt) : undefined);
 	const recorded = history.filter((r) => r.date >= since).at(-1) ?? null;
 	return {
@@ -88,16 +92,18 @@ export function startAftermath(
 			.map((f) => ({
 				instanceId: f.instanceId,
 				name: f.name,
+				tookPart: true,
 				answers: Object.fromEntries(
-					rules.questions.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
-				)
+					rules.modifiers.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
+				),
+				levels: 0
 			})),
 		excluded: fighters.filter((f) => !earns(f) && !f.away).map((f) => f.name),
 		out: fighters.filter((f) => !f.away && stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
 		injuries: {},
 		recovered: {},
 		surgeon: {},
-		bonus: null,
+		marked: null,
 		result: null,
 		shards: 0,
 		record: recorded === null,
@@ -108,9 +114,9 @@ export function startAftermath(
 }
 
 /**
- * Takes a fighter out of action or back, for the injuries and the experience
- * alike: the question that starts from the battle's state follows, and a
- * fighter brought back drops the result it was given.
+ * Takes a fighter out of action or back, for the injuries and the roll alike:
+ * the modifier that starts from the battle's state follows, and a fighter
+ * brought back drops the result it was given.
  */
 export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: string) {
 	const out = !draft.out.includes(instanceId);
@@ -121,7 +127,7 @@ export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: s
 		delete draft.surgeon[instanceId];
 	}
 	const row = draft.rows.find((r) => r.instanceId === instanceId);
-	for (const question of rules.questions) if (row && question.start === 'not-out') row.answers[question.key] = !out;
+	for (const modifier of rules.modifiers) if (row && modifier.start === 'not-out') row.answers[modifier.key] = !out;
 }
 
 /** What the result a fighter was given comes to, as the game resolves it; null where it was given none or rolls none. */
@@ -152,9 +158,19 @@ export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, d
 	return purse(warband, game) - warbandCost(warband, faction) - spent;
 }
 
-/** The points a row earns: one for each answer that holds, one more for the bonus. */
-export function xpEarned(row: AftermathRow, bonus: string | null): number {
-	return Object.values(row.answers).filter(Boolean).length + (bonus === row.instanceId ? 1 : 0);
+/** The score a row's roll needs on the die: the game's target, less 1 for each modifier that holds. */
+export function scoreNeeded(row: AftermathRow, rules: Aftermath): number {
+	return rules.roll.target - Object.values(row.answers).filter(Boolean).length;
+}
+
+/** How many rolls a row makes: two for the marked fighter, one for the rest, none for one that did not take part. */
+export function rollsOf(row: AftermathRow, marked: string | null): number {
+	return row.tookPart ? (marked === row.instanceId ? 2 : 1) : 0;
+}
+
+/** The levels a row earns, as tapped, never more than its rolls. */
+export function levelsEarned(row: AftermathRow, marked: string | null): number {
+	return Math.min(row.levels, rollsOf(row, marked));
 }
 
 /** The battle's line in the history, or null where none is to be added. */
@@ -170,10 +186,10 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
 }
 
 /**
- * The warband with the battle's injuries, experience, income and history line
+ * The warband with the battle's injuries, levels, income and history line
  * written in. A fighter that missed this battle with an injury is back for the
  * next. The injury comes first, as the aftermath rolls it first: a level of
- * renown it brings is there before the experience, and a fighter that dies
+ * renown it brings is there before the roll's, and a fighter that dies
  * earns none. A dead fighter leaves the roster, its bought wargear going to the
  * stash where the roll recovered it – or, dying at the surgeon's, always; a
  * dead leader stays, marked dead. A surgeon's fee comes off the gold, robbery
@@ -217,8 +233,8 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
 		}
 		const row = rows.get(fighter.instanceId);
-		const points = row ? xpEarned(row, draft.bonus) : 0;
-		return [points > 0 ? rules.gainXp(fighter, points) : fighter];
+		const levels = row ? levelsEarned(row, draft.marked) : 0;
+		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];
 	});
 	return {
 		...warband,

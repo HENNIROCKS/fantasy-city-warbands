@@ -186,6 +186,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		});
 	}
 
+	issues.push(...(game.advancement?.check?.(warband, faction) ?? []));
+
 	for (const choice of faction.choices) {
 		const picked = warband.picks[choice.id] ?? [];
 		const options = new Set(choice.options.map((o) => o.id));

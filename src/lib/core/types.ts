@@ -61,9 +61,9 @@ export interface GameSystem {
 	statFloor?: number;
 	/**
 	 * How the roster PDF heads its columns, in the order of `stats`,
-	 * `weaponStats` and a fighter's campaign counters – the experience first,
-	 * then `campaign.fighter` – and what it is called. A game whose sheet
-	 * differs in more than its columns gets its own layout here.
+	 * `weaponStats` and a fighter's campaign counters, `campaign.fighter` – and
+	 * what it is called. A game whose sheet differs in more than its columns
+	 * gets its own layout here.
 	 */
 	roster: { title: string; stats: string[]; weapons: string[]; campaign?: string[] };
 	/**
@@ -120,6 +120,8 @@ export interface GameSystem {
 		 * with a short label for the phone. Without it, the list shows `values`.
 		 */
 		brief?: (warband: Warband) => Figure[];
+		/** The counters a fighter starts with when recruited, such as Wyrdcry's leader's first level of renown. */
+		recruited?: (fighter: Fighter) => Record<string, number>;
 	};
 	/**
 	 * What ending a battle asks and writes into the warband. Without it, ending a
@@ -190,22 +192,27 @@ export interface CounterStage {
 }
 
 /**
- * A game's aftermath: who earns experience for what, and what the battle's
- * result and shards bring the warband.
+ * A game's aftermath: the roll each fighter that took part makes for a level,
+ * what adds to it, and what the battle's result and shards bring the warband.
+ * The dice are rolled at the table; the app is handed how many levels came of it.
  */
 export interface Aftermath {
+	/** The roll, as the rules name it, and the score that earns a level: `Renown roll`, 6. */
+	roll: { label: string; target: number };
 	/**
-	 * Asked of every fighter that earns experience, a point each: `Participated`.
-	 * `start` is the answer it begins with: yes, no, or yes unless the battle
-	 * left the fighter out of action.
+	 * What adds 1 to a fighter's roll: `Not taken out of action`. `start` is the
+	 * answer it begins with: yes, no, or yes unless the battle left the fighter
+	 * out of action.
 	 */
-	questions: { key: string; label: string; start: 'yes' | 'no' | 'not-out' }[];
-	/** Whether one fighter of the warband's choosing earns a point more. */
-	bonus: boolean;
-	/** Fighters carrying one of these keywords never earn experience. */
-	noXp: string[];
-	/** The fighter with `points` more experience, levels and all. */
-	gainXp: (fighter: FighterInstance, points: number) => FighterInstance;
+	modifiers: { key: string; label: string; start: 'yes' | 'no' | 'not-out' }[];
+	/** What the one fighter of the warband's choosing who rolls twice is called: `Marked for greatness`. Null where none does. */
+	marked: string | null;
+	/** Fighters carrying one of these keywords never roll. */
+	excluded: string[];
+	/** The fighter with `levels` more. */
+	gainLevels: (fighter: FighterInstance, levels: number) => FighterInstance;
+	/** What to keep in mind while counting the shards, such as a fighter whose injury may take one, a line each. */
+	shardNotes?: (warband: Warband) => string[];
 	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
@@ -228,14 +235,16 @@ export interface Advancement {
 	counter: string;
 	/** The fighter's levels earned and not yet spent, lowest first. */
 	open(instance: FighterInstance, fighter: Fighter): OpenLevel[];
-	/** What one of those levels can be spent on, each with the reason where it cannot. */
-	offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel): LevelOffer;
+	/** What one of those levels can be spent on, each with the reason where it cannot – the warband for what only one of its fighters may take. */
+	offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel, warband: Warband): LevelOffer;
 	/** The fighter's keywords as its levels make them, such as a henchman's promotion to HERO. */
 	keywords(instance: FighterInstance, keywords: string[]): string[];
 	/** What the spent levels add to the card besides characteristics: rules, keywords, a weapon's figures. */
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): AdvanceEffects;
 	/** What the fighter's advance at `index` was spent on, in a line: `Fight 4 → 5`, `Fearsome`, `used up`. */
 	describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number): string;
+	/** What the warband's spent levels break among its fighters, such as an ability only one of them may have; `validate` reports it. */
+	check?(warband: Warband, faction: Faction): Issue[];
 }
 
 export interface OpenLevel {
@@ -275,6 +284,8 @@ export interface LevelRule {
 export interface AdvanceEffects {
 	rules: Rule[];
 	keywords: string[];
+	/** What they add to a characteristic, each by the rule's name. */
+	stats: { stat: string; bonus: number; source: string }[];
 	/** A weapon column the levels change, by wargear id: its new figure and why. */
 	weapons: { wargear: string; stat: string; value: string; source: string }[];
 }
@@ -343,8 +354,6 @@ export interface InjuryResolution {
 }
 
 export interface InjuryEffects extends AdvanceEffects {
-	/** What the results add to a characteristic, each by the result's name. */
-	stats: { stat: string; bonus: number; source: string }[];
 	/** Types of ability the fighter cannot use, such as `reaction`, each by the result's name. */
 	forbid: { type: string; source: string }[];
 }
@@ -552,7 +561,7 @@ export interface FighterInstance {
 	fluff?: string;
 	/** Anything to remember at the table, shown at the foot of the fighter's card. */
 	notes?: string;
-	/** Experience towards the next level. Missing reads as none. */
+	/** Experience a saved warband or file carries; no game here counts it, and it is kept as it is. */
 	xp?: number;
 	/** What the fighter's levels were spent on, in the order they were spent. */
 	advances?: Advance[];
@@ -641,7 +650,8 @@ export interface Issue {
 		| 'unknown-fighter'
 		| 'wargear-not-allowed'
 		| 'wargear-carry'
-		| 'wargear-rare';
+		| 'wargear-rare'
+		| 'legendary';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */
 	kind: 'missing' | 'excess';
 	message: string;

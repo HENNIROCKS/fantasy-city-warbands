@@ -26,12 +26,12 @@
 	{
 		"id": "ghoul",
 		"name": "Ghoul",
-		"cost": 80,
-		"limit": { "min": 0, "max": 5 },
+		"cost": 70,
+		"limit": { "min": 0, "max": null },
 		"description": "",
-		"profile": { "move": 5, "fight": 4, "shoot": 3, "defense": 0, "health": 12, "bravery": 5 },
+		"profile": { "move": 5, "fight": 3, "shoot": 3, "defense": 0, "health": 12, "bravery": 5 },
 		"keywords": ["ghoul", "undead", "henchman", "terrifying"],
-		"abilities": [],
+		"abilities": ["bloody-feast"],
 		"gear": [],
 		"choose": null
 	},
