@@ -7,6 +7,7 @@
 
 import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
 import { LEADER } from './effects';
+import { keywordsOf } from './leader';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
@@ -234,14 +235,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	];
 
 	/* As the levels make them – a henchman with three of Wyrdcry's renown is a HERO – and LEADER for one that took the lead. */
-	const recruited = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
 	const keywords = [
-		...new Set([
-			...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited),
-			...(instance.leader ? [LEADER] : []),
-			...advanced.keywords,
-			...injured.keywords
-		])
+		...new Set([...(fighter ? keywordsOf(instance, fighter, game) : instance.leader ? [LEADER] : []), ...advanced.keywords, ...injured.keywords])
 	];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
@@ -449,7 +444,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	const heroTitle = game.groups.length ? undefined : game.roleLabels?.hero;
 	const promoted = (i: FighterInstance) => {
 		const type = faction.fighters.find((f) => f.id === i.fighterId);
-		return !!type && !!game.advancement && !type.keywords.includes('hero') && game.advancement.keywords(i, type.keywords).includes('hero');
+		return !!type && !type.keywords.includes('hero') && keywordsOf(i, type, game).includes('hero');
 	};
 	/* Where the leader is marked first among the heroes, a fighter that took the lead stands there, not under its own heading. */
 	const leaderTitle = game.groups.length ? null : game.roleLabels?.leader;

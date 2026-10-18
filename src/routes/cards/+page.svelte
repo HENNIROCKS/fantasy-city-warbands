@@ -269,11 +269,12 @@
 		return `Name your ${type?.name ?? instance?.fighterId ?? 'fighter'}`;
 	});
 
-	/* Whether the fighter on the back may take the lead of a warband that lost its leader, and who leaves the roster when it does. */
+	/* Whether the fighter on the back may take the lead of a warband that lost its leader, and who leaves the roster when it does.
+	   Not while a battle goes on: the dead leader's card and equipment would leave the deck mid-battle. */
 	const backLead = $derived.by((): BackLead | null => {
 		const game = system?.game;
 		const instance = warband?.fighters.find((f) => f.instanceId === editingId);
-		if (!warband || !faction || !game?.succession || !instance || !mayLead(warband, faction, game, instance)) return null;
+		if (battle || !warband || !faction || !game?.succession || !instance || !mayLead(warband, faction, game, instance)) return null;
 		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 		return {
 			keyword: game.succession.keyword.toUpperCase(),

@@ -179,7 +179,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			message = `${fighter.name}: ${successor.name.trim() || 'a fighter'} leads the warband in its place.`;
 			short = 'Already led';
 		} else if (heir && game.succession) {
-			message = `No leader: a ${game.succession.keyword.toUpperCase()} takes the lead on the back of its card, or recruit a ${fighter.name}.`;
+			message = `No leader: a ${game.succession.keyword.toUpperCase()} takes the lead on the back of its card.`;
 			short = 'No leader';
 		} else if (source && limit.max === 0) {
 			message = `${fighter.name} cannot be recruited with ${source}.`;
@@ -188,6 +188,16 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			message = `${source}: the warband must be led by a ${fighter.name}.`;
 		}
 		issues.push({ code: 'fighter-limit', kind, message, short });
+	}
+
+	const leading = warband.fighters.filter((f) => f.leader);
+	if (leading.length > 1) {
+		issues.push({
+			code: 'leaders',
+			kind: 'excess',
+			message: `One fighter leads the warband in its leader's place, this warband has ${leading.length}: ${leading.map((f) => f.name.trim() || 'Unnamed fighter').join(', ')}.`,
+			short: 'Already led'
+		});
 	}
 
 	for (const group of game.groups) {

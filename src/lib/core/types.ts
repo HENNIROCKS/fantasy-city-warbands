@@ -675,7 +675,8 @@ export interface Issue {
 		| 'wargear-not-allowed'
 		| 'wargear-carry'
 		| 'wargear-rare'
-		| 'legendary';
+		| 'legendary'
+		| 'leaders';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */
 	kind: 'missing' | 'excess';
 	message: string;
