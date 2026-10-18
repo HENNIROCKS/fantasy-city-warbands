@@ -1,6 +1,20 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { goldLeft, isLeader, levelsEarned, rollsOf, scoreNeeded, toggleOut, type AftermathDraft, type AftermathRow, type SurgeonAnswer } from '$lib/core/aftermath';
+	import {
+		extraMarksOf,
+		goldLeft,
+		isLeader,
+		levelsEarned,
+		markReason,
+		marksOf,
+		rollsOf,
+		scoreNeeded,
+		survivorsOf,
+		toggleOut,
+		type AftermathDraft,
+		type AftermathRow,
+		type SurgeonAnswer
+	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
@@ -33,7 +47,10 @@
 		onclose: () => void;
 	} = $props();
 
-	const earned = $derived(rules.income(warband, game, draft.result, draft.shards));
+	const earned = $derived(rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft)));
+	/* The marks beyond the first, and the marks that stand – both follow who came through the battle. */
+	const extra = $derived(extraMarksOf(warband, rules, draft));
+	const marks = $derived(marksOf(draft, extra));
 	const injuries = $derived(game.injuries);
 
 	const nameOf = (instanceId: string) => warband.fighters.find((f) => f.instanceId === instanceId)?.name.trim() || 'Unnamed fighter';
@@ -99,18 +116,24 @@
 	const present = $derived(warband.fighters.filter((f) => !f.away));
 	const sittingOut = $derived(warband.fighters.flatMap((f) => (f.away ? [`${nameOf(f.instanceId)} (${AWAY_LABELS[f.away]})`] : [])));
 
-	/* One fighter at most: a tap moves the mark, a second tap takes it back. A level tapped for a second roll goes with it. */
+	/*
+	 * A tap marks the fighter, a second tap takes the mark back, and with it a
+	 * level tapped for the second roll. With one mark only, a tap moves it; with
+	 * more, a fighter no mark is left for cannot be tapped.
+	 */
 	function toggleMarked(row: AftermathRow) {
-		draft.marked = draft.marked === row.instanceId ? null : row.instanceId;
-		for (const r of draft.rows) r.levels = Math.min(r.levels, rollsOf(r, draft.marked));
+		if (marks.includes(row.instanceId)) draft.marked = marks.filter((id) => id !== row.instanceId);
+		else draft.marked = extra.notes.length ? [...marks, row.instanceId] : [row.instanceId];
+		const now = marksOf(draft, extra);
+		for (const r of draft.rows) r.levels = Math.min(r.levels, rollsOf(r, now));
 	}
 
-	/* A fighter that sat the battle out rolls nothing, and is not the one marked. */
+	/* A fighter that sat the battle out rolls nothing, and loses its mark. */
 	function toggleTookPart(row: AftermathRow) {
 		row.tookPart = !row.tookPart;
 		if (!row.tookPart) {
 			row.levels = 0;
-			if (draft.marked === row.instanceId) draft.marked = null;
+			draft.marked = draft.marked.filter((id) => id !== row.instanceId);
 		}
 	}
 
@@ -319,9 +342,17 @@
 				<h2 class="name" id="aftermath-title">Renown</h2>
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
+					{#if extra.notes.length}
+						<section>
+							{#each extra.notes as note (note)}
+								<p class="note">{note}</p>
+							{/each}
+						</section>
+					{/if}
 					{#each draft.rows as row (row.instanceId)}
-						{@const levels = levelsEarned(row, draft.marked)}
-						{@const rolls = rollsOf(row, draft.marked)}
+						{@const levels = levelsEarned(row, marks)}
+						{@const rolls = rollsOf(row, marks)}
+						{@const blocked = markReason(draft, row, extra)}
 						<section>
 							<h3 class="heading">
 								<span>{row.name}</span><span class="rule"></span>
@@ -341,10 +372,15 @@
 										</button>
 									{/each}
 									{#if rules.marked}
-										<button class="toggle" aria-pressed={draft.marked === row.instanceId} onclick={() => toggleMarked(row)}>{rules.marked}</button>
+										<button class="toggle" aria-pressed={marks.includes(row.instanceId)} disabled={blocked !== null && extra.notes.length > 0} onclick={() => toggleMarked(row)}
+											>{rules.marked}</button
+										>
 									{/if}
 								{/if}
 							</div>
+							{#if row.tookPart && blocked && extra.notes.length}
+								<p class="hint">{blocked}.</p>
+							{/if}
 							{#if rolls}
 								<p class="note" id="roll-{row.instanceId}">
 									{rules.roll.label}{rolls === 2 ? ', twice' : ''}: needs {scoreNeeded(row, rules)}+

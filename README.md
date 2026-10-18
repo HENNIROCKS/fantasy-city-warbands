@@ -105,7 +105,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   to tap what the dice rolled – an injury it already has counts as a Flesh
   Wound, a fourth kills a HERO, Unbending Will rolls none; then each fighter's
   renown roll – what adds to it, the score it needs, and whether it reached it,
-  twice for the one marked for greatness. Apply carries out what an injury does once:
+  twice for the one marked for greatness, and for a HENCHMAN more for each
+  Drillmaster that came through; a Bootlicker that came through adds a favour. Apply carries out what an injury does once:
   a dead fighter leaves the roster, its equipment going to the stash on a 3+
   (a dead leader stays, marked Dead, until the app can pick another), a surgeon
   costs 15 gc, robbery takes what the fighter bought, and a captured fighter or

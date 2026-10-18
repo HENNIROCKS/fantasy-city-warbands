@@ -25,6 +25,8 @@ export interface AftermathRow {
 	name: string;
 	/** Whether it took part in the battle; one that did not rolls nothing. */
 	tookPart: boolean;
+	/** The keywords its fighter carries, for a mark only some may take. */
+	keywordIds: string[];
 	/** By the key of each of the game's modifiers. */
 	answers: Record<string, boolean>;
 	/** The levels its roll – both rolls, when it is marked – came to, as tapped. */
@@ -46,8 +48,8 @@ export interface AftermathDraft {
 	surgeon: Record<string, SurgeonAnswer>;
 	/** Who never rolls, named under the rows. */
 	excluded: string[];
-	/** The one fighter marked to roll twice, if any. */
-	marked: string | null;
+	/** The fighters marked to roll twice, in the order they were marked. */
+	marked: string[];
 	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
@@ -93,6 +95,7 @@ export function startAftermath(
 				instanceId: f.instanceId,
 				name: f.name,
 				tookPart: true,
+				keywordIds: f.keywordIds,
 				answers: Object.fromEntries(
 					rules.modifiers.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
 				),
@@ -103,7 +106,7 @@ export function startAftermath(
 		injuries: {},
 		recovered: {},
 		surgeon: {},
-		marked: null,
+		marked: [],
 		result: null,
 		shards: 0,
 		record: recorded === null,
@@ -163,14 +166,52 @@ export function scoreNeeded(row: AftermathRow, rules: Aftermath): number {
 	return rules.roll.target - Object.values(row.answers).filter(Boolean).length;
 }
 
-/** How many rolls a row makes: two for the marked fighter, one for the rest, none for one that did not take part. */
-export function rollsOf(row: AftermathRow, marked: string | null): number {
-	return row.tookPart ? (marked === row.instanceId ? 2 : 1) : 0;
+/** Who took part and was not taken out of action, by instance id. */
+export function survivorsOf(draft: AftermathDraft): string[] {
+	return draft.rows.filter((r) => r.tookPart && !draft.out.includes(r.instanceId)).map((r) => r.instanceId);
+}
+
+/** The marks the warband may give beyond the first, as the fighters that came through give them; none where the game has none. */
+export function extraMarksOf(warband: Warband, rules: Aftermath, draft: AftermathDraft): { keyword: string; notes: string[] } {
+	return rules.extraMarks?.(warband, survivorsOf(draft)) ?? { keyword: '', notes: [] };
+}
+
+/**
+ * Why a row cannot be marked as well: no marks left, or the one mark open to
+ * any fighter already taken by one without the keyword the further marks ask
+ * for. Null where it can, or is marked already and can be unmarked.
+ */
+function markBlocked(row: AftermathRow, marks: string[], rows: AftermathRow[], extra: { keyword: string; notes: string[] }): string | null {
+	if (marks.includes(row.instanceId)) return null;
+	if (!row.tookPart) return 'Did not take part';
+	const room = 1 + extra.notes.length;
+	if (marks.length >= room) return room === 1 ? 'Another fighter is marked' : `Already ${room} marked`;
+	const free = (id: string) => !rows.find((r) => r.instanceId === id)?.keywordIds.includes(extra.keyword);
+	if (free(row.instanceId) && marks.some(free)) return `The second mark goes to a ${extra.keyword.toUpperCase()}`;
+	return null;
+}
+
+/** The marks that stand, in the order given: one that no mark is left for any more, as a Drillmaster taken out of action leaves it, drops. */
+export function marksOf(draft: AftermathDraft, extra: { keyword: string; notes: string[] }): string[] {
+	return draft.marked.reduce<string[]>((kept, id) => {
+		const row = draft.rows.find((r) => r.instanceId === id);
+		return row && markBlocked(row, kept, draft.rows, extra) === null ? [...kept, id] : kept;
+	}, []);
+}
+
+/** Why the row cannot be marked now, against the marks that stand. */
+export function markReason(draft: AftermathDraft, row: AftermathRow, extra: { keyword: string; notes: string[] }): string | null {
+	return markBlocked(row, marksOf(draft, extra), draft.rows, extra);
+}
+
+/** How many rolls a row makes: two for a marked fighter, one for the rest, none for one that did not take part. */
+export function rollsOf(row: AftermathRow, marks: string[]): number {
+	return row.tookPart ? (marks.includes(row.instanceId) ? 2 : 1) : 0;
 }
 
 /** The levels a row earns, as tapped, never more than its rolls. */
-export function levelsEarned(row: AftermathRow, marked: string | null): number {
-	return Math.min(row.levels, rollsOf(row, marked));
+export function levelsEarned(row: AftermathRow, marks: string[]): number {
+	return Math.min(row.levels, rollsOf(row, marks));
 }
 
 /** The battle's line in the history, or null where none is to be added. */
@@ -198,7 +239,8 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
 	if (!rules) return warband;
-	const earned = rules.income(warband, game, draft.result, draft.shards);
+	const earned = rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft));
+	const marks = marksOf(draft, extraMarksOf(warband, rules, draft));
 	const record = battleRecord(draft, at);
 	const rows = new Map(draft.rows.map((r) => [r.instanceId, r]));
 	/* What leaves the warband's worth – a fighter, what it carried – leaves the
@@ -233,7 +275,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
 		}
 		const row = rows.get(fighter.instanceId);
-		const levels = row ? levelsEarned(row, draft.marked) : 0;
+		const levels = row ? levelsEarned(row, marks) : 0;
 		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];
 	});
 	return {

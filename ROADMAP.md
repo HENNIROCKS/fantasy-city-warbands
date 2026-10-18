@@ -65,23 +65,26 @@
 - [x] 🛠️ The check names what a fighter still has to choose on recruitment – the spells, characteristics or table it picks from
 - [x] 🛠️ The list of warbands shows each one's campaign figures – Wyrdcry's favour with its standing, and the reputation
 - [x] 📚 Wyrdcry: the Campaign Book 0.9 – favour tiers and income, the renown roll in place of experience, a characteristic on every level and a talent on every odd one, promotion at the third, legendary abilities, the new heroic talents, lasting injuries and Trading Post, and the 0.9 weapon and Ghoul updates
+- [x] 📈 Wyrdcry: talents that change the aftermath counted there – Bootlicker's favour, Drillmaster's second mark for greatness
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
+- [ ] 📈 Wyrdcry: single-use items used up in a battle, and Crimson Shade's roll for Kleptomania in the aftermath
+- [ ] 📈 Wyrdcry: a dead or dismissed leader hands the LEADER keyword to a HERO
+- [ ] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
+- [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
+- [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
+- [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
+- [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
 - [ ] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [ ] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
 - [ ] 🛠️ Recruit between battles
 - [ ] 📄 The roster per game, as each game's own sheet has it
-- [ ] 🛠️ Hire a Hired Sword for a single battle
-- [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls and the encounters
-- [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
-- [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
-- [ ] 📈 Wyrdcry: talents that change the aftermath counted there – Bootlicker, Drillmaster, Scout
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
 

@@ -105,6 +105,11 @@ export const game: GameSystem = {
 			{ key: 'enemy-out', label: 'Took an enemy out of action', start: 'no' }
 		],
 		marked: 'Marked for greatness',
+		/* Drillmaster (p. 12): one more HENCHMAN for each Drillmaster that came through. */
+		extraMarks: (warband, survivors) => ({
+			keyword: 'henchman',
+			notes: holdersOf(warband, 'drillmaster', survivors).map((who) => `Drillmaster (${who}): one more HENCHMAN may be marked for greatness.`)
+		}),
 		/* `keywords.json`: BEAST and THRALL both read "Never earn experience or gain renown". */
 		excluded: ['beast', 'thrall'],
 		gainLevels: (fighter, levels) => ({ ...fighter, tally: { ...fighter.tally, renown: (fighter.tally?.renown ?? 0) + levels } }),
@@ -166,22 +171,32 @@ function tierFor(favour: number): FavourTier {
 	return tiers.find((t) => favour >= t.min && favour <= t.max) ?? tiers[tiers.length - 1];
 }
 
+/** The names of the fighters among `among` that hold a heroic talent, by its id. */
+function holdersOf(warband: Warband, talent: string, among: string[]): string[] {
+	return warband.fighters
+		.filter((f) => among.includes(f.instanceId) && (f.advances ?? []).some((a) => a.rule === talent))
+		.map((f) => f.name.trim() || 'Unnamed fighter');
+}
+
 /**
- * Step 4 of the aftermath: a favour for each shard and one more for a win, then
- * the income of the standing the warband now holds, so a rise counts at once.
- * The gold goes into the purse, which counts the warband's value in.
+ * Step 4 of the aftermath: a favour for each shard, one more for a win and one
+ * for each Bootlicker that came through (p. 15), then the income of the standing
+ * the warband now holds, so a rise counts at once. The gold goes into the purse,
+ * which counts the warband's value in.
  */
-function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number) {
+function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number, survivors: string[]) {
 	const before = warband.tally?.favour ?? 0;
-	const favour = shards + (result === 'win' ? 1 : 0);
+	const bootlickers = holdersOf(warband, 'bootlicker', survivors);
+	const favour = shards + (result === 'win' ? 1 : 0) + bootlickers.length;
 	const tier = tierFor(before + favour);
 	const gold = tier.income + tier.per_shard * shards;
 	const rises = tier.label !== tierFor(before).label;
+	const licked = bootlickers.length ? ` – ${bootlickers.length} for Bootlicker (${bootlickers.join(', ')})` : '';
 	return {
 		tally: { ...warband.tally, favour: before + favour },
 		gold: purse(warband, game) + gold,
 		lines: [
-			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}` },
+			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}${licked}` },
 			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
 		]
 	};

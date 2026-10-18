@@ -207,6 +207,12 @@ export interface Aftermath {
 	modifiers: { key: string; label: string; start: 'yes' | 'no' | 'not-out' }[];
 	/** What the one fighter of the warband's choosing who rolls twice is called: `Marked for greatness`. Null where none does. */
 	marked: string | null;
+	/**
+	 * Marks beyond the first, given by fighters that came through the battle –
+	 * `survivors`, by instance id – such as Wyrdcry's Drillmaster: the keyword a
+	 * further marked fighter must carry, and a line for each mark saying who gives it.
+	 */
+	extraMarks?: (warband: Warband, survivors: string[]) => { keyword: string; notes: string[] };
 	/** Fighters carrying one of these keywords never roll. */
 	excluded: string[];
 	/** The fighter with `levels` more. */
@@ -216,8 +222,10 @@ export interface Aftermath {
 	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
+	 * `survivors` are the fighters that took part and were not taken out of
+	 * action, by instance id, for what only they bring in.
 	 */
-	income: (warband: Warband, game: GameSystem, result: BattleRecord['result'] | null, shards: number) => {
+	income: (warband: Warband, game: GameSystem, result: BattleRecord['result'] | null, shards: number, survivors: string[]) => {
 		tally: Record<string, number>;
 		gold: number;
 		lines: { gain: string; why: string }[];
