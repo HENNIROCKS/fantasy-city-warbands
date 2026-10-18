@@ -20,6 +20,18 @@
 		injuries: string[];
 		/** Why an injury keeps the fighter out, null where nothing does or it was cleared on this back. */
 		away: AwayReason | null;
+		/** Whether the fighter takes the lead of a warband that lost its leader. */
+		lead: boolean;
+		/** Whether the roll recovered what a dead leader still on the roster carried, as it leaves. */
+		recovered: boolean;
+	}
+
+	/** What taking the lead on this back asks, worked out by the page; null where the fighter may not take it. */
+	export interface BackLead {
+		/** The keyword the game asks of a new leader, as the rules print it: `HERO`. */
+		keyword: string;
+		/** The dead leaders still on the roster, with the names of what they carried: they leave it once the lead is taken. */
+		dead: { name: string; carried: string[] }[];
 	}
 
 	/** What the back may move between the fighter and the stash, worked out by the page from the draft. */
@@ -85,6 +97,7 @@
 		campaign,
 		renown,
 		injuries,
+		lead,
 		equipment
 	}: {
 		name: string;
@@ -96,6 +109,7 @@
 		renown: BackRenown | null;
 		/** The names of `draft.injuries`, in its order; null where the game has no injuries. */
 		injuries: string[] | null;
+		lead: BackLead | null;
 		equipment: BackEquipment | null;
 	} = $props();
 
@@ -397,6 +411,26 @@
 							</li>
 						{/each}
 					</ul>
+				</section>
+			{/if}
+
+			{#if lead}
+				<!-- Death of a leader: a warband that lost its leader picks one of
+				     its fighters to carry the LEADER keyword, here as on the aftermath. -->
+				<section>
+					<h3 class="heading"><span>Leader</span><span class="rule"></span></h3>
+					<p class="note">The warband has no leader. A {lead.keyword} takes the LEADER keyword – only the keyword, not the abilities of the leader's own type.</p>
+					<div class="toggles stacked">
+						<button class="toggle" aria-pressed={draft.lead} onclick={() => (draft.lead = !draft.lead)}>Lead the warband</button>
+						{#if draft.lead && lead.dead.some((d) => d.carried.length)}
+							<button class="toggle" aria-pressed={draft.recovered} onclick={() => (draft.recovered = !draft.recovered)}>
+								Recovered on a 3+ – {lead.dead.flatMap((d) => d.carried).join(', ')} to the stash
+							</button>
+						{/if}
+					</div>
+					{#if draft.lead && lead.dead.length}
+						<p class="hint">{lead.dead.map((d) => d.name).join(', ')} leaves the roster with Done.</p>
+					{/if}
 				</section>
 			{/if}
 

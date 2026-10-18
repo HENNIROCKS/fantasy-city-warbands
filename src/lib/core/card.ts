@@ -6,6 +6,7 @@
  */
 
 import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
+import { LEADER } from './effects';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
 import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
@@ -232,10 +233,15 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		)
 	];
 
-	/* As the levels make them: a henchman with four of Wyrdcry's renown is a HERO. */
+	/* As the levels make them – a henchman with three of Wyrdcry's renown is a HERO – and LEADER for one that took the lead. */
 	const recruited = [...new Set([...(fighter?.keywords ?? []), ...options.flatMap((o) => o.keywords ?? [])])];
 	const keywords = [
-		...new Set([...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited), ...advanced.keywords, ...injured.keywords])
+		...new Set([
+			...(game.advancement ? game.advancement.keywords(instance, recruited) : recruited),
+			...(instance.leader ? [LEADER] : []),
+			...advanced.keywords,
+			...injured.keywords
+		])
 	];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
@@ -445,11 +451,14 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 		const type = faction.fighters.find((f) => f.id === i.fighterId);
 		return !!type && !!game.advancement && !type.keywords.includes('hero') && game.advancement.keywords(i, type.keywords).includes('hero');
 	};
+	/* Where the leader is marked first among the heroes, a fighter that took the lead stands there, not under its own heading. */
+	const leaderTitle = game.groups.length ? null : game.roleLabels?.leader;
 	const of = (fighters: Fighter[], title: string | null = null) =>
 		warband.fighters.filter(
 			(i) =>
-				(fighters.some((f) => f.id === i.fighterId) && !(heroTitle && promoted(i))) ||
-				(heroTitle !== undefined && title === heroTitle && promoted(i))
+				!(leaderTitle && i.leader) &&
+				((fighters.some((f) => f.id === i.fighterId) && !(heroTitle && promoted(i))) ||
+					(heroTitle !== undefined && title === heroTitle && promoted(i)))
 		);
 
 	/* Fighters in the order of the headings, within one in the order the warband
@@ -457,14 +466,14 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	   first among the heroes, marked, as on the Warband Deck's card; a game that
 	   counts its leaders as a group of its own, as Black Death City, keeps it. */
 	const sections = fighterSections(faction, game);
-	const leaderTitle = game.groups.length ? null : game.roleLabels?.leader;
 	const leaders = sections.find((s) => leaderTitle && s.title === leaderTitle);
+	const led = leaderTitle ? warband.fighters.filter((i) => i.leader) : [];
 	const roster = sections
 		.filter((section) => section !== leaders)
 		.map((section, i) => ({
 			title: section.title,
 			entries: [
-				...(leaders && i === 0 ? of(leaders.fighters).map((f) => entry(f, true)) : []),
+				...(i === 0 ? [...(leaders ? of(leaders.fighters) : []), ...led].map((f) => entry(f, true)) : []),
 				...of(section.fighters, section.title).map((f) => entry(f))
 			]
 		}))

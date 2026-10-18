@@ -11,6 +11,7 @@
 import { stateOf, type BattleState } from './battle';
 import { LEADER } from './effects';
 import { today } from './history';
+import { canLead, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { newId } from './warband';
@@ -54,6 +55,8 @@ export interface AftermathDraft {
 	excluded: string[];
 	/** The fighters marked to roll twice, in the order they were marked. */
 	marked: string[];
+	/** Who takes the lead where the leader dies, by instance id; null while none is picked. */
+	successor: string | null;
 	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
@@ -113,6 +116,7 @@ export function startAftermath(
 		used: {},
 		afterUse: {},
 		marked: [],
+		successor: null,
 		result: null,
 		shards: 0,
 		record: recorded === null,
@@ -178,8 +182,25 @@ export function toggleUsed(draft: AftermathDraft, instanceId: string, index: num
 	} else draft.used[instanceId] = [...used, index];
 }
 
-/** A leader that dies stays on the roster, marked dead, until another fighter can take its place – which the app cannot do yet. */
-export const isLeader = (type: Fighter) => type.keywords.includes(LEADER);
+/** Whether a fighter that dies stays on the roster, marked dead: a leader, where the game has no one take its place. */
+export const staysDead = (game: GameSystem, type: Fighter) => !game.succession && type.keywords.includes(LEADER);
+
+/** The fighter leading the warband, where the answers have it die; null where it lives, or the game has no one take its place. */
+export function fallenLeader(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): FighterInstance | null {
+	const leader = game.succession ? leaderOf(warband, faction) : null;
+	return leader && diesOf(draft, game, faction, leader) ? leader : null;
+}
+
+/**
+ * Who may take the lead from a fallen leader: a fighter that can lead and
+ * lives through the injuries, with the keywords it has before the renown
+ * roll – Death of a leader comes in the first step of the aftermath.
+ */
+export function heirsOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): FighterInstance[] {
+	const fallen = fallenLeader(warband, game, faction, draft);
+	if (!fallen) return [];
+	return warband.fighters.filter((f) => f !== fallen && canLead(f, faction, game) && !diesOf(draft, game, faction, f));
+}
 
 /** What a fighter's result costs as answered, such as a surgeon paid for; 0 where nothing is paid. */
 function feeOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): number {
@@ -270,7 +291,8 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * renown it brings is there before the roll's, and a fighter that dies
  * earns none. A dead fighter leaves the roster, its bought wargear going to the
  * stash where the roll recovered it – or, dying at the surgeon's, always; a
- * dead leader stays, marked dead. A surgeon's fee comes off the gold, robbery
+ * dead leader stays, marked dead, only where the game has no one take its
+ * place, and elsewhere the fighter picked takes the lead. A surgeon's fee comes off the gold, robbery
  * takes what the fighter bought, and a capture or a missed battle marks it.
  * A single-use piece used up is struck before any of it, so a dead fighter
  * leaves none to the stash; a roll it asked for that brought an injury adds
@@ -282,6 +304,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	const earned = rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft));
 	const marks = marksOf(draft, extraMarksOf(warband, rules, draft));
 	const record = battleRecord(draft, at);
+	const heir = heirsOf(warband, game, faction, draft).find((f) => f.instanceId === draft.successor)?.instanceId ?? null;
 	const rows = new Map(draft.rows.map((r) => [r.instanceId, r]));
 	/* What leaves the warband's worth – a fighter, what it carried – leaves the
 	   purse with it, so the gold left stays where it was; a fee comes off the
@@ -306,7 +329,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			spent += feeOf(draft, game, faction, before);
 			const dies = diesOf(draft, game, faction, before);
 			const carried = fighter.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
-			if (dies && isLeader(type)) return [{ ...fighter, away: 'dead' }];
+			if (dies && staysDead(game, type)) return [{ ...fighter, away: 'dead' }];
 			if (dies) {
 				const kept = surgeon === 'died' || draft.recovered[id];
 				if (kept) stash.push(...fighter.wargear);
@@ -324,6 +347,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			const held = fighter.injuries ?? [];
 			if (roll && draft.afterUse[usedKey(id, index)] && !held.includes(roll.injury)) fighter = { ...fighter, injuries: [...held, roll.injury] };
 		}
+		if (id === heir) fighter = { ...fighter, leader: true };
 		const row = rows.get(fighter.instanceId);
 		const levels = row ? levelsEarned(row, marks) : 0;
 		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];

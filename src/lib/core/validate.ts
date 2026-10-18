@@ -10,7 +10,8 @@
  * against these checks first and refuse the ones that would bring a new excess.
  */
 
-import { activeEffects, isGrouped, limitOf } from './effects';
+import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
+import { canLead, lostLeader, recruitedLeader } from './leader';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -94,7 +95,11 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		});
 	}
 
-	const resolved: Fighter[] = [];
+	/* Who counts towards the limits, each with the keywords it counts under: a
+	   dead leader still on the roster counts for nothing, and a fighter that
+	   took the lead counts as a LEADER. */
+	const resolved: { fighter: Fighter; keywords: string[] }[] = [];
+	const successor = warband.fighters.find((f) => f.leader);
 	for (const instance of warband.fighters) {
 		const fighter = fighters.get(instance.fighterId);
 		if (!fighter) {
@@ -107,7 +112,9 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			});
 			continue;
 		}
-		resolved.push(fighter);
+		if (!(instance.away === 'dead' && recruitedLeader(instance, faction))) {
+			resolved.push({ fighter, keywords: instance.leader && !fighter.keywords.includes(LEADER) ? [...fighter.keywords, LEADER] : fighter.keywords });
+		}
 
 		const allowed = new Set(fighter.wargear);
 		for (const id of instance.wargear) {
@@ -158,14 +165,23 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	}
 
 	for (const fighter of faction.fighters) {
-		const count = resolved.filter((f) => f.id === fighter.id).length;
-		const { limit, source } = limitOf(fighter, effects);
+		const count = resolved.filter((r) => r.fighter.id === fighter.id).length;
+		const isLeader = fighter.keywords.includes(LEADER);
+		/* A fighter that took the lead leaves no place for another leader. */
+		const { limit, source } = successor && isLeader ? { limit: { min: 0, max: 0 }, source: null } : limitOf(fighter, effects);
 		const kind = compare(count, limit);
 		if (!kind) continue;
 
 		let message = `${fighter.name}: ${describe(limit)}${source ? ` with ${source}` : ''}, this warband has ${count}.`;
 		let short = kind === 'excess' ? 'Limit reached' : `${fighter.name} needed`;
-		if (source && limit.max === 0) {
+		const heir = game.succession && kind === 'missing' && isLeader && lostLeader(warband) && warband.fighters.some((f) => canLead(f, faction, game));
+		if (successor && isLeader) {
+			message = `${fighter.name}: ${successor.name.trim() || 'a fighter'} leads the warband in its place.`;
+			short = 'Already led';
+		} else if (heir && game.succession) {
+			message = `No leader: a ${game.succession.keyword.toUpperCase()} takes the lead on the back of its card, or recruit a ${fighter.name}.`;
+			short = 'No leader';
+		} else if (source && limit.max === 0) {
 			message = `${fighter.name} cannot be recruited with ${source}.`;
 			short = `Not with ${source}`;
 		} else if (source && kind === 'missing' && fighter.keywords.includes('leader')) {
@@ -175,7 +191,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	}
 
 	for (const group of game.groups) {
-		const count = resolved.filter((f) => f.keywords.includes(group.keyword) && isGrouped(f.id, effects)).length;
+		const count = resolved.filter((r) => r.keywords.includes(group.keyword) && isGrouped(r.fighter.id, effects)).length;
 		const kind = compare(count, group.limit);
 		if (!kind) continue;
 		issues.push({

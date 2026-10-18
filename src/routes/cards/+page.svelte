@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
-	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackPhoto, type BackRenown } from '$lib/components/CardBack.svelte';
+	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackLead, type BackPhoto, type BackRenown } from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import WarbandBack from '$lib/components/WarbandBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
@@ -15,6 +15,7 @@
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
+	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
@@ -37,7 +38,7 @@
 	/* The fighter whose card is turned over, and what its back holds until Done.
 	   The draft outlasts the edit by half a turn, while the back is still in view. */
 	let editingId = $state<string | null>(null);
-	let draft = $state<BackDraft>({ name: '', fluff: '', notes: '', tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null });
+	let draft = $state<BackDraft>({ name: '', fluff: '', notes: '', tally: {}, wargear: [], stash: [], advances: [], injuries: [], away: null, lead: false, recovered: false });
 	let backCampaign = $state<BackCampaign | null>(null);
 	/* What the back of the warband card holds until Done, while `editingId` is the warband's id. */
 	let warbandDraft = $state<WarbandBackDraft>({
@@ -162,7 +163,9 @@
 			stash: [...(warband?.stash ?? [])],
 			advances: [...(fighter.advances ?? [])],
 			injuries: [...(fighter.injuries ?? [])],
-			away: fighter.away ?? null
+			away: fighter.away ?? null,
+			lead: false,
+			recovered: false
 		};
 		backCampaign = campaignOf(fighter);
 		photoDraft = { photo: stored.get(instanceId) ?? null, changed: false };
@@ -266,6 +269,18 @@
 		return `Name your ${type?.name ?? instance?.fighterId ?? 'fighter'}`;
 	});
 
+	/* Whether the fighter on the back may take the lead of a warband that lost its leader, and who leaves the roster when it does. */
+	const backLead = $derived.by((): BackLead | null => {
+		const game = system?.game;
+		const instance = warband?.fighters.find((f) => f.instanceId === editingId);
+		if (!warband || !faction || !game?.succession || !instance || !mayLead(warband, faction, game, instance)) return null;
+		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+		return {
+			keyword: game.succession.keyword.toUpperCase(),
+			dead: deadLeaders(warband, faction).map((f) => ({ name: f.name.trim() || 'Unnamed fighter', carried: f.wargear.map(nameOf) }))
+		};
+	});
+
 	/* The names of the injuries the fighter on the back keeps, as the draft leaves them. */
 	const backInjuries = $derived.by(() => {
 		const injuries = system?.game.injuries;
@@ -324,16 +339,17 @@
 		   when something moved, so a back that moved nothing leaves it as it is. */
 		const before = warband.fighters.find((f) => f.instanceId === targetId)?.wargear ?? [];
 		if (values.wargear.join() !== before.join()) updated.stash = values.stash;
+		const led = values.lead && backLead && system && faction ? takeLead(updated, faction, system.game, targetId, values.recovered) : updated;
 		editingId = null;
-		warband = updated;
-		saveWarband(updated);
+		warband = led;
+		saveWarband(led);
 		if (photoDraft.changed) {
 			/* IndexedDB trips over the reactivity proxy, so the photo goes in as a plain object. */
 			const photo = photoDraft.photo
 				? { ...photoDraft.photo, bytes: photoDraft.photo.bytes.slice(0), crop: { ...photoDraft.photo.crop } }
 				: null;
 			showPhoto(targetId, photo);
-			savePhoto(updated.id, targetId, photo);
+			savePhoto(led.id, targetId, photo);
 		}
 	}
 
@@ -544,7 +560,7 @@
 					{#if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} placeholder={backPlaceholder} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} equipment={backEquipment} />
+						<CardBack name={card.name} placeholder={backPlaceholder} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} lead={backLead} equipment={backEquipment} />
 					{/if}
 				{/snippet}
 			</Deck>

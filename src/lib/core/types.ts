@@ -132,6 +132,12 @@ export interface GameSystem {
 	advancement?: Advancement;
 	/** What a fighter taken out of action rolls on afterwards, and what the result does. Without it, no injuries. */
 	injuries?: Injuries;
+	/**
+	 * Who takes the LEADER keyword once the warband's leader is dead or gone,
+	 * as Wyrdcry's HERO: the keyword a fighter must carry. Without it, the
+	 * warband recruits a new leader instead.
+	 */
+	succession?: { keyword: string };
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -585,6 +591,8 @@ export interface FighterInstance {
 	injuries?: string[];
 	/** Why the fighter sits out; missing where it does not. */
 	away?: AwayReason;
+	/** Whether it leads the warband in place of the leader it was recruited with, carrying the LEADER keyword. */
+	leader?: true;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
 }

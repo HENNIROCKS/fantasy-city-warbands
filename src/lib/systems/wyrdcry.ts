@@ -122,6 +122,8 @@ export const game: GameSystem = {
 		income
 	},
 	advancement,
+	/* Death of a leader (Campaign Book, p. 8): a HERO takes the LEADER keyword. */
+	succession: { keyword: 'hero' },
 	/* Unbending Will is an ability of the fighter's type, which the shared form
 	   carries only as a rule's text; the raw fighter still has its id. */
 	injuries: wyrdcryInjuries({

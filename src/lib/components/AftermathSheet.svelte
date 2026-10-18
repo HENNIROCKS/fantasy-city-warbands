@@ -3,14 +3,16 @@
 	import {
 		diesOf,
 		extraMarksOf,
+		fallenLeader,
 		goldLeft,
-		isLeader,
+		heirsOf,
 		levelsEarned,
 		markReason,
 		marksOf,
 		rollsOf,
 		scoreNeeded,
 		singleUseOf,
+		staysDead,
 		survivorsOf,
 		toggleOut,
 		toggleUsed,
@@ -26,7 +28,8 @@
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
 	 * result, the shards and the line in the battle history; who was taken out
-	 * of action; one page for each of them that rolls for injuries; the
+	 * of action; one page for each of them that rolls for injuries; who takes
+	 * the lead, where the leader dies; the
 	 * single-use pieces used up, where a fighter carries any; then the
 	 * roll each fighter makes for renown. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
@@ -85,6 +88,10 @@
 			: []
 	);
 
+	/* The leader, where the injuries kill it, and who may take its place. */
+	const fallen = $derived(fallenLeader(warband, game, faction, draft));
+	const heirs = $derived(heirsOf(warband, game, faction, draft));
+
 	/* Who carries a single-use piece, asked after the injuries, so a fighter that dies is known not to roll for one. */
 	const carrying = $derived(singleUseOf(warband, faction));
 
@@ -92,6 +99,7 @@
 	const pages = $derived([
 		'battle',
 		...(injuries ? ['out', ...rolling.map((r) => `roll:${r.instance.instanceId}`)] : []),
+		...(fallen ? ['leader'] : []),
 		...(carrying.length ? ['items'] : []),
 		'renown'
 	]);
@@ -314,8 +322,8 @@
 												</div>
 												{#if gold < cost}<p class="unfold-text">Only {Math.max(0, gold)} {game.currency} left for a surgeon.</p>{/if}
 											{/if}
-											{#if dies && isLeader(roller.type)}
-												<p class="unfold-text">A new leader cannot be chosen in the app yet, so {nameOf(id)} stays on the roster, marked Dead.</p>
+											{#if dies && staysDead(game, roller.type)}
+												<p class="unfold-text">A new leader cannot be chosen in this game, so {nameOf(id)} stays on the roster, marked Dead.</p>
 											{:else if dies}
 												<p class="caption">Equipment</p>
 												{#if bought.length}
@@ -351,6 +359,40 @@
 			<div class="foot">
 				<button class="plain" onclick={() => step(-1)}>Back</button>
 				<button class="add" onclick={() => step(1)} use:focusOnMount>{picked ? 'Next' : 'Skip'}</button>
+			</div>
+		{:else if current === 'leader' && fallen}
+			{@const keyword = game.succession?.keyword.toUpperCase() ?? ''}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">New leader</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">{nameOf(fallen.instanceId)} is dead. A {keyword} takes the LEADER keyword – only the keyword, not the abilities of the leader's own type.</p>
+						{#if heirs.length}
+							<div class="toggles stacked" role="group" aria-label="New leader">
+								{#each heirs as heir (heir.instanceId)}
+									<button
+										class="toggle"
+										aria-pressed={draft.successor === heir.instanceId}
+										onclick={() => (draft.successor = draft.successor === heir.instanceId ? null : heir.instanceId)}
+									>
+										{nameOf(heir.instanceId)}
+									</button>
+								{/each}
+							</div>
+							{#if !draft.successor}
+								<p class="hint">Left open, a {keyword} can take the lead on the back of its card later.</p>
+							{/if}
+						{:else}
+							<p class="hint">No {keyword} is left. The Campaign Book has the warband disbanded and a new one started.</p>
+						{/if}
+					</section>
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>{draft.successor || !heirs.length ? 'Next' : 'Skip'}</button>
 			</div>
 		{:else if current === 'items'}
 			<div class="scroll">

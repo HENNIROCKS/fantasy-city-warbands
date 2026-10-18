@@ -109,7 +109,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   twice for the one marked for greatness, and for a HENCHMAN more for each
   Drillmaster that came through; a Bootlicker that came through adds a favour. Apply carries out what an injury does once:
   a dead fighter leaves the roster, its equipment going to the stash on a 3+
-  (a dead leader stays, marked Dead, until the app can pick another), a surgeon
+  (a dead leader's LEADER keyword goes to a HERO, picked on a page of its own
+  or later on the back of the HERO's card), a surgeon
   costs 15 gc, robbery takes what the fighter bought, and a captured fighter or
   one that misses the next battle carries a band, and a single-use item used up
   leaves the fighter's equipment; Sticky Fingers is a reminder
