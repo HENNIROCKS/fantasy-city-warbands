@@ -103,7 +103,7 @@
     "text": "Select a friendly `HERO` within 1\" of this fighter. Until the end of the battle round, while that `HERO` remains within 1\" of this fighter, they cannot be targeted by attack actions."
   },
   {
-    "id": "indomitable",
+    "id": "indomitable-legendary",
     "name": "Indomitable",
     "specialization": "toughness",
     "type": "quad",

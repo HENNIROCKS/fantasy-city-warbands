@@ -208,22 +208,21 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) && ruleHolds(a, fighter) ? [talentOf(a.rule)!] : []));
 	const holders = legendaryHolders(warband, faction);
 	const specializations = new Set(held.map((t) => t.specialization));
+	/* Why a talent cannot be taken on this level, the first reason that holds; null where it can. */
+	const blockedFor = (talent: Talent): string | null => {
+		if (held.some((t) => t.id === talent.id)) return 'Already taken';
+		if (talent.legendary && level.level < LEGENDARY_FROM) return `From renown ${LEGENDARY_FROM}`;
+		if (talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)) return 'Another fighter of the warband has it';
+		if (held.length >= MAX_TALENTS) return `Already ${MAX_TALENTS} talents`;
+		if (!specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} specializations`;
+		return null;
+	};
 	const talentRule = (talent: Talent): LevelRule => ({
 		id: talent.id,
 		name: talent.name,
 		text: talent.text,
 		type: talent.type,
-		blocked: held.some((t) => t.id === talent.id)
-			? 'Already taken'
-			: talent.legendary && level.level < LEGENDARY_FROM
-				? `From renown ${LEGENDARY_FROM}`
-				: talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)
-					? 'Another fighter of the warband has it'
-					: held.length >= MAX_TALENTS
-				? `Already ${MAX_TALENTS} talents`
-				: !specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS
-					? `Already ${MAX_SPECIALIZATIONS} specializations`
-					: null,
+		blocked: blockedFor(talent),
 		weapons: 'weapon' in talent && talent.weapon ? weaponsFor(talent.weapon, instance, fighter, faction) : null
 	});
 	const groups = [...new Set(talents.map((t) => t.specialization))].map((specialization) => ({
