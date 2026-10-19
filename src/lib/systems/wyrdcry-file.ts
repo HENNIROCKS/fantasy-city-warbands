@@ -147,7 +147,9 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	if (unexplained.length) hints.push(`Raised without a record of why, kept as such: ${unexplained.join(', ')}.`);
 	const unknown = fighters.filter((f) => !faction.fighters.some((x) => x.id === f.fighterId));
 	if (unknown.length) {
-		hints.push(`Not in the app yet, such as a hired sword, and shown as unknown: ${unknown.map((f) => f.name || f.fighterId).join(', ')}.`);
+		hints.push(
+			`Not among the faction's fighters here, and shown as unknown – a hired sword is hired for one battle here, from the Battle menu: ${unknown.map((f) => f.name || f.fighterId).join(', ')}.`
+		);
 	}
 
 	return { ok: true, warband, hints };

@@ -6,6 +6,7 @@
 		fallenLeader,
 		goldLeft,
 		heirsOf,
+		hireFees,
 		levelsEarned,
 		markReason,
 		marksOf,
@@ -218,6 +219,17 @@
 							</ul>
 						{:else}
 							<p class="hint">What the battle brings in, once the result is picked.</p>
+						{/if}
+						{#if draft.hired.length}
+							<ul class="list">
+								<li>
+									<span class="line"
+										><span class="gain">−{hireFees(draft)} {game.currency}</span> – hired for this battle: {draft.hired
+											.map((h) => `${h.name} (${h.fee})`)
+											.join(', ')}</span
+									>
+								</li>
+							</ul>
 						{/if}
 					</section>
 

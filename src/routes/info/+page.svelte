@@ -62,7 +62,7 @@
 		{
 			question: 'Can I bring a warband over from the Warband Deck?',
 			answer:
-				'Yes: export it there, then Import warband on the start page here takes the file – one from the Warband Builder too. Renown, favour, gold, stash, fluff, notes, colour and battle history come along; experience does not, since the Campaign Book counts renown only. The sheet before importing says what is carried over differently: purchases still pending in the builder are taken as bought, custom abilities and weapons go into the warband’s notes, and renown levels without a record of what they were spent on count as spent. Clan Pestilens and the Greenskin Marauders are not here yet, and a hired sword shows as unknown.'
+				'Yes: export it there, then Import warband on the start page here takes the file – one from the Warband Builder too. Renown, favour, gold, stash, fluff, notes, colour and battle history come along; experience does not, since the Campaign Book counts renown only. The sheet before importing says what is carried over differently: purchases still pending in the builder are taken as bought, custom abilities and weapons go into the warband’s notes, and renown levels without a record of what they were spent on count as spent. Clan Pestilens and the Greenskin Marauders are not here yet, and a hired sword on the roster shows as unknown – here one is hired for a single battle, from the Battle menu.'
 		},
 		{
 			question: 'Can I keep one warband at the top?',
@@ -72,7 +72,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment, and in Wyrdcry the renown, favour and income a battle brings, as the Campaign Book 0.9 has them. A Wyrdcry fighter’s characteristics count in its pick, its renown, its injuries and its armour; tap one to see how it adds up, and a star marks one a situation can still change, such as Parry or a shield. A faction rule that leaves a fighter out keeps its line on that fighter’s card, with a hint where its text would stand, such as Sudden Accusation on a War Hound. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation and Black Death City’s campaign are still to come.'
+				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin changes about the roster, the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment, and in Wyrdcry the renown, favour and income a battle brings and the fees of the hired swords taken along, as the Campaign Book 0.9 has them. A Wyrdcry fighter’s characteristics count in its pick, its renown, its injuries and its armour; tap one to see how it adds up, and a star marks one a situation can still change, such as Parry or a shield. A faction rule that leaves a fighter out keeps its line on that fighter’s card, with a hint where its text would stand, such as Sudden Accusation on a War Hound. State Pride’s effects on the profiles, the special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation and Black Death City’s campaign are still to come.'
 		},
 		{
 			question: 'Can I track a battle?',

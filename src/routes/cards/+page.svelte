@@ -19,7 +19,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { adjustCounter, allocate, isWavering, nextRound, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
+	import { adjustCounter, allocate, hire, isWavering, nextRound, release, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
@@ -27,8 +27,9 @@
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
-	import type { FighterInstance, Warband } from '$lib/core/types';
-	import { newExcess, validate } from '$lib/core/validate';
+	import type { Faction, FighterInstance, Warband } from '$lib/core/types';
+	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
+	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { systems } from '$lib/systems';
 
@@ -120,11 +121,33 @@
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	/** A piece's name as the faction lists it, its id where the faction has none. */
 	const wargearName = (id: string) => faction?.wargear.find((w) => w.id === id)?.name ?? id;
-	/* The warband's own card first, then its fighters. */
+	/* What the faction may hire, and the faction with them added, so a hired fighter's card finds its profile and weapons. */
+	const hiring = $derived(system?.game.hiring ?? null);
+	const offered = $derived(hiring && faction ? hiring.hirelings.filter((h) => h.factions.includes(faction.id)) : []);
+	const hiringFaction = $derived.by((): Faction | null =>
+		faction && offered.length
+			? { ...faction, fighters: [...faction.fighters, ...offered.map((h) => h.fighter)], wargear: [...faction.wargear, ...offered.flatMap((h) => h.wargear)] }
+			: faction
+	);
+	/* What each hire of the battle costs, in the order they were hired. */
+	const hiredFees = $derived(warband && hiring && battle ? hiring.fees(warband, battle.hired) : []);
+
+	/* The warband's own card first, then its fighters, then whoever was hired for the battle. */
 	const cards = $derived.by<DeckCard[]>(() => {
 		const w = warband;
-		if (!w || !system || !faction) return [];
-		return [warbandCard(w, faction, system.game), ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks))];
+		if (!w || !system || !faction || !hiringFaction) return [];
+		const hired = (battle?.hired ?? []).map((h, i): DeckCard => {
+			const card = fighterCard({ instanceId: h.instanceId, fighterId: h.fighterId, name: '', wargear: [] }, hiringFaction, system.game);
+			return {
+				...card,
+				name: card.subtitle,
+				unnamed: false,
+				subtitle: 'Hired for this battle',
+				campaign: [{ key: 'fee', label: 'Fee', value: String(hiredFees[i] ?? 0) }],
+				hired: true
+			};
+		});
+		return [warbandCard(w, faction, system.game), ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
 	});
 	/** Where the builder names the warband, or the fighter in its editor. */
 	function nameField(card: DeckCard): string {
@@ -136,7 +159,7 @@
 	function wavers(): boolean {
 		const morale = system?.game.battle?.wavering;
 		if (!morale) return false;
-		const ids = cards.flatMap((c) => (c.kind === 'fighter' ? [c.instanceId] : []));
+		const ids = cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [c.instanceId] : []));
 		return isWavering(battle, ids, morale.threshold);
 	}
 
@@ -532,9 +555,13 @@
 		const rules = system?.game.aftermath;
 		if (!rules || !warband) return ask('end', out);
 		const fighters = cards.flatMap((c) =>
-			c.kind === 'fighter' ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds, away: c.away !== null }] : []
+			c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds, away: c.away !== null }] : []
 		);
-		aftermath = startAftermath(rules, fighters, battle, warband.history ?? []);
+		const hired = (battle?.hired ?? []).map((h, i) => ({
+			name: cards.find((c) => c.kind === 'fighter' && c.instanceId === h.instanceId)?.name ?? h.fighterId,
+			fee: hiredFees[i] ?? 0
+		}));
+		aftermath = startAftermath(rules, fighters, battle, warband.history ?? [], hired);
 	}
 
 	/* The warband first: only once it is stored does the battle go, so a failed
@@ -579,6 +606,55 @@
 		if (levels.length === 0) spending = false;
 	}
 
+	/* Who is hired, in a sheet over the deck while the battle is still being set
+	   up. A tap hires or sends away at once, as a tap at the table does; the
+	   fees are paid when the battle is written down, so nothing is paid back. */
+	let hiringOpen = $state(false);
+	/* Whether the talent's roll for half a fee came up, for the next one hired. */
+	let rolledHalf = $state(false);
+	const halving = $derived(warband && hiring && !battle?.hired.some((h) => h.halved) ? hiring.halving(warband) : null);
+	const sum = (fees: number[]) => fees.reduce((total, fee) => total + fee, 0);
+	/* The gold left to hire with: the purse, less what the warband is worth and what is hired already. */
+	const goldFree = $derived(warband && system && faction ? purse(warband, system.game) - warbandCost(warband, faction) - sum(hiredFees) : 0);
+
+	/* Each one the faction may hire: hired already, or what hiring it would cost and whether the gold holds it. */
+	const hireOffers = $derived.by(() => {
+		const w = warband;
+		if (!w || !hiring) return [];
+		const hired = battle?.hired ?? [];
+		return offered.map((h) => {
+			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
+			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
+			const halved = rolledHalf && halving ? { halved: true as const } : {};
+			const trial = hiring.fees(w, [...hired, { instanceId: '', fighterId: h.fighter.id, ...halved }]);
+			return { hireling: h, held, fee: trial.at(-1) ?? 0, refused: sum(trial) - sum(hiredFees) > goldFree ? 'Not enough gold' : null };
+		});
+	});
+
+	function toggleHire(offer: (typeof hireOffers)[number]) {
+		if (offer.held) {
+			if (battle) setBattle(release(battle, offer.held.instanceId));
+			return;
+		}
+		if (offer.refused) return;
+		setBattle(hire(battle, newId(), offer.hireling.fighter.id, rolledHalf && halving !== null));
+		rolledHalf = false;
+	}
+
+	function openHiring() {
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+		rolledHalf = false;
+		hiringOpen = true;
+	}
+
+	async function closeHiring() {
+		hiringOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
 	function focusOnMount(node: HTMLElement) {
 		node.focus();
 	}
@@ -618,12 +694,13 @@
 	onkeydown={(event) => {
 		if (event.key !== 'Escape') return;
 		if (dismissing) keepFighter();
+		else if (hiringOpen) closeHiring();
 		else if (asking) keepPlaying();
 		else if (spending) spending = false;
 	}}
 />
 
-<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || aftermath !== null || (spending && levels.length > 0)}>
+<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || hiringOpen || aftermath !== null || (spending && levels.length > 0)}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -659,6 +736,8 @@
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
 				onlevels={() => (spending = true)}
+				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
+				hireLabel={hiring?.label ?? ''}
 				editing={editingId !== null}
 				doneDisabled={backBlocked}
 				onedit={edit}
@@ -705,6 +784,38 @@
 		onspend={spendLevel}
 		onclose={() => (spending = false)}
 	/>
+{/if}
+
+{#if hiringOpen && hiring && system}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="hire-title">
+			<h2 id="hire-title">{hiring.label}</h2>
+			<p class="count">{goldFree} {system.game.currency} left · paid in the aftermath</p>
+			{#if warband && hiring.discount(warband)}
+				<p class="notice mb-3">{hiring.discount(warband)}</p>
+			{/if}
+			<div class="max-h-[60dvh] space-y-2 overflow-y-auto">
+				{#if halving}
+					<button type="button" class="choice" aria-pressed={rolledHalf} onclick={() => (rolledHalf = !rolledHalf)}>
+						<span class="block font-semibold">{halving.name}: rolled 4+</span>
+						<span class="block text-zinc-400">{halving.holders.join(', ')} – the next one hired costs half.</span>
+					</button>
+				{/if}
+				{#each hireOffers as offer (offer.hireling.fighter.id)}
+					<button type="button" class="choice" aria-pressed={offer.held !== null} disabled={offer.refused !== null} onclick={() => toggleHire(offer)}>
+						<span class="block font-semibold">{offer.hireling.fighter.name}</span>
+						<span class="block text-zinc-400">{offer.fee} {system.game.currency}{#if offer.held}{' '}· hired – tap to send away{/if}</span>
+						{#if offer.refused}
+							<span class="block font-semibold" style="color: var(--ui-warn-text)">{offer.refused}</span>
+						{/if}
+					</button>
+				{/each}
+			</div>
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeHiring} use:focusOnMount>Done</button>
+			</div>
+		</div>
+	</div>
 {/if}
 
 {#if dismissing}

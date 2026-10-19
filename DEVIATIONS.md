@@ -20,6 +20,9 @@ The data is the Warband Deck's hand-kept ruleset, brought up to the core rules 1
 - [ ] Mercenaries: the allowance thief-throwing-dagger in the 0.9 data, the Thief hired sword's own weapon, is left out
 - [ ] Respite and Onslaught as page 29 of the core rules 1.0 has them – Respite a [Triple] removing D3+3, Onslaught a [Double] for the next melee attack action – where the reference card on page 48 has Respite a [Double] removing (X) and Onslaught a [Triple] for every melee attack action of the activation
 - [ ] Strike them down is made when an enemy fighter makes a Retreat action, where the core rules 1.0 say "disengage action", an action they name nowhere else
+- [ ] Freelance Knight (hired sword): carries his Mastercrafted Sword only, where the 0.9 data adds Heavy Armour and a Shield – his Armour 6 holds them already
+- [ ] Thief and Troll Slayer (hired swords): Fall Back and Slayer Oath, which the 0.9 data names without a text, are left out
+- [ ] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword and is rounded up, as Well-Connected rounds it, where the rule says only "one Hired Sword for half its normal hiring fee"
 
 ### Open upstream
 

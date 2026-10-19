@@ -36,6 +36,8 @@
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
+		onhire,
+		hireLabel = '',
 		editing = false,
 		doneDisabled = false,
 		closed = null,
@@ -71,6 +73,10 @@
 		levelsOpen?: number;
 		levelLabel?: string;
 		onlevels?: () => void;
+		/** Opens what is on offer for hire, where the game hires and the battle is still being set up. */
+		onhire?: () => void;
+		/** What the game calls the fighters hired, many of them: `Hired swords`. */
+		hireLabel?: string;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
 		/** Holds that button back while what the turned card holds would break the warband's limits. */
@@ -137,7 +143,9 @@
 	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
 	const out = $derived(outOfAction(battle, fighterIds));
 	const toAct = $derived(remaining(battle, fighterIds));
-	const wavering = $derived(rules?.wavering ? isWavering(battle, fighterIds, rules.wavering.threshold) : false);
+	/* A hired fighter acts with the rest but leaves the warband's morale alone. */
+	const rosterIds = $derived(cards.filter((c) => c.kind === 'fighter' && !c.hired).map((c) => c.instanceId));
+	const wavering = $derived(rules?.wavering ? isWavering(battle, rosterIds, rules.wavering.threshold) : false);
 	const stage = $derived(counter && battle ? (reached(counter.stages, battle.counter).at(-1) ?? null) : null);
 
 	/** What the battle does to one fighter's card, and whether the wavering warband asks it for a test. */
@@ -408,7 +416,10 @@
 		{editing}
 		{doneDisabled}
 		{closed}
+		editable={!topFighter?.hired}
 		onedit={() => onedit?.(cards[current].instanceId)}
+		{onhire}
+		{hireLabel}
 		{ondone}
 		{oncancel}
 	/>

@@ -33,7 +33,10 @@
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
+		onhire,
+		hireLabel = '',
 		editing = false,
+		editable = true,
 		doneDisabled = false,
 		closed = null,
 		onedit,
@@ -76,8 +79,14 @@
 		levelLabel?: string;
 		/** Opens the sheet that spends them. */
 		onlevels?: () => void;
+		/** Opens what is on offer for hire; given while the battle is still being set up. */
+		onhire?: () => void;
+		/** What the game calls the fighters hired, many of them: `Hired swords`. */
+		hireLabel?: string;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
+		/** Whether the card on top has a back to write on; a hired fighter's has none. */
+		editable?: boolean;
 		/** Holds the button back while what the turned card holds would break the warband's limits. */
 		doneDisabled?: boolean;
 		/** Why no battle starts, as for a disbanded warband; null where one can. */
@@ -162,9 +171,11 @@
 						</button>
 					{/each}
 				</MenuButton>
-				<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
-				</button>
+				{#if editable}
+					<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+					</button>
+				{/if}
 			</div>
 		{:else}
 			{#if closed && !battle}
@@ -218,6 +229,9 @@
 						{/if}
 					{:else if !closed}
 						<button onclick={() => onstart?.()}>Start battle</button>
+					{/if}
+					{#if onhire && !closed}
+						<button onclick={() => onhire?.()}>{hireLabel}…</button>
 					{/if}
 					{#if levelsOpen > 0}
 						{#if battle || !closed}<hr />{/if}

@@ -148,6 +148,12 @@ export interface GameSystem {
 	 * marked `found` is only asked about.
 	 */
 	rarity?: { keyword: string; target: number; helper: number; singleUse: number };
+	/**
+	 * Fighters a warband hires for one battle, as Wyrdcry's Hired Swords: set
+	 * up with the battle, never on the roster, gone when it ends. Without it,
+	 * nobody is hired.
+	 */
+	hiring?: Hiring;
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -169,6 +175,37 @@ export interface GameSystem {
 			failed: string;
 		};
 	};
+}
+
+/** One fighter on offer for hire, with the wargear only it carries and the factions it fights for. */
+export interface Hireling {
+	/** Its `cost` is the fee for one battle. */
+	fighter: Fighter;
+	wargear: Wargear[];
+	factions: string[];
+}
+
+/** One fighter hired into the battle running, as stored with it. */
+export interface Hire {
+	instanceId: string;
+	fighterId: string;
+	/** Hired at half the fee on a roll such as Wyrdcry's Well-Connected. */
+	halved?: true;
+}
+
+export interface Hiring {
+	/** What they are called, many of them: `Hired swords`. */
+	label: string;
+	hirelings: Hireling[];
+	/** The fee of each hire, in the order given, with what the warband's picks and the halved hires take off. */
+	fees: (warband: Warband, hires: Hire[]) => number[];
+	/** What the warband's picks take off the fees, as a sentence; null where they take nothing. */
+	discount: (warband: Warband) => string | null;
+	/**
+	 * A roll that halves the next fee, once per battle, and who in the warband
+	 * may make it – `Well-Connected`. Null where nobody may.
+	 */
+	halving: (warband: Warband) => { name: string; holders: string[] } | null;
 }
 
 /** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */

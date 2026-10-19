@@ -53,6 +53,8 @@ export interface AftermathDraft {
 	afterUse: Record<string, boolean>;
 	/** Who never rolls, named under the rows. */
 	excluded: string[];
+	/** Who was hired for the battle and leaves with it, and the fee that comes off the gold left. */
+	hired: { name: string; fee: number }[];
 	/** The fighters marked to roll twice, in the order they were marked. */
 	marked: string[];
 	/** Who takes the lead where the leader dies, by instance id; null while none is picked. */
@@ -90,7 +92,8 @@ export function startAftermath(
 	rules: Aftermath,
 	fighters: AftermathFighter[],
 	battle: BattleState | null,
-	history: BattleRecord[] = []
+	history: BattleRecord[] = [],
+	hired: AftermathDraft['hired'] = []
 ): AftermathDraft {
 	const earns = (f: AftermathFighter) => !f.keywordIds.some((k) => rules.excluded.includes(k));
 	const since = today(battle ? new Date(battle.startedAt) : undefined);
@@ -109,6 +112,7 @@ export function startAftermath(
 				levels: 0
 			})),
 		excluded: fighters.filter((f) => !earns(f) && !f.away).map((f) => f.name),
+		hired,
 		out: fighters.filter((f) => !f.away && stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
 		injuries: {},
 		recovered: {},
@@ -209,13 +213,18 @@ function feeOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instan
 	return resolution?.result.outcome === 'surgeon' && (answer === 'died' || answer === 'survived') ? (resolution.result.cost ?? 0) : 0;
 }
 
+/** What the hires of the battle cost together. */
+export function hireFees(draft: AftermathDraft): number {
+	return draft.hired.reduce((sum, h) => sum + h.fee, 0);
+}
+
 /**
  * The gold the warband has left before the battle's income – the purse less
- * what the warband is worth – less what the answers already spend for every
- * fighter but `instanceId`.
+ * what the warband is worth – less the hires' fees and what the answers
+ * already spend for every fighter but `instanceId`.
  */
 export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, instanceId: string): number {
-	const spent = warband.fighters.reduce((sum, f) => sum + (f.instanceId === instanceId ? 0 : feeOf(draft, game, faction, f)), 0);
+	const spent = warband.fighters.reduce((sum, f) => sum + (f.instanceId === instanceId ? 0 : feeOf(draft, game, faction, f)), hireFees(draft));
 	return purse(warband, game) - warbandCost(warband, faction) - spent;
 }
 
@@ -292,7 +301,7 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * earns none. A dead fighter leaves the roster, its bought wargear going to the
  * stash where the roll recovered it – or, dying at the surgeon's, always; a
  * dead leader stays, marked dead, only where the game has no one take its
- * place, and elsewhere the fighter picked takes the lead. A surgeon's fee comes off the gold, robbery
+ * place, and elsewhere the fighter picked takes the lead. The hires' fees and a surgeon's come off the gold, robbery
  * takes what the fighter bought, and a capture or a missed battle marks it.
  * A single-use piece used up is struck before any of it, so a dead fighter
  * leaves none to the stash; a roll it asked for that brought an injury adds
@@ -309,7 +318,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	/* What leaves the warband's worth – a fighter, what it carried – leaves the
 	   purse with it, so the gold left stays where it was; a fee comes off the
 	   gold left. */
-	let spent = 0;
+	let spent = hireFees(draft);
 	const stash = [...(warband.stash ?? [])];
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;

@@ -109,6 +109,13 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   and in the strokes over the deck. A Wyrdcry warband with more than half its
   fighters out of action asks each fighter for its Bravery test in the round
   after, and the Witch Hunters count Zeal into every fighter's figures
+- Hire a Wyrdcry hired sword for a single battle from the Battle menu, before
+  the battle or in its first round: only those the faction may take, one of
+  each, at half the fee for the dearest where the Mercenaries picked
+  Well-connected and for the next one where a HERO with Well-Connected rolled
+  a 4+. Its card comes after the fighters and leaves the warband's morale
+  alone; the aftermath asks nothing of it and takes the fees off the gold, and
+  a cancelled battle costs nothing
 - End a Wyrdcry battle in pages over the deck, each set as the back of a card
   with its answers at the foot: the result, the
   shards delivered with what they bring in favour and gold, and the battle

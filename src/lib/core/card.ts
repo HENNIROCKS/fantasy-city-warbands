@@ -144,6 +144,8 @@ export interface FighterCardData {
 	away: string | null;
 	/** Set where the faction no longer has the fighter's type. */
 	unknown: boolean;
+	/** Hired for the battle running, not on the roster: it counts toward no morale and has no back to write on. */
+	hired?: true;
 }
 
 /** In the order the Warband Deck lists abilities, injuries after the traits; a type it does not know comes first. */

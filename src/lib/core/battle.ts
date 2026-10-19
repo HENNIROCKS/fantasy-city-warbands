@@ -10,7 +10,7 @@
  * marks and stages a game declares arrive the same way, handed in.
  */
 
-import type { BattleMark, CounterStage, StatCondition } from './types';
+import type { BattleMark, CounterStage, Hire, StatCondition } from './types';
 
 /**
  * What a fighter carries in the battle running right now. `activated` and
@@ -64,13 +64,15 @@ export interface BattleState extends BattleRound {
 	 * nothing left to return to.
 	 */
 	undo: BattleRound | null;
+	/** Who was hired for this battle, in the order they were hired. Their states are kept under `fighters` like anyone's. */
+	hired: Hire[];
 }
 
 /** What a fighter carries before anything has happened to it. */
 export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {} };
 
 export function start(): BattleState {
-	return { startedAt: new Date().toISOString(), round: 1, counter: 0, fighters: {}, undo: null };
+	return { startedAt: new Date().toISOString(), round: 1, counter: 0, fighters: {}, undo: null, hired: [] };
 }
 
 /**
@@ -85,7 +87,8 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		counter: stored.counter ?? 0,
 		fighters: stored.fighters ?? {},
 		morale: stored.morale ?? false,
-		undo: stored.undo ?? null
+		undo: stored.undo ?? null,
+		hired: stored.hired ?? []
 	};
 }
 
@@ -108,6 +111,27 @@ function write(battle: BattleState | null, instanceId: string, patch: Partial<Fi
 		   reach – returning to it would drop this tap on the floor. */
 		undo: null
 	};
+}
+
+/**
+ * Hired before the battle is fought, which starts it if none is running: the
+ * hire is the first thing set up. Only while nothing has been played past the
+ * first round – the rules hire in the battle's setup.
+ */
+export function hire(battle: BattleState | null, instanceId: string, fighterId: string, halved = false): BattleState {
+	const current = battle ?? start();
+	return { ...current, hired: [...current.hired, { instanceId, fighterId, ...(halved ? { halved: true as const } : {}) }] };
+}
+
+/** Sent away again before the battle is fought, with whatever it already carries in it. */
+export function release(battle: BattleState, instanceId: string): BattleState {
+	const { [instanceId]: _gone, ...fighters } = battle.fighters;
+	return { ...battle, hired: battle.hired.filter((h) => h.instanceId !== instanceId), fighters };
+}
+
+/** Whether the battle is still being set up, so that a fighter may be hired or sent away: none running, or its first round. */
+export function settingUp(battle: BattleState | null): boolean {
+	return !battle || battle.round === 1;
 }
 
 /** Activated: the fighter is done for this round, so it is no longer waiting. */

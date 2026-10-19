@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
+import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -127,6 +127,17 @@ export const game: GameSystem = {
 	/* The rarity roll (Campaign Book, p. 27): a HERO on a 6+, +1 for each HERO
 	   more helping, a d3 of a single-use piece. */
 	rarity: { keyword: 'hero', target: 6, helper: 1, singleUse: 3 },
+	/* Hired Swords (Campaign Book, p. 31), read off their files further down. */
+	hiring: {
+		label: 'Hired swords',
+		get hirelings() {
+			return hirelings;
+		},
+		fees,
+		discount: (warband) =>
+			warband.picks[HALF_FEE_PICK.choice]?.includes(HALF_FEE_PICK.option) ? 'Well-connected (State Pride): the dearest one hired costs half.' : null,
+		halving
+	},
 	/* Unbending Will is an ability of the fighter's type, which the shared form
 	   carries only as a rule's text; the raw fighter still has its id. */
 	injuries: wyrdcryInjuries({
@@ -209,6 +220,36 @@ function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'lo
 			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
 		]
 	};
+}
+
+/* The State Pride the Mercenaries may pick: one Hired Sword at half its fee. */
+const HALF_FEE_PICK = { choice: 'state-pride', option: 'well-connected' };
+/* The heroic talent that rolls for half the fee, once per battle. */
+const HALF_FEE_TALENT = 'underground-contacts';
+
+/** Half a fee, rounded up, as Well-Connected rounds it. */
+const half = (fee: number) => Math.ceil(fee / 2);
+
+/**
+ * What each hire costs: a fee halved on the talent's roll stays halved, and
+ * where the warband picked Well-connected the dearest of the others is halved
+ * too – worked out afresh, so sending one away moves it to the next.
+ */
+function fees(warband: Warband, hires: Hire[]): number[] {
+	const base = hires.map((h) => hirelings.find((x) => x.fighter.id === h.fighterId)?.fighter.cost ?? 0);
+	const halves = warband.picks[HALF_FEE_PICK.choice]?.includes(HALF_FEE_PICK.option);
+	const open = base.map((fee, i) => (hires[i].halved ? -1 : fee));
+	const dearest = halves ? open.indexOf(Math.max(...open)) : -1;
+	return base.map((fee, i) => (hires[i].halved || (i === dearest && open[i] >= 0) ? half(fee) : fee));
+}
+
+/** Who in the warband holds the talent that rolls for half a fee, leaving out whoever sits this battle out. */
+function halving(warband: Warband) {
+	const talent = heroicTalents.find((t) => t.id === HALF_FEE_TALENT);
+	const holders = warband.fighters
+		.filter((f) => !f.away && (f.advances ?? []).some((a) => a.rule === HALF_FEE_TALENT))
+		.map((f) => f.name.trim() || 'Unnamed fighter');
+	return talent && holders.length ? { name: talent.name, holders } : null;
 }
 
 interface RawFaction {
@@ -354,6 +395,38 @@ function range({ min, max }: { min: number; max: number }): string {
 	return min ? `${min}–${max}"` : `${max}"`;
 }
 
+/**
+ * A Hired Sword as the Warband Deck writes it, one file each: its own abilities
+ * and the weapons only it carries are in the file; what the shared lists hold,
+ * such as a sword, is named by id.
+ */
+interface RawHiredSword {
+	id: string;
+	name: string;
+	cost: number;
+	limit: { min: number; max: number | null };
+	may_hire: string[];
+	profile: Record<string, number>;
+	keywords: string[];
+	gear: string[];
+	abilities: RawAbility[];
+	weapons: (typeof weapons)[number][];
+}
+
+const hiredSwords = Object.values(
+	import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.json', { eager: true, import: 'default' })
+) as RawHiredSword[];
+
+/* A hired sword's own weapon goes into the shared list; one whose id is
+   taken there already is left out, so the game's own weapon keeps its profile. */
+const hiredWeapons = hiredSwords
+	.flatMap((h) => h.weapons)
+	.filter((w) => {
+		const taken = weapons.some((own) => own.id === w.id);
+		if (taken && import.meta.env.DEV) console.warn(`hired sword weapon "${w.id}" is a shared weapon already`);
+		return !taken;
+	});
+
 /* The Trading Post's two lists, under the Warband Deck's headings. */
 const TRADING_POST: Record<string, string> = { miscellaneous: 'Trading Post', 'single-use': 'Trading Post – single use' };
 
@@ -363,7 +436,7 @@ const TRADING_POST: Record<string, string> = { miscellaneous: 'Trading Post', 's
  * its own and is left out.
  */
 const catalogue = new Map<string, Wargear>([
-	...weapons.map((w): [string, Wargear] => [
+	...[...weapons, ...hiredWeapons].map((w): [string, Wargear] => [
 		`weapon:${w.id}`,
 		{
 			id: `weapon:${w.id}`,
@@ -663,3 +736,23 @@ export const factions: Faction[] = folders.map((folder) =>
 		file<RawAbility[]>(folder, 'abilities')
 	)
 );
+
+/* A hired sword arrives with what it carries and takes nothing more. */
+const hirelings: Hireling[] = hiredSwords
+	.map((h) => ({
+		fighter: {
+			id: h.id,
+			name: h.name,
+			cost: h.cost,
+			limit: h.limit,
+			keywords: h.keywords,
+			profile: h.profile,
+			rules: h.abilities.map((a) => ({ name: a.name, text: a.text, type: a.type })),
+			wargear: [],
+			unequipped: 'A HIRED SWORD comes with its own equipment',
+			gear: h.gear
+		},
+		wargear: h.gear.flatMap((id) => catalogue.get(id) ?? []),
+		factions: h.may_hire
+	}))
+	.sort((a, b) => a.fighter.name.localeCompare(b.fighter.name));
