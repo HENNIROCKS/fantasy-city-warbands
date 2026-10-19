@@ -78,6 +78,7 @@
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
 - [ ] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
+- [ ] 🛠️ Wyrdcry: a warband whose leader is gone with no HERO left is disbanded, in the builder as in the aftermath
 - [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [ ] 🛠️ Hire a Hired Sword for a single battle
 - [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
