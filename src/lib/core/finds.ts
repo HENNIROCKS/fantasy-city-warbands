@@ -3,7 +3,8 @@
  * roll has it (Campaign Book, p. 27): a fighter carrying the game's `rarity`
  * keyword searches, others carrying it help, and each of them does so once
  * until the next battle. The roll is made at the table; the app keeps who
- * searched and what was found, and how many copies of it are still to buy.
+ * searched and what was found, and counts the copies bought from it – not
+ * what the warband holds, which a fighter dismissed or a piece sold lowers.
  *
  * A warband that has not fought sets out with common pieces only (p. 6), so a
  * piece marked `found` is none of its own yet.
@@ -37,15 +38,18 @@ export function targetOf(game: GameSystem, helpers: number): number {
 	return Math.max(2, game.rarity.target - helpers * game.rarity.helper);
 }
 
-/** How many copies of the piece the warband holds, on its fighters and in the stash. */
-export function heldOf(warband: Warband, id: string): number {
-	return [...warband.fighters.flatMap((f) => f.wargear), ...(warband.stash ?? [])].filter((w) => w === id).length;
-}
-
 /** How many found copies of the piece are still to buy; null where it was not found since the battle. */
 export function leftOf(warband: Warband, id: string): number | null {
 	const found = findsOf(warband)?.found.find((f) => f.id === id);
-	return found ? Math.max(0, found.had + found.copies - heldOf(warband, id)) : null;
+	return found ? Math.max(0, found.copies - (found.bought ?? 0)) : null;
+}
+
+/** The warband with `change` more copies of a found piece bought – fewer where one is put down again; unchanged where it was not found since the battle. */
+export function buy(warband: Warband, id: string, change: number): Warband {
+	const finds = findsOf(warband);
+	if (!finds?.found.some((f) => f.id === id)) return warband;
+	const found = finds.found.map((f) => (f.id === id ? { ...f, bought: Math.max(0, (f.bought ?? 0) + change) } : f));
+	return { ...warband, finds: { ...finds, found } };
 }
 
 /**
@@ -60,9 +64,7 @@ export function search(warband: Warband, id: string, searched: string[], copies:
 	const found = copies
 		? [
 				...finds.found.filter((f) => f !== earlier),
-				earlier
-					? { ...earlier, copies: earlier.copies + copies }
-					: { id, copies, had: heldOf(warband, id) }
+				earlier ? { ...earlier, copies: earlier.copies + copies } : { id, copies }
 			]
 		: finds.found;
 	return { ...warband, finds: { after: finds.after, searched: [...finds.searched, ...searched], found } };
@@ -96,7 +98,7 @@ export function findIssues(warband: Warband, game: GameSystem, faction: Faction)
 			continue;
 		}
 		const found = finds.found.find((f) => f.id === wargear.id);
-		if (found && heldOf(warband, wargear.id) > found.had + found.copies) {
+		if (found && (found.bought ?? 0) > found.copies) {
 			issues.push({
 				code: 'wargear-unfound',
 				kind: 'excess',

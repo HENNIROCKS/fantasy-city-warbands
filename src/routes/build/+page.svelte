@@ -15,7 +15,7 @@
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { deadLeaders } from '$lib/core/leader';
 	import { paidFor } from '$lib/core/manage';
-	import { findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
+	import { buy, findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
@@ -271,6 +271,10 @@
 		if (warband) warband.finds = search($state.snapshot(warband) as Warband, id, party, copies).finds;
 	}
 
+	function onbuy(id: string, change: number) {
+		if (warband) warband.finds = buy($state.snapshot(warband) as Warband, id, change).finds;
+	}
+
 	function blockedBy(after: Warband): Issue | null {
 		return system && faction ? newExcess(issues, after, system.game, faction) : null;
 	}
@@ -303,12 +307,14 @@
 		const instance = $state.snapshot(warband.fighters[index]);
 		const label = fighterName(instance, faction);
 		warband.fighters.splice(index, 1);
+		for (const id of instance.wargear) onbuy(id, -1);
 		removed = { instance, index, label };
 	}
 
 	function undoRemove() {
 		if (!warband || !removed) return;
 		warband.fighters = withInstance(warband, removed.instance, removed.index).fighters;
+		for (const id of removed.instance.wargear) onbuy(id, 1);
 		removed = null;
 	}
 
@@ -521,6 +527,7 @@
 						dead={deadLeaders(warband, faction).some((f) => f.instanceId === instance.instanceId)}
 						{rarity}
 						{onsearch}
+						{onbuy}
 						onremove={() => removeFighter(instance.instanceId)}
 					/>
 				{/each}

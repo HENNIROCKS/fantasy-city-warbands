@@ -649,8 +649,8 @@ export interface Finds {
 	after: string;
 	/** The instance ids of the fighters that searched or helped. */
 	searched: string[];
-	/** Each piece found: how many copies came in, and how many the warband held as it was found. */
-	found: { id: string; copies: number; had: number }[];
+	/** Each piece found: how many copies came in, and how many of them were bought – missing reads as none. */
+	found: { id: string; copies: number; bought?: number }[];
 }
 
 /** A warband as stored. Everything else is looked up from its game and faction. */

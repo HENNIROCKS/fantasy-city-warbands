@@ -14,6 +14,7 @@
 		dead,
 		rarity,
 		onsearch,
+		onbuy,
 		onremove
 	}: {
 		instance: FighterInstance;
@@ -46,6 +47,8 @@
 		} | null;
 		/** Writes a search: the piece, who searched and helped, and how many copies were found – none where it failed. */
 		onsearch: (wargearId: string, party: string[], copies: number) => void;
+		/** Counts copies of a found piece bought, or put down again – a negative `change`. */
+		onbuy: (wargearId: string, change: number) => void;
 		onremove: () => void;
 	} = $props();
 
@@ -123,8 +126,13 @@
 			return;
 		}
 		finding = null;
-		if (countOf(id)) instance.wargear = instance.wargear.filter((w) => w !== id);
-		else instance.wargear.push(id);
+		if (countOf(id)) {
+			onbuy(id, -countOf(id));
+			instance.wargear = instance.wargear.filter((w) => w !== id);
+		} else {
+			onbuy(id, 1);
+			instance.wargear.push(id);
+		}
 	}
 
 	/* Not found, or not looked for: back to the row it was asked about. */
@@ -134,11 +142,12 @@
 		document.getElementById(checkId(id))?.focus();
 	}
 
-	/* A search written down: the party used up until the next battle, and the piece bought where it was found. */
-	function searched(id: string, copies: number) {
+	/* A search written down: the party used up until the next battle, and the
+	   piece bought where it was found; either way back to its row. */
+	async function searched(id: string, copies: number) {
 		onsearch(id, party, copies);
 		if (copies) toggle(id);
-		else notFound(id);
+		await notFound(id);
 	}
 
 	function found(id: string) {

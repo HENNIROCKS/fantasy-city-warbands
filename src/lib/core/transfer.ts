@@ -104,8 +104,9 @@ function readFinds(raw: unknown): Finds | null {
 	if (typeof after !== 'string' || !isStrings(searched)) return null;
 	const read = readAll(found, (entry) => {
 		if (!isObject(entry)) return null;
-		const { id, copies, had } = entry;
-		return typeof id === 'string' && isNumber(copies) && isNumber(had) ? { id, copies, had } : null;
+		const { id, copies, bought } = entry;
+		if (typeof id !== 'string' || !isNumber(copies) || (bought !== undefined && !isNumber(bought))) return null;
+		return { id, copies, ...(bought !== undefined ? { bought } : {}) };
 	});
 	return read && { after, searched, found: read };
 }
