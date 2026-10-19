@@ -2,7 +2,9 @@
 	import { grow } from '$lib/grow';
 	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
 	import { RESULT_LABELS, displayDate, newestFirst, opponent } from '$lib/core/history';
+	import { findsOf } from '$lib/core/finds';
 	import { goldIn, saleOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
+	import { fighterName } from '$lib/core/warband';
 	import type { BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 	import { purse, warbandCost } from '$lib/core/validate';
 
@@ -81,6 +83,14 @@
 		draft.tally = { ...draft.tally, [key]: Math.max(0, (draft.tally[key] ?? 0) + by) };
 	}
 
+	/* Who searched since the battle, to free again where a tap was a mistake. */
+	const searched = $derived(
+		(findsOf(warband)?.searched ?? []).map((id) => {
+			const instance = warband.fighters.find((f) => f.instanceId === id);
+			return instance ? fighterName(instance, faction) : 'a fighter no longer here';
+		})
+	);
+
 	const custom = $derived(draft.colour !== null && !PALETTE.some((entry) => entry.value === draft.colour));
 </script>
 
@@ -125,6 +135,29 @@
 				{/each}
 				{#if worked.length}
 					<p class="line">{worked.map((v) => `${v.label} ${v.value}`).join(' · ')}</p>
+				{/if}
+				<!-- A tap made by mistake, taken back with Done, as a piece leaves the stash. -->
+				{#if searched.length || warband.disbanded}
+					<ul class="list">
+						{#if searched.length}
+							<li class:gone={draft.clearSearches}>
+								<span class="line">
+									<span class="piece">Searched since the last battle: {searched.join(', ')}</span>
+									{#if draft.clearSearches}<span class="why">Free again with Done, what was not bought lost</span>{/if}
+								</span>
+								<button class="remove" onclick={() => (draft.clearSearches = !draft.clearSearches)}>{draft.clearSearches ? 'Undo' : 'Clear'}</button>
+							</li>
+						{/if}
+						{#if warband.disbanded}
+							<li class:gone={draft.undisband}>
+								<span class="line">
+									<span class="piece">Disbanded – no {game.succession?.keyword.toUpperCase()} was left to lead it</span>
+									{#if draft.undisband}<span class="why">Building again with Done – recruit a {game.succession?.keyword.toUpperCase()} to take the lead</span>{/if}
+								</span>
+								<button class="remove" onclick={() => (draft.undisband = !draft.undisband)}>{draft.undisband ? 'Keep' : 'Undo'}</button>
+							</li>
+						{/if}
+					</ul>
 				{/if}
 			</section>
 		{/if}

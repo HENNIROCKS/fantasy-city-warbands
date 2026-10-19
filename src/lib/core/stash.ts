@@ -2,7 +2,9 @@
  * What the back of the warband card writes: gold added, pieces of the stash
  * sold or thrown away, battles added or struck and the colour, as the Wyrdcry
  * Warband Deck keeps them there, and the name, fluff, notes and campaign
- * counters, as the back of a fighter's card has them. The draft is held apart
+ * counters, as the back of a fighter's card has them, and – to take back a
+ * tap made by mistake – the searches since the battle and a warband marked
+ * disbanded. The draft is held apart
  * from the warband until Done writes it in one go; Cancel lets it fall.
  *
  * `gold` is the whole purse – what the warband is worth together with what it
@@ -11,6 +13,7 @@
  * what the piece brings.
  */
 
+import { findsOf } from './finds';
 import type { BattleRecord, Faction, GameSystem, Warband } from './types';
 import { purse } from './validate';
 import { newId } from './warband';
@@ -47,6 +50,10 @@ export interface WarbandBackDraft {
 	/** Battles struck, dropped on Done and brought back until then. */
 	removed: string[];
 	pending: PendingBattle;
+	/** Whether the searches since the battle are cleared: every searcher free again, what was found and not bought gone. */
+	clearSearches: boolean;
+	/** Whether a warband marked disbanded is taken back to building. */
+	undisband: boolean;
 }
 
 export function emptyPending(date: string): PendingBattle {
@@ -94,7 +101,8 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 	const pending = toRecord(draft.pending);
 	const history = [...draft.history.filter((r) => !draft.removed.includes(r.id)), ...(pending ? [pending] : [])];
 	const changed = draft.goldAdded.length > 0 || gone.size > 0;
-	const { fluff: _fluff, notes: _notes, ...rest } = warband;
+	const { fluff: _fluff, notes: _notes, disbanded, finds: _finds, ...rest } = warband;
+	const finds = draft.clearSearches ? findsOf(warband) : null;
 	const fluff = draft.fluff.trim();
 	const notes = draft.notes.trim();
 	const counted = Object.fromEntries(Object.entries(draft.tally).filter(([key, value]) => value !== 0 || warband.tally?.[key] !== undefined));
@@ -107,6 +115,12 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 		...(Object.keys(counted).length || warband.tally ? { tally: counted } : {}),
 		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed } : {}),
 		...(gone.size ? { stash: stash.filter((_, i) => !gone.has(i)) } : {}),
-		...(history.length || warband.history ? { history } : {})
+		...(history.length || warband.history ? { history } : {}),
+		...(finds
+			? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } }
+			: warband.finds
+				? { finds: warband.finds }
+				: {}),
+		...(disbanded && !draft.undisband ? { disbanded } : {})
 	};
 }

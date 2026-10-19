@@ -60,7 +60,9 @@
 		stashOut: [],
 		history: [],
 		removed: [],
-		pending: emptyPending(today())
+		pending: emptyPending(today()),
+		clearSearches: false,
+		undisband: false
 	});
 	/* The photo apart from the draft: the warband is written as a whole and has
 	   to stay free of the bytes. */
@@ -158,7 +160,9 @@
 				stashOut: [],
 				history,
 				removed: [],
-				pending: emptyPending(today())
+				pending: emptyPending(today()),
+				clearSearches: false,
+				undisband: false
 			};
 			editingId = instanceId;
 			return;
