@@ -13,6 +13,7 @@ import italic from '$lib/assets/card/Alegreya-Italic.ttf?url';
 import regular from '$lib/assets/card/Alegreya-Regular.ttf?url';
 import { tokenize } from '$lib/core/markup';
 import type { Roster, RosterFighter, RosterRule } from '$lib/core/roster';
+import { fileDate } from '$lib/core/transfer';
 import { safeName } from '$lib/share';
 
 /* A4 landscape, 10 mm margins, 14 mm at the foot for the footer. */
@@ -170,8 +171,8 @@ function rulesTable(roster: Roster): Content {
 /* pdfmake fetches the fonts itself, and needs an address it can resolve on its own. */
 const absolute = (url: string) => new URL(url, location.href).href;
 
-/** The document itself, apart from loading pdfmake and its fonts. */
-export function rosterDoc(roster: Roster): TDocumentDefinitions {
+/** The document itself, apart from loading pdfmake and its fonts. The footer carries the day it was made, as the file's name does. */
+export function rosterDoc(roster: Roster, now = new Date()): TDocumentDefinitions {
 	return {
 		info: { title: `${roster.name} – ${roster.title}` },
 		pageSize: 'A4',
@@ -179,12 +180,12 @@ export function rosterDoc(roster: Roster): TDocumentDefinitions {
 		pageMargins: [MARGIN, MARGIN, MARGIN, MARGIN_FOOT],
 		defaultStyle: { font: 'Alegreya', fontSize: 9.5 },
 		styles: { th: { bold: true, fontSize: 10 } },
-		footer: { text: roster.title, alignment: 'right', fontSize: 8, margin: [MARGIN, 14, MARGIN, 0] },
+		footer: { text: `${roster.title} · ${fileDate(now)}`, alignment: 'right', fontSize: 8, margin: [MARGIN, 14, MARGIN, 0] },
 		content: [warbandTable(roster), fighterTable(roster), ...(roster.rules.length ? [rulesTable(roster)] : [])]
 	};
 }
 
-export async function rosterPdf(roster: Roster): Promise<File> {
+export async function rosterPdf(roster: Roster, now = new Date()): Promise<File> {
 	const { default: pdfMake } = await import('pdfmake/build/pdfmake');
 
 	pdfMake.addFonts({
@@ -196,6 +197,6 @@ export async function rosterPdf(roster: Roster): Promise<File> {
 		}
 	});
 
-	const blob = await pdfMake.createPdf(rosterDoc(roster)).getBlob();
-	return new File([blob], `${safeName(roster.name)} – ${roster.title}.pdf`, { type: 'application/pdf' });
+	const blob = await pdfMake.createPdf(rosterDoc(roster, now)).getBlob();
+	return new File([blob], `${safeName(roster.name)} – ${roster.title} – ${fileDate(now)}.pdf`, { type: 'application/pdf' });
 }

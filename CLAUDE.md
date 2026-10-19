@@ -29,8 +29,10 @@ Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
 gleich gilt, liegt direkt in `docs/`. Die App liest dieselben Dateien beim
 Build ein (`src/lib/docs.ts`) und zeigt sie unter `/docs`, erreichbar über
 Settings und verlinkt aus der README. Der Renderer kennt nur Überschriften,
-Absätze, Listen, fett, kursiv und Links; eine Liste, deren Punkte mit einem
-Link beginnen, wird zu Buttons.
+Absätze, Listen, fett, kursiv, Links und Bilder; eine Liste, deren Punkte mit
+einem Link beginnen, wird zu Buttons. Bilder sind die Icons der App aus
+`docs/icons/`, Kopien der SVGs aus dem Markup: Ändert sich ein Icon in der
+App, zieht seine Datei dort mit.
 
 Die Seiten sind kurz und in einfacher Sprache, ein roter Faden durch den
 Spielabend statt einer Liste von Änderungen. Sie beschreiben, wie man eine

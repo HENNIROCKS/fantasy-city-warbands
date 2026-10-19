@@ -51,13 +51,14 @@ function devNetworkInfo(): Plugin {
 	};
 }
 
-/* The about page names the version. Reading it from package.json keeps the
-   number in one place instead of a second copy in the markup. */
+/* The settings page names the version. Reading it from package.json keeps the
+   number in one place instead of a second copy in the markup. npm wants three
+   parts there; the app names major.minor only. */
 const { version } = JSON.parse(readFileSync('./package.json', 'utf8'));
 
 export default defineConfig({
 	define: {
-		__APP_VERSION__: JSON.stringify(version)
+		__APP_VERSION__: JSON.stringify(version.split('.').slice(0, 2).join('.'))
 	},
 	plugins: [devNetworkInfo(), tailwindcss(), sveltekit()]
 });

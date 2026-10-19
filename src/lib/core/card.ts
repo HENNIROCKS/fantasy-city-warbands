@@ -186,10 +186,10 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const changed = [...advanced.weapons, ...injured.weapons];
 	const carried = counted([...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear], faction);
 
-	/* Melee ahead of ranged, otherwise in the order they are carried. */
+	/* Ranged ahead of melee, otherwise in the order they are carried. */
 	const weapons = carried
 		.filter(({ wargear }) => wargear.kind === 'melee' || wargear.kind === 'ranged')
-		.sort((a, b) => Number(a.wargear.kind === 'ranged') - Number(b.wargear.kind === 'ranged'))
+		.sort((a, b) => Number(a.wargear.kind === 'melee') - Number(b.wargear.kind === 'melee'))
 		.map(({ wargear, count }): CardWeapon => {
 			/* The extra attack belongs to the weapon in hand, so it is the row's own number. */
 			const dual = count > 1 && wargear.kind === 'melee' ? game.dualWielding : undefined;
@@ -254,11 +254,11 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
 	/* A fighter with no melee weapon in hand fights with the game's Unarmed
-	   profile, at the head of the table where the melee weapons stand – where
-	   its profile is known, since only that says what it carries. */
+	   profile, where the melee weapons stand: after the ranged ones – where its
+	   profile is known, since only that says what it carries. */
 	const unarmed = game.unarmed;
 	if (unarmed && fighter && !carried.some(({ wargear }) => wargear.kind === 'melee') && !keywords.some((k) => unarmed.except.includes(k))) {
-		weapons.unshift({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
+		weapons.push({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
 	}
 
 	/* A pick that raises a characteristic is in the profile above, and the rule

@@ -23,6 +23,9 @@
 			<strong class="text-zinc-200">{token.value}</strong>
 		{:else if token.kind === 'italic'}
 			<em>{token.value}</em>
+		{:else if token.kind === 'icon'}
+			<!-- The app's own icon, from docs/icons/: the guide's own file, so the markup is trusted. -->
+			<span class="doc-icon" role="img" aria-label={token.value}>{@html token.svg}</span>
 		{:else if token.kind === 'link' && token.to !== undefined}
 			<a class="underline" href={hrefOf(token.to)}>{token.value}</a>
 		{:else if token.kind === 'link'}
@@ -86,3 +89,13 @@
 		{/if}
 	{/each}
 </main>
+
+<style>
+	/* As large as the type, sitting on its line; the preflight would make it a block. */
+	.doc-icon :global(svg) {
+		display: inline;
+		width: 1.15em;
+		height: 1.15em;
+		vertical-align: -0.2em;
+	}
+</style>
