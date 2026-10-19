@@ -155,7 +155,7 @@ function readFighter(raw: unknown): FighterInstance | null {
  */
 function readWarband(raw: unknown): Warband | null {
 	if (!isObject(raw)) return null;
-	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, finds, tally } = raw;
+	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, finds, disbanded, tally } = raw;
 	if (typeof id !== 'string' || typeof game !== 'string' || typeof factionId !== 'string' || typeof name !== 'string') return null;
 	if (!isObject(picks) || !Object.values(picks).every(isStrings) || !Array.isArray(fighters)) return null;
 	const read = fighters.map(readFighter);
@@ -169,6 +169,7 @@ function readWarband(raw: unknown): Warband | null {
 	if (records === null) return null;
 	const searches = finds === undefined ? undefined : readFinds(finds);
 	if (searches === null) return null;
+	if (disbanded !== undefined && disbanded !== true) return null;
 	return {
 		id,
 		game,
@@ -183,6 +184,7 @@ function readWarband(raw: unknown): Warband | null {
 		...(stash !== undefined ? { stash } : {}),
 		...(records !== undefined ? { history: records } : {}),
 		...(searches !== undefined ? { finds: searches } : {}),
+		...(disbanded ? { disbanded } : {}),
 		...(tally !== undefined ? { tally } : {}),
 		...(updatedAt !== undefined ? { updatedAt: updatedAt as string } : {})
 	};

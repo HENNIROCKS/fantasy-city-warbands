@@ -23,7 +23,7 @@
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
-	import { canLead, deadLeaders, leaderOf, mayLead, takeLead } from '$lib/core/leader';
+	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
@@ -372,11 +372,7 @@
 		dismissOpener?.focus();
 	}
 
-	/**
-	 * What the sheet says beyond the fighter leaving: where its equipment goes,
-	 * and what the warband then lacks. A leader leaving with no fighter left to
-	 * follow it gets what the game has happen then, not a leader to recruit.
-	 */
+	/** What the sheet says beyond the fighter leaving: where its equipment goes, and what the warband then lacks – a leader to follow, or disbanding where none can. */
 	const dismissNotes = $derived.by(() => {
 		if (!dismissing || !warband || !system || !faction) return [];
 		const { instanceId, toStash } = dismissing;
@@ -385,17 +381,15 @@
 		const kept = instance.wargear.filter((_, i) => toStash.includes(i)).map(wargearName);
 		const gone = instance.wargear.filter((_, i) => !toStash.includes(i)).map(wargearName);
 		const before = validate(warband, system.game, faction);
-		const left = dismiss($state.snapshot(warband) as Warband, faction, system.game, instanceId, []);
-		const succession = system.game.succession;
-		const heirless = succession && leaderOf(warband, faction)?.instanceId === instanceId && !left.fighters.some((f) => canLead(f, faction!, system!.game));
-		const short = validate(left, system.game, faction).filter(
-			(i) => i.kind === 'missing' && !before.some((b) => b.code === i.code && b.message === i.message) && !(heirless && i.code === 'fighter-limit')
-		);
+		const after = validate(dismiss($state.snapshot(warband) as Warband, faction, system.game, instanceId, []), system.game, faction);
+		/* Disbanding first: it outweighs whatever else the warband then lacks. */
+		const short = after
+			.filter((i) => i.kind === 'missing' && !before.some((b) => b.code === i.code && b.message === i.message))
+			.sort((a, b) => Number(b.short === 'Disbanded') - Number(a.short === 'Disbanded'));
 		return [
 			...(kept.length ? [`${kept.join(', ')} ${kept.length > 1 ? 'go' : 'goes'} to the stash.`] : []),
 			...(gone.length ? [`${gone.join(', ')} ${gone.length > 1 ? 'leave' : 'leaves'} with the fighter.`] : []),
 			'Nothing is paid back.',
-			...(heirless ? [succession.none] : []),
 			...short.map((i) => i.message)
 		];
 	});

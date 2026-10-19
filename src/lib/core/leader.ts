@@ -47,6 +47,21 @@ export function mayLead(warband: Warband, faction: Faction, game: GameSystem, in
 	return !leaderOf(warband, faction) && lostLeader(warband) && canLead(instance, faction, game);
 }
 
+/** Whether the warband lost its leader and no fighter can take the lead, so the game has it disbanded. */
+export function leaderless(warband: Warband, faction: Faction, game: GameSystem): boolean {
+	return !!game.succession && !leaderOf(warband, faction) && lostLeader(warband) && !warband.fighters.some((f) => canLead(f, faction, game));
+}
+
+/**
+ * The warband marked disbanded where losing `leader` – the one leading it
+ * before – leaves no fighter to take the lead; as it was otherwise.
+ */
+export function disbandedAfter(warband: Warband, faction: Faction, game: GameSystem, leader: FighterInstance | null): Warband {
+	return leader && !warband.fighters.some((f) => f.instanceId === leader.instanceId) && leaderless(warband, faction, game)
+		? { ...warband, disbanded: true }
+		: warband;
+}
+
 /** The dead leaders still on the roster, which leave it once another fighter takes the lead. */
 export function deadLeaders(warband: Warband, faction: Faction): FighterInstance[] {
 	return warband.fighters.filter((f) => f.away === 'dead' && recruitedLeader(f, faction));

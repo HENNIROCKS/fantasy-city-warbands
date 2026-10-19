@@ -175,13 +175,17 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 
 		let message = `${fighter.name}: ${describe(limit)}${source ? ` with ${source}` : ''}, this warband has ${count}.`;
 		let short = kind === 'excess' ? 'Limit reached' : `${fighter.name} needed`;
-		const heir = game.succession && kind === 'missing' && isLeader && lostLeader(warband) && warband.fighters.some((f) => canLead(f, faction, game));
+		const lost = game.succession && kind === 'missing' && isLeader && lostLeader(warband);
+		const heir = lost && warband.fighters.some((f) => canLead(f, faction, game));
 		if (successor && isLeader) {
 			message = `${fighter.name}: ${successor.name.trim() || 'a fighter'} leads the warband in its place.`;
 			short = 'Already led';
 		} else if (heir && game.succession) {
 			message = `No leader: a ${game.succession.keyword.toUpperCase()} takes the lead on the back of its card.`;
 			short = 'No leader';
+		} else if (lost && game.succession) {
+			message = game.succession.none;
+			short = 'Disbanded';
 		} else if (source && limit.max === 0) {
 			message = `${fighter.name} cannot be recruited with ${source}.`;
 			short = `Not with ${source}`;

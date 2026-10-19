@@ -680,6 +680,8 @@ export interface Warband {
 	history?: BattleRecord[];
 	/** What was looked for at the table since the last battle, where the game has a `rarity` roll. */
 	finds?: Finds;
+	/** Whether it lost its leader with no fighter left to take the lead, so the game has it disbanded. */
+	disbanded?: true;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
 	/**

@@ -11,7 +11,7 @@
 import { stateOf, type BattleState } from './battle';
 import { LEADER } from './effects';
 import { today } from './history';
-import { canLead, leaderOf } from './leader';
+import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { newId } from './warband';
@@ -352,7 +352,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		const levels = row ? levelsEarned(row, marks) : 0;
 		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];
 	});
-	return {
+	const applied: Warband = {
 		...warband,
 		gold: earned.gold - spent,
 		tally: earned.tally,
@@ -360,4 +360,5 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		...(record ? { history: [...(warband.history ?? []), record] } : {}),
 		fighters
 	};
+	return disbandedAfter(applied, faction, game, leaderOf(warband, faction));
 }

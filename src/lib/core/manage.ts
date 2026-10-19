@@ -11,22 +11,28 @@
  */
 
 import type { Faction, GameSystem, Warband } from './types';
+import { disbandedAfter, leaderOf } from './leader';
 import { purse } from './validate';
 import { fighterCost } from './warband';
 import { priceOf } from './stash';
 
-/** The warband without the fighter, the pieces at `toStash` – places in its wargear – handed to the stash. */
+/**
+ * The warband without the fighter, the pieces at `toStash` – places in its
+ * wargear – handed to the stash; disbanded where it was the leader and no
+ * fighter is left to take the lead.
+ */
 export function dismiss(warband: Warband, faction: Faction, game: GameSystem, instanceId: string, toStash: number[]): Warband {
 	const instance = warband.fighters.find((f) => f.instanceId === instanceId);
 	if (!instance) return warband;
 	const kept = instance.wargear.filter((_, i) => toStash.includes(i));
 	const leaving = fighterCost(instance, faction) - kept.reduce((sum, id) => sum + priceOf(id, faction), 0);
-	return {
+	const left: Warband = {
 		...warband,
 		gold: purse(warband, game) - leaving,
 		...(kept.length || warband.stash ? { stash: [...(warband.stash ?? []), ...kept] } : {}),
 		fighters: warband.fighters.filter((f) => f !== instance)
 	};
+	return disbandedAfter(left, faction, game, leaderOf(warband, faction));
 }
 
 /**
