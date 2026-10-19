@@ -11,9 +11,9 @@ import type { Content, ContentText, CustomTableLayout, TableCell, TDocumentDefin
 import bold from '$lib/assets/card/Alegreya-Bold.ttf?url';
 import italic from '$lib/assets/card/Alegreya-Italic.ttf?url';
 import regular from '$lib/assets/card/Alegreya-Regular.ttf?url';
+import { today } from '$lib/core/history';
 import { tokenize } from '$lib/core/markup';
 import type { Roster, RosterFighter, RosterRule } from '$lib/core/roster';
-import { fileDate } from '$lib/core/transfer';
 import { safeName } from '$lib/share';
 
 /* A4 landscape, 10 mm margins, 14 mm at the foot for the footer. */
@@ -180,7 +180,7 @@ export function rosterDoc(roster: Roster, now = new Date()): TDocumentDefinition
 		pageMargins: [MARGIN, MARGIN, MARGIN, MARGIN_FOOT],
 		defaultStyle: { font: 'Alegreya', fontSize: 9.5 },
 		styles: { th: { bold: true, fontSize: 10 } },
-		footer: { text: `${roster.title} · ${fileDate(now)}`, alignment: 'right', fontSize: 8, margin: [MARGIN, 14, MARGIN, 0] },
+		footer: { text: `${roster.title} · ${today(now)}`, alignment: 'right', fontSize: 8, margin: [MARGIN, 14, MARGIN, 0] },
 		content: [warbandTable(roster), fighterTable(roster), ...(roster.rules.length ? [rulesTable(roster)] : [])]
 	};
 }
@@ -198,5 +198,5 @@ export async function rosterPdf(roster: Roster, now = new Date()): Promise<File>
 	});
 
 	const blob = await pdfMake.createPdf(rosterDoc(roster, now)).getBlob();
-	return new File([blob], `${safeName(roster.name)} – ${roster.title} – ${fileDate(now)}.pdf`, { type: 'application/pdf' });
+	return new File([blob], `${safeName(roster.name)} – ${roster.title} – ${today(now)}.pdf`, { type: 'application/pdf' });
 }

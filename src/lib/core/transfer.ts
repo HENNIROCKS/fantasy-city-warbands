@@ -12,6 +12,7 @@
  */
 
 import type { Advance, AwayReason, BattleRecord, FighterInstance, Finds, Warband } from './types';
+import { today } from './history';
 import { sameWarband } from './warband';
 
 export const FORMAT = 'fantasy-city-warbands';
@@ -34,17 +35,12 @@ export function toFile(warband: Warband, now = new Date()): WarbandFile {
 	return { format: FORMAT, version: VERSION, exportedAt: now.toISOString(), warband };
 }
 
-/** The day a file is made, as its name and the roster's footer carry it: `2026-10-19`. */
-export function fileDate(now = new Date()): string {
-	return now.toISOString().slice(0, 10);
-}
-
 /**
- * Dated, so an export made before deleting does not replace an older copy of
- * the same warband in the same folder.
+ * Dated as the phone's calendar has the day, so an export made before deleting
+ * does not replace an older copy of the same warband in the same folder.
  */
 export function fileName(name: string, now = new Date()): string {
-	return `${name} – ${fileDate(now)}.json`;
+	return `${name} – ${today(now)}.json`;
 }
 
 /**
