@@ -155,10 +155,12 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's
 choice and its effect on the roster, and the choice a Wyrdcry fighter makes
-on recruitment. Wyrdcry's abilities and faction rules are shown as text. Not
-there yet: State Pride's effects on the profiles, the special rules of Black
-Death City's fighters, the skills and spells they pick on recruitment, and
-the cost of a Misbegotten's bloodline mutation.
+on recruitment. Wyrdcry's abilities and faction rules are shown as text; a
+faction rule that leaves a fighter out, or applies only to a keyword it
+lacks, shows a hint on its card instead. Not there yet: State Pride's
+effects on the profiles, the special rules of Black Death City's fighters,
+the skills and spells they pick on recruitment, and the cost of a
+Misbegotten's bloodline mutation.
 
 ## Roadmap
 

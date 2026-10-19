@@ -275,6 +275,10 @@ interface RawRule {
 	table?: RawRow[];
 	/** What the rule does that the app counts, as the Warband Deck writes it; only Zeal is read here. */
 	effect?: RawEffect | null;
+	/** A keyword id whose carriers the rule leaves out, such as Sudden Accusation for a BEAST. */
+	except?: string;
+	/** A keyword id only whose carriers the rule applies to. */
+	only?: string;
 }
 
 /** A stage of Zeal, as the Warband Deck's ruleset writes it. `except` is a keyword id. */
@@ -571,7 +575,9 @@ function build(
 		origin: meta.origin,
 		author: meta.author,
 		/* A rule with a pick is asked for as a choice; the rest is read, not decided. */
-		rules: rules.filter((r) => r.pick === null).map((r) => ({ name: r.name, text: r.text })),
+		rules: rules
+			.filter((r) => r.pick === null)
+			.map((r) => ({ name: r.name, text: r.text, ...(r.except ? { except: r.except } : {}), ...(r.only ? { only: r.only } : {}) })),
 		size: meta.warband_size,
 		choices: rules
 			.filter((r) => r.pick !== null)

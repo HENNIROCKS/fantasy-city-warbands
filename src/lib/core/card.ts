@@ -226,17 +226,28 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			...ruleEntries((wargear.grants ?? []).filter((r) => !given.has(r.name) && given.add(r.name)))
 		]);
 
-	/* The faction's standing rules, then what the warband picked under its choices. */
-	const factionRules: CardEntry[] = [
-		...faction.rules.map((r) => ({ label: r.name, text: r.text })),
-		...faction.choices.flatMap((c) =>
-			c.options.filter((o) => picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
-		)
-	];
-
 	/* As the levels make them – a henchman with three of Wyrdcry's renown is a HERO – and LEADER for one that took the lead. */
 	const keywords = [
 		...new Set([...(fighter ? keywordsOf(instance, fighter, game) : instance.leader ? [LEADER] : []), ...advanced.keywords, ...injured.keywords])
+	];
+
+	/* The faction's standing rules, then what the warband picked under its
+	   choices. A rule that leaves this fighter out keeps its line, with a hint
+	   where its text would stand – Sudden Accusation on a War Hound. */
+	const named = (keyword: string) => `\`${keyword.replaceAll('-', ' ').toUpperCase()}\``;
+	const factionRules: CardEntry[] = [
+		...faction.rules.map((r) => ({
+			label: r.name,
+			text:
+				r.except && keywords.includes(r.except)
+					? `Does not apply to a ${named(r.except)}.`
+					: r.only && !keywords.includes(r.only)
+						? `Applies only to a ${named(r.only)}.`
+						: r.text
+		})),
+		...faction.choices.flatMap((c) =>
+			c.options.filter((o) => picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
+		)
 	];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
 
