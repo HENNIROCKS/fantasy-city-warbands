@@ -384,7 +384,7 @@
 								<p class="hint">Left open, a {keyword} can take the lead on the back of its card later.</p>
 							{/if}
 						{:else}
-							<p class="hint">No {keyword} is left. The Campaign Book has the warband disbanded and a new one started.</p>
+							<p class="hint">{game.succession?.none}</p>
 						{/if}
 					</section>
 				</div>

@@ -134,10 +134,11 @@ export interface GameSystem {
 	injuries?: Injuries;
 	/**
 	 * Who takes the LEADER keyword once the warband's leader is dead or gone,
-	 * as Wyrdcry's HERO: the keyword a fighter must carry. Without it, the
-	 * warband recruits a new leader instead.
+	 * as Wyrdcry's HERO: the keyword a fighter must carry, and what the game
+	 * has happen when no fighter carries it. Without it, the warband recruits
+	 * a new leader instead.
 	 */
-	succession?: { keyword: string };
+	succession?: { keyword: string; none: string };
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
