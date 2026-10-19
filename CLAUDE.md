@@ -104,7 +104,9 @@ umstellt, wird vorher probehalber durch `validate` gerechnet und gesperrt, wenn
 sie einen neuen Verstoß brächte – mit dem Grund am Button. Eine neue Grenze
 gehört deshalb in `validate`, nicht als eigene Sperre in die Oberfläche.
 Ein Import übernimmt, was die Datei hat, auch ein `excess`, und sagt es;
-gesperrt wird nur beim Bauen.
+gesperrt wird nur beim Bauen. Entfernen wird nur gesperrt, wo es eine vorher
+eingehaltene Grenze bräche, etwa die Pecking Order; was eine Bande schon
+bricht, lässt sich abbauen.
 
 ## Oberfläche
 
