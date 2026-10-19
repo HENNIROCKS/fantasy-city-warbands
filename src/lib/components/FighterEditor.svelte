@@ -13,6 +13,7 @@
 		paid,
 		dead,
 		rarity,
+		closed,
 		onsearch,
 		onbuy,
 		onremove
@@ -45,6 +46,8 @@
 			left: (wargearId: string) => number | null;
 			singleUse: number;
 		} | null;
+		/** Whether the warband builds no more, as a disbanded one: its wargear is not offered. */
+		closed: boolean;
 		/** Writes a search: the piece, who searched and helped, and how many copies were found – none where it failed. */
 		onsearch: (wargearId: string, party: string[], copies: number) => void;
 		/** Counts copies of a found piece bought, or put down again – a negative `change`. */
@@ -337,7 +340,7 @@
 					{/each}
 				</ul>
 			{/if}
-			{#if fighter.wargear.length}
+			{#if fighter.wargear.length && !closed}
 				<button
 					type="button"
 					class="wargear-add {fighter.gear.length || instance.wargear.length ? 'mt-2' : ''}"
@@ -473,7 +476,7 @@
 			Dead – it leaves the roster once a {game.succession?.keyword.toUpperCase() ?? 'fighter'} takes the lead on the back of that fighter's card, its
 			equipment to the stash on a 3+.
 		</p>
-	{:else if paid}
+	{:else if paid && !closed}
 		<p class="text-zinc-400">Paid for – dismiss it, or put what it carries in the stash, on the back of its card.</p>
 	{/if}
 

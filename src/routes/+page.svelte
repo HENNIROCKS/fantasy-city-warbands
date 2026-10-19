@@ -259,7 +259,7 @@
 			cost: `${warbandCost(w, f)} / ${purse(w, s.game)} ${s.game.currency}`,
 			/* Past its limits is not the same as unfinished: an import or a corrected
 			   rule can leave a warband there, and building never does. */
-			status: issues.some((i) => i.kind === 'excess') ? 'excess' : issues.length ? 'missing' : 'valid',
+			status: w.disbanded ? 'disbanded' : issues.some((i) => i.kind === 'excess') ? 'excess' : issues.length ? 'missing' : 'valid',
 			/* A roster reads the faction; without it there is nothing to print. */
 			known: true
 		};
@@ -349,8 +349,8 @@
 								{/if}
 								<span class="block text-zinc-400">{[s.fighters, s.cost].filter(Boolean).join(' · ')}</span>
 								<!-- Only what still needs doing takes a colour; the row's own is its deck's. -->
-								{#if s.status === 'valid'}
-									<span class="block text-zinc-400">valid</span>
+								{#if s.status === 'valid' || s.status === 'disbanded'}
+									<span class="block text-zinc-400">{s.status}</span>
 								{:else}
 									<span class="block" style="color: var(--ui-warn-text)">{s.status === 'excess' ? 'over its limits' : 'not valid yet'}</span>
 								{/if}

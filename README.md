@@ -82,7 +82,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   for: the builder no longer takes it back at its full price, and the back of
   the fighter's card dismisses it instead, after a question – its equipment to
   the stash or with it, nothing paid back; a dismissed leader leaves the lead
-  to a HERO. In Wyrdcry the back also corrects renown by hand – it does not go
+  to a HERO. With no HERO left, the warband is disbanded, as the Campaign Book
+  has it: it stays in the list to look at, recruits, buys and fights no more,
+  and the builder starts a new one of its faction. In Wyrdcry the back also corrects renown by hand – it does not go
   below a level already spent; a BEAST or THRALL has none. Spend renown turns
   the back to a page for the next open level, as the Warband Deck does, and
   lists the levels spent, the last with Undo, and the injuries the fighter

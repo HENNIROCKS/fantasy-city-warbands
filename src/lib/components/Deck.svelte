@@ -40,6 +40,7 @@
 		onlevels,
 		editing = false,
 		doneDisabled = false,
+		closed = null,
 		back,
 		onedit,
 		ondone,
@@ -78,6 +79,8 @@
 		editing?: boolean;
 		/** Holds that button back while what the turned card holds would break the warband's limits. */
 		doneDisabled?: boolean;
+		/** Why no battle starts, as for a disbanded warband; null where one can. */
+		closed?: string | null;
 		/** The back of the card on top, shown while `editing`. */
 		back?: Snippet<[DeckCard]>;
 		/** Asks for the card on top to be turned over, by its instanceId – the warband's id for the warband card. */
@@ -410,6 +413,7 @@
 		{onlevels}
 		{editing}
 		{doneDisabled}
+		{closed}
 		onedit={() => onedit?.(cards[current].instanceId)}
 		{ondone}
 		{oncancel}

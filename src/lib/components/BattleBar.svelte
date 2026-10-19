@@ -37,6 +37,7 @@
 		onlevels,
 		editing = false,
 		doneDisabled = false,
+		closed = null,
 		onedit,
 		ondone,
 		oncancel
@@ -83,6 +84,8 @@
 		editing?: boolean;
 		/** Holds the button back while what the turned card holds would break the warband's limits. */
 		doneDisabled?: boolean;
+		/** Why no battle starts, as for a disbanded warband; null where one can. */
+		closed?: string | null;
 		/** Turns the card on top over, the warband's as a fighter's. */
 		onedit?: () => void;
 		ondone?: () => void;
@@ -110,6 +113,13 @@
 					disabled={doneDisabled}
 					onclick={() => ondone?.()}>Done</button
 				>
+			</div>
+		{:else if fighter && closed && !battle}
+			<p class="summary text-zinc-400">{closed}</p>
+			<div class="actions">
+				<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+				</button>
 			</div>
 		{:else if fighter}
 			<div class="wounds">
@@ -161,7 +171,9 @@
 				</button>
 			</div>
 		{:else}
-			{#if counter}
+			{#if closed && !battle}
+				<p class="summary text-zinc-400">{closed}</p>
+			{:else if counter}
 				<!-- A faction that counts through the battle has the count where a
 				     fighter has its wounds, under the same thumb; the round is in the
 				     battle menu. -->
@@ -207,7 +219,7 @@
 						{#if battle.undo}
 							<button onclick={() => onundo?.()}>Back to round {battle.undo.round}</button>
 						{/if}
-					{:else}
+					{:else if !closed}
 						<button onclick={() => onstart?.()}>Start battle</button>
 					{/if}
 					{#if levelsOpen > 0}

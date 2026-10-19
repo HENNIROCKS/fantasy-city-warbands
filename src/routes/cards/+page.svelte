@@ -185,6 +185,8 @@
 
 	/* Why a back changes no wargear while a battle goes on, as the Warband Deck says it. */
 	const IN_BATTLE = 'Not during a battle – end or cancel it first.';
+	/* Why a disbanded warband fights and changes no more. */
+	const DISBANDED = 'Disbanded – it fights no more.';
 
 	/* Why a dead leader still on the roster neither hands its equipment on nor is
 	   dismissed: it leaves as another takes the lead, its equipment recovered
@@ -207,7 +209,9 @@
 		const profile = faction.fighters.find((f) => f.id === instance.fighterId);
 		const blocked = battle
 			? IN_BATTLE
-			: (deadLeader(instance) ??
+			: warband.disbanded
+				? DISBANDED
+				: (deadLeader(instance) ??
 				(!profile ? "This fighter is not in the app's own rules, so what it may carry cannot be checked." : null));
 		const buy = resolve('/build') + `?id=${warband.id}&step=fighters#fighter-${instance.instanceId}`;
 		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [], buy };
@@ -336,7 +340,7 @@
 	const backDismissal = $derived.by((): BackDismissal | null => {
 		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
 		const instance = warband.fighters.find((f) => f.instanceId === editingId);
-		if (!instance || deadLeader(instance)) return null;
+		if (!instance || deadLeader(instance) || warband.disbanded) return null;
 		const moved = draft.wargear.join() !== instance.wargear.join();
 		return {
 			carried: instance.wargear.map(wargearName),
@@ -649,6 +653,7 @@
 				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key))}
 				oncount={(delta) => setBattle(adjustCounter(battle, delta))}
 				onstart={() => setBattle(start())}
+				closed={warband.disbanded ? DISBANDED : null}
 				onnext={() => battle && setBattle(nextRound(battle, roundMarks, wavers()))}
 				onundo={() => battle && setBattle(undoRound(battle))}
 				onend={endBattle}

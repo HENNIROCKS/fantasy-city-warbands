@@ -207,7 +207,17 @@
 	}
 
 	/* Switching the faction removes every fighter, which would hand back what was paid for. */
-	const switchLocked = $derived(!!paid && !!warband?.fighters.some((f) => paid!.has(f.instanceId)));
+	const switchLocked = $derived(!!warband?.disbanded || (!!paid && !!warband?.fighters.some((f) => paid!.has(f.instanceId))));
+
+	/* A disbanded warband is kept to look at: a new one of its faction starts
+	   from nothing, as the game has it, and opens at its choice. */
+	async function startOver() {
+		if (!system || !faction) return;
+		const created = createWarband(system.game.id, faction, '');
+		if (!(await saveWarband(created))) return;
+		await requestPersistence();
+		goto(url({ id: created.id, step: 'choice' }));
+	}
 
 	async function pickFaction(factionId: string) {
 		const f = system?.factions.find((x) => x.id === factionId);
@@ -257,7 +267,7 @@
 	/* The rarity roll as the builder's wargear asks it, once the warband has fought. */
 	const rarity = $derived.by(() => {
 		const game = system?.game;
-		if (!game?.rarity || !warband || !faction || !findsOf(warband)) return null;
+		if (!game?.rarity || !warband || !faction || warband.disbanded || !findsOf(warband)) return null;
 		const current = warband;
 		return {
 			searchers: searchers(current, faction, game).map((f) => ({ instanceId: f.instanceId, name: fighterName(f, faction!) })),
@@ -371,6 +381,17 @@
 <main class="mx-auto max-w-2xl space-y-8 p-5 pb-40 text-sm">
 	<Stepper {steps} current={STEPS.indexOf(step)} />
 
+	{#if warband?.disbanded && faction}
+		<section class="space-y-3">
+			<p class="notice">Disbanded – no HERO was left to lead it. It is kept to look at, and recruits, buys and fights no more.</p>
+			<button
+				type="button"
+				class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
+				onclick={startOver}>Start a new {faction.name} warband</button
+			>
+		</section>
+	{/if}
+
 	{#if id && loadedId !== id}
 		<!-- Read in a moment; nothing to show until then. -->
 	{:else if id && !warband}
@@ -456,7 +477,7 @@
 												? `Switch to ${f.name}`
 												: `Choose ${f.name}`}
 									</button>
-									{#if !current && switchLocked}
+									{#if !current && switchLocked && !warband?.disbanded}
 										<p class="text-zinc-400">This warband has fought: its fighters are paid for. Start a new warband for {f.name}.</p>
 									{/if}
 								</div>
@@ -488,7 +509,7 @@
 							type="button"
 							class="choice"
 							aria-pressed={on}
-							disabled={!!block}
+							disabled={!!block || !!warband.disbanded}
 							onclick={() => {
 								if (warband) warband.picks[choice.id] = next;
 							}}
@@ -526,6 +547,7 @@
 						paid={paid?.get(instance.instanceId) ?? null}
 						dead={deadLeaders(warband, faction).some((f) => f.instanceId === instance.instanceId)}
 						{rarity}
+						closed={!!warband.disbanded}
 						{onsearch}
 						{onbuy}
 						onremove={() => removeFighter(instance.instanceId)}
@@ -534,6 +556,7 @@
 			</div>
 		</section>
 
+		{#if !warband.disbanded}
 		<section id="recruit" class="scroll-mt-20">
 			<p class="field-label">
 				Recruit
@@ -572,6 +595,7 @@
 				{/each}
 			</div>
 		</section>
+		{/if}
 	{:else if step === 'finish'}
 		<section>
 			<label class="field-label" for="warband-name">Name of your warband</label>
@@ -800,7 +824,10 @@
 					<span class="block font-semibold" style={cost > gold ? 'color: var(--ui-danger-text)' : ''}>
 						{cost} / {gold}&nbsp;{system.game.currency}
 					</span>
-					{#if issues.length}
+					{#if warband?.disbanded}
+						<!-- Nothing is left to do on a warband that builds no more. -->
+						<span class="block text-zinc-400">disbanded</span>
+					{:else if issues.length}
 						<span class="block underline decoration-dotted underline-offset-2" style="color: var(--ui-warn-text)">
 							{`${issues.length} ${excess.length ? `problem${issues.length === 1 ? '' : 's'}` : 'to do'}`}
 							<span aria-hidden="true">{showIssues ? '▾' : '▸'}</span>
@@ -809,7 +836,7 @@
 						<span class="block" style="color: var(--ui-sel-text)">valid</span>
 					{/if}
 				{/snippet}
-				{#if issues.length}
+				{#if issues.length && !warband?.disbanded}
 					<!-- The whole summary opens the list, so the target is as large as the text it carries. -->
 					<button
 						type="button"
@@ -823,7 +850,7 @@
 				{:else}
 					<div class="min-w-0 flex-1">{@render summary()}</div>
 				{/if}
-				{#if step === 'fighters'}
+				{#if step === 'fighters' && !warband?.disbanded}
 					<a
 						href="#recruit"
 						class="flex min-h-11 items-center rounded border border-zinc-700 px-4 font-semibold text-zinc-200 transition hover:bg-zinc-800 focus-visible:bg-zinc-800"
