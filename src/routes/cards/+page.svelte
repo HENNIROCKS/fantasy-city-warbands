@@ -116,6 +116,8 @@
 	});
 	const system = $derived(warband ? systems[warband.game] : null);
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
+	/** A piece's name as the faction lists it, its id where the faction has none. */
+	const wargearName = (id: string) => faction?.wargear.find((w) => w.id === id)?.name ?? id;
 	/* The warband's own card first, then its fighters. */
 	const cards = $derived.by<DeckCard[]>(() => {
 		const w = warband;
@@ -200,7 +202,6 @@
 			: !profile
 				? "This fighter is not in the app's own rules, so what it may carry cannot be checked."
 				: null;
-		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 		const buy = resolve('/build') + `?id=${warband.id}&step=fighters#fighter-${instance.instanceId}`;
 		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [], buy };
 		const moved = (wargear: string[], stash: string[]): Warband => ({
@@ -213,10 +214,10 @@
 		return {
 			blocked: null,
 			takesNothing: profile.wargear.length ? null : (profile.unequipped ?? 'Takes no wargear'),
-			carried: draft.wargear.map(nameOf),
+			carried: draft.wargear.map(wargearName),
 			stash: draft.stash.map((id, i) => {
 				const after = moved([...draft.wargear, id], draft.stash.filter((_, j) => j !== i));
-				return { name: nameOf(id), refused: newExcess(before, after, system.game, faction)?.short ?? null };
+				return { name: wargearName(id), refused: newExcess(before, after, system.game, faction)?.short ?? null };
 			}),
 			buy
 		};
@@ -284,10 +285,9 @@
 		const game = system?.game;
 		const instance = warband?.fighters.find((f) => f.instanceId === editingId);
 		if (battle || !warband || !faction || !game?.succession || !instance || !mayLead(warband, faction, game, instance)) return null;
-		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 		return {
 			keyword: game.succession.keyword.toUpperCase(),
-			dead: deadLeaders(warband, faction).map((f) => ({ name: f.name.trim() || 'Unnamed fighter', carried: f.wargear.map(nameOf) }))
+			dead: deadLeaders(warband, faction).map((f) => ({ name: f.name.trim() || 'Unnamed fighter', carried: f.wargear.map(wargearName) }))
 		};
 	});
 
@@ -320,16 +320,24 @@
 	}
 
 	/* Whether the fighter on the back may be dismissed, where the game keeps a
-	   campaign. Not during a battle, and not while pieces moved on the back are
-	   still to be written with Done: the stash it hands to would be the old one. */
+	   campaign. Not during a battle; not a dead leader, which leaves as another
+	   takes the lead, its equipment recovered only on a roll; and not while
+	   pieces moved on the back are still to be written with Done: the stash it
+	   hands to would be the old one. */
 	const backDismissal = $derived.by((): BackDismissal | null => {
 		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
 		const instance = warband.fighters.find((f) => f.instanceId === editingId);
 		if (!instance) return null;
 		const moved = draft.wargear.join() !== instance.wargear.join();
 		return {
-			carried: instance.wargear.map((id) => faction.wargear.find((w) => w.id === id)?.name ?? id),
-			blocked: battle ? IN_BATTLE : moved ? 'Equipment was moved on this back – Done first.' : null
+			carried: instance.wargear.map(wargearName),
+			blocked: battle
+				? IN_BATTLE
+				: deadLeaders(warband, faction).includes(instance)
+					? `Dead – it leaves the roster once a ${system.game.succession?.keyword.toUpperCase() ?? 'fighter'} takes the lead, its equipment to the stash on a 3+.`
+					: moved
+						? 'Equipment was moved on this back – Done first.'
+						: null
 		};
 	});
 
@@ -361,9 +369,8 @@
 		const { instanceId, toStash } = dismissing;
 		const instance = warband.fighters.find((f) => f.instanceId === instanceId);
 		if (!instance) return [];
-		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
-		const kept = instance.wargear.filter((_, i) => toStash.includes(i)).map(nameOf);
-		const gone = instance.wargear.filter((_, i) => !toStash.includes(i)).map(nameOf);
+		const kept = instance.wargear.filter((_, i) => toStash.includes(i)).map(wargearName);
+		const gone = instance.wargear.filter((_, i) => !toStash.includes(i)).map(wargearName);
 		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === instanceId);
 		const leads = card?.kind === 'fighter' && card.keywordIds.includes('leader');
 		const before = validate(warband, system.game, faction);

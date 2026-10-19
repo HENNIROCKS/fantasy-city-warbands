@@ -204,9 +204,13 @@
 		goto(url({ game, step: 'faction' }));
 	}
 
+	/* Switching the faction removes every fighter, which would hand back what was paid for. */
+	const switchLocked = $derived(!!paid && !!warband?.fighters.some((f) => paid!.has(f.instanceId)));
+
 	async function pickFaction(factionId: string) {
 		const f = system?.factions.find((x) => x.id === factionId);
 		if (!system || !f) return;
+		if (warband?.factionId !== f.id && switchLocked) return;
 
 		if (warband) {
 			if (warband.factionId !== f.id) {
@@ -417,7 +421,8 @@
 									<FactionInfo faction={f} game={system.game} />
 									<button
 										type="button"
-										class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
+										class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
+										disabled={!current && switchLocked}
 										onclick={() => pickFaction(f.id)}
 									>
 										{current
@@ -426,6 +431,9 @@
 												? `Switch to ${f.name}`
 												: `Choose ${f.name}`}
 									</button>
+									{#if !current && switchLocked}
+										<p class="text-zinc-400">This warband has fought: its fighters are paid for. Start a new warband for {f.name}.</p>
+									{/if}
 								</div>
 							{/if}
 						</div>

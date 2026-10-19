@@ -49,7 +49,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - An Origin sets the leader and changes limits, such as 0-2 Pox Priest's
   Apprentices for the Acolytes of Plague
 - Come back to any step later, including the faction; switching faction asks
-  first when fighters or a choice would be lost
+  first when fighters or a choice would be lost, and is closed once the
+  warband has fought, since its fighters are paid for
 - Star one warband to keep it at the top of the list, which otherwise runs A
   to Z; the star stays on the device and out of the export
 - See each warband's campaign figures in the list, such as Wyrdcry's favour

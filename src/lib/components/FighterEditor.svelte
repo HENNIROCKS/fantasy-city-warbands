@@ -308,8 +308,9 @@
 								<fieldset>
 									<legend class="sublabel">{group}</legend>
 									<!-- One to a row, as the Warband Deck offers wargear, with the reason a
-									     piece cannot be taken under its name. A ticked piece can always be
-									     put down, so only an unticked one is ever refused. -->
+									     piece cannot be taken under its name. A ticked piece can be put
+									     down unless the warband already paid for it; an unticked one is
+									     refused for what it would break. -->
 									{#if options.length}<ul class="checklist">
 										{#each options as w (w.id)}
 											{@const count = countOf(w.id)}
@@ -371,7 +372,7 @@
 	{/if}
 
 	{#if paid}
-		<p class="text-zinc-400">Paid for: it is dismissed, and what it carries put in the stash, on the back of its card.</p>
+		<p class="text-zinc-400">Paid for – dismiss it, or put what it carries in the stash, on the back of its card.</p>
 	{/if}
 
 	{#if listed.length}
