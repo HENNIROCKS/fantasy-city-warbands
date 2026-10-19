@@ -20,7 +20,6 @@
 		wavering = false,
 		toAct = 0,
 		out = 0,
-		sound = true,
 		onwound,
 		onactivated,
 		onwaiting,
@@ -31,7 +30,6 @@
 		onundo,
 		onend,
 		oncancelbattle,
-		onsound,
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
@@ -61,7 +59,6 @@
 		toAct?: number;
 		/** How many fighters are out of action. */
 		out?: number;
-		sound?: boolean;
 		onwound?: (delta: number) => void;
 		onactivated?: () => void;
 		onwaiting?: () => void;
@@ -74,7 +71,6 @@
 		onend?: () => void;
 		/** Drops the battle without its aftermath, after asking. Only where the game has an aftermath. */
 		oncancelbattle?: () => void;
-		onsound?: () => void;
 		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
 		levelsOpen?: number;
 		levelLabel?: string;
@@ -205,8 +201,9 @@
 			{/if}
 			<div class="actions">
 				<!-- Where the count takes the standing line's place, the menu's trigger
-				     carries the morale instead, so it shows under the warband card too. -->
-				<MenuButton
+				     carries the morale instead, so it shows under the warband card too.
+				     With nothing to offer, as for a disbanded warband, it is left out. -->
+				{#if battle || !closed || counter || levelsOpen > 0}<MenuButton
 					label={counter && wavering ? 'Battle, wavering' : 'Battle'}
 					class="action {BUTTON} {counter && wavering ? 'warn' : ''}"
 				>
@@ -223,13 +220,9 @@
 						<button onclick={() => onstart?.()}>Start battle</button>
 					{/if}
 					{#if levelsOpen > 0}
-						<hr />
+						{#if battle || !closed || counter}<hr />{/if}
 						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
 					{/if}
-					<hr />
-					<button aria-pressed={sound} onclick={() => onsound?.()}>
-						<span class="tick" aria-hidden="true">{sound ? '✓' : ''}</span>Scream when out of action
-					</button>
 					{#if battle}
 						<hr />
 						<button onclick={() => onend?.()}>End battle…</button>
@@ -237,7 +230,7 @@
 							<button onclick={() => oncancelbattle?.()}>Cancel battle…</button>
 						{/if}
 					{/if}
-				</MenuButton>
+				</MenuButton>{/if}
 				<button class="action edit {BUTTON}" aria-label="Edit" onclick={() => onedit?.()}>
 					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
 				</button>

@@ -26,7 +26,7 @@
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
-	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
+	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, validate } from '$lib/core/validate';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
@@ -579,11 +579,6 @@
 		node.focus();
 	}
 
-	function toggleSound() {
-		sound = !sound;
-		saveSound(sound);
-	}
-
 	/* The deck's own colour stands in for the card green on the root, where the
 	   explanation overlay reads it too. Left again, the green. While the back of
 	   the warband card is turned, the colour picked there, so it is not picked
@@ -646,7 +641,6 @@
 				{battle}
 				rules={system.game.battle}
 				counter={faction.counter}
-				{sound}
 				onwound={wound}
 				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
 				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
@@ -658,7 +652,6 @@
 				onundo={() => battle && setBattle(undoRound(battle))}
 				onend={endBattle}
 				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}
-				onsound={toggleSound}
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
 				onlevels={() => (spending = true)}

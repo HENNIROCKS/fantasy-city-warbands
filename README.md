@@ -102,7 +102,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   the rounds with one step back, and ends it after asking; the bar under a
   fighter's card takes Health down a point at a time, the card fills with
   blood, and a fighter at none is out of action – with the Wilhelm scream,
-  which can be switched off. State marks a fighter activated or waiting, and
+  which the settings under the gear switch off. State marks a fighter activated or waiting, and
   in Wyrdcry in cover, panicked or with its heroic reaction used, on the card
   and in the strokes over the deck. A Wyrdcry warband with more than half its
   fighters out of action asks each fighter for its Bravery test in the round
@@ -150,8 +150,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - Delete a warband after a question that says what is lost and offers the
   export first
 - Dark and light mode
-- An about page with the games, where their rules come from, and answers to
-  the first questions
+- Settings and about under the gear: the scream on or off, the games, where
+  their rules come from, and answers to the first questions
 
 ## Games and factions
 
@@ -183,7 +183,7 @@ this one browser. No account, no server, no sync. Clearing the site's data
 removes them. Export a warband to keep a copy; Import warband brings it back,
 here or on another device. Add the app to the home screen: Safari can remove
 the data of a site not opened for seven days, and keeps it for good mostly for
-an installed app. The about page says how. Once opened with a network, the app
+an installed app. The page under the gear says how. Once opened with a network, the app
 starts without one: a service worker keeps every file of the build, the game
 data and the roster's PDF library included. A battle in progress stays on the device and is not
 part of the export.

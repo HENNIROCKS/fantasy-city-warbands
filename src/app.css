@@ -794,7 +794,8 @@ html {
 		cursor: pointer;
 	}
 
-	.theme-switch-track {
+	.theme-switch-track,
+	.switch-track {
 		position: relative;
 		width: 52px;
 		height: 26px;
@@ -803,20 +804,24 @@ html {
 		transition: box-shadow 0.15s;
 	}
 
-	.theme-switch:hover .theme-switch-track {
+	.theme-switch:hover .theme-switch-track,
+	.switch:hover .switch-track {
 		box-shadow: 0 0 0 1px var(--ui-text-subtle);
 	}
 
-	.theme-switch:focus-visible {
+	.theme-switch:focus-visible,
+	.switch:focus-visible {
 		outline: none;
 	}
 
-	.theme-switch:focus-visible .theme-switch-track {
+	.theme-switch:focus-visible .theme-switch-track,
+	.switch:focus-visible .switch-track {
 		outline: 2px solid #16754a;
 		outline-offset: 2px;
 	}
 
-	.theme-switch-knob {
+	.theme-switch-knob,
+	.switch-knob {
 		position: absolute;
 		top: 4px;
 		left: 4px;
@@ -827,8 +832,32 @@ html {
 		transition: transform 0.15s ease-out;
 	}
 
-	.theme-switch[aria-checked='true'] .theme-switch-knob {
+	.theme-switch[aria-checked='true'] .theme-switch-knob,
+	.switch[aria-checked='true'] .switch-knob {
 		transform: translateX(26px);
+	}
+
+	/*
+	 * A setting switched on or off, beside the text that names it: the theme
+	 * switch's track, green and with a light knob where it is on – the theme
+	 * switch has no on, only two modes.
+	 */
+	.switch {
+		display: inline-flex;
+		align-items: center;
+		justify-content: flex-end;
+		flex-shrink: 0;
+		width: 64px;
+		height: 44px;
+		cursor: pointer;
+	}
+
+	.switch[aria-checked='true'] .switch-track {
+		background: #16754a;
+	}
+
+	.switch[aria-checked='true'] .switch-knob {
+		background: #fff;
 	}
 
 	/* Each icon sits centred in the space the knob leaves on its side. */

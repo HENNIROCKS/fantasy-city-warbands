@@ -23,7 +23,6 @@
 		battle = null,
 		rules,
 		counter,
-		sound = true,
 		onwound,
 		onactivated,
 		onwaiting,
@@ -34,7 +33,6 @@
 		onundo,
 		onend,
 		oncancelbattle,
-		onsound,
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
@@ -53,7 +51,6 @@
 		edit?: (card: DeckCard) => string;
 		battle?: BattleState | null;
 		/** Whether a fighter going out of action is heard. */
-		sound?: boolean;
 		/** What the game tracks in a battle beyond rounds, activations and damage. */
 		rules?: GameSystem['battle'];
 		/** What the faction counts through a battle, such as Zeal. */
@@ -70,7 +67,6 @@
 		onend?: (out: number) => void;
 		/** Drops the battle without its aftermath; only where the game has one. */
 		oncancelbattle?: (out: number) => void;
-		onsound?: () => void;
 		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
 		levelsOpen?: number;
 		levelLabel?: string;
@@ -396,7 +392,6 @@
 		{wavering}
 		{toAct}
 		{out}
-		{sound}
 		onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
 		onactivated={() => topFighter && onactivated?.(topFighter.instanceId)}
 		onwaiting={() => topFighter && onwaiting?.(topFighter.instanceId)}
@@ -407,7 +402,6 @@
 		{onundo}
 		onend={() => onend?.(out)}
 		oncancelbattle={oncancelbattle && (() => oncancelbattle(out))}
-		{onsound}
 		{levelsOpen}
 		{levelLabel}
 		{onlevels}
