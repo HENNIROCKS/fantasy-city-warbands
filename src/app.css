@@ -3,7 +3,7 @@
 /*
  * Colours and form elements follow the Wyrdcry Card Creator, so the apps look
  * alike. Dark or light comes from `data-theme` on the root, set before the
- * first render by the script in app.html and switched by ThemeToggle.
+ * first render by the script in app.html and switched under Settings.
  *
  * Light mode works by translating the zinc utilities below. A zinc shade that
  * is not translated stays dark in light mode, so the markup keeps to these.
@@ -741,8 +741,8 @@ html {
 	}
 
 	/*
-	 * A button carrying only an icon, such as the header's about link: a 26 px
-	 * face in the theme switch's colours, inside a 44 px high touch area.
+	 * A button carrying only an icon, such as the header's settings link: a
+	 * 26 px face in the switches' colours, inside a 44 px touch area.
 	 */
 	.icon-button {
 		display: inline-flex;
@@ -780,67 +780,9 @@ html {
 	}
 
 	/*
-	 * The theme switch: a 52 × 26 track in a 44 px high touch area. The 12 px on
-	 * the right match the header menu's -mr-3, so the track ends at the page's edge.
-	 */
-	.theme-switch {
-		display: inline-flex;
-		align-items: center;
-		justify-content: flex-end;
-		flex-shrink: 0;
-		width: 64px;
-		height: 44px;
-		padding-right: 12px;
-		cursor: pointer;
-	}
-
-	.theme-switch-track,
-	.switch-track {
-		position: relative;
-		width: 52px;
-		height: 26px;
-		border-radius: 9999px;
-		background: var(--ui-border);
-		transition: box-shadow 0.15s;
-	}
-
-	.theme-switch:hover .theme-switch-track,
-	.switch:hover .switch-track {
-		box-shadow: 0 0 0 1px var(--ui-text-subtle);
-	}
-
-	.theme-switch:focus-visible,
-	.switch:focus-visible {
-		outline: none;
-	}
-
-	.theme-switch:focus-visible .theme-switch-track,
-	.switch:focus-visible .switch-track {
-		outline: 2px solid #16754a;
-		outline-offset: 2px;
-	}
-
-	.theme-switch-knob,
-	.switch-knob {
-		position: absolute;
-		top: 4px;
-		left: 4px;
-		width: 18px;
-		height: 18px;
-		border-radius: 9999px;
-		background: var(--ui-text);
-		transition: transform 0.15s ease-out;
-	}
-
-	.theme-switch[aria-checked='true'] .theme-switch-knob,
-	.switch[aria-checked='true'] .switch-knob {
-		transform: translateX(26px);
-	}
-
-	/*
-	 * A setting switched on or off, beside the text that names it: the theme
-	 * switch's track, green and with a light knob where it is on – the theme
-	 * switch has no on, only two modes.
+	 * A setting switched on or off, beside the text that names it: a 52 × 26
+	 * track at the end of a 44 px high touch area, green with a light knob
+	 * where it is on.
 	 */
 	.switch {
 		display: inline-flex;
@@ -852,39 +794,50 @@ html {
 		cursor: pointer;
 	}
 
+	.switch-track {
+		position: relative;
+		width: 52px;
+		height: 26px;
+		border-radius: 9999px;
+		background: var(--ui-border);
+		transition: box-shadow 0.15s;
+	}
+
+	.switch:hover .switch-track {
+		box-shadow: 0 0 0 1px var(--ui-text-subtle);
+	}
+
+	.switch:focus-visible {
+		outline: none;
+	}
+
+	.switch:focus-visible .switch-track {
+		outline: 2px solid #16754a;
+		outline-offset: 2px;
+	}
+
+	.switch-knob {
+		position: absolute;
+		top: 4px;
+		left: 4px;
+		width: 18px;
+		height: 18px;
+		border-radius: 9999px;
+		background: var(--ui-text);
+		transition: transform 0.15s ease-out;
+	}
+
 	.switch[aria-checked='true'] .switch-track {
 		background: #16754a;
 	}
 
 	.switch[aria-checked='true'] .switch-knob {
+		transform: translateX(26px);
 		background: #fff;
 	}
 
-	/* Each icon sits centred in the space the knob leaves on its side. */
-	.theme-switch-icon {
-		position: absolute;
-		top: 6px;
-		color: var(--ui-text-muted);
-		opacity: 0;
-		transition: opacity 0.15s;
-	}
-
-	.theme-switch-moon {
-		left: 8px;
-	}
-
-	.theme-switch-sun {
-		right: 8px;
-	}
-
-	.theme-switch[aria-checked='true'] .theme-switch-moon,
-	.theme-switch[aria-checked='false'] .theme-switch-sun {
-		opacity: 1;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
-		.theme-switch-knob,
-		.theme-switch-icon {
+		.switch-knob {
 			transition: none;
 		}
 	}

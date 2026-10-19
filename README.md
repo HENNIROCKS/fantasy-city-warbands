@@ -151,7 +151,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   fighters and their gear once, with the fighters that carry it
 - Delete a warband after a question that says what is lost and offers the
   export first
-- Dark and light mode
+- Dark and light mode, under the gear
 - Settings and about under the gear: the scream on or off, the games, where
   their rules come from, and answers to the first questions
 

@@ -5,6 +5,7 @@
 	// import { areas } from '$lib/core/coverage';
 	import { planned, systems } from '$lib/systems';
 	import { loadSound, saveSound } from '$lib/core/storage.svelte';
+	import { theme } from '$lib/theme.svelte';
 
 	/* Kept on this device, as the theme is; the cards read it as they open. */
 	let sound = $state(true);
@@ -134,7 +135,16 @@
 
 <main class="mx-auto max-w-2xl space-y-10 p-5 pb-16 text-sm text-zinc-300">
 	<section class="space-y-3">
-		<h2 class="text-base font-semibold text-zinc-200">Settings</h2>
+		<div>
+			<h2 class="text-base font-semibold text-zinc-200">Settings</h2>
+			<p class="text-zinc-400">Kept on this device.</p>
+		</div>
+		<div class="flex items-center justify-between gap-4">
+			<p id="theme-label" class="font-semibold text-zinc-200">Dark mode</p>
+			<button type="button" class="switch" role="switch" aria-checked={theme.dark} aria-labelledby="theme-label" onclick={() => theme.toggle()}>
+				<span class="switch-track"><span class="switch-knob"></span></span>
+			</button>
+		</div>
 		<!-- Only the switch is tapped: the text beside it carries a link, which a
 		     switch cannot hold, and names it. -->
 		<div class="flex items-center justify-between gap-4">
@@ -143,7 +153,7 @@
 				<p class="text-zinc-400">
 					The <a class="underline" href="https://en.wikipedia.org/wiki/Wilhelm_scream" target="_blank" rel="noopener"
 						>Wilhelm scream <span aria-hidden="true">↗</span></a
-					>, on this device.
+					>
 				</p>
 			</div>
 			<button type="button" class="switch" role="switch" aria-checked={sound} aria-labelledby="sound-label" onclick={toggleSound}>
