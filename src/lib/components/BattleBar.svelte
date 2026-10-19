@@ -203,12 +203,12 @@
 				<!-- Where the count takes the standing line's place, the menu's trigger
 				     carries the morale instead, so it shows under the warband card too.
 				     With nothing to offer, as for a disbanded warband, it is left out. -->
-				{#if battle || !closed || counter || levelsOpen > 0}<MenuButton
+				{#if battle || !closed || levelsOpen > 0}<MenuButton
 					label={counter && wavering ? 'Battle, wavering' : 'Battle'}
 					class="action {BUTTON} {counter && wavering ? 'warn' : ''}"
 				>
 					{#snippet trigger()}Battle{/snippet}
-					{#if counter}
+					{#if counter && (battle || !closed)}
 						<p>{@render standing()}</p>
 					{/if}
 					{#if battle}
@@ -220,7 +220,7 @@
 						<button onclick={() => onstart?.()}>Start battle</button>
 					{/if}
 					{#if levelsOpen > 0}
-						{#if battle || !closed || counter}<hr />{/if}
+						{#if battle || !closed}<hr />{/if}
 						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
 					{/if}
 					{#if battle}

@@ -211,12 +211,17 @@
 
 	/* A disbanded warband is kept to look at: a new one of its faction starts
 	   from nothing, as the game has it, and opens at its choice. */
+	/* Started once, however often the button is tapped while the write runs. */
+	let starting = $state(false);
+
 	async function startOver() {
-		if (!system || !faction) return;
+		if (!system || !faction || starting) return;
+		starting = true;
 		const created = createWarband(system.game.id, faction, '');
-		if (!(await saveWarband(created))) return;
-		await requestPersistence();
-		goto(url({ id: created.id, step: 'choice' }));
+		const saved = await saveWarband(created);
+		if (saved) await requestPersistence();
+		starting = false;
+		if (saved) goto(url({ id: created.id, step: 'choice' }));
 	}
 
 	async function pickFaction(factionId: string) {
@@ -386,7 +391,8 @@
 			<p class="notice">Disbanded – no HERO was left to lead it. It is kept to look at, and recruits, buys and fights no more.</p>
 			<button
 				type="button"
-				class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
+				class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
+				disabled={starting}
 				onclick={startOver}>Start a new {faction.name} warband</button
 			>
 		</section>

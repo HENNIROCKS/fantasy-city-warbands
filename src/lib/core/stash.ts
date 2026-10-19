@@ -101,7 +101,7 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 	const pending = toRecord(draft.pending);
 	const history = [...draft.history.filter((r) => !draft.removed.includes(r.id)), ...(pending ? [pending] : [])];
 	const changed = draft.goldAdded.length > 0 || gone.size > 0;
-	const { fluff: _fluff, notes: _notes, disbanded, finds: _finds, ...rest } = warband;
+	const { fluff: _fluff, notes: _notes, disbanded, ...rest } = warband;
 	const finds = draft.clearSearches ? findsOf(warband) : null;
 	const fluff = draft.fluff.trim();
 	const notes = draft.notes.trim();
@@ -116,11 +116,7 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed } : {}),
 		...(gone.size ? { stash: stash.filter((_, i) => !gone.has(i)) } : {}),
 		...(history.length || warband.history ? { history } : {}),
-		...(finds
-			? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } }
-			: warband.finds
-				? { finds: warband.finds }
-				: {}),
+		...(finds ? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } } : {}),
 		...(disbanded && !draft.undisband ? { disbanded } : {})
 	};
 }

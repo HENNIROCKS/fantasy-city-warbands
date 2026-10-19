@@ -46,7 +46,7 @@
 			left: (wargearId: string) => number | null;
 			singleUse: number;
 		} | null;
-		/** Whether the warband builds no more, as a disbanded one: its wargear is not offered. */
+		/** Whether the warband builds no more, as a disbanded one: its wargear is not offered, its choice not changed. */
 		closed: boolean;
 		/** Writes a search: the piece, who searched and helped, and how many copies were found – none where it failed. */
 		onsearch: (wargearId: string, party: string[], copies: number) => void;
@@ -294,6 +294,7 @@
 								id={optionId(option.id)}
 								class="choice"
 								aria-pressed={picks.includes(option.id)}
+								disabled={closed}
 								onclick={() => choose(option.id)}
 							>
 								<span class="block font-semibold"
