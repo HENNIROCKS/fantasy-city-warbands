@@ -186,6 +186,14 @@
 	/* Why a back changes no wargear while a battle goes on, as the Warband Deck says it. */
 	const IN_BATTLE = 'Not during a battle – end or cancel it first.';
 
+	/* Why a dead leader still on the roster neither hands its equipment on nor is
+	   dismissed: it leaves as another takes the lead, its equipment recovered
+	   only on a roll. Null for any other fighter. */
+	function deadLeader(instance: FighterInstance): string | null {
+		if (!warband || !faction || !deadLeaders(warband, faction).includes(instance)) return null;
+		return `Dead – it leaves the roster once a ${system?.game.succession?.keyword.toUpperCase() ?? 'fighter'} takes the lead, its equipment to the stash on a 3+.`;
+	}
+
 	/**
 	 * What the back may move between the fighter on it and the stash. A piece
 	 * from the stash is tried against the same checks as in the builder, on the
@@ -199,9 +207,8 @@
 		const profile = faction.fighters.find((f) => f.id === instance.fighterId);
 		const blocked = battle
 			? IN_BATTLE
-			: !profile
-				? "This fighter is not in the app's own rules, so what it may carry cannot be checked."
-				: null;
+			: (deadLeader(instance) ??
+				(!profile ? "This fighter is not in the app's own rules, so what it may carry cannot be checked." : null));
 		const buy = resolve('/build') + `?id=${warband.id}&step=fighters#fighter-${instance.instanceId}`;
 		if (blocked || !profile) return { blocked, takesNothing: null, carried: [], stash: [], buy };
 		const moved = (wargear: string[], stash: string[]): Warband => ({
@@ -320,24 +327,18 @@
 	}
 
 	/* Whether the fighter on the back may be dismissed, where the game keeps a
-	   campaign. Not during a battle; not a dead leader, which leaves as another
-	   takes the lead, its equipment recovered only on a roll; and not while
-	   pieces moved on the back are still to be written with Done: the stash it
-	   hands to would be the old one. */
+	   campaign. Not during a battle, and not while pieces moved on the back are
+	   still to be written with Done: the stash it hands to would be the old one.
+	   A dead leader gets no section: it leaves as another takes the lead, which
+	   its Equipment section says. */
 	const backDismissal = $derived.by((): BackDismissal | null => {
 		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
 		const instance = warband.fighters.find((f) => f.instanceId === editingId);
-		if (!instance) return null;
+		if (!instance || deadLeader(instance)) return null;
 		const moved = draft.wargear.join() !== instance.wargear.join();
 		return {
 			carried: instance.wargear.map(wargearName),
-			blocked: battle
-				? IN_BATTLE
-				: deadLeaders(warband, faction).includes(instance)
-					? `Dead – it leaves the roster once a ${system.game.succession?.keyword.toUpperCase() ?? 'fighter'} takes the lead, its equipment to the stash on a 3+.`
-					: moved
-						? 'Equipment was moved on this back – Done first.'
-						: null
+			blocked: battle ? IN_BATTLE : moved ? 'Equipment was moved on this back – Done first.' : null
 		};
 	});
 

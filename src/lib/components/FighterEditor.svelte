@@ -11,6 +11,7 @@
 		issues,
 		blocked,
 		paid,
+		dead,
 		onremove
 	}: {
 		instance: FighterInstance;
@@ -27,6 +28,8 @@
 		 * can still be taken back whole.
 		 */
 		paid: string[] | null;
+		/** Whether it is a dead leader still on the roster, which leaves once another fighter takes the lead. */
+		dead: boolean;
 		onremove: () => void;
 	} = $props();
 
@@ -371,7 +374,12 @@
 		</div>
 	{/if}
 
-	{#if paid}
+	{#if dead}
+		<p class="text-zinc-400">
+			Dead – it leaves the roster once a {game.succession?.keyword.toUpperCase() ?? 'fighter'} takes the lead on the back of that fighter's card, its
+			equipment to the stash on a 3+.
+		</p>
+	{:else if paid}
 		<p class="text-zinc-400">Paid for – dismiss it, or put what it carries in the stash, on the back of its card.</p>
 	{/if}
 

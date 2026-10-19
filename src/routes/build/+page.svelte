@@ -13,6 +13,7 @@
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
 	import { areas, coverage } from '$lib/core/coverage';
 	import { activeEffects, limitOf } from '$lib/core/effects';
+	import { deadLeaders } from '$lib/core/leader';
 	import { paidFor } from '$lib/core/manage';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
@@ -499,6 +500,7 @@
 						issues={issues.filter((i) => i.instanceId === instance.instanceId)}
 						blocked={(wargearId) => blockedBy(withWargear(warband!, instance.instanceId, wargearId))}
 						paid={paid?.get(instance.instanceId) ?? null}
+						dead={deadLeaders(warband, faction).some((f) => f.instanceId === instance.instanceId)}
 						onremove={() => removeFighter(instance.instanceId)}
 					/>
 				{/each}
