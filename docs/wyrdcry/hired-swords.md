@@ -8,6 +8,14 @@ up the battle.
    fee.
 3. Tap one to hire it. Tap it again to send it away.
 
+**A pick.** The Goblin Shaman comes in one of six roles, the Troll as a Stone
+or a River Troll. Tap it, then tap the role: its card shows the talent and the
+weapon that come with it. To pick again, send it away and hire it anew.
+
+**Homebrew.** Six of them are homebrew, marked so in the list. Greenskin
+Marauders with a wizard of their own cannot hire another one: the button says
+*A WIZARD is on the roster*.
+
 You can hire before the battle starts and during the first round. Hiring also
 starts the battle, as the first tap at the table does.
 
@@ -20,7 +28,8 @@ the dearest one for you. If a hero has the talent *Well-Connected*, roll the
 dice at the table. On a 4+, switch on **rolled 4+** before you tap the hired
 sword.
 
-**In the battle.** Its card comes after your fighters. Count its damage and
+**In the battle.** Its card comes after your fighters, and the warband card
+lists it under *Hired swords*; tap its name to go there. Count its damage and
 mark it activated like any fighter. It does not count when the app checks
 whether your warband wavers, and it has nothing to write on its back.
 

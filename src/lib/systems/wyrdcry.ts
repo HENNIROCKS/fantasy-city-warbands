@@ -8,10 +8,9 @@ import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire,
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
+import { weaponRules, weapons } from './wyrdcry-homebrew';
 
-import weapons from '$lib/rules/wyrdcry/weapons.json';
 import items from '$lib/rules/wyrdcry/items.json';
-import weaponRules from '$lib/rules/wyrdcry/weapon-rules.json';
 import universal from '$lib/rules/wyrdcry/universal-abilities.json';
 import campaign from '$lib/rules/wyrdcry/campaign.json';
 import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
@@ -136,7 +135,8 @@ export const game: GameSystem = {
 		fees,
 		discount: (warband) =>
 			warband.picks[HALF_FEE_PICK.choice]?.includes(HALF_FEE_PICK.option) ? 'Well-connected (State Pride): the dearest one hired costs half.' : null,
-		halving
+		halving,
+		refuse: refuseHire
 	},
 	/* Unbending Will is an ability of the fighter's type, which the shared form
 	   carries only as a rule's text; the raw fighter still has its id. */
@@ -169,7 +169,7 @@ export const game: GameSystem = {
 		   phase that ends a round: each fighter takes a Bravery test, and a fail
 		   panics it until the next morale phase – the next round clears it, as
 		   it does any panic (core rules 1.0, p. 33). */
-		wavering: { threshold: (size) => Math.ceil(size / 2) + 1, test: 'Bravery test', failed: 'panicked' }
+		wavering: { wavers: (out, size) => out > Math.ceil(size / 2), test: 'Bravery test', failed: 'panicked' }
 	}
 };
 
@@ -227,6 +227,17 @@ const HALF_FEE_PICK = { choice: 'state-pride', option: 'well-connected' };
 /* The heroic talent that rolls for half the fee, once per battle. */
 const HALF_FEE_TALENT = 'underground-contacts';
 
+/* The Greenskin Marauders' Hired Swords: no WIZARD for hire where one is on the roster. */
+const ONE_WIZARD = { faction: 'greenskin-marauders', keyword: 'wizard' };
+
+function refuseHire(warband: Warband, faction: Faction, hireling: Hireling): string | null {
+	if (faction.id !== ONE_WIZARD.faction || !hireling.fighter.keywords.includes(ONE_WIZARD.keyword)) return null;
+	const own = warband.fighters.some(
+		(i) => i.away !== 'dead' && faction.fighters.find((f) => f.id === i.fighterId)?.keywords.includes(ONE_WIZARD.keyword)
+	);
+	return own ? `A ${ONE_WIZARD.keyword.toUpperCase()} is on the roster` : null;
+}
+
 /** Half a fee, rounded up, as Well-Connected rounds it. */
 const half = (fee: number) => Math.ceil(fee / 2);
 
@@ -258,6 +269,8 @@ interface RawFaction {
 	warband_size: { min: number; max: number | null };
 	origin: 'official' | 'homebrew';
 	author: string;
+	/** Hired swords a homebrew faction adds itself to, beside those whose own file names it. */
+	may_hire?: string[];
 }
 
 /** A row of a faction's `equipment.json`: `hero` sells to fighters with that keyword only. */
@@ -298,6 +311,8 @@ interface RawChoice {
 	table?: string;
 	/** How many more of `abilities` a wizard may learn later, each in place of a heroic talent. */
 	instead_of_talent?: number;
+	/** With `kind: 'role'`: each role an ability of the fighter's, by id, and what it is armed with. */
+	roles?: { id: string; name: string; ability: string; gear: string[] }[];
 }
 
 /** A row of a roll table, such as the Possessed's Mutation Table. */
@@ -317,7 +332,7 @@ interface RawRule {
 	pick: number | null;
 	options: { id: string; name: string; text: string }[];
 	table?: RawRow[];
-	/** What the rule does that the app counts, as the Warband Deck writes it; only Zeal is read here. */
+	/** What the rule does that the app counts. */
 	effect?: RawEffect | null;
 	/** A keyword id whose carriers the rule leaves out, such as Sudden Accusation for a BEAST. */
 	except?: string;
@@ -325,7 +340,11 @@ interface RawRule {
 	only?: string;
 }
 
-/** A stage of Zeal, as the Warband Deck's ruleset writes it. `except` is a keyword id. */
+/**
+ * What a rule does that the app counts, as the Warband Deck's ruleset writes
+ * it: a stage of Zeal (`except` a keyword id), a weight in the morale, or how
+ * many fighters with one keyword the warband may have for each with another.
+ */
 interface RawEffect {
 	kind: string;
 	at?: number;
@@ -334,6 +353,13 @@ interface RawEffect {
 	except?: string;
 	/** What the stage adds in one situation only: to which characteristics, how much, when. */
 	conditions?: { stats: string[]; amount: number; text: string };
+	/** With `kind: 'morale'`: what the `fighters`, by id, count for. */
+	weight?: number;
+	fighters?: string[];
+	/** With `kind: 'ratio'`: at most `max` fighters with `keyword` for each with `per`. */
+	keyword?: string;
+	per?: string;
+	max?: number;
 }
 
 interface RawAbility {
@@ -403,12 +429,15 @@ function range({ min, max }: { min: number; max: number }): string {
 interface RawHiredSword {
 	id: string;
 	name: string;
+	origin: 'official' | 'homebrew';
 	cost: number;
 	limit: { min: number; max: number | null };
 	may_hire: string[];
 	profile: Record<string, number>;
 	keywords: string[];
 	gear: string[];
+	/** What it picks when hired; only a role so far, such as the Goblin Shaman's. */
+	choose: RawChoice | null;
 	abilities: RawAbility[];
 	weapons: (typeof weapons)[number][];
 }
@@ -631,6 +660,16 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 		}));
 		return { ...base, roll: table?.name, options };
 	}
+	if (raw.kind === 'role') {
+		const options = (raw.roles ?? []).flatMap((role) => {
+			const a = ability.get(role.ability);
+			if (!a) return [];
+			/* The card lists the pick as a rule of the fighter's: the role, and the talent where it has a name of its own. */
+			const name = a.name === role.name ? role.name : `${role.name} – ${a.name}`;
+			return [{ id: role.id, name, text: a.text, type: a.type, gear: role.gear }];
+		});
+		return { ...base, options, noun: { one: 'role', many: 'roles' } };
+	}
 	return undefined;
 }
 
@@ -686,7 +725,15 @@ function build(
 				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
 			])
 		].flatMap((id) => catalogue.get(id) ?? []),
-		counter: zeal(rules)
+		counter: zeal(rules),
+		weights: Object.fromEntries(
+			rules.flatMap((r) => (r.effect?.kind === 'morale' ? (r.effect.fighters ?? []).map((id) => [id, r.effect!.weight ?? 1]) : []))
+		),
+		ratios: rules.flatMap((r) =>
+			r.effect?.kind === 'ratio' && r.effect.keyword && r.effect.per
+				? [{ rule: r.name, keyword: r.effect.keyword, per: r.effect.per, max: r.effect.max ?? 0 }]
+				: []
+		)
 	};
 }
 
@@ -737,22 +784,32 @@ export const factions: Faction[] = folders.map((folder) =>
 	)
 );
 
+/* A homebrew faction may add itself to an official hired sword, which keeps what the game prints. */
+const addedHires = folders.map((folder) => file<RawFaction>(folder, 'faction')).filter((f) => f.may_hire?.length);
+
 /* A hired sword arrives with what it carries and takes nothing more. */
 const hirelings: Hireling[] = hiredSwords
-	.map((h) => ({
-		fighter: {
-			id: h.id,
-			name: h.name,
-			cost: h.cost,
-			limit: h.limit,
-			keywords: h.keywords,
-			profile: h.profile,
-			rules: h.abilities.map((a) => ({ name: a.name, text: a.text, type: a.type })),
-			wargear: [],
-			unequipped: 'A HIRED SWORD comes with its own equipment',
-			gear: h.gear
-		},
-		wargear: h.gear.flatMap((id) => catalogue.get(id) ?? []),
-		factions: h.may_hire
-	}))
+	.map((h) => {
+		/* An ability a role brings is the role's, not the hired sword's own. */
+		const roles = new Set((h.choose?.roles ?? []).map((r) => r.ability));
+		const choice = choiceOf(h.choose, [], new Map(h.abilities.map((a) => [a.id, a])));
+		return {
+			fighter: {
+				id: h.id,
+				name: h.name,
+				cost: h.cost,
+				limit: h.limit,
+				keywords: h.keywords,
+				profile: h.profile,
+				rules: h.abilities.filter((a) => !roles.has(a.id)).map((a) => ({ name: a.name, text: a.text, type: a.type })),
+				wargear: [],
+				unequipped: 'A HIRED SWORD comes with its own equipment',
+				gear: h.gear,
+				...(choice ? { choice } : {})
+			},
+			wargear: [...new Set([...h.gear, ...(choice?.options ?? []).flatMap((o) => o.gear ?? [])])].flatMap((id) => catalogue.get(id) ?? []),
+			factions: [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)],
+			origin: h.origin
+		};
+	})
 	.sort((a, b) => a.fighter.name.localeCompare(b.fighter.name));

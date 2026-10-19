@@ -217,6 +217,19 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		});
 	}
 
+	for (const ratio of faction.ratios ?? []) {
+		const count = resolved.filter((r) => r.keywords.includes(ratio.keyword)).length;
+		const per = resolved.filter((r) => r.keywords.includes(ratio.per)).length;
+		if (count <= ratio.max * per) continue;
+		const [many, one] = [ratio.keyword, ratio.per].map((k) => k.replaceAll('-', ' ').toUpperCase());
+		issues.push({
+			code: 'ratio',
+			kind: 'excess',
+			message: `${ratio.rule}: at most ${ratio.max} ${many} for each ${one}, this warband has ${count} to ${per}.`,
+			short: `${ratio.max} ${many} per ${one}`
+		});
+	}
+
 	issues.push(...(game.advancement?.check?.(warband, faction) ?? []));
 
 	for (const choice of faction.choices) {

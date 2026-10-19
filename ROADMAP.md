@@ -74,6 +74,8 @@
 - [x] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
 - [x] 🛠️ Wyrdcry: a warband whose leader is gone with no HERO left is disbanded, in the builder as in the aftermath
 - [x] 🛠️ Wyrdcry: hire a Hired Sword for a single battle – the ten official ones, their fees paid in the aftermath
+- [x] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders, and six homebrew hired swords – Pecking Order, the half-counted morale, the Goblin Shaman's role and the Troll's kin
+- [x] ⚔️ Hired swords listed on the warband card while they are hired
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
@@ -84,7 +86,6 @@
 - [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
 - [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [ ] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included
-- [ ] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

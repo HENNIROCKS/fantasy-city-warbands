@@ -167,8 +167,8 @@ export interface GameSystem {
 		 * asked in the round after a morale phase in which it wavered.
 		 */
 		wavering?: {
-			/** How many fighters out of action make the warband waver, from its size. */
-			threshold: (size: number) => number;
+			/** Whether so many fighters out of action make the warband waver, for its size; `out` may be a fraction. */
+			wavers: (out: number, size: number) => boolean;
 			/** What each fighter has to do in that round, on its card: `Bravery test`. */
 			test: string;
 			/** The mark failing it sets, which also ends the question. */
@@ -183,6 +183,8 @@ export interface Hireling {
 	fighter: Fighter;
 	wargear: Wargear[];
 	factions: string[];
+	/** Whether the game's own rules print this fighter or it is written by fans. */
+	origin: 'official' | 'homebrew';
 }
 
 /** One fighter hired into the battle running, as stored with it. */
@@ -191,6 +193,8 @@ export interface Hire {
 	fighterId: string;
 	/** Hired at half the fee on a roll such as Wyrdcry's Well-Connected. */
 	halved?: true;
+	/** The option ids picked under the hired fighter's own `choice`, such as the Goblin Shaman's role. */
+	picks?: string[];
 }
 
 export interface Hiring {
@@ -206,6 +210,8 @@ export interface Hiring {
 	 * may make it – `Well-Connected`. Null where nobody may.
 	 */
 	halving: (warband: Warband) => { name: string; holders: string[] } | null;
+	/** Why the warband may not hire this one, in a few words for its button; null where it may. */
+	refuse?: (warband: Warband, faction: Faction, hireling: Hireling) => string | null;
 }
 
 /** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */
@@ -619,6 +625,14 @@ export interface Faction {
 	wargear: Wargear[];
 	/** Where the faction counts something through a battle. */
 	counter?: FactionCounter;
+	/**
+	 * What a fighter counts for when the warband's morale is judged, by fighter
+	 * id, where a faction rule makes it other than a whole one – half for a
+	 * Plague Novice. Only the count out of action is weighted, not the size.
+	 */
+	weights?: Record<string, number>;
+	/** At most `max` fighters with `keyword` for each with `per`, such as the Greenskins' two GOBLINs per ORC; `rule` names it. */
+	ratios?: { rule: string; keyword: string; per: string; max: number }[];
 }
 
 /** One fighter in a warband, as stored. */
@@ -737,6 +751,7 @@ export interface Issue {
 		| 'size'
 		| 'fighter-limit'
 		| 'group-limit'
+		| 'ratio'
 		| 'choice'
 		| 'fighter-choice'
 		| 'unknown-fighter'

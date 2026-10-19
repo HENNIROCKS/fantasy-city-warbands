@@ -132,12 +132,20 @@
 	/* What each hire of the battle costs, in the order they were hired. */
 	const hiredFees = $derived(warband && hiring && battle ? hiring.fees(warband, battle.hired) : []);
 
+	/** What a hired fighter picked when it was hired, such as the Goblin Shaman's role, by name. */
+	const pickedName = (fighterId: string, picks: string[] = []) =>
+		offered
+			.find((h) => h.fighter.id === fighterId)
+			?.fighter.choice?.options.filter((o) => picks.includes(o.id))
+			.map((o) => o.name)
+			.join(', ') ?? '';
+
 	/* The warband's own card first, then its fighters, then whoever was hired for the battle. */
 	const cards = $derived.by<DeckCard[]>(() => {
 		const w = warband;
 		if (!w || !system || !faction || !hiringFaction) return [];
 		const hired = (battle?.hired ?? []).map((h, i): DeckCard => {
-			const card = fighterCard({ instanceId: h.instanceId, fighterId: h.fighterId, name: '', wargear: [] }, hiringFaction, system.game);
+			const card = fighterCard({ instanceId: h.instanceId, fighterId: h.fighterId, name: '', wargear: [], picks: h.picks }, hiringFaction, system.game);
 			return {
 				...card,
 				name: card.subtitle,
@@ -147,7 +155,17 @@
 				hired: true
 			};
 		});
-		return [warbandCard(w, faction, system.game), ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
+		/* The hired ones under their own heading on the warband's card, leading to their cards as the rest do. */
+		const own = warbandCard(w, faction, system.game);
+		/* Under the name what it was hired as, or else its fee, so each entry has a line beneath like the rest. */
+		const listed = (battle?.hired ?? []).map((h, i) => ({
+			instanceId: h.instanceId,
+			name: hired[i].name,
+			type: pickedName(h.fighterId, h.picks) || `${hiredFees[i] ?? 0} ${system.game.currency}`,
+			leader: false
+		}));
+		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;
+		return [{ ...own, roster }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
 	});
 	/** Where the builder names the warband, or the fighter in its editor. */
 	function nameField(card: DeckCard): string {
@@ -159,8 +177,8 @@
 	function wavers(): boolean {
 		const morale = system?.game.battle?.wavering;
 		if (!morale) return false;
-		const ids = cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [c.instanceId] : []));
-		return isWavering(battle, ids, morale.threshold);
+		const roster = cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight }] : []));
+		return isWavering(battle, roster, morale.wavers);
 	}
 
 	/* The marks the next round clears. */
@@ -621,7 +639,7 @@
 	   the gold holds it – more than its own fee where Well-connected's half moves over to it from one hired before. */
 	const hireOffers = $derived.by(() => {
 		const w = warband;
-		if (!w || !hiring) return [];
+		if (!w || !hiring || !faction) return [];
 		const hired = battle?.hired ?? [];
 		return offered.map((h) => {
 			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
@@ -629,18 +647,28 @@
 			const halved = rolledHalf && halving ? { halved: true as const } : {};
 			const trial = hiring.fees(w, [...hired, { instanceId: '', fighterId: h.fighter.id, ...halved }]);
 			const added = sum(trial) - sum(hiredFees);
-			return { hireling: h, held, fee: added, refused: added > goldFree ? 'Not enough gold' : null };
+			const refused = hiring.refuse?.(w, faction, h) ?? (added > goldFree ? 'Not enough gold' : null);
+			return { hireling: h, held, fee: added, refused };
 		});
 	});
 
-	function toggleHire(offer: (typeof hireOffers)[number]) {
+	/* The one whose choice is open under it, such as the Goblin Shaman's role: it is hired with the option tapped. */
+	let choosing = $state<string | null>(null);
+
+	function toggleHire(offer: (typeof hireOffers)[number], picks: string[] = []) {
 		if (offer.held) {
 			if (battle) setBattle(release(battle, offer.held.instanceId));
 			return;
 		}
 		if (offer.refused) return;
-		setBattle(hire(battle, newId(), offer.hireling.fighter.id, rolledHalf && halving !== null));
+		const id = offer.hireling.fighter.id;
+		if (offer.hireling.fighter.choice && !picks.length) {
+			choosing = choosing === id ? null : id;
+			return;
+		}
+		setBattle(hire(battle, newId(), id, rolledHalf && halving !== null, picks));
 		rolledHalf = false;
+		choosing = null;
 	}
 
 	function openHiring() {
@@ -648,6 +676,7 @@
 		const menu = active?.closest('[popover]');
 		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
 		rolledHalf = false;
+		choosing = null;
 		hiringOpen = true;
 	}
 
@@ -804,13 +833,37 @@
 					</button>
 				{/if}
 				{#each hireOffers as offer (offer.hireling.fighter.id)}
-					<button type="button" class="choice" aria-pressed={offer.held !== null} disabled={offer.refused !== null} onclick={() => toggleHire(offer)}>
+					{@const choice = offer.hireling.fighter.choice}
+					{@const open = choosing === offer.hireling.fighter.id}
+					{@const picked = offer.held ? pickedName(offer.hireling.fighter.id, offer.held.picks) : ''}
+					<button
+						type="button"
+						class="choice"
+						aria-pressed={choice && !offer.held ? undefined : offer.held !== null}
+						aria-expanded={choice && !offer.held ? open : undefined}
+						disabled={offer.refused !== null}
+						onclick={() => toggleHire(offer)}
+					>
 						<span class="block font-semibold">{offer.hireling.fighter.name}</span>
-						<span class="block text-zinc-400">{#if offer.held}{offer.fee} {system.game.currency} · hired – tap to send away{:else}+{offer.fee} {system.game.currency}{/if}</span>
+						<span class="block text-zinc-400"
+							>{#if offer.held}{offer.fee} {system.game.currency}{#if picked}{' '}· {picked}{/if} · hired – tap to send away{:else}+{offer.fee}
+								{system.game.currency}{#if choice}{' '}· pick a {choice.noun?.one ?? 'option'}{/if}{/if}{#if offer.hireling.origin === 'homebrew'}{' '}· Homebrew{/if}</span
+						>
 						{#if offer.refused}
 							<span class="block font-semibold" style="color: var(--ui-warn-text)">{offer.refused}</span>
 						{/if}
 					</button>
+					{#if choice && open && !offer.held}
+						<div class="space-y-2 pl-4" role="group" aria-label="{offer.hireling.fighter.name}: {choice.noun?.one ?? 'option'}">
+							{#each choice.options as option (option.id)}
+								{@const gear = (option.gear ?? []).map((id) => offer.hireling.wargear.find((w) => w.id === id)?.name ?? id)}
+								<button type="button" class="choice" onclick={() => toggleHire(offer, [option.id])}>
+									<span class="block font-semibold">{option.name}</span>
+									{#if gear.length}<span class="block text-zinc-400">{gear.join(', ')}</span>{/if}
+								</button>
+							{/each}
+						</div>
+					{/if}
 				{/each}
 			</div>
 			<div class="sheet-actions">

@@ -77,8 +77,10 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - Track a battle on the cards: damage, states, rounds with one step back, and
   in Wyrdcry morale and Zeal – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
-- Hire a Wyrdcry hired sword for one battle, its fee paid in the aftermath –
-  see [Hired swords](docs/wyrdcry/hired-swords.md)
+- Hire a Wyrdcry hired sword for one battle – the ten official ones and six
+  homebrew, the Goblin Shaman's role and the Troll's kin picked as it is
+  hired – listed on the warband card, its fee paid in the aftermath – see
+  [Hired swords](docs/wyrdcry/hired-swords.md)
 - End a Wyrdcry battle in a few pages: result, income, injuries, a new
   leader, items used up and renown, written in with Apply – see
   [The aftermath](docs/wyrdcry/aftermath.md)
@@ -100,15 +102,16 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Game | Rules the data follows | Factions |
 | --- | --- | --- |
 | Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
-| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters |
+| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters; homebrew: Clan Pestilens, Greenskin Marauders |
 | Mordheim | – | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's
-choice and its effect on the roster, and the choice a Wyrdcry fighter makes
-on recruitment. Wyrdcry's abilities and faction rules are shown as text; a
-faction rule that leaves a fighter out, or applies only to a keyword it
-lacks, shows a hint on its card instead. Not there yet: State Pride's
+choice and its effect on the roster, the choice a Wyrdcry fighter makes on
+recruitment, the Greenskin Marauders' two GOBLINs per ORC, and the fighters
+who count as half in a Wyrdcry warband's morale. Wyrdcry's abilities and
+faction rules are shown as text; a faction rule that leaves a fighter out, or
+applies only to a keyword it lacks, shows a hint on its card instead. Not there yet: State Pride's
 effects on the profiles, the special rules of Black Death City's fighters,
 the skills and spells they pick on recruitment, and the cost of a
 Misbegotten's bloodline mutation.

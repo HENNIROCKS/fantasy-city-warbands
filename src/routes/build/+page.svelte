@@ -294,6 +294,18 @@
 		return system && faction ? newExcess(issues, after, system.game, faction) : null;
 	}
 
+	/**
+	 * What taking a fighter out would break, such as the GOBLINs an ORC leaves
+	 * behind. Only a faction's ratios can be broken by fewer fighters. A limit
+	 * the warband breaks already, as an import may, does not stop it: taking
+	 * fighters out is how it is put right.
+	 */
+	function removeBlockedBy(instanceId: string): Issue | null {
+		if (!warband || !faction?.ratios?.length) return null;
+		const block = blockedBy({ ...warband, fighters: warband.fighters.filter((f) => f.instanceId !== instanceId) });
+		return block && !issues.some((i) => i.kind === 'excess' && i.code === block.code) ? block : null;
+	}
+
 	/** The picks under a choice once an option is tapped: off again, swapped in, or added. */
 	function nextPicks(choiceId: string, optionId: string, pick: number): string[] {
 		const picked = warband?.picks[choiceId] ?? [];
@@ -557,6 +569,7 @@
 						{onsearch}
 						{onbuy}
 						onremove={() => removeFighter(instance.instanceId)}
+						removeBlocked={removeBlockedBy(instance.instanceId)}
 					/>
 				{/each}
 			</div>

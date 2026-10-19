@@ -146,6 +146,8 @@ export interface FighterCardData {
 	unknown: boolean;
 	/** Hired for the battle running, not on the roster: it counts toward no morale and has no back to write on. */
 	hired?: true;
+	/** What it counts for when the warband's morale is judged: 1, or less where a faction rule says so. */
+	weight: number;
 }
 
 /** In the order the Warband Deck lists abilities, injuries after the traits; a type it does not know comes first. */
@@ -300,6 +302,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	return {
 		kind: 'fighter',
 		instanceId: instance.instanceId,
+		weight: faction.weights?.[instance.fighterId] ?? 1,
 		name: instance.name.trim() || 'Unnamed fighter',
 		unnamed: !instance.name.trim(),
 		subtitle: type,

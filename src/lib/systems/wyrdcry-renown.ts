@@ -9,11 +9,11 @@
  */
 
 import { chosenOptions, profileOf } from '$lib/core/warband';
+import { racialLimits as limits } from './wyrdcry-homebrew';
 import { injuryBonus } from './wyrdcry-injuries';
 import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, Issue, LevelOffer, LevelRule, OpenLevel, Rule, Warband } from '$lib/core/types';
 
 import talents from '$lib/rules/wyrdcry/heroic-talents.json';
-import limits from '$lib/rules/wyrdcry/racial-limits.json';
 
 type Talent = (typeof talents)[number];
 

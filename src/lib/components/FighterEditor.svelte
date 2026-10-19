@@ -16,7 +16,8 @@
 		closed,
 		onsearch,
 		onbuy,
-		onremove
+		onremove,
+		removeBlocked = null
 	}: {
 		instance: FighterInstance;
 		game: GameSystem;
@@ -53,6 +54,8 @@
 		/** Counts copies of a found piece bought, or put down again – a negative `change`. */
 		onbuy: (wargearId: string, change: number) => void;
 		onremove: () => void;
+		/** What would stop this fighter from being removed, such as the GOBLINs it leaves without enough ORCs; null where nothing. */
+		removeBlocked?: Issue | null;
 	} = $props();
 
 	const KINDS: { kind: WargearKind; label: string }[] = [
@@ -222,9 +225,10 @@
 			{#if !paid}
 				<button
 					type="button"
-					class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
-					aria-label="Remove {label}"
-					onclick={onremove}>Remove</button
+					class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white disabled:pointer-events-none"
+					aria-label={removeBlocked ? `Remove ${label}: ${removeBlocked.message}` : `Remove ${label}`}
+					disabled={removeBlocked !== null}
+					onclick={onremove}>{#if removeBlocked}<span class="font-semibold" style="color: var(--ui-warn-text)">{removeBlocked.short}</span>{:else}Remove{/if}</button
 				>
 			{/if}
 		</div>

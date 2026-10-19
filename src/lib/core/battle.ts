@@ -118,9 +118,10 @@ function write(battle: BattleState | null, instanceId: string, patch: Partial<Fi
  * hire is the first thing set up. Only while nothing has been played past the
  * first round – the rules hire in the battle's setup.
  */
-export function hire(battle: BattleState | null, instanceId: string, fighterId: string, halved = false): BattleState {
+export function hire(battle: BattleState | null, instanceId: string, fighterId: string, halved = false, picks: string[] = []): BattleState {
 	const current = battle ?? start();
-	return { ...current, hired: [...current.hired, { instanceId, fighterId, ...(halved ? { halved: true as const } : {}) }] };
+	const hired = { instanceId, fighterId, ...(halved ? { halved: true as const } : {}), ...(picks.length ? { picks } : {}) };
+	return { ...current, hired: [...current.hired, hired] };
 }
 
 /** Sent away again before the battle is fought, with whatever it already carries in it. */
@@ -218,10 +219,21 @@ export function outOfAction(battle: BattleState | null, instanceIds: string[]): 
 	return instanceIds.filter((id) => stateOf(battle, id).out).length;
 }
 
-/** Whether as many of the given fighters as `threshold` names for their number are out of action. */
-export function isWavering(battle: BattleState | null, instanceIds: string[], threshold: (size: number) => number): boolean {
-	if (!battle || !instanceIds.length) return false;
-	return outOfAction(battle, instanceIds) >= threshold(instanceIds.length);
+/** A fighter as the morale counts it: a faction rule can make one count for less than a whole fighter. */
+export interface Counted {
+	instanceId: string;
+	weight: number;
+}
+
+/**
+ * Whether the game's `wavers` holds for the given fighters: those out of
+ * action counted each at its weight – so the count may be a fraction – against
+ * the number of fighters, which stays as it is.
+ */
+export function isWavering(battle: BattleState | null, fighters: Counted[], wavers: (out: number, size: number) => boolean): boolean {
+	if (!battle || !fighters.length) return false;
+	const out = fighters.reduce((sum, f) => (stateOf(battle, f.instanceId).out ? sum + f.weight : sum), 0);
+	return wavers(out, fighters.length);
 }
 
 /** The stages a count has reached, lowest first; the stages arrive sorted. */

@@ -144,8 +144,8 @@
 	const out = $derived(outOfAction(battle, fighterIds));
 	const toAct = $derived(remaining(battle, fighterIds));
 	/* A hired fighter acts with the rest but leaves the warband's morale alone. */
-	const rosterIds = $derived(cards.filter((c) => c.kind === 'fighter' && !c.hired).map((c) => c.instanceId));
-	const wavering = $derived(rules?.wavering ? isWavering(battle, rosterIds, rules.wavering.threshold) : false);
+	const roster = $derived(cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight }] : [])));
+	const wavering = $derived(rules?.wavering ? isWavering(battle, roster, rules.wavering.wavers) : false);
 	const stage = $derived(counter && battle ? (reached(counter.stages, battle.counter).at(-1) ?? null) : null);
 
 	/** What the battle does to one fighter's card, and whether the wavering warband asks it for a test. */

@@ -1,0 +1,10 @@
+{
+  "id": "greenskin-marauders",
+  "name": "Greenskin Marauders",
+  "keyword": "GREENSKIN MARAUDERS",
+  "warband_size": { "min": 3, "max": 15 },
+  "origin": "homebrew",
+  "version": "0.3",
+  "may_hire": ["ogre-bodyguard", "warlock"],
+  "author": "Hendrik Berends"
+}
