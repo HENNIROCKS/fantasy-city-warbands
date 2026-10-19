@@ -1,30 +1,17 @@
 <script lang="ts">
-	import { afterNavigate } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 
-	/* On the settings page the same button closes it. */
+	/* On the settings page the same button closes it, always to the start –
+	   also when Settings was reached from the docs. */
 	const onInfo = $derived(page.url.pathname === resolve('/info'));
-
-	/*
-	 * Reached from within the app, closing goes back to where the page was
-	 * opened, the builder's step included. Opened directly, it goes to the start.
-	 */
-	let cameFromApp = $state(false);
-	afterNavigate(({ type }) => (cameFromApp = type !== 'enter'));
-
-	function close(event: MouseEvent) {
-		if (!cameFromApp) return;
-		event.preventDefault();
-		history.back();
-	}
 </script>
 
 <!-- The touch area reaches 9 px into the header's padding, so the round face
      ends at the page's edge and the title keeps the room. -->
 <nav class="-mr-[9px] flex shrink-0 items-center" aria-label="App">
 	{#if onInfo}
-		<a href={resolve('/')} onclick={close} class="icon-button" aria-label="Close settings" title="Close">
+		<a href={resolve('/')} class="icon-button" aria-label="Close settings" title="Close">
 			<span class="icon-button-face">
 				<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">
 					<line x1="3.5" y1="3.5" x2="12.5" y2="12.5" />

@@ -617,7 +617,8 @@
 	/* The gold left to hire with: the purse, less what the warband is worth and what is hired already. */
 	const goldFree = $derived(warband && system && faction ? purse(warband, system.game) - warbandCost(warband, faction) - sum(hiredFees) : 0);
 
-	/* Each one the faction may hire: hired already, or what hiring it would cost and whether the gold holds it. */
+	/* Each one the faction may hire: hired already with its fee, or what hiring it adds to the fees and whether
+	   the gold holds it – more than its own fee where Well-connected's half moves over to it from one hired before. */
 	const hireOffers = $derived.by(() => {
 		const w = warband;
 		if (!w || !hiring) return [];
@@ -627,7 +628,8 @@
 			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
 			const halved = rolledHalf && halving ? { halved: true as const } : {};
 			const trial = hiring.fees(w, [...hired, { instanceId: '', fighterId: h.fighter.id, ...halved }]);
-			return { hireling: h, held, fee: trial.at(-1) ?? 0, refused: sum(trial) - sum(hiredFees) > goldFree ? 'Not enough gold' : null };
+			const added = sum(trial) - sum(hiredFees);
+			return { hireling: h, held, fee: added, refused: added > goldFree ? 'Not enough gold' : null };
 		});
 	});
 
@@ -804,7 +806,7 @@
 				{#each hireOffers as offer (offer.hireling.fighter.id)}
 					<button type="button" class="choice" aria-pressed={offer.held !== null} disabled={offer.refused !== null} onclick={() => toggleHire(offer)}>
 						<span class="block font-semibold">{offer.hireling.fighter.name}</span>
-						<span class="block text-zinc-400">{offer.fee} {system.game.currency}{#if offer.held}{' '}· hired – tap to send away{/if}</span>
+						<span class="block text-zinc-400">{#if offer.held}{offer.fee} {system.game.currency} · hired – tap to send away{:else}+{offer.fee} {system.game.currency}{/if}</span>
 						{#if offer.refused}
 							<span class="block font-semibold" style="color: var(--ui-warn-text)">{offer.refused}</span>
 						{/if}

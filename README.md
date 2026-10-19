@@ -70,13 +70,13 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   rules, with the characteristic, the keyword or the bar on reactions it brings
 - Turn a fighter's card over to write on it, add a photo, move equipment to
   and from the stash, correct its campaign, spend renown or dismiss it – see
-  [Between battles in Wyrdcry](docs/wyrdcry/between-battles.md) and
-  [in Black Death City](docs/black-death-city/between-battles.md)
+  [Between battles in Black Death City](docs/black-death-city/between-battles.md)
+  and [in Wyrdcry](docs/wyrdcry/between-battles.md)
 - Turn the warband card over to name it, pick its colour, set favour, add gold
   and sell from the stash – see the same guides
 - Track a battle on the cards: damage, states, rounds with one step back, and
-  in Wyrdcry morale and Zeal – see [The battle in Wyrdcry](docs/wyrdcry/battle.md) and
-  [in Black Death City](docs/black-death-city/battle.md)
+  in Wyrdcry morale and Zeal – see [The battle in Black Death City](docs/black-death-city/battle.md)
+  and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle, its fee paid in the aftermath –
   see [Hired swords](docs/wyrdcry/hired-swords.md)
 - End a Wyrdcry battle in a few pages: result, income, injuries, a new

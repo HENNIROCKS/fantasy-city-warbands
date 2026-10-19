@@ -18,6 +18,6 @@ print or to share.
 
 **Home screen.** Add the app to your home screen. Safari can delete a site's
 data after seven days without a visit, but mostly keeps it for an installed
-app. The About page says how.
+app. In Settings, under About, *How do I install the app?* says how.
 
 [All guides](README.md)

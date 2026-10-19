@@ -44,8 +44,8 @@
 		<ol class="flex flex-wrap items-center gap-x-1.5 text-zinc-400">
 			<li><a class="underline" href={resolve('/info')}>Settings</a></li>
 			{#each data.crumbs as crumb (crumb.path)}
-				<li aria-hidden="true">›</li>
-				<li><a class="underline" href={hrefOf(crumb.path)}>{crumb.label}</a></li>
+				<!-- The separator inside the crumb, so the list counts only the crumbs. -->
+				<li><span class="mr-1.5" aria-hidden="true">›</span><a class="underline" href={hrefOf(crumb.path)}>{crumb.label}</a></li>
 			{/each}
 		</ol>
 	</nav>
