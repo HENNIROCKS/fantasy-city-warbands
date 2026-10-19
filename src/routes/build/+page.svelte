@@ -188,7 +188,16 @@
 		openFaction = warband?.factionId ?? null;
 	});
 
-	const factionsAtoZ = $derived(system ? [...system.factions].sort((a, b) => a.name.localeCompare(b.name)) : []);
+	/* The official factions A to Z, then the homebrew ones under a heading of their own: at the table it
+	   decides whether the opponent can look the faction up. */
+	const factionGroups = $derived(
+		(['official', 'homebrew'] as const)
+			.map((origin) => ({
+				origin,
+				factions: (system?.factions ?? []).filter((f) => f.origin === origin).sort((a, b) => a.name.localeCompare(b.name))
+			}))
+			.filter((g) => g.factions.length)
+	);
 
 	/** The line under a faction's name in step 2. */
 	function factionSummary(f: Faction): string {
@@ -456,53 +465,56 @@
 		{#if system}
 			<section>
 				<p class="field-label">Pick a warband</p>
-				<div class="space-y-2">
-					{#each factionsAtoZ as f (f.id)}
-						{@const open = openFaction === f.id}
-						{@const current = warband?.factionId === f.id}
-						<div
-							class="rounded-md border bg-zinc-800 {open || current ? '' : 'border-zinc-700'}"
-							style={open || current ? 'border-color: var(--ui-sel-border)' : ''}
-						>
-							<button
-								type="button"
-								class="flex min-h-11 w-full items-center gap-3 rounded-md px-4 py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16754A]"
-								aria-expanded={open}
-								aria-controls="faction-{f.id}"
-								onclick={() => (openFaction = open ? null : f.id)}
+				{#each factionGroups as group (group.origin)}
+					{#if group.origin === 'homebrew'}<p class="field-label mt-6">Homebrew</p>{/if}
+					<div class="space-y-2">
+						{#each group.factions as f (f.id)}
+							{@const open = openFaction === f.id}
+							{@const current = warband?.factionId === f.id}
+							<div
+								class="rounded-md border bg-zinc-800 {open || current ? '' : 'border-zinc-700'}"
+								style={open || current ? 'border-color: var(--ui-sel-border)' : ''}
 							>
-								<span class="min-w-0 flex-1">
-									<span class="block text-base font-semibold text-zinc-200">
-										{f.name}
-										{#if current}<span class="ml-1 text-xs font-normal" style="color: var(--ui-sel-text)">current</span>{/if}
+								<button
+									type="button"
+									class="flex min-h-11 w-full items-center gap-3 rounded-md px-4 py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16754A]"
+									aria-expanded={open}
+									aria-controls="faction-{f.id}"
+									onclick={() => (openFaction = open ? null : f.id)}
+								>
+									<span class="min-w-0 flex-1">
+										<span class="block text-base font-semibold text-zinc-200">
+											{f.name}
+											{#if current}<span class="ml-1 text-xs font-normal" style="color: var(--ui-sel-text)">current</span>{/if}
+										</span>
+										<span class="block text-zinc-400">{factionSummary(f)}</span>
 									</span>
-									<span class="block text-zinc-400">{factionSummary(f)}</span>
-								</span>
-								<span aria-hidden="true" class="text-zinc-400">{open ? '▾' : '▸'}</span>
-							</button>
-							{#if open}
-								<div id="faction-{f.id}" class="space-y-4 border-t border-zinc-700 p-4">
-									<FactionInfo faction={f} game={system.game} />
-									<button
-										type="button"
-										class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
-										disabled={!current && switchLocked}
-										onclick={() => pickFaction(f.id)}
-									>
-										{current
-											? `Keep ${f.name}`
-											: warband?.fighters.length
-												? `Switch to ${f.name}`
-												: `Choose ${f.name}`}
-									</button>
-									{#if !current && switchLocked && !warband?.disbanded}
-										<p class="text-zinc-400">This warband has fought: its fighters are paid for. Start a new warband for {f.name}.</p>
-									{/if}
-								</div>
-							{/if}
-						</div>
-					{/each}
-				</div>
+									<span aria-hidden="true" class="text-zinc-400">{open ? '▾' : '▸'}</span>
+								</button>
+								{#if open}
+									<div id="faction-{f.id}" class="space-y-4 border-t border-zinc-700 p-4">
+										<FactionInfo faction={f} game={system.game} />
+										<button
+											type="button"
+											class="min-h-11 w-full rounded bg-[#125E3C] px-6 font-semibold text-white transition enabled:hover:bg-[#16754A] focus-visible:bg-[#16754A] disabled:opacity-50"
+											disabled={!current && switchLocked}
+											onclick={() => pickFaction(f.id)}
+										>
+											{current
+												? `Keep ${f.name}`
+												: warband?.fighters.length
+													? `Switch to ${f.name}`
+													: `Choose ${f.name}`}
+										</button>
+										{#if !current && switchLocked && !warband?.disbanded}
+											<p class="text-zinc-400">This warband has fought: its fighters are paid for. Start a new warband for {f.name}.</p>
+										{/if}
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				{/each}
 			</section>
 		{:else}
 			<p class="text-zinc-400">Unknown game. <a class="underline" href={url({})}>Pick one.</a></p>

@@ -12,9 +12,9 @@ up the battle.
 or a River Troll. Tap it, then tap the role: its card shows the talent and the
 weapon that come with it. To pick again, send it away and hire it anew.
 
-**Homebrew.** Six of them are homebrew, marked so in the list. Greenskin
-Marauders with a wizard of their own cannot hire another one: the button says
-*A WIZARD is on the roster*.
+**Homebrew.** Six of them are homebrew, listed under their own heading at the
+end. Greenskin Marauders with a wizard of their own cannot hire another one:
+the button says *A WIZARD is on the roster*.
 
 You can hire before the battle starts and during the first round. Hiring also
 starts the battle, as the first tap at the table does.

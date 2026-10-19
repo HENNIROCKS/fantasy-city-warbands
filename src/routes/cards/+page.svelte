@@ -635,13 +635,15 @@
 	/* The gold left to hire with: the purse, less what the warband is worth and what is hired already. */
 	const goldFree = $derived(warband && system && faction ? purse(warband, system.game) - warbandCost(warband, faction) - sum(hiredFees) : 0);
 
-	/* Each one the faction may hire: hired already with its fee, or what hiring it adds to the fees and whether
-	   the gold holds it – more than its own fee where Well-connected's half moves over to it from one hired before. */
+	/* Each one the faction may hire, the official ones ahead of the homebrew: hired already with its fee, or what
+	   hiring it adds to the fees and whether the gold holds it – more than its own fee where Well-connected's half
+	   moves over to it from one hired before. */
 	const hireOffers = $derived.by(() => {
 		const w = warband;
 		if (!w || !hiring || !faction) return [];
 		const hired = battle?.hired ?? [];
-		return offered.map((h) => {
+		const homebrew = (h: (typeof offered)[number]) => Number(h.origin === 'homebrew');
+		return [...offered].sort((a, b) => homebrew(a) - homebrew(b)).map((h) => {
 			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
 			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
 			const halved = rolledHalf && halving ? { halved: true as const } : {};
@@ -832,10 +834,13 @@
 						<span class="block text-zinc-400">{halving.holders.join(', ')} – the next one hired costs half.</span>
 					</button>
 				{/if}
-				{#each hireOffers as offer (offer.hireling.fighter.id)}
+				{#each hireOffers as offer, i (offer.hireling.fighter.id)}
 					{@const choice = offer.hireling.fighter.choice}
 					{@const open = choosing === offer.hireling.fighter.id}
 					{@const picked = offer.held ? pickedName(offer.hireling.fighter.id, offer.held.picks) : ''}
+					{#if offer.hireling.origin === 'homebrew' && hireOffers[i - 1]?.hireling.origin !== 'homebrew'}
+						<p class="field-label pt-4">Homebrew</p>
+					{/if}
 					<button
 						type="button"
 						class="choice"
@@ -847,7 +852,7 @@
 						<span class="block font-semibold">{offer.hireling.fighter.name}</span>
 						<span class="block text-zinc-400"
 							>{#if offer.held}{offer.fee} {system.game.currency}{#if picked}{' '}· {picked}{/if} · hired – tap to send away{:else}+{offer.fee}
-								{system.game.currency}{#if choice}{' '}· pick a {choice.noun?.one ?? 'option'}{/if}{/if}{#if offer.hireling.origin === 'homebrew'}{' '}· Homebrew{/if}</span
+								{system.game.currency}{#if choice}{' '}· pick a {choice.noun?.one ?? 'option'}{/if}{/if}</span
 						>
 						{#if offer.refused}
 							<span class="block font-semibold" style="color: var(--ui-warn-text)">{offer.refused}</span>

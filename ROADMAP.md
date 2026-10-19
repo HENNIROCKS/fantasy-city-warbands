@@ -76,6 +76,7 @@
 - [x] 🛠️ Wyrdcry: hire a Hired Sword for a single battle – the ten official ones, their fees paid in the aftermath
 - [x] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders, and six homebrew hired swords – Pecking Order, the half-counted morale, the Goblin Shaman's role and the Troll's kin
 - [x] ⚔️ Hired swords listed on the warband card while they are hired
+- [x] 🛠️ Homebrew warbands and hired swords listed under their own heading, after the official ones
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
