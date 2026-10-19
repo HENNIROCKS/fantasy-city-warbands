@@ -329,8 +329,10 @@
 	/* Whether the fighter on the back may be dismissed, where the game keeps a
 	   campaign. Not during a battle, and not while pieces moved on the back are
 	   still to be written with Done: the stash it hands to would be the old one.
-	   A dead leader gets no section: it leaves as another takes the lead, which
-	   its Equipment section says. */
+	   Not before the warband's first battle either: nothing is paid for yet, and
+	   the builder takes the fighter back at its full price. A dead leader gets
+	   no section: it leaves as another takes the lead, which its Equipment
+	   section says. */
 	const backDismissal = $derived.by((): BackDismissal | null => {
 		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
 		const instance = warband.fighters.find((f) => f.instanceId === editingId);
@@ -338,7 +340,13 @@
 		const moved = draft.wargear.join() !== instance.wargear.join();
 		return {
 			carried: instance.wargear.map(wargearName),
-			blocked: battle ? IN_BATTLE : moved ? 'Equipment was moved on this back – Done first.' : null
+			blocked: battle
+				? IN_BATTLE
+				: !warband.history?.length
+					? 'Not fought yet – remove it in the Fighters step, which pays it back in full.'
+					: moved
+						? 'Equipment was moved on this back – Done first.'
+						: null
 		};
 	});
 
@@ -364,7 +372,7 @@
 		dismissOpener?.focus();
 	}
 
-	/** What the sheet says beyond the fighter leaving: where its equipment goes, a leader to follow, the warband falling short. */
+	/** What the sheet says beyond the fighter leaving: where its equipment goes, and what the warband then lacks – a leader to follow among it. */
 	const dismissNotes = $derived.by(() => {
 		if (!dismissing || !warband || !system || !faction) return [];
 		const { instanceId, toStash } = dismissing;
@@ -372,8 +380,6 @@
 		if (!instance) return [];
 		const kept = instance.wargear.filter((_, i) => toStash.includes(i)).map(wargearName);
 		const gone = instance.wargear.filter((_, i) => !toStash.includes(i)).map(wargearName);
-		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === instanceId);
-		const leads = card?.kind === 'fighter' && card.keywordIds.includes('leader');
 		const before = validate(warband, system.game, faction);
 		const after = validate(dismiss($state.snapshot(warband) as Warband, faction, system.game, instanceId, []), system.game, faction);
 		const short = after.filter((i) => i.kind === 'missing' && !before.some((b) => b.code === i.code && b.message === i.message));
@@ -381,9 +387,6 @@
 			...(kept.length ? [`${kept.join(', ')} ${kept.length > 1 ? 'go' : 'goes'} to the stash.`] : []),
 			...(gone.length ? [`${gone.join(', ')} ${gone.length > 1 ? 'leave' : 'leaves'} with the fighter.`] : []),
 			'Nothing is paid back.',
-			...(leads && system.game.succession
-				? [`The warband then has no leader: a ${system.game.succession.keyword.toUpperCase()} takes the LEADER keyword on the back of its card.`]
-				: []),
 			...short.map((i) => i.message)
 		];
 	});
