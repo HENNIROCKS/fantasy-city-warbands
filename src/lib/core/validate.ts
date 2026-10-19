@@ -12,6 +12,7 @@
 
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
+import { findIssues } from './finds';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -228,6 +229,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			});
 		}
 	}
+
+	issues.push(...findIssues(warband, game, faction));
 
 	return issues;
 }

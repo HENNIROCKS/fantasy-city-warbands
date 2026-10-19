@@ -71,13 +71,13 @@
 - [x] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
 - [x] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
 - [x] 🛠️ Recruit between battles
+- [x] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
-- [ ] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
 - [ ] 🛠️ Wyrdcry: a warband whose leader is gone with no HERO left is disbanded, in the builder as in the aftermath
 - [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [ ] 🛠️ Hire a Hired Sword for a single battle

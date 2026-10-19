@@ -12,6 +12,8 @@
 		blocked,
 		paid,
 		dead,
+		rarity,
+		onsearch,
 		onremove
 	}: {
 		instance: FighterInstance;
@@ -30,6 +32,20 @@
 		paid: string[] | null;
 		/** Whether it is a dead leader still on the roster, which leaves once another fighter takes the lead. */
 		dead: boolean;
+		/**
+		 * Where a piece marked `found` is looked for at the table between battles,
+		 * as Wyrdcry's rarity roll: who may still search, the score a party of so
+		 * many needs, how many found copies of a piece are left, and the sides of
+		 * the die a single-use piece rolls for its copies. Null where it is only asked about.
+		 */
+		rarity: {
+			searchers: { instanceId: string; name: string }[];
+			target: (party: number) => number;
+			left: (wargearId: string) => number | null;
+			singleUse: number;
+		} | null;
+		/** Writes a search: the piece, who searched and helped, and how many copies were found – none where it failed. */
+		onsearch: (wargearId: string, party: string[], copies: number) => void;
 		onremove: () => void;
 	} = $props();
 
@@ -86,15 +102,24 @@
 	});
 
 	/* A piece found only at the table, by a Rarity roll, is asked about on the
-	   first tap, as the Warband Deck asks before it sells one. */
+	   first tap, as the Warband Deck asks before it sells one – unless copies
+	   found since the battle are still to buy. Where the game keeps the roll,
+	   the question picks who searches, and a single-use piece found asks what
+	   the die brought. */
 	let finding = $state<string | null>(null);
+	let party = $state<string[]>([]);
+	let rolling = $state(false);
+
+	/** Whether a found piece is none of the warband's yet, so ticking it asks first. */
+	const asks = (id: string) => !!faction.wargear.find((w) => w.id === id)?.found && !(rarity?.left(id) ?? 0);
 
 	/* Ticking takes one; unticking puts down every copy. */
 	function toggle(id: string, event?: Event) {
-		const found = faction.wargear.find((w) => w.id === id)?.found;
-		if (!countOf(id) && found && finding !== id) {
+		if (!countOf(id) && asks(id) && finding !== id) {
 			if (event?.currentTarget instanceof HTMLInputElement) event.currentTarget.checked = false;
 			finding = id;
+			party = [];
+			rolling = false;
 			return;
 		}
 		finding = null;
@@ -102,11 +127,23 @@
 		else instance.wargear.push(id);
 	}
 
-	/* Not found: back to the row it was asked about. */
+	/* Not found, or not looked for: back to the row it was asked about. */
 	async function notFound(id: string) {
 		finding = null;
 		await tick();
 		document.getElementById(checkId(id))?.focus();
+	}
+
+	/* A search written down: the party used up until the next battle, and the piece bought where it was found. */
+	function searched(id: string, copies: number) {
+		onsearch(id, party, copies);
+		if (copies) toggle(id);
+		else notFound(id);
+	}
+
+	function found(id: string) {
+		if (faction.wargear.find((w) => w.id === id)?.singleUse && rarity!.singleUse > 1) rolling = true;
+		else searched(id, 1);
 	}
 
 	const checkId = (id: string) => `wargear-${instance.instanceId}-${id}`;
@@ -151,8 +188,8 @@
 
 	const optionId = (id: string) => `pick-${instance.instanceId}-${id}`;
 
-	function focusOnMount(node: HTMLElement) {
-		node.focus();
+	function focusOnMount(node: HTMLElement, on = true) {
+		if (on) node.focus();
 	}
 </script>
 
@@ -317,7 +354,11 @@
 									{#if options.length}<ul class="checklist">
 										{#each options as w (w.id)}
 											{@const count = countOf(w.id)}
-											{@const block = count ? null : blocked(w.id)}
+											{@const left = rarity?.left(w.id) ?? null}
+											{@const refused = count ? null : blocked(w.id)}
+											<!-- Every copy found is bought, but another search may find more. -->
+											{@const block = refused?.code === 'wargear-unfound' && left === 0 && rarity?.searchers.length ? null : refused}
+											{@const spent = !count && !!w.found && !!rarity && !left && !rarity.searchers.length}
 											{@const kept = paidOf(w.id)}
 											<li class="check-row">
 												<label class="check-label">
@@ -326,7 +367,7 @@
 														type="checkbox"
 														class="h-4 w-4 shrink-0 rounded accent-[#16754A]"
 														checked={count > 0}
-														disabled={!!block || kept > 0}
+														disabled={!!block || kept > 0 || spent}
 														onchange={(event) => toggle(w.id, event)}
 													/>
 													<span class="check-name">{w.name}</span>
@@ -344,17 +385,61 @@
 												{/if}
 												{#if block}<span class="check-why">{block.short}</span>
 												{:else if kept}<span class="check-why">Paid for – to the stash on its card</span>
+												{:else if spent}<span class="check-why">Rare – every {game.rarity?.keyword.toUpperCase()} has searched</span>
+												{:else if left}<span class="check-why">Found – {left} left</span>
 												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
 												{#if finding === w.id}
 													<!-- On the row's own surface, as the question for a rolled option. -->
 													<div class="check-ask" role="group" aria-labelledby="find-{checkId(w.id)}">
-														<p id="find-{checkId(w.id)}" class="font-semibold">Found {w.name} with {w.found}?</p>
-														<div class="sheet-actions">
-															<button type="button" class="btn" onclick={() => notFound(w.id)}>Not found</button>
-															<button type="button" class="btn" onclick={() => toggle(w.id)} use:focusOnMount
-																>Found – buy for {w.cost}&nbsp;{game.currency}</button
+														{#if !rarity}
+															<p id="find-{checkId(w.id)}" class="font-semibold">Found {w.name} with {w.found}?</p>
+															<div class="sheet-actions">
+																<button type="button" class="btn" onclick={() => notFound(w.id)}>Not found</button>
+																<button type="button" class="btn" onclick={() => toggle(w.id)} use:focusOnMount
+																	>Found – buy for {w.cost}&nbsp;{game.currency}</button
+																>
+															</div>
+														{:else if rolling}
+															<p id="find-{checkId(w.id)}" class="font-semibold">How many did the d{rarity.singleUse} bring?</p>
+															<div class="sheet-actions">
+																{#each Array.from({ length: rarity.singleUse }, (_, i) => i + 1) as copies (copies)}
+																	<button type="button" class="btn" onclick={() => searched(w.id, copies)} use:focusOnMount={copies === 1}
+																		>{copies}</button
+																	>
+																{/each}
+															</div>
+														{:else}
+															{@const keyword = game.rarity?.keyword.toUpperCase()}
+															<p id="find-{checkId(w.id)}" class="font-semibold">Who looks for {w.name}?</p>
+															<p class="text-zinc-400">Each {keyword} beyond the first adds 1 to the roll.</p>
+															<div class="mt-2 grid grid-cols-2 gap-2" role="group" aria-label="Search party">
+																{#each rarity.searchers as searcher, i (searcher.instanceId)}
+																	<button
+																		type="button"
+																		class="choice"
+																		use:focusOnMount={i === 0}
+																		aria-pressed={party.includes(searcher.instanceId)}
+																		onclick={() =>
+																			(party = party.includes(searcher.instanceId)
+																				? party.filter((p) => p !== searcher.instanceId)
+																				: [...party, searcher.instanceId])}>{searcher.name}</button
+																	>
+																{/each}
+															</div>
+															<p class="mt-2 font-semibold">
+																{party.length ? `Roll ${rarity.target(party.length)}+ – a 1 always fails.` : `Pick the ${keyword} who searches.`}
+															</p>
+															<div class="sheet-actions">
+																<button type="button" class="btn" disabled={!party.length} onclick={() => searched(w.id, 0)}>Not found</button>
+																<button type="button" class="btn" disabled={!party.length} onclick={() => found(w.id)}>Found</button>
+															</div>
+															<!-- Not rolled: nothing is used up. -->
+															<button
+																type="button"
+																class="-ml-3 mt-2 min-h-11 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+																onclick={() => notFound(w.id)}>Cancel</button
 															>
-														</div>
+														{/if}
 													</div>
 												{/if}
 											</li>

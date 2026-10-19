@@ -15,6 +15,7 @@
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { deadLeaders } from '$lib/core/leader';
 	import { paidFor } from '$lib/core/manage';
+	import { findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
@@ -253,6 +254,23 @@
 	 * before it is offered, so nothing reaches the list of issues but what is
 	 * still missing.
 	 */
+	/* The rarity roll as the builder's wargear asks it, once the warband has fought. */
+	const rarity = $derived.by(() => {
+		const game = system?.game;
+		if (!game?.rarity || !warband || !faction || !findsOf(warband)) return null;
+		const current = warband;
+		return {
+			searchers: searchers(current, faction, game).map((f) => ({ instanceId: f.instanceId, name: fighterName(f, faction!) })),
+			target: (party: number) => targetOf(game, party - 1),
+			left: (id: string) => leftOf(current, id),
+			singleUse: game.rarity.singleUse
+		};
+	});
+
+	function onsearch(id: string, party: string[], copies: number) {
+		if (warband) warband.finds = search($state.snapshot(warband) as Warband, id, party, copies).finds;
+	}
+
 	function blockedBy(after: Warband): Issue | null {
 		return system && faction ? newExcess(issues, after, system.game, faction) : null;
 	}
@@ -501,6 +519,8 @@
 						blocked={(wargearId) => blockedBy(withWargear(warband!, instance.instanceId, wargearId))}
 						paid={paid?.get(instance.instanceId) ?? null}
 						dead={deadLeaders(warband, faction).some((f) => f.instanceId === instance.instanceId)}
+						{rarity}
+						{onsearch}
 						onremove={() => removeFighter(instance.instanceId)}
 					/>
 				{/each}

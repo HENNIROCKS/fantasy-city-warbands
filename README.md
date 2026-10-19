@@ -75,8 +75,10 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   takes pieces from it, each checked as the builder checks it, and not during
   a battle; buying is in the builder, which the back links to. In Wyrdcry the
   builder offers the Trading Post to every fighter that takes equipment, one
-  of each piece, and asks before a rare one whether a Rarity roll of 6+ found
-  it. Once a warband has fought, what it carried as the builder opened is paid
+  of each piece, the rare ones only once the warband has fought. Before a rare
+  piece it asks which HEROes searched – 6+, one less for each HERO beyond the
+  first, each HERO once until the next battle – and whether they found it; a
+  single-use piece comes in as many copies as a d3 says, for any fighter. Once a warband has fought, what it carried as the builder opened is paid
   for: the builder no longer takes it back at its full price, and the back of
   the fighter's card dismisses it instead, after a question – its equipment to
   the stash or with it, nothing paid back; a dismissed leader leaves the lead

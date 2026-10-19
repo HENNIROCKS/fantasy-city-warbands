@@ -11,7 +11,7 @@
  * two states is newer.
  */
 
-import type { Advance, AwayReason, BattleRecord, FighterInstance, Warband } from './types';
+import type { Advance, AwayReason, BattleRecord, FighterInstance, Finds, Warband } from './types';
 import { sameWarband } from './warband';
 
 export const FORMAT = 'fantasy-city-warbands';
@@ -98,6 +98,18 @@ function readRecord(raw: unknown): BattleRecord | null {
 }
 
 /** Every entry read, or null where any one of them is not what it should be. */
+function readFinds(raw: unknown): Finds | null {
+	if (!isObject(raw)) return null;
+	const { after, searched, found } = raw;
+	if (typeof after !== 'string' || !isStrings(searched)) return null;
+	const read = readAll(found, (entry) => {
+		if (!isObject(entry)) return null;
+		const { id, copies, had } = entry;
+		return typeof id === 'string' && isNumber(copies) && isNumber(had) ? { id, copies, had } : null;
+	});
+	return read && { after, searched, found: read };
+}
+
 function readAll<T>(raw: unknown, read: (entry: unknown) => T | null): T[] | null {
 	if (!Array.isArray(raw)) return null;
 	const all = raw.map(read);
@@ -142,7 +154,7 @@ function readFighter(raw: unknown): FighterInstance | null {
  */
 function readWarband(raw: unknown): Warband | null {
 	if (!isObject(raw)) return null;
-	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, tally } = raw;
+	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, finds, tally } = raw;
 	if (typeof id !== 'string' || typeof game !== 'string' || typeof factionId !== 'string' || typeof name !== 'string') return null;
 	if (!isObject(picks) || !Object.values(picks).every(isStrings) || !Array.isArray(fighters)) return null;
 	const read = fighters.map(readFighter);
@@ -154,6 +166,8 @@ function readWarband(raw: unknown): Warband | null {
 	if (tally !== undefined && !isTally(tally)) return null;
 	const records = history === undefined ? undefined : readAll(history, readRecord);
 	if (records === null) return null;
+	const searches = finds === undefined ? undefined : readFinds(finds);
+	if (searches === null) return null;
 	return {
 		id,
 		game,
@@ -167,6 +181,7 @@ function readWarband(raw: unknown): Warband | null {
 		...(gold !== undefined ? { gold } : {}),
 		...(stash !== undefined ? { stash } : {}),
 		...(records !== undefined ? { history: records } : {}),
+		...(searches !== undefined ? { finds: searches } : {}),
 		...(tally !== undefined ? { tally } : {}),
 		...(updatedAt !== undefined ? { updatedAt: updatedAt as string } : {})
 	};

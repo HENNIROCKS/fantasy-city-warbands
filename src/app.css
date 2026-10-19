@@ -572,7 +572,7 @@ html {
 	}
 
 	@media (hover: hover) {
-		.btn:not(.danger):hover {
+		.btn:not(.danger, :disabled):hover {
 			background: var(--ui-surface-hover);
 		}
 	}
@@ -580,6 +580,12 @@ html {
 	.btn.danger {
 		color: #fff;
 		background: var(--ui-danger);
+	}
+
+	/* Not yet to be answered, as a search before anyone is picked to make it. */
+	.btn:disabled {
+		opacity: 0.5;
+		cursor: default;
 	}
 
 	.btn:focus-visible {

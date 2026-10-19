@@ -124,6 +124,9 @@ export const game: GameSystem = {
 	advancement,
 	/* Death of a leader (Campaign Book, p. 8): a HERO takes the LEADER keyword. */
 	succession: { keyword: 'hero', none: 'No HERO is left. The Campaign Book has the warband disbanded and a new one started.' },
+	/* The rarity roll (Campaign Book, p. 27): a HERO on a 6+, +1 for each HERO
+	   more helping, a d3 of a single-use piece. */
+	rarity: { keyword: 'hero', target: 6, helper: 1, singleUse: 3 },
 	/* Unbending Will is an ability of the fighter's type, which the shared form
 	   carries only as a rule's text; the raw fighter still has its id. */
 	injuries: wyrdcryInjuries({

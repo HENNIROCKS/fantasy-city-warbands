@@ -139,6 +139,15 @@ export interface GameSystem {
 	 * a new leader instead.
 	 */
 	succession?: { keyword: string; none: string };
+	/**
+	 * How a piece marked `found` is looked for between battles, as Wyrdcry's
+	 * Rarity roll: a fighter with `keyword` searches on a `target`+, each one
+	 * more helping takes `helper` off, a 1 always fails, and each searches or
+	 * helps once until the next battle. A single-use piece found comes in as
+	 * many copies as a die of `singleUse` sides says. Without it, a piece
+	 * marked `found` is only asked about.
+	 */
+	rarity?: { keyword: string; target: number; helper: number; singleUse: number };
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -631,6 +640,19 @@ export interface BattleRecord {
 	opponentPlayer: string;
 }
 
+/**
+ * The searches since a battle: who searched or helped, and what was found.
+ * Stale once another battle is written down.
+ */
+export interface Finds {
+	/** The id of the battle the searches followed. */
+	after: string;
+	/** The instance ids of the fighters that searched or helped. */
+	searched: string[];
+	/** Each piece found: how many copies came in, and how many the warband held as it was found. */
+	found: { id: string; copies: number; had: number }[];
+}
+
 /** A warband as stored. Everything else is looked up from its game and faction. */
 export interface Warband {
 	id: string;
@@ -656,6 +678,8 @@ export interface Warband {
 	stash?: string[];
 	/** The battles fought, in the order they were written down. */
 	history?: BattleRecord[];
+	/** What was looked for at the table since the last battle, where the game has a `rarity` roll. */
+	finds?: Finds;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
 	/**
@@ -680,6 +704,7 @@ export interface Issue {
 		| 'wargear-not-allowed'
 		| 'wargear-carry'
 		| 'wargear-rare'
+		| 'wargear-unfound'
 		| 'legendary'
 		| 'leaders';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */
