@@ -68,99 +68,32 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its
   rules, with the characteristic, the keyword or the bar on reactions it brings
-- Turn a fighter's card over with the pencil under it to write the fighter's
-  name, fluff and notes, which the card then shows, and to put a photo of the
-  painted model in its image field, moved and zoomed there; the photo stays on
-  the device. The back also hands what the fighter bought to the stash and
-  takes pieces from it, each checked as the builder checks it, and not during
-  a battle; buying is in the builder, which the back links to. In Wyrdcry the
-  builder offers the Trading Post to every fighter that takes equipment, one
-  of each piece, the rare ones only once the warband has fought. Before a rare
-  piece it asks which HEROes searched – 6+, one less for each HERO beyond the
-  first, each HERO once until the next battle – and whether they found it; a
-  single-use piece comes in as many copies as a d3 says, for any fighter. Once a warband has fought, what it carried as the builder opened is paid
-  for: the builder no longer takes it back at its full price, and the back of
-  the fighter's card dismisses it instead, after a question – its equipment to
-  the stash or with it, nothing paid back; a dismissed leader leaves the lead
-  to a HERO. With no HERO left, the warband is disbanded, as the Campaign Book
-  has it: it stays in the list to look at, recruits, buys and fights no more,
-  and the builder starts a new one of its faction. The back of the warband
-  card takes back a disbanding and frees the HEROes that searched since the
-  battle, for a tap made by mistake. In Wyrdcry the back also corrects renown by hand – it does not go
-  below a level already spent; a BEAST or THRALL has none. Spend renown turns
-  the back to a page for the next open level, as the Warband Deck does, and
-  lists the levels spent, the last with Undo, and the injuries the fighter
-  keeps, each to remove, and why it sits out – Captured with Got back – kept
-  until Done like the rest. The warband's favour is set by hand in the finish
-  step and on the back of the warband card, with the standing and reputation
-  it comes to
-- Turn the warband card over with the pencil under it to write its name,
-  fluff and notes as a fighter's back has them, set its favour, pick the
-  colour of its cards – the deck takes it on at once, Cancel brings back the
-  old one –, add gold, sell or throw away what lies in the stash, and add or
-  strike battles – all kept apart until Done. Wyrdcry sells a piece for half its price, rounded down to
-  5 gc and never below 5 gc; Black Death City's playtest has no rule for it yet
-- Track a battle at the table: Battle on the warband card starts it, counts
-  the rounds with one step back, and ends it after asking; the bar under a
-  fighter's card takes Health down a point at a time, the card fills with
-  blood, and a fighter at none is out of action – with the Wilhelm scream,
-  which the settings under the gear switch off. State marks a fighter activated or waiting, and
-  in Wyrdcry in cover, panicked or with its heroic reaction used, on the card
-  and in the strokes over the deck. A Wyrdcry warband with more than half its
-  fighters out of action asks each fighter for its Bravery test in the round
-  after, and the Witch Hunters count Zeal into every fighter's figures
-- Hire a Wyrdcry hired sword for a single battle from the Battle menu, before
-  the battle or in its first round: only those the faction may take, one of
-  each, at half the fee for the dearest where the Mercenaries picked
-  Well-connected and for the next one where a HERO with Well-Connected rolled
-  a 4+. Its card comes after the fighters and leaves the warband's morale
-  alone; the aftermath asks nothing of it and takes the fees off the gold, and
-  a cancelled battle costs nothing
-- End a Wyrdcry battle in pages over the deck, each set as the back of a card
-  with its answers at the foot: the result, the
-  shards delivered with what they bring in favour and gold, and the battle
-  history; who was taken out of action, and for each of them the injury table
-  to tap what the dice rolled – an injury it already has counts as a Flesh
-  Wound, a fourth kills a HERO, Unbending Will rolls none; the single-use
-  items used up, with Crimson Shade's roll for Sticky Fingers; then each fighter's
-  renown roll – what adds to it, the score it needs, and whether it reached it,
-  twice for the one marked for greatness, and for a HENCHMAN more for each
-  Drillmaster that came through; a Bootlicker that came through adds a favour. Apply carries out what an injury does once:
-  a dead fighter leaves the roster, its equipment going to the stash on a 3+
-  (a dead leader's LEADER keyword goes to a HERO, picked on a page of its own
-  or later on the back of the HERO's card), a surgeon
-  costs 15 gc, robbery takes what the fighter bought, and a captured fighter or
-  one that misses the next battle carries a band, and a single-use item used up
-  leaves the fighter's equipment; Sticky Fingers is a reminder
-  under the shards. Apply writes it all into the warband and the
-  battle history, which the warband card shows with its favour, standing and
-  reputation
-- Spend each level of renown in a sheet set as the back of the fighter's card, after the battle or from the Battle
-  menu: a characteristic within the fighter's racial limit on every level, and
-  for a hero a heroic talent on every odd one – a henchman's third level makes
-  it a HERO, on its card and among the warband's heroes; a legendary ability
-  from renown 5, one fighter per warband. A recruited leader starts with a level
-  to spend. A level spent under older rules opens again for what it lacks
-- Export a warband as a JSON file, to keep a copy outside the browser – through
-  the share sheet on a phone, as a download on a desktop
-- Import such a file again, on this device or another: the app says whether it
-  is new, the same, newer or older than what is stored, asks before an older
-  state overwrites a newer one, and says so where the warband goes past its
-  limits – it is imported as it is
-- Import a warband from the Wyrdcry Warband Deck or the Warband Builder, its
-  campaign included; the sheet says what is carried over differently, such as
-  pending purchases taken as bought and custom abilities moved into the notes;
-  experience is not carried over
-- Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's: the
-  warband, a row per fighter with profile, abilities, weapons and notes in the
-  game's own columns – in Wyrdcry with the battles won, drawn and lost and each
-  fighter's renown – then every rule of the warband, its
-  fighters and their gear once, with the fighters that carry it
+- Turn a fighter's card over to write on it, add a photo, move equipment to
+  and from the stash, correct its campaign, spend renown or dismiss it – see
+  [Between battles in Wyrdcry](docs/wyrdcry/between-battles.md) and
+  [in Black Death City](docs/black-death-city/between-battles.md)
+- Turn the warband card over to name it, pick its colour, set favour, add gold
+  and sell from the stash – see the same guides
+- Track a battle on the cards: damage, states, rounds with one step back, and
+  in Wyrdcry morale and Zeal – see [The battle in Wyrdcry](docs/wyrdcry/battle.md) and
+  [in Black Death City](docs/black-death-city/battle.md)
+- Hire a Wyrdcry hired sword for one battle, its fee paid in the aftermath –
+  see [Hired swords](docs/wyrdcry/hired-swords.md)
+- End a Wyrdcry battle in a few pages: result, income, injuries, a new
+  leader, items used up and renown, written in with Apply – see
+  [The aftermath](docs/wyrdcry/aftermath.md)
+- Spend each level of renown on a characteristic, a heroic talent or a
+  legendary ability, after the battle or from the Battle menu
+- Export a warband as a file, import it again here or elsewhere, and import
+  the Warband Deck's and the Warband Builder's files – see
+  [Files and the roster](docs/files-and-roster.md) and
+  [From the Warband Deck or the Builder](docs/wyrdcry/from-the-deck.md)
+- Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's
 - Delete a warband after a question that says what is lost and offers the
   export first
 - Dark and light mode, under the gear
-- Settings and about under the gear: the scream on or off, the games, where
-  their rules come from, and answers to the first questions
+- Settings, docs and about under the gear: the scream on or off, the guides,
+  the games, where their rules come from, and answers to the first questions
 
 ## Games and factions
 
@@ -179,6 +112,12 @@ lacks, shows a hint on its card instead. Not there yet: State Pride's
 effects on the profiles, the special rules of Black Death City's fighters,
 the skills and spells they pick on recruitment, and the cost of a
 Misbegotten's bloodline mutation.
+
+## Using it at the table
+
+Short guides in plain words, one game night after the other, first by game,
+then by topic. The app shows them under the gear, offline too; the files are
+in [`docs/`](docs/README.md).
 
 ## Roadmap
 

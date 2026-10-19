@@ -29,8 +29,9 @@ export const areas: Area[] = [
 		built: (game, factions) => !!game.salePrice && factions.some((f) => f.wargear.some((w) => w.group))
 	},
 	{ label: 'Injuries', built: (game) => !!game.injuries },
+	{ label: 'Hired swords', built: (game) => !!game.hiring },
 	/* The system has no field to read for this, so it counts as open for every game. */
-	{ label: 'Hired swords', built: () => false }
+	{ label: 'Exploring the city', built: () => false }
 ];
 
 /** Which of the areas the game has, in the order of `areas`. */

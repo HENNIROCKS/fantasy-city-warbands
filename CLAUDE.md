@@ -24,6 +24,20 @@ mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
 Roadmap; was dort steht, gleicht keine Session wieder an. Darunter steht unter
 „Open upstream“, was nur der Autor klären kann und hier noch nichts ändert.
 
+Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
+(`docs/<spiel>/`), dann nach Themen, eine Seite je Thema; was für alle Spiele
+gleich gilt, liegt direkt in `docs/`. Die App liest dieselben Dateien beim
+Build ein (`src/lib/docs.ts`) und zeigt sie unter `/docs`, erreichbar über
+Settings und verlinkt aus der README. Der Renderer kennt nur Überschriften,
+Absätze, Listen, fett, kursiv und Links; eine Liste, deren Punkte mit einem
+Link beginnen, wird zu Buttons.
+
+Die Seiten sind kurz und in einfacher Sprache, ein roter Faden durch den
+Spielabend statt einer Liste von Änderungen. Sie beschreiben, wie man eine
+Spielmechanik mit der App anwendet, und schreiben keine Regeln ab. Ändert sich
+eine Funktion, ändert sich ihre Seite im selben Schritt; was die Docs
+erklären, steht nicht noch einmal in den Fragen der Settings-Seite.
+
 Architektur, Entscheidungen und offene Punkte im Vault unter
 `Projekte/Fantasy City Warbands.md`.
 
@@ -70,8 +84,9 @@ Die Kernregeln – Deckung, Moral, Universal Abilities und Reactions,
 Waffenregeln – folgen dem Rulebook 1.0 unter `_works/Rulebooks/`, wo immer
 die aktuellen PDFs liegen; Kampagne, Renown, Heroic Talents, Lasting Injuries
 und Trading Post dem Campaign Book 0.9 dort. Fraktionen, ihre Kämpfer und
-Waffen folgen den 0.9-Daten des Site-Repos, von Hand übertragen; Hired Swords
-sind dort, aber noch nicht hier.
+Waffen folgen den 0.9-Daten des Site-Repos, von Hand übertragen; ebenso die
+zehn offiziellen Hired Swords, aus dem Deck übernommen, unter
+`rules/wyrdcry/hired-swords/`.
 
 **Black Death City** ist von Hand aus dem Playtest v1.01 übertragen
 (`~/Spiele/+ Games Workshop/Mordheim Fanac [1e] - Black Death City Playtest v1.01.pdf`).

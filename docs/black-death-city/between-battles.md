@@ -1,0 +1,17 @@
+# Between battles
+
+**Recruit and buy in the builder.** Tap the warband in the list. Add fighters
+and give them equipment, as when you first built the warband. The builder
+keeps your Origin's limits for you.
+
+**The back of a fighter's card.** Tap the pencil under the card. There you can
+write a name, fluff and notes, add a photo of the model, and move equipment to
+the stash and back.
+
+**The back of the warband card.** Name, colour, fluff and notes. You can also
+add gold, throw away what lies in the stash, and add or strike battles. The
+playtest has no rule for selling yet.
+
+Nothing on a back is saved until **Done**. **Cancel** drops it.
+
+[All Black Death City guides](README.md) · [Files and the roster](../files-and-roster.md)
