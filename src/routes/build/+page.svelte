@@ -13,6 +13,7 @@
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
 	import { areas, coverage } from '$lib/core/coverage';
 	import { activeEffects, limitOf } from '$lib/core/effects';
+	import { paidFor } from '$lib/core/manage';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
@@ -47,6 +48,10 @@
 	/* The id whose read has come back, so a warband still being read never shows as missing. */
 	let loadedId = $state<string | null>(null);
 
+	/* What a warband that has fought carried as the builder opened it: paid for,
+	   so dismissed and stashed on the back of a card rather than taken back here. */
+	let paid = $state<Map<string, string[]> | null>(null);
+
 	/* Fluff or notes asked for while still empty; written in, a field stays open anyway. */
 	let writing = $state({ fluff: false, notes: false });
 
@@ -54,6 +59,7 @@
 	$effect.pre(() => {
 		const current = id;
 		warband = null;
+		paid = null;
 		loadedId = null;
 		writing = { fluff: false, notes: false };
 		if (!current) return;
@@ -67,6 +73,7 @@
 				loaded.name = '';
 			}
 			warband = loaded;
+			paid = loaded ? paidFor(loaded) : null;
 			loadedId = current;
 		});
 		return () => {
@@ -267,7 +274,7 @@
 	});
 
 	function removeFighter(instanceId: string) {
-		if (!warband || !faction) return;
+		if (!warband || !faction || paid?.has(instanceId)) return;
 		const index = warband.fighters.findIndex((f) => f.instanceId === instanceId);
 		if (index === -1) return;
 		const instance = $state.snapshot(warband.fighters[index]);
@@ -483,6 +490,7 @@
 						{faction}
 						issues={issues.filter((i) => i.instanceId === instance.instanceId)}
 						blocked={(wargearId) => blockedBy(withWargear(warband!, instance.instanceId, wargearId))}
+						paid={paid?.get(instance.instanceId) ?? null}
 						onremove={() => removeFighter(instance.instanceId)}
 					/>
 				{/each}

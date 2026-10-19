@@ -5,7 +5,15 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
-	import CardBack, { type BackCampaign, type BackDraft, type BackEquipment, type BackLead, type BackPhoto, type BackRenown } from '$lib/components/CardBack.svelte';
+	import CardBack, {
+		type BackCampaign,
+		type BackDismissal,
+		type BackDraft,
+		type BackEquipment,
+		type BackLead,
+		type BackPhoto,
+		type BackRenown
+	} from '$lib/components/CardBack.svelte';
 	import RenownSheet, { type LevelPick } from '$lib/components/RenownSheet.svelte';
 	import WarbandBack from '$lib/components/WarbandBack.svelte';
 	import Deck from '$lib/components/Deck.svelte';
@@ -16,6 +24,7 @@
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
+	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveSound, saveWarband } from '$lib/core/storage.svelte';
 	import type { FighterInstance, Warband } from '$lib/core/types';
@@ -310,6 +319,89 @@
 		};
 	}
 
+	/* Whether the fighter on the back may be dismissed, where the game keeps a
+	   campaign. Not during a battle, and not while pieces moved on the back are
+	   still to be written with Done: the stash it hands to would be the old one. */
+	const backDismissal = $derived.by((): BackDismissal | null => {
+		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
+		const instance = warband.fighters.find((f) => f.instanceId === editingId);
+		if (!instance) return null;
+		const moved = draft.wargear.join() !== instance.wargear.join();
+		return {
+			carried: instance.wargear.map((id) => faction.wargear.find((w) => w.id === id)?.name ?? id),
+			blocked: battle ? IN_BATTLE : moved ? 'Equipment was moved on this back – Done first.' : null
+		};
+	});
+
+	/* Dismissing is asked once more in a sheet, as deleting a warband is, with
+	   the focus on keeping the fighter, and written at once. */
+	let dismissing = $state<{ instanceId: string; name: string; toStash: number[] } | null>(null);
+	let dismissError = $state(false);
+	/* Written once, however often Dismiss is tapped while the write runs. */
+	let dismissBusy = $state(false);
+	let dismissOpener: HTMLElement | null = null;
+
+	function askDismiss(toStash: number[]) {
+		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === editingId);
+		if (!card || !editingId) return;
+		dismissOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		dismissError = false;
+		dismissing = { instanceId: editingId, name: card.name, toStash };
+	}
+
+	async function keepFighter() {
+		dismissing = null;
+		await tick();
+		dismissOpener?.focus();
+	}
+
+	/** What the sheet says beyond the fighter leaving: where its equipment goes, a leader to follow, the warband falling short. */
+	const dismissNotes = $derived.by(() => {
+		if (!dismissing || !warband || !system || !faction) return [];
+		const { instanceId, toStash } = dismissing;
+		const instance = warband.fighters.find((f) => f.instanceId === instanceId);
+		if (!instance) return [];
+		const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+		const kept = instance.wargear.filter((_, i) => toStash.includes(i)).map(nameOf);
+		const gone = instance.wargear.filter((_, i) => !toStash.includes(i)).map(nameOf);
+		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === instanceId);
+		const leads = card?.kind === 'fighter' && card.keywordIds.includes('leader');
+		const before = validate(warband, system.game, faction);
+		const after = validate(dismiss($state.snapshot(warband) as Warband, faction, system.game, instanceId, []), system.game, faction);
+		const short = after.filter((i) => i.kind === 'missing' && !before.some((b) => b.code === i.code && b.message === i.message));
+		return [
+			...(kept.length ? [`${kept.join(', ')} ${kept.length > 1 ? 'go' : 'goes'} to the stash.`] : []),
+			...(gone.length ? [`${gone.join(', ')} ${gone.length > 1 ? 'leave' : 'leaves'} with the fighter.`] : []),
+			'Nothing is paid back.',
+			...(leads && system.game.succession
+				? [`The warband then has no leader: a ${system.game.succession.keyword.toUpperCase()} takes the LEADER keyword on the back of its card.`]
+				: []),
+			...short.map((i) => i.message)
+		];
+	});
+
+	/* The warband first; only once it is stored does the card leave the deck,
+	   and the photo with it. A failed write keeps the sheet open and says so. */
+	async function confirmDismiss() {
+		if (!dismissing || dismissBusy || !warband || !system || !faction) return;
+		const { instanceId, toStash } = dismissing;
+		const updated = dismiss($state.snapshot(warband) as Warband, faction, system.game, instanceId, toStash);
+		dismissBusy = true;
+		const saved = await saveWarband(updated);
+		dismissBusy = false;
+		if (!saved) {
+			dismissError = true;
+			return;
+		}
+		dismissing = null;
+		editingId = null;
+		warband = updated;
+		if (stored.has(instanceId)) {
+			showPhoto(instanceId, null);
+			savePhoto(updated.id, instanceId, null);
+		}
+	}
+
 	/* Nothing on the back of the warband card takes the warband further, but
 	   Done is held to the same check as the builder. A battle still being
 	   entered changes no limit, so it is left out of the check: Done gives it
@@ -508,12 +600,13 @@
 <svelte:window
 	onkeydown={(event) => {
 		if (event.key !== 'Escape') return;
-		if (asking) keepPlaying();
+		if (dismissing) keepFighter();
+		else if (asking) keepPlaying();
 		else if (spending) spending = false;
 	}}
 />
 
-<div class="flex h-dvh flex-col" inert={asking !== null || aftermath !== null || (spending && levels.length > 0)}>
+<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || aftermath !== null || (spending && levels.length > 0)}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -561,7 +654,11 @@
 					{#if card.kind === 'warband' && warband}
 						<WarbandBack name={card.name} {warband} {faction} game={system.game} blocked={battle ? IN_BATTLE : null} bind:draft={warbandDraft} />
 					{:else}
-						<CardBack name={card.name} placeholder={backPlaceholder} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} lead={backLead} equipment={backEquipment} />
+						<CardBack name={card.name} placeholder={backPlaceholder} bind:draft bind:photo={photoDraft} campaign={backCampaign} renown={backRenown} injuries={backInjuries} lead={backLead}
+							equipment={backEquipment}
+							dismissal={backDismissal}
+							ondismiss={askDismiss}
+						/>
 					{/if}
 				{/snippet}
 			</Deck>
@@ -592,6 +689,22 @@
 		onspend={spendLevel}
 		onclose={() => (spending = false)}
 	/>
+{/if}
+
+{#if dismissing}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="dismiss-title">
+			<h2 id="dismiss-title">Dismiss {dismissing.name}?</h2>
+			<p class="notice">{dismissNotes.join(' ')}</p>
+			{#if dismissError}
+				<p class="notice danger">This browser refused to save it – nothing was changed.</p>
+			{/if}
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={keepFighter} use:focusOnMount>Keep</button>
+				<button type="button" class="btn danger" disabled={dismissBusy} onclick={confirmDismiss}>Dismiss</button>
+			</div>
+		</div>
+	</div>
 {/if}
 
 {#if asking && battle}

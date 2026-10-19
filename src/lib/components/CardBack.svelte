@@ -48,6 +48,14 @@
 		buy: string;
 	}
 
+	/** What dismissing the fighter on this back would mean, worked out by the page. */
+	export interface BackDismissal {
+		/** The names of what the fighter carries as stored, in its order – the places the stash is handed. */
+		carried: string[];
+		/** Why the fighter cannot be dismissed now, or null when it can. */
+		blocked: string | null;
+	}
+
 	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
 	export interface BackCampaign {
 		/** Without `raise` a counter only comes down, for a fighter that never gains it and has some from a file. */
@@ -98,7 +106,9 @@
 		renown,
 		injuries,
 		lead,
-		equipment
+		equipment,
+		dismissal,
+		ondismiss
 	}: {
 		name: string;
 		/** What the name field offers while it is blank. */
@@ -111,7 +121,15 @@
 		injuries: string[] | null;
 		lead: BackLead | null;
 		equipment: BackEquipment | null;
+		dismissal: BackDismissal | null;
+		/** Asks for the fighter to be dismissed, handing the places of what goes to the stash. */
+		ondismiss: (toStash: number[]) => void;
 	} = $props();
+
+	/* Every piece goes to the stash unless taken off: the Campaign Book has the
+	   equipment deposited, and the fighter leaves with what is left. */
+	let leaves = $state<number[]>([]);
+	const toggleLeaves = (i: number) => (leaves = leaves.includes(i) ? leaves.filter((j) => j !== i) : [...leaves, i]);
 
 	/* A piece changes hands within the draft; no gold moves, in the builder neither. */
 	function toStash(index: number) {
@@ -486,6 +504,28 @@
 				<textarea id="back-notes" class="field" rows="2" placeholder="Anything to remember at the table" bind:value={draft.notes} use:grow
 				></textarea>
 			</section>
+
+			{#if dismissal}
+				<!-- As the Warband Deck has it, last on the back: asked once more in a
+				     sheet and written at once, not with Done. -->
+				<section>
+					<h3 class="heading"><span>Dismiss</span><span class="rule"></span></h3>
+					{#if dismissal.blocked}
+						<p class="hint">{dismissal.blocked}</p>
+					{:else}
+						{#if dismissal.carried.length}
+							<div class="toggles stacked">
+								{#each dismissal.carried as piece, i (i)}
+									<button class="toggle" aria-pressed={!leaves.includes(i)} onclick={() => toggleLeaves(i)}>{piece} to the stash</button>
+								{/each}
+							</div>
+						{/if}
+						<button class="dismiss" onclick={() => ondismiss(dismissal.carried.map((_, i) => i).filter((i) => !leaves.includes(i)))}
+							>Dismiss {name}…</button
+						>
+					{/if}
+				</section>
+			{/if}
 		</div>
 	{/if}
 </article>
@@ -564,6 +604,19 @@
 	.when {
 		margin-right: 0.3em;
 		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	/* The one button on the back that takes something away, in the link's red. */
+	.dismiss {
+		align-self: flex-end;
+		min-height: 40px;
+		padding: 0 calc(14 * var(--u));
+		border: 1px solid var(--card-link);
+		border-radius: 999px;
+		background: var(--card-field);
+		color: var(--card-link);
+		font-family: 'Alegreya', serif;
+		font-size: calc(17 * var(--t));
 	}
 
 	.buy {

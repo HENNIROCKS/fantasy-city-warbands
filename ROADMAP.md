@@ -69,14 +69,14 @@
 - [x] 📈 Wyrdcry: single-use items used up in a battle, and Crimson Shade's roll for Sticky Fingers in the aftermath
 - [x] 📈 Wyrdcry: a dead or dismissed leader hands the LEADER keyword to a HERO
 - [x] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
+- [x] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
+- [x] 🛠️ Recruit between battles
 - [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
-- [ ] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
-- [ ] 🛠️ Recruit between battles
 - [ ] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
 - [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [ ] 🛠️ Hire a Hired Sword for a single battle

@@ -10,6 +10,7 @@
 		faction,
 		issues,
 		blocked,
+		paid,
 		onremove
 	}: {
 		instance: FighterInstance;
@@ -19,6 +20,13 @@
 		issues: Issue[];
 		/** What would stop this fighter from being given a piece of wargear, or null. */
 		blocked: (wargearId: string) => Issue | null;
+		/**
+		 * What the fighter carried when the builder was opened on a warband that
+		 * has fought, so is paid for: it is dismissed and stashed on the back of
+		 * its card, not taken back here at its full price. Null for a fighter that
+		 * can still be taken back whole.
+		 */
+		paid: string[] | null;
 		onremove: () => void;
 	} = $props();
 
@@ -47,6 +55,8 @@
 	let adding = $state(false);
 
 	const countOf = (id: string) => instance.wargear.filter((w) => w === id).length;
+	/* Copies are alike, so any copy beyond those paid for can be put down. */
+	const paidOf = (id: string) => paid?.filter((w) => w === id).length ?? 0;
 
 	/* What the fighter could never take is no choice and stays out of the list,
 	   unless an older warband carries it and it has to be put down. */
@@ -157,12 +167,14 @@
 			<p class="min-w-0 text-zinc-400">
 				{fighter?.name ?? instance.fighterId} · {fighterCost(instance, faction)}&nbsp;{game.currency}
 			</p>
-			<button
-				type="button"
-				class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
-				aria-label="Remove {label}"
-				onclick={onremove}>Remove</button
-			>
+			{#if !paid}
+				<button
+					type="button"
+					class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white"
+					aria-label="Remove {label}"
+					onclick={onremove}>Remove</button
+				>
+			{/if}
 		</div>
 	</div>
 
@@ -262,12 +274,16 @@
 						<li class="wargear-row">
 							<span class="wargear-cell">{nameOf(id)}</span>
 							<span class="wargear-cell wargear-cost">{costOf(id)}&nbsp;{game.currency}</span>
-							<button
-								type="button"
-								class="wargear-remove"
-								aria-label="Remove {nameOf(id)} from {label}"
-								onclick={() => instance.wargear.splice(index, 1)}><span aria-hidden="true">×</span></button
-							>
+							{#if countOf(id) > paidOf(id)}
+								<button
+									type="button"
+									class="wargear-remove"
+									aria-label="Remove {nameOf(id)} from {label}"
+									onclick={() => instance.wargear.splice(index, 1)}><span aria-hidden="true">×</span></button
+								>
+							{:else}
+								<span></span>
+							{/if}
 						</li>
 					{/each}
 				</ul>
@@ -298,6 +314,7 @@
 										{#each options as w (w.id)}
 											{@const count = countOf(w.id)}
 											{@const block = count ? null : blocked(w.id)}
+											{@const kept = paidOf(w.id)}
 											<li class="check-row">
 												<label class="check-label">
 													<input
@@ -305,7 +322,7 @@
 														type="checkbox"
 														class="h-4 w-4 shrink-0 rounded accent-[#16754A]"
 														checked={count > 0}
-														disabled={!!block}
+														disabled={!!block || kept > 0}
 														onchange={(event) => toggle(w.id, event)}
 													/>
 													<span class="check-name">{w.name}</span>
@@ -316,11 +333,13 @@
 														type="button"
 														class="check-pair"
 														aria-pressed={count > 1}
+														disabled={count > 1 && kept >= count}
 														aria-label="Carry two {w.name}"
 														onclick={() => pair(w.id)}>×2</button
 													>
 												{/if}
 												{#if block}<span class="check-why">{block.short}</span>
+												{:else if kept}<span class="check-why">Paid for – to the stash on its card</span>
 												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
 												{#if finding === w.id}
 													<!-- On the row's own surface, as the question for a rolled option. -->
@@ -349,6 +368,10 @@
 				<p class="text-zinc-400 {fighter.gear.length ? 'mt-2' : ''}">{fighter.unequipped}.</p>
 			{/if}
 		</div>
+	{/if}
+
+	{#if paid}
+		<p class="text-zinc-400">Paid for: it is dismissed, and what it carries put in the stash, on the back of its card.</p>
 	{/if}
 
 	{#if listed.length}

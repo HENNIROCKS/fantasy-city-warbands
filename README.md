@@ -68,21 +68,25 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   change, marked with a star. An injury the fighter keeps stands among its
   rules, with the characteristic, the keyword or the bar on reactions it brings
 - Turn a fighter's card over with the pencil under it to write the fighter's
-  name, fluff and notes, which the card then shows, and to put a photo of the painted
-  model in its image field, moved and zoomed there; the photo stays on the device.
-  The back also hands what the fighter bought to the stash and takes pieces
-  from it, each checked as the builder checks it, and not during a battle;
-  buying is in the builder, which the back links to. In Wyrdcry the builder
-  offers the Trading Post to every fighter that takes equipment, one of each
-  piece, and asks before a rare one whether a Rarity roll of 6+ found it
-  In Wyrdcry the back also corrects renown by hand – it does not go below a
-  level already spent; a BEAST or THRALL has none. Spend renown turns the
-  back to a page for the next open level, as the Warband Deck does, and lists
-  the levels spent, the last with Undo, and the injuries the fighter keeps,
-  each to remove, and why it sits out – Captured with Got back – kept until
-  Done like the rest. The
-  warband's favour is set by hand in the finish step and on the back of the
-  warband card, with the standing and reputation it comes to
+  name, fluff and notes, which the card then shows, and to put a photo of the
+  painted model in its image field, moved and zoomed there; the photo stays on
+  the device. The back also hands what the fighter bought to the stash and
+  takes pieces from it, each checked as the builder checks it, and not during
+  a battle; buying is in the builder, which the back links to. In Wyrdcry the
+  builder offers the Trading Post to every fighter that takes equipment, one
+  of each piece, and asks before a rare one whether a Rarity roll of 6+ found
+  it. Once a warband has fought, what it carried as the builder opened is paid
+  for: the builder no longer takes it back at its full price, and the back of
+  the fighter's card dismisses it instead, after a question – its equipment to
+  the stash or with it, nothing paid back; a dismissed leader leaves the lead
+  to a HERO. In Wyrdcry the back also corrects renown by hand – it does not go
+  below a level already spent; a BEAST or THRALL has none. Spend renown turns
+  the back to a page for the next open level, as the Warband Deck does, and
+  lists the levels spent, the last with Undo, and the injuries the fighter
+  keeps, each to remove, and why it sits out – Captured with Got back – kept
+  until Done like the rest. The warband's favour is set by hand in the finish
+  step and on the back of the warband card, with the standing and reputation
+  it comes to
 - Turn the warband card over with the pencil under it to write its name,
   fluff and notes as a fighter's back has them, set its favour, pick the
   colour of its cards – the deck takes it on at once, Cancel brings back the
