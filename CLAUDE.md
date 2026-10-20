@@ -74,6 +74,13 @@ Link zwischen Routen läuft deshalb über `resolve()`, nie über ein hartes `/`.
 - `src/lib/rules/<spiel>/factions/<fraktion>/` – die Daten, ein Ordner je
   Fraktion. Ein neuer Ordner wird ohne weiteren Code geladen.
 
+Bevor ein Spiel etwas Eigenes bekommt, wird gesucht, ob der Kern es schon trägt
+(`Wargear.effects`, `FighterChoice`, `campaign.recruited` …): lieber ein Feld in
+den Daten, das der Kern für jedes Spiel liest, als ein Haken mit festen Ids.
+Eine Änderung für ein Spiel wird an allen Spielen geprüft – Daten laden, die
+anderen Spiele durch die geänderten Funktionen, je eine Bande auf jeder
+geänderten Seite.
+
 **Wyrdcry** wird hier gepflegt. Der Bestand stammt aus dem handgepflegten
 Regelbestand des Warband Decks (`~/Sites/wyrdcry-warband-deck/src/lib/rules/`),
 dessen Daten eingefroren sind; sein Repo ist seit 12.10.2026 ein öffentliches
