@@ -1,6 +1,6 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import type { Faction, FighterInstance, GameSystem, Issue, WargearKind } from '$lib/core/types';
+	import type { Faction, FighterInstance, GameSystem, Issue, Wargear, WargearKind } from '$lib/core/types';
 	import { fighterCost, fighterName, formatStat, neverCarried, profileOf } from '$lib/core/warband';
 	import { tick } from 'svelte';
 
@@ -162,6 +162,19 @@
 	}
 
 	const checkId = (id: string) => `wargear-${instance.instanceId}-${id}`;
+
+	/* What a piece does, read before it is bought: one row open at a time, under
+	   its own toggle, since a tap on the name ticks it. */
+	let reading = $state<string | null>(null);
+
+	const readable = (w: Wargear) => !!(w.text || w.profile || w.rules?.length || w.grants?.length);
+
+	/** `Range 1" · Attacks 3 · Damage 2/4`, in the order the game prints a weapon. */
+	const profileLine = (w: Wargear) =>
+		game.weaponStats
+			.filter((s) => w.profile?.[s.key])
+			.map((s) => `${s.label} ${w.profile![s.key]}`)
+			.join(' · ');
 
 	/* A second of the same piece, where the game's carrying rules allow one: two
 	   swords to dual wield, a pair of pistols. */
@@ -354,6 +367,7 @@
 					onclick={() => {
 						adding = !adding;
 						finding = null;
+						reading = null;
 					}}>{adding ? 'Done' : instance.wargear.length ? 'Change wargear' : '+ Add wargear'}</button
 				>
 				{#if adding}
@@ -400,11 +414,31 @@
 														onclick={() => pair(w.id)}>×2</button
 													>
 												{/if}
+												{#if readable(w)}
+													<button
+														type="button"
+														class="check-more"
+														aria-expanded={reading === w.id}
+														aria-controls={reading === w.id ? `read-${checkId(w.id)}` : undefined}
+														aria-label="What {w.name} does"
+														onclick={() => (reading = reading === w.id ? null : w.id)}
+														><span aria-hidden="true">{reading === w.id ? '▾' : '▸'}</span></button
+													>
+												{/if}
 												{#if block}<span class="check-why">{block.short}</span>
 												{:else if kept}<span class="check-why">Paid for – to the stash on its card</span>
 												{:else if spent}<span class="check-why">Rare – every {game.rarity?.keyword.toUpperCase()} has searched</span>
 												{:else if left}<span class="check-why">Found – {left} left</span>
 												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
+												{#if reading === w.id}
+													<div id="read-{checkId(w.id)}" class="check-detail">
+														{#if w.profile}<p>{profileLine(w)}</p>{/if}
+														{#if w.text}<RichText text={w.text} />{/if}
+														{#each [...(w.rules ?? []), ...(w.grants ?? [])] as rule, i (i)}
+															<div><strong>{rule.name}</strong><RichText text={rule.text} /></div>
+														{/each}
+													</div>
+												{/if}
 												{#if finding === w.id}
 													<!-- On the row's own surface, as the question for a rolled option. -->
 													<div class="check-ask" role="group" aria-labelledby="find-{checkId(w.id)}">

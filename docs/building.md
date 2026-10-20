@@ -13,6 +13,8 @@ app never blocks these. It lists them on every step and again at the end.
 
 **Equipment.** Each fighter gets a checklist of what its faction allows. What a
 fighter can never take is named under the list. What its current gear rules
-out stays in the list, greyed out with the reason.
+out stays in the list, greyed out with the reason. The arrow at the end of a
+row shows what a piece does – a weapon's profile and rules, an item's text –
+before you tick it.
 
 [All guides](README.md)

@@ -459,6 +459,29 @@ html {
 		outline-offset: -2px;
 	}
 
+	.check-more {
+		flex: none;
+		width: 44px;
+		min-height: 44px;
+		border-left: 1px solid var(--ui-border);
+		color: var(--ui-text-muted);
+	}
+
+	.check-more:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: -2px;
+	}
+
+	/* What a piece does, under its row, level with the name. */
+	.check-detail {
+		flex-basis: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 0 12px 12px 38px;
+		color: var(--ui-text-muted);
+	}
+
 	/* The question before a piece found only at the table, under its row. */
 	.check-ask {
 		flex-basis: 100%;
