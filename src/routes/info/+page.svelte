@@ -37,10 +37,9 @@
 			id: s.game.id,
 			name: s.game.name,
 			author: s.game.author,
-			edition: s.game.edition,
-			factions: s.factions.map((f) => (f.origin === 'homebrew' ? `${f.name} (homebrew)` : f.name)).sort((a, b) => a.localeCompare(b))
+			edition: s.game.edition
 		})),
-		...planned.map((g) => ({ ...g, edition: 'eventually', factions: [] as string[] }))
+		...planned.map((g) => ({ ...g, edition: 'eventually' }))
 	].sort((a, b) => a.name.localeCompare(b.name));
 
 	/** The domain alone, as the label of a game's link. */
@@ -227,9 +226,6 @@
 					<li class="rounded-md border border-zinc-700 bg-zinc-800 p-3">
 						<p class="font-semibold text-zinc-200">{game.name}</p>
 						<p class="text-zinc-400">by {game.author} · {game.edition}</p>
-						{#if game.factions.length}
-							<p class="mt-2">{game.factions.join(', ')}</p>
-						{/if}
 						{#if SITES[game.id]}
 							<a
 								class="mt-2 inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-1 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"

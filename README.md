@@ -98,13 +98,13 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - Settings, docs and about under the gear: the scream on or off, the guides,
   the games, where their rules come from, and answers to the first questions
 
-## Games and factions
+## Games and their rules
 
-| Game | Rules the data follows | Factions |
-| --- | --- | --- |
-| Black Death City | Playtest v1.01 | Death Covens, Guild Mercenaries, The Blighted Cloister, Verminkin |
-| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 | Clan Eshin, Mercenaries, Possessed, Sisters of Sigmar, Undead, Witch Hunters; homebrew: Clan Pestilens, Greenskin Marauders |
-| Mordheim | – | eventually |
+| Game | Rules the data follows |
+| --- | --- |
+| Black Death City | Playtest v1.01 |
+| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 |
+| Mordheim | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's
