@@ -13,8 +13,9 @@ app never blocks these. It lists them on every step and again at the end.
 
 **Equipment.** Each fighter gets a checklist of what its faction allows. What a
 fighter can never take is named under the list. What its current gear rules
-out stays in the list, greyed out with the reason. The arrow at the end of a
-row shows what a piece does – a weapon's profile and rules, an item's text –
-before you tick it.
+out stays in the list, greyed out with the reason. Tap a piece's name to see
+what it does – a weapon's profile and rules, an item's text – and tick the box
+to buy it. Where a fighter may carry two of a piece, a button under it adds
+the second.
 
 [All guides](README.md)

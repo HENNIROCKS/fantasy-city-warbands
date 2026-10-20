@@ -163,8 +163,9 @@
 
 	const checkId = (id: string) => `wargear-${instance.instanceId}-${id}`;
 
-	/* What a piece does, read before it is bought: one row open at a time, under
-	   its own toggle, since a tap on the name ticks it. */
+	/* What a piece does, read before it is bought: a tap on its name opens it, as
+	   a Heroic Talent opens on the back of a card, one row at a time; only the
+	   checkbox buys. */
 	let reading = $state<string | null>(null);
 
 	const readable = (w: Wargear) => !!(w.text || w.profile || w.rules?.length || w.grants?.length);
@@ -175,6 +176,9 @@
 			.filter((s) => w.profile?.[s.key])
 			.map((s) => `${s.label} ${w.profile![s.key]}`)
 			.join(' · ');
+
+	/** What the second copy is for, as the game names it: ` – dual wield`, ` – a pair`. */
+	const pairFor = (w: Wargear) => (w.kind === 'melee' && game.dualWielding ? ' – dual wield' : w.kind === 'ranged' ? ' – a pair' : '');
 
 	/* A second of the same piece, where the game's carrying rules allow one: two
 	   swords to dual wield, a pair of pistols. */
@@ -391,45 +395,44 @@
 											{@const block = refused?.code === 'wargear-unfound' && left === 0 && rarity?.searchers.length ? null : refused}
 											{@const spent = !count && !!w.found && !!rarity && !left && !rarity.searchers.length}
 											{@const kept = paidOf(w.id)}
+											{@const locked = !!block || kept > 0 || spent}
 											<li class="check-row">
-												<label class="check-label">
+												<label class="check-box">
 													<input
 														id={checkId(w.id)}
 														type="checkbox"
 														class="h-4 w-4 shrink-0 rounded accent-[#16754A]"
 														checked={count > 0}
-														disabled={!!block || kept > 0 || spent}
+														disabled={locked}
+														aria-label="Buy {w.name}"
 														onchange={(event) => toggle(w.id, event)}
 													/>
-													<span class="check-name">{w.name}</span>
-													<span class="check-cost">{w.cost}&nbsp;{game.currency}</span>
 												</label>
-												{#if count > 1 || (count === 1 && !blocked(w.id))}
-													<button
-														type="button"
-														class="check-pair"
-														aria-pressed={count > 1}
-														disabled={count > 1 && kept >= count}
-														aria-label="Carry two {w.name}"
-														onclick={() => pair(w.id)}>×2</button
-													>
-												{/if}
-												{#if readable(w)}
-													<button
-														type="button"
-														class="check-more"
-														aria-expanded={reading === w.id}
-														aria-controls={reading === w.id ? `read-${checkId(w.id)}` : undefined}
-														aria-label="What {w.name} does"
-														onclick={() => (reading = reading === w.id ? null : w.id)}
-														><span aria-hidden="true">{reading === w.id ? '▾' : '▸'}</span></button
-													>
-												{/if}
+												<button
+													type="button"
+													class="check-open"
+													class:locked
+													aria-expanded={reading === w.id}
+													aria-controls={reading === w.id ? `read-${checkId(w.id)}` : undefined}
+													disabled={!readable(w)}
+													onclick={() => (reading = reading === w.id ? null : w.id)}
+												>
+													<span class="check-name">{w.name}</span>
+													<span class="check-cost">{Math.max(count, 1) * w.cost}&nbsp;{game.currency}</span>
+												</button>
 												{#if block}<span class="check-why">{block.short}</span>
 												{:else if kept}<span class="check-why">Paid for – to the stash on its card</span>
 												{:else if spent}<span class="check-why">Rare – every {game.rarity?.keyword.toUpperCase()} has searched</span>
 												{:else if left}<span class="check-why">Found – {left} left</span>
 												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
+												{#if count > 1 || (count === 1 && !blocked(w.id))}
+													<div class="check-second">
+														<button type="button" aria-pressed={count > 1} disabled={count > 1 && kept >= count} onclick={() => pair(w.id)}>
+															<span>{count > 1 ? '✓' : '+'} Two<span class="sr-only"> {w.name}</span>{pairFor(w)}</span>
+															<span class="check-cost">+{w.cost}&nbsp;{game.currency}</span>
+														</button>
+													</div>
+												{/if}
 												{#if reading === w.id}
 													<div id="read-{checkId(w.id)}" class="check-detail">
 														{#if w.profile}<p>{profileLine(w)}</p>{/if}

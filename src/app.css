@@ -411,21 +411,46 @@ html {
 		align-items: center;
 	}
 
-	.check-label {
+	/* The checkbox in a cell of its own, 44px square to tap. */
+	.check-box {
+		display: flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		min-height: 44px;
+		cursor: pointer;
+	}
+
+	.check-box:has(input:disabled) {
+		cursor: not-allowed;
+	}
+
+	/* The name and price open what the piece does. */
+	.check-open {
 		display: flex;
 		flex: 1;
 		min-width: 0;
 		align-items: center;
 		gap: 10px;
 		min-height: 44px;
-		padding: 0 12px;
+		padding-right: 12px;
+		text-align: left;
 		color: var(--ui-text);
 		cursor: pointer;
 	}
 
-	.check-label:has(input:disabled) {
+	.check-open.locked {
 		color: var(--ui-text-muted);
-		cursor: not-allowed;
+	}
+
+	.check-open:disabled {
+		cursor: default;
+	}
+
+	.check-open:focus-visible {
+		outline: 2px solid #16754a;
+		outline-offset: -2px;
 	}
 
 	/* A name without a space, such as Club/Mace/Hammer, breaks only where it has to. */
@@ -441,33 +466,41 @@ html {
 		color: var(--ui-text-muted);
 	}
 
-	.check-pair {
-		flex: none;
-		width: 44px;
+	/* A second copy, where the game's carrying rules allow one: what it is for on the left, its price on the right. */
+	.check-second {
+		flex-basis: 100%;
+		padding: 0 12px 12px 44px;
+	}
+
+	.check-second button {
+		display: flex;
+		width: 100%;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
 		min-height: 44px;
-		border-left: 1px solid var(--ui-border);
+		padding: 0 12px;
+		border: 1px solid var(--ui-border);
+		border-radius: 6px;
+		text-align: left;
 		color: var(--ui-text-muted);
 	}
 
-	.check-pair[aria-pressed='true'] {
+	.check-second button[aria-pressed='true'] {
+		border-color: var(--ui-sel-border);
 		background: var(--ui-sel-bg);
 		color: var(--ui-sel-text);
 	}
 
-	.check-pair:focus-visible {
-		outline: 2px solid #16754a;
-		outline-offset: -2px;
+	.check-second button[aria-pressed='true'] .check-cost {
+		color: inherit;
 	}
 
-	.check-more {
-		flex: none;
-		width: 44px;
-		min-height: 44px;
-		border-left: 1px solid var(--ui-border);
-		color: var(--ui-text-muted);
+	.check-second button:disabled {
+		cursor: not-allowed;
 	}
 
-	.check-more:focus-visible {
+	.check-second button:focus-visible {
 		outline: 2px solid #16754a;
 		outline-offset: -2px;
 	}
@@ -478,7 +511,7 @@ html {
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
-		padding: 0 12px 12px 38px;
+		padding: 0 12px 12px 44px;
 		color: var(--ui-text-muted);
 	}
 
@@ -494,11 +527,11 @@ html {
 		color: var(--ui-text-muted);
 	}
 
-	/* Under the name, level with it past the checkbox: 12px padding, 16px box, 10px gap. */
+	/* Under the name, level with it past the checkbox's 44px cell. */
 	.check-why {
 		flex-basis: 100%;
 		margin-top: -8px;
-		padding: 0 12px 10px 38px;
+		padding: 0 12px 10px 44px;
 		font-size: 0.7rem;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
