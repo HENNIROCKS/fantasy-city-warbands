@@ -20,7 +20,7 @@
 	import { purse, warbandCost, validate } from '$lib/core/validate';
 	import { rosterPdf } from '$lib/pdf/roster';
 	import { safeName, shareFile, type ShareResult } from '$lib/share';
-	import { systems } from '$lib/systems';
+	import { systems, upgraded } from '$lib/systems';
 	import { isDeckOrBuilder, readDeckFile } from '$lib/systems/wyrdcry-file';
 
 	let warbands = $state<Warband[]>([]);
@@ -32,7 +32,8 @@
 
 	/* A to Z by the name the list shows, as the Warband Deck has it, the starred one first. */
 	async function refresh() {
-		const [all, starred] = await Promise.all([loadWarbands(), loadFavourite()]);
+		const [stored, starred] = await Promise.all([loadWarbands(), loadFavourite()]);
+		const all = stored.map(upgraded);
 		const title = (w: Warband) => w.name.trim() || systems[w.game]?.factions.find((f) => f.id === w.factionId)?.name || '';
 		const first = (w: Warband) => (w.id === starred ? 0 : 1);
 		warbands = all.sort((a, b) => first(a) - first(b) || title(a).localeCompare(title(b), 'en'));
@@ -200,7 +201,7 @@
 			notify(result.message, true);
 			return;
 		}
-		const w = result.warband;
+		const w = upgraded(result.warband);
 		const s = systems[w.game];
 		const f = s.factions.find((x) => x.id === w.factionId)!;
 		notify(null);

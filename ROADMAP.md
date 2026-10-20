@@ -78,8 +78,8 @@
 - [x] ⚔️ Hired swords listed on the warband card while they are hired
 - [x] 🛠️ Homebrew warbands and hired swords listed under their own heading, after the official ones
 - [x] 🛠️ What a piece of wargear does, unfolded in the builder's checklist before it is bought
-- [ ] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
-- [ ] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
+- [x] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
+- [x] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost

@@ -12,9 +12,9 @@
 	{
 		"id": "priesthood-of-sorcerers",
 		"name": "Priesthood of Sorcerers",
-		"text": "You must recruit a High Sorcerer to lead your warband. You begin the campaign with the Fortified Keep stronghold. Your warband can recruit 0-2 Cloister Sorcerers.",
+		"text": "You must recruit a High Sorcerer to lead your warband. You begin the campaign with the Secluded Scriptorium stronghold. Your warband can recruit 0-2 Cloister Sorcerers.",
 		"leader": "high-sorcerer",
-		"stronghold": "Fortified Keep",
+		"stronghold": "Secluded Scriptorium",
 		"limits": [
 			{ "fighter": "cloister-sorcerer", "limit": { "min": 0, "max": 2 } }
 		]
@@ -22,9 +22,12 @@
 	{
 		"id": "the-anointed-one",
 		"name": "The Anointed One",
-		"text": "You must recruit a Knight-Abbot Noble to lead your warband. You begin the campaign with the Unholy Altar stronghold. Your warband can recruit any number of Rot Walkers.",
+		"text": "You must recruit a Knight-Abbot to lead your warband. You begin the campaign with the Unholy Altar stronghold. Your warband can recruit any number of Rot Demons.",
 		"leader": "knight-abbot",
-		"stronghold": "Unholy Altar"
+		"stronghold": "Unholy Altar",
+		"limits": [
+			{ "fighter": "rot-demon", "limit": { "min": 0, "max": null } }
+		]
 	},
 	{
 		"id": "blessed-rabble",

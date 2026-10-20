@@ -31,7 +31,7 @@
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
-	import { systems } from '$lib/systems';
+	import { systems, upgraded } from '$lib/systems';
 
 	/*
 	 * A warband and its fighters as a stack of cards, filling the screen under the
@@ -105,7 +105,7 @@
 		let left = false;
 		Promise.all([loadWarband(current), loadBattle(current)]).then(async ([w, b]) => {
 			if (left) return;
-			warband = w;
+			warband = w && upgraded(w);
 			battle = b;
 			loadedId = current;
 			if (!w) return;

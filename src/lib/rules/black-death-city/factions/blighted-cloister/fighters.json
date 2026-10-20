@@ -4,7 +4,7 @@
 		"name": "Knight-Abbot",
 		"cost": 190,
 		"limit": { "min": 0, "max": null },
-		"keywords": ["leader", "cloister", "human"],
+		"keywords": ["leader", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 7 },
 		"wargear_lists": ["main", "champion"],
 		"gear": ["full-plate"]
@@ -34,7 +34,7 @@
 		"name": "Cloister Champion",
 		"cost": 145,
 		"limit": { "min": 0, "max": null },
-		"keywords": ["champion", "cloister", "human"],
+		"keywords": ["champion", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 6 },
 		"wargear_lists": ["main", "champion"],
 		"gear": ["full-plate"]
@@ -64,7 +64,7 @@
 		"name": "Cloister Knight",
 		"cost": 95,
 		"limit": { "min": 0, "max": 3 },
-		"keywords": ["henchman", "cloister", "human"],
+		"keywords": ["henchman", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 4, "initiative": 3, "willpower": 3, "life": 5 },
 		"wargear_lists": ["main"],
 		"gear": ["full-plate"]
@@ -132,7 +132,7 @@
 	{
 		"id": "rotling",
 		"name": "Rotling",
-		"cost": 20,
+		"cost": 25,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["beast", "cloister", "demon"],
 		"profile": { "move": 4, "blade": 4, "bow": null, "armour": 5, "initiative": 3, "willpower": 2, "life": 3 },

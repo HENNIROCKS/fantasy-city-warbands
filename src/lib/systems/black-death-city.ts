@@ -1,17 +1,17 @@
 /**
  * Black Death City, from the ruleset under `src/lib/rules/black-death-city/`,
- * transcribed from the Black Death City Playtest v1.01. Every folder under
+ * transcribed from the Black Death City Playtest v1.03. Every folder under
  * `factions/` is one faction.
  */
 
-import type { Faction, Fighter, GameSystem, Rule, Wargear } from '$lib/core/types';
+import type { Faction, Fighter, GameSystem, Rule, Wargear, Warband } from '$lib/core/types';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 
 export const game: GameSystem = {
 	id: 'black-death-city',
 	name: 'Black Death City',
-	edition: 'Playtest v1.01',
+	edition: 'Playtest v1.03',
 	author: 'Sam Pearson',
 	currency: 'silver',
 	budget: 1000,
@@ -48,7 +48,8 @@ export const game: GameSystem = {
 		{ key: 'damage', label: 'Damage' }
 	],
 	universal: [],
-	carry
+	carry,
+	upgrade
 };
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */
@@ -168,6 +169,26 @@ function carry(fighter: Fighter, faction: Faction, wargear: string[]) {
 		const refused = w && refuse(known([...fighter.gear, ...wargear.slice(0, i)]), w);
 		return refused ? [{ message: `${w.name}: ${refused.message}.`, short: refused.short }] : [];
 	});
+}
+
+/**
+ * Warbands built under the Playtest v1.01 carry two ids v1.03 no longer has:
+ * the Cursed Sword is the Cursed Blade, and the Arablast is the Ogre Arbalest
+ * for a fighter offered one and the Arbalest for anyone else and in the stash.
+ */
+function upgrade(warband: Warband, faction: Faction): Warband {
+	const renamed = (id: string, fighter?: Fighter) =>
+		id === 'cursed-sword' ? 'cursed-blade' : id === 'arablast' ? (fighter?.wargear.includes('ogre-arbalest') ? 'ogre-arbalest' : 'arbalest') : id;
+	const old = (ids: string[]) => ids.some((id) => id === 'cursed-sword' || id === 'arablast');
+	if (!warband.fighters.some((f) => old(f.wargear)) && !old(warband.stash ?? [])) return warband;
+	return {
+		...warband,
+		fighters: warband.fighters.map((instance) => {
+			const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+			return old(instance.wargear) ? { ...instance, wargear: instance.wargear.map((id) => renamed(id, fighter)) } : instance;
+		}),
+		...(warband.stash ? { stash: warband.stash.map((id) => renamed(id)) } : {})
+	};
 }
 
 interface RawOrigin {

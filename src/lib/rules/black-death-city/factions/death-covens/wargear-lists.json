@@ -1,6 +1,6 @@
 {
 	"main": ["axe", "club-mace-hammer", "dagger", "flail", "halberd", "spear", "sword", "cuirass", "shield"],
-	"champion": ["cursed-sword", "great-mace", "full-plate", "ancient-banner", "bestial-companion", "spirit-guardian", "winged-familiar"],
+	"champion": ["cursed-blade", "great-mace", "heavy-axe", "full-plate", "ancient-banner", "bestial-companion", "spirit-guardian", "winged-familiar"],
 	"zombie-ogre": ["ogre-blade", "ogre-great-weapon", "ogre-mace", "shield"],
-	"practitioner": ["arcane-staff", "ensorcelled-weapon", "sword", "cursed-sword", "warded-robes", "grimoire", "bestial-companion", "winged-familiar", "spirit-guardian"]
+	"practitioner": ["arcane-staff", "ensorcelled-weapon", "sword", "cursed-blade", "warded-robes", "grimoire", "bestial-companion", "winged-familiar", "spirit-guardian"]
 }

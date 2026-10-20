@@ -115,7 +115,7 @@
 		"cost": 100,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "mercenary", "ogre"],
-		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"profile": { "move": 4, "blade": 4, "bow": 4, "armour": 6, "initiative": 2, "willpower": 2, "life": 8 },
 		"wargear_lists": ["ogre"],
 		"gear": []
 	},

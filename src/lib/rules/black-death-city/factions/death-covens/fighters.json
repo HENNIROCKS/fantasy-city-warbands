@@ -14,8 +14,8 @@
 		"name": "Necromancer",
 		"cost": 165,
 		"limit": { "min": 0, "max": null },
-		"keywords": ["leader", "human"],
-		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"keywords": ["leader", "human", "wizard"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
 		"wargear_lists": ["practitioner"],
 		"gear": []
 	},
@@ -102,7 +102,7 @@
 	{
 		"id": "zombie",
 		"name": "Zombie",
-		"cost": 30,
+		"cost": 35,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "undead", "zombie", "thrall"],
 		"profile": { "move": 4, "blade": 5, "bow": 6, "armour": 6, "initiative": 1, "willpower": 2, "life": 4 },
@@ -112,7 +112,7 @@
 	{
 		"id": "zombie-ogre",
 		"name": "Zombie Ogre",
-		"cost": 100,
+		"cost": 95,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "undead", "zombie", "thrall"],
 		"profile": { "move": 4, "blade": 4, "bow": 6, "armour": 6, "initiative": 1, "willpower": 2, "life": 8 },

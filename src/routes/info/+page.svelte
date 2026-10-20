@@ -28,7 +28,7 @@
 	const SOURCES: Record<string, string> = {
 		// wyrdcry:
 		// 	'The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net.',
-		// 'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.01.'
+		// 'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.03.'
 	};
 
 	/** Playable games and those still to come in one list, by name. */

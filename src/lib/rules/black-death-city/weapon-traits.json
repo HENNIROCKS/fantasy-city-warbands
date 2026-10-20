@@ -17,7 +17,7 @@
 	{
 		"id": "brace",
 		"name": "Brace",
-		"text": "If the defending fighter uses this weapon while they are the defending fighter, they automatically have the initiative if the attacking fighter charged this activation."
+		"text": "If a fighter uses this weapon while they are the defending fighter, they automatically have the initiative if the attacking fighter charged this activation."
 	},
 	{
 		"id": "flame",
@@ -32,7 +32,7 @@
 	{
 		"id": "heavy",
 		"name": "Heavy",
-		"text": "This weapon cannot be used to make an attack if the fighter has made a move during their activation. In addition, if this weapon has been used to make an attack, the fighter cannot make a move during their activation.\n\n**Reloading:** The weapon can be used to attack if the fighter spent their move to reload it. Likewise, after the weapon has been used to attack, if they have not yet spent their Move, they can do so to reload it (see the *Reload* weapon trait)."
+		"text": "This weapon cannot be used to make an attack if the fighter has made a move during the same activation. In addition, if this weapon has been used to make an attack, the fighter cannot make a move in that same activation."
 	},
 	{
 		"id": "misfire",
@@ -47,7 +47,7 @@
 	{
 		"id": "off-hand",
 		"name": "Off-hand",
-		"text": "When making a melee attack action, this weapon can be used to make an off-hand attack."
+		"text": "When making a melee attack, this weapon can be used to make an off-hand attack."
 	},
 	{
 		"id": "one-use",
@@ -67,7 +67,7 @@
 	{
 		"id": "reload",
 		"name": "Reload",
-		"text": "Each time this weapon is used to make an attack, before it can be used again, the fighter must **reload** it. To reload a weapon, the fighter must spend either their Move or their Action during their activation. When a fighter spends either a Move or Action, they forfeit it."
+		"text": "This weapon begins the battle **loaded**. Each time this weapon is used to make an attack, before it can be used again, the fighter must **reload** it. To reload a weapon, the fighter must forgo either their Move or their Action during their activation. A fighter cannot reload a weapon while engaged in melee."
 	},
 	{
 		"id": "scare",

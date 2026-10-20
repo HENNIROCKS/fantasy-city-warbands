@@ -13,11 +13,11 @@
 	],
 	"ogre": [
 		"ogre-blade", "ogre-great-weapon", "ogre-mace",
-		"arablast", "ogre-cannon", "ogre-pistol",
+		"ogre-arbalest", "ogre-cannon", "ogre-pistol",
 		"ogre-armour",
 		"shield"
 	],
-	"munitions": ["arablast", "flamethrower", "fire-bombs", "volley-rifle", "bomb-bolt"],
+	"munitions": ["arbalest", "flamethrower", "fire-bombs", "volley-rifle", "bomb-bolt"],
 	"witch-hunters": ["lantern-torch", "wooden-stakes"],
 	"wizard": ["arcane-staff", "ensorcelled-weapon", "sword", "warded-robes", "grimoire"]
 }

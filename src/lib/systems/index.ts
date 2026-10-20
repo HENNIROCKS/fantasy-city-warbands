@@ -1,4 +1,4 @@
-import type { Faction, GameSystem } from "$lib/core/types";
+import type { Faction, GameSystem, Warband } from "$lib/core/types";
 
 import * as blackDeathCity from "./black-death-city";
 import * as wyrdcry from "./wyrdcry";
@@ -19,3 +19,10 @@ export const planned: { id: string; name: string; author: string }[] = [
   { id: "mordheim", name: "Mordheim", author: "Tuomas Pirinen" },
   { id: "necropolis", name: "Necropolis", author: "Peter Vigors" },
 ];
+
+/** The warband in the ids its game's data uses now; see `GameSystem.upgrade`. */
+export function upgraded(warband: Warband): Warband {
+  const system = systems[warband.game];
+  const faction = system?.factions.find((f) => f.id === warband.factionId);
+  return system?.game.upgrade && faction ? system.game.upgrade(warband, faction) : warband;
+}

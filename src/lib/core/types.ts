@@ -175,6 +175,13 @@ export interface GameSystem {
 			failed: string;
 		};
 	};
+	/**
+	 * The warband with the wargear ids an older edition of the rules used
+	 * replaced by the ones the data uses now, for a warband stored or imported
+	 * under that edition. The same warband when nothing needs replacing.
+	 * Without it, a warband is read as it is stored.
+	 */
+	upgrade?: (warband: Warband, faction: Faction) => Warband;
 }
 
 /** One fighter on offer for hire, with the wargear only it carries and the factions it fights for. */

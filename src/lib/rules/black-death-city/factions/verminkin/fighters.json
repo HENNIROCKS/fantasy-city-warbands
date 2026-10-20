@@ -104,7 +104,7 @@
 		"name": "Rat-Mutant",
 		"cost": 105,
 		"limit": { "min": 0, "max": null },
-		"keywords": ["brute", "ogre"],
+		"keywords": ["brute", "verminkin", "ogre"],
 		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 2, "willpower": 2, "life": 8 },
 		"wargear_lists": ["rat-mutant"],
 		"gear": ["oversized-claw"]

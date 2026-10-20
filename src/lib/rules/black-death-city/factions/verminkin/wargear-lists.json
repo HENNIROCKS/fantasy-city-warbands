@@ -1,6 +1,6 @@
 {
 	"main": ["axe", "club-mace-hammer", "dagger-punch-dagger", "flail", "halberd", "heavy-flail", "iron-claw", "spear", "sword", "orb-bombs", "sling", "throwing-stars", "gas-mask", "grappling-hook", "net", "shield", "smoke-bomb"],
-	"champion": ["blackpowder-pistol", "repeater-pistol", "full-plate", "bomb-rat", "clan-banner"],
+	"champion": ["ensorcelled-halberd", "poison-blade", "blackpowder-pistol", "repeater-pistol", "full-plate", "bomb-rat", "clan-banner"],
 	"contraption": ["dagger-punch-dagger", "arc-lightning-gun", "flame-canister", "wheel-spikes"],
 	"sparkseer": ["spark-drill", "arc-lightning-gun", "rocket-launcher", "flame-canister", "long-rifle", "periscope"],
 	"practitioner": ["arcane-staff", "ensorcelled-weapon", "warded-robes", "grimoire", "ensorcelled-bell"],

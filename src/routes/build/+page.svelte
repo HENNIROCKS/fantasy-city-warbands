@@ -31,7 +31,7 @@
 		withPicks,
 		withWargear
 	} from '$lib/core/warband';
-	import { planned, systems } from '$lib/systems';
+	import { planned, systems, upgraded } from '$lib/systems';
 
 	/*
 	 * One page for all five steps, the step held in the URL so the back gesture
@@ -67,8 +67,9 @@
 		if (!current) return;
 		/* A read for an id left meanwhile comes back to nothing. */
 		let left = false;
-		loadWarband(current).then((loaded) => {
+		loadWarband(current).then((stored) => {
 			if (left) return;
+			const loaded = stored && upgraded(stored);
 			/* A name that is only the faction's is no name of the warband's: the field
 			   shows it as the placeholder, and the warband card asks for one. */
 			if (loaded && loaded.name === systems[loaded.game]?.factions.find((f) => f.id === loaded.factionId)?.name) {

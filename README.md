@@ -102,7 +102,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 
 | Game | Rules the data follows |
 | --- | --- |
-| Black Death City | Playtest v1.01 |
+| Black Death City | Playtest v1.03 |
 | Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 |
 | Mordheim | eventually |
 
@@ -193,7 +193,7 @@ first and publishes it to GitHub Pages.
   which follows the rules at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is
   by Johan Markström; the rules belong to the Wyrdcry project.
 - **Black Death City** – transcribed by hand from the Black Death City
-  Playtest v1.01 by Sam Pearson. Where the playtest contradicts itself, the
+  Playtest v1.03 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.
 
 Where the app reads a game differently from its page or its data, or settles a

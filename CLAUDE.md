@@ -90,8 +90,9 @@ Waffen folgen den 0.9-Daten des Site-Repos, von Hand übertragen; ebenso die
 zehn offiziellen Hired Swords, aus dem Deck übernommen, unter
 `rules/wyrdcry/hired-swords/`.
 
-**Black Death City** ist von Hand aus dem Playtest v1.01 übertragen
-(`~/Spiele/+ Games Workshop/Mordheim Fanac [1e] - Black Death City Playtest v1.01.pdf`).
+**Black Death City** ist von Hand aus dem Playtest v1.03 übertragen
+(`_works/Rulebooks/Black Death City Playtest v1.03.pdf`; die High-Res-Fassung
+daneben hat dieselben Seiten und hinten Spickzettel und Roster-Bögen).
 Werte **an der PDF-Seite ablesen, nicht am extrahierten Text** – die
 Spaltenextraktion verschiebt Profile. Widersprechen sich Fighters List und
 Fighter Scroll, gilt die Scroll; der Widerspruch kommt in die `DEVIATIONS.md`.
