@@ -167,6 +167,9 @@ function limitFor(held: string[]): Record<string, number> | null {
 
 const talentOf = (id: string) => talents.find((t) => t.id === id);
 
+/** The kind of weapon a talent is taken for, such as Weapon Master's melee, or null where it is taken for none. */
+const weaponKind = (talent: Talent): string | null => ('weapon' in talent && talent.weapon) || null;
+
 /** The weapons of a kind a talent can be taken for: what the fighter carries first, then what its faction sells. */
 function weaponsFor(kind: string, instance: FighterInstance, fighter: Fighter, faction: Faction) {
 	const carried = [...fighter.gear, ...chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []), ...instance.wargear];
@@ -226,14 +229,17 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		if (!specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} talent groups`;
 		return null;
 	};
-	const talentRule = (talent: Talent): LevelRule => ({
-		id: talent.id,
-		name: talent.name,
-		text: talent.text,
-		type: talent.type,
-		blocked: blockedFor(talent),
-		weapons: 'weapon' in talent && talent.weapon ? weaponsFor(talent.weapon, instance, fighter, faction) : null
-	});
+	const talentRule = (talent: Talent): LevelRule => {
+		const kind = weaponKind(talent);
+		return {
+			id: talent.id,
+			name: talent.name,
+			text: talent.text,
+			type: talent.type,
+			blocked: blockedFor(talent),
+			weapons: kind ? weaponsFor(kind, instance, fighter, faction) : null
+		};
+	};
 	const groups = [...new Set(talents.map((t) => t.specialization))].map((specialization) => ({
 		heading: specialization[0].toUpperCase() + specialization.slice(1),
 		options: talents.filter((t) => t.specialization === specialization).map(talentRule)
@@ -275,7 +281,7 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 		const talent = talentOf(advance.rule);
 		if (talent) {
 			/* Only a talent that is taken for a weapon names it: one that no longer is, such as Surgical Precision, keeps a weapon picked earlier off the card. */
-			const weapon = advance.option && 'weapon' in talent && talent.weapon ? faction.wargear.find((w) => w.id === advance.option) : undefined;
+			const weapon = advance.option && weaponKind(talent) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 			result.rules.push({ name: weapon ? `${talent.name} (${weapon.name})` : talent.name, text: talent.text, type: talent.type });
 			for (const effect of (talent.effects ?? []) as { kind: string; keyword?: string; characteristic?: string; bonus?: number }[]) {
 				if (effect.kind === 'keyword' && effect.keyword) result.keywords.push(effect.keyword);
@@ -313,7 +319,7 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 			talent?.name ??
 			fighter.choice?.options.find((o) => o.id === advance.rule)?.name ??
 			advance.rule.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
-		const weapon = advance.option && (!talent || ('weapon' in talent && talent.weapon)) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
+		const weapon = advance.option && (!talent || weaponKind(talent)) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 		const named = weapon ? `${name} (${weapon.name})` : name;
 		if (ruleHolds(advance, fighter)) return named;
 		return talent ? `${named} – not before renown ${LEGENDARY_FROM}` : `${named} – no longer a heroic talent`;

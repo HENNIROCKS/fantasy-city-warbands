@@ -89,13 +89,13 @@ Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
 `~/Sites/wyrdcry`. Ob sich das Regelwerk bewegt hat, zeigt der Skill
 `wyrdcry-rules-watch`; übertragen wird von Hand. Eine Bravery-Verbesserung ist
 ein negativer Bonus: Bravery ist ein Wurfziel.
-Die Kernregeln – Deckung, Moral, Universal Abilities und Reactions,
-Waffenregeln – folgen dem Rulebook 1.0 unter `_works/Rulebooks/`, wo immer
-die aktuellen PDFs liegen; Kampagne, Renown, Heroic Talents, Lasting Injuries
-und Trading Post dem Campaign Book 0.9 dort. Fraktionen, ihre Kämpfer und
-Waffen folgen den 0.9-Daten des Site-Repos, von Hand übertragen; ebenso die
-zehn offiziellen Hired Swords, aus dem Deck übernommen, unter
-`rules/wyrdcry/hired-swords/`.
+Die App folgt Wyrdcry 1.0, die PDFs liegen unter `_works/Rulebooks/`. Die
+Kernregeln – Deckung, Moral, Universal Abilities und Reactions, Waffenregeln –
+folgen dem Rulebook 1.0; Kampagne, Renown, Heroic Talents, Lasting Injuries,
+Trading Post und die acht Hired Swords, die es druckt, dem Campaign Book 1.0.
+Fraktionen, ihre Kämpfer und Waffen folgen den 1.0-Daten und Fraktionsseiten
+des Site-Repos, von Hand übertragen; ebenso Thief und Beastman, die beiden
+übrigen der zehn offiziellen Hired Swords unter `rules/wyrdcry/hired-swords/`.
 
 **Black Death City** ist von Hand aus dem Playtest v1.03 übertragen
 (`_works/Rulebooks/Black Death City Playtest v1.03.pdf`; die High-Res-Fassung
