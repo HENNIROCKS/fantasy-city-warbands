@@ -21,7 +21,7 @@
     "id": "hammer-of-sigmar",
     "name": "Hammer of Sigmar",
     "type": "triple",
-    "text": "A fighter can only use this ability if equipped with a Warhammer or Sigmarite Hammer. Add (X/2) to the damage points allocated to enemy fighters by each hit and critical hit from the next melee attack action made by this fighter in this activation."
+    "text": "Until the end of this fighter's activation, add 1 to the Hit Damage and Critical Damage characteristics of their weapon. In addition, the weapon gains the blessed weapon rule."
   },
   {
     "id": "lead-by-example",
@@ -33,7 +33,7 @@
     "id": "soulfire",
     "name": "Soulfire",
     "type": "quad",
-    "text": "Allocate (X/2) damage points to each visible enemy fighter within 6\" of this fighter. If the enemy fighter is a `VAMPIRE`, `DAEMON` or `THRALL`, allocate (X) damage points instead."
+    "text": "Allocate D3 damage points to each visible enemy fighter within 6\" of this fighter. If the enemy fighter is a `VAMPIRE`, `DAEMON` or `THRALL`, allocate D3+3 damage points instead."
   },
   {
     "id": "words-of-healing",

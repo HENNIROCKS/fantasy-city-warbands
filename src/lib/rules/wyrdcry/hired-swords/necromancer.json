@@ -4,15 +4,15 @@
   "origin": "official",
   "version": "1.0",
   "author": "Johan Markström",
-  "cost": 65,
+  "cost": 50,
   "limit": { "min": 0, "max": 1 },
   "may_hire": ["mercenaries", "possessed", "undead"],
-  "description": "Necromancers are evil wizards who have mastered the corrupt art of Necromancy. Many havefled to Mordheim to escape the agents of Sigmar and practice their dark arts freely.",
+  "description": "Necromancers are evil wizards who have mastered the corrupt art of Necromancy. Many have fled to Mordheim to practice their dark art freely and without interference from the Templars of Sigmar.",
   "profile": {
     "move": 5,
     "fight": 3,
     "shoot": 3,
-    "defense": 3,
+    "defense": 0,
     "health": 12,
     "bravery": 4
   },
@@ -24,19 +24,19 @@
       "id": "raise-dead",
       "name": "Raise Dead",
       "type": "double",
-      "text": "Magical ability. Set up a new Zombie wholly within 3\" of this fighter, on a platform or the battlefield floor. That Zombie is considered to be a friendly fighter, and can be activated as normal in this battleround. It has (X) damage points remaining. Raised Zombies are not added to the warband roster and crumble to dust at the end of the battle."
+      "text": "Set up a new Zombie (see the Undead faction entry) wholly within 3\" of this fighter, on a platform or the battlefield floor. That Zombie is considered to be a friendly fighter, and can be activated as normal in this battle round. It has (X) health remaining. Raised Zombies are not added to the warband roster and crumble to dust at the end of the battle (or if the Necromancer is taken out of action)."
     },
     {
       "id": "transference",
       "name": "Transference",
       "type": "triple",
-      "text": "Magical ability. Allocate up to (X) damage points to a fighter within 12\" of this fighter, and then remove the same amount of damage points from a friendly fighter within 3\" of this fighter."
+      "text": "Select a fighter within 12\" of this fighter and roll a d6. On a 3+, allocate up to (X) damage points to that fighter, and then remove the same amount of damage points from a friendly `THRALL` within 3\" of this fighter."
     },
     {
       "id": "vanhels-danse-macabre",
       "name": "Vanhel’s Danse Macabre",
       "type": "triple",
-      "text": "Magical ability. Until the end of the battle round, `THRALLS` activated within (X)\" of this fighter may increase their Move characteristic by 2, and their Attacks characteristics by 1."
+      "text": "Select up to (X) `THRALLS` within 6\" of this fighter. Add 1 to their Move characteristic and 1 to the Attacks characteristic of their melee attack actions until the end of the battle round."
     }
   ],
   "weapons": [],

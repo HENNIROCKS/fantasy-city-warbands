@@ -3,7 +3,7 @@
 		"weaponRule": "parry",
 		"characteristic": "fight",
 		"bonus": 1,
-		"expect": "increase their Fight characteristic by 1"
+		"expect": "add 1 to their Fight characteristic"
 	},
 	{
 		"item": "shield",
@@ -16,5 +16,11 @@
 		"characteristic": "defense",
 		"bonus": null,
 		"expect": "When targeted by a ranged attack action, the bearer is considered to be in cover"
+	},
+	{
+		"item": "elven-cloak",
+		"characteristic": "defense",
+		"bonus": null,
+		"expect": "it is considered to be in cover if it is more than 6\" away"
 	}
 ]

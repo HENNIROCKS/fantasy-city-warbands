@@ -9,7 +9,7 @@
       {
         "id": "huntsmen",
         "name": "Huntsmen",
-        "text": "Increase the Shoot characteristic of all Marksmen by 1.",
+        "text": "Add 1 to the Shoot characteristic of all Marksmen.",
         "phase": "recruitment",
         "effect": {
           "kind": "stat",
@@ -21,7 +21,7 @@
       {
         "id": "hardy",
         "name": "Hardy",
-        "text": "Increase the Health characteristic of all Warriors and Champions by 2.",
+        "text": "Add 2 to the Health characteristic of all Warriors and Champions.",
         "phase": "recruitment",
         "effect": {
           "kind": "stat",
@@ -33,7 +33,7 @@
       {
         "id": "state-troopers",
         "name": "State Troopers",
-        "text": "Increase the Fight characteristic of all Warriors by 1.",
+        "text": "Add 1 to the Fight characteristic of all Warriors.",
         "phase": "recruitment",
         "effect": {
           "kind": "stat",
@@ -45,7 +45,7 @@
       {
         "id": "unyielding",
         "name": "Unyielding",
-        "text": "Increase the Bravery characteristic of all fighters by 1.",
+        "text": "Add 1 to the Bravery characteristic of all fighters.",
         "phase": "recruitment",
         "effect": {
           "kind": "stat",
@@ -57,7 +57,7 @@
       {
         "id": "desperate",
         "name": "Desperate",
-        "text": "You cannot recruit Warriors or Marksmen, but may recruit Youngbloods for 50% of their recruitment fee.",
+        "text": "You cannot recruit Warriors or Marksmen, but may recruit Youngbloods for half of their recruitment fee.",
         "phase": "recruitment",
         "effect": {
           "kind": "recruit",
@@ -89,7 +89,7 @@
       {
         "id": "well-connected",
         "name": "Well-connected",
-        "text": "When setting up a battle, you may recruit one Hired Sword for half its normal hiring fee.",
+        "text": "When setting up a battle, you may recruit one `HIRED SWORD` for half of their recruitment fee.",
         "phase": "battle",
         "effect": null
       }

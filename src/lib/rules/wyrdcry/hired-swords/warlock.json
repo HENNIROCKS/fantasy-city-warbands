@@ -4,15 +4,15 @@
   "origin": "official",
   "version": "1.0",
   "author": "Johan Markström",
-  "cost": 60,
+  "cost": 50,
   "limit": { "min": 0, "max": 1 },
-  "may_hire": ["mercenaries", "possessed", "undead"],
-  "description": "Witchcraft is a crime in the Empire, but that doesn’t stop magicians from finding employ with wealthy patrons. In Mordheim they barter their perilous craft for wyrdstone and a chance to uncover magical relics lost in the ruins.",
+  "may_hire": ["clan-eshin", "mercenaries", "possessed", "sisters-of-sigmar", "undead", "witch-hunters"],
+  "description": "Witchcraft is a crime in the Empire, but that doesn't stop magicians from finding employ with wealthy patrons. In Mordheim they barter their perilous craft for wyrdstone and a chance to uncover magical items lost in the ruins.",
   "profile": {
     "move": 5,
     "fight": 3,
     "shoot": 3,
-    "defense": 3,
+    "defense": 0,
     "health": 12,
     "bravery": 4
   },
@@ -24,7 +24,7 @@
       "id": "wither",
       "name": "Wither",
       "type": "double",
-      "text": "Magical ability. Select a visible enemy fighter within 12\". That fighter must reduce its Move, Fight and Shoot characteristic by (X/2) until the end of the battle round."
+      "text": "Magical ability. Select a visible enemy fighter within 12\" of this fighter. Subtract (X/2) from that fighter's Move, Fight and Shoot characteristics until the end of the battle round."
     },
     {
       "id": "flight-of-zimmerman",
@@ -36,7 +36,7 @@
       "id": "fires-of-uzhul",
       "name": "Fires of U'Zhul",
       "type": "triple",
-      "text": "Magical ability. Select an enemy fighter within 12\" of this fighter to be the target and roll three d6. For each roll of 3+, allocate (X/2) damage to the target. For each roll of 6, allocate (X/2) damage points to all visible fighters within 2\" of the target."
+      "text": "Magical ability. Select an enemy fighter within 12\" of this fighter to be the target and roll (X) dice. For each roll of 3+, allocate 2 damage points to the target. For each roll of 6, allocate 2 damage points to all fighters within 2\" of (and visible to) the target."
     }
   ],
   "weapons": [],

@@ -1,6 +1,6 @@
 /**
  * The underdog of a battle, as Wyrdcry's optional Underdogs has it (Campaign
- * Book 0.9, p. 30): worked out in the battle's setup from both warbands'
+ * Book 1.0, p. 30): worked out in the battle's setup from both warbands'
  * figures, before anyone is hired. The opponent's figure is asked for and kept
  * with the battle, so the bonuses follow it when it is corrected; the
  * warband's own is read off the warband.

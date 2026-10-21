@@ -41,7 +41,7 @@
 		"hit": 2,
 		"crit": 3,
 		"rules": [],
-		"cost": 10
+		"cost": 15
 	},
 	{
 		"id": "halberd",
@@ -52,7 +52,7 @@
 		"hit": 2,
 		"crit": 4,
 		"rules": ["two-handed"],
-		"cost": 15
+		"cost": 20
 	},
 	{
 		"id": "sword",
@@ -74,7 +74,7 @@
 		"hit": 3,
 		"crit": 4,
 		"rules": ["two-handed", "cumbersome"],
-		"cost": 15
+		"cost": 20
 	},
 	{
 		"id": "warhammer",
@@ -88,15 +88,26 @@
 		"cost": 20
 	},
 	{
+		"id": "morning-star",
+		"name": "Morning Star",
+		"type": "melee",
+		"range": { "min": 0, "max": 1 },
+		"attacks": 3,
+		"hit": 2,
+		"crit": 3,
+		"rules": ["pierce-1"],
+		"cost": 15
+	},
+	{
 		"id": "great-weapon",
 		"name": "Great Weapon",
 		"type": "melee",
 		"range": { "min": 0, "max": 1 },
 		"attacks": 3,
 		"hit": 3,
-		"crit": 5,
-		"rules": ["two-handed", "pierce-2"],
-		"cost": 45
+		"crit": 4,
+		"rules": ["two-handed", "pierce-2", "brutal"],
+		"cost": 40
 	},
 	{
 		"id": "fighting-claws",
@@ -116,9 +127,9 @@
 		"range": { "min": 0, "max": 1 },
 		"attacks": 3,
 		"hit": 2,
-		"crit": 5,
-		"rules": ["parry", "pierce-1"],
-		"cost": 30
+		"crit": 4,
+		"rules": ["parry", "pierce-1", "poisoned"],
+		"cost": 35
 	},
 	{
 		"id": "staff",
@@ -150,7 +161,7 @@
 		"attacks": 3,
 		"hit": 2,
 		"crit": 4,
-		"rules": [],
+		"rules": ["pierce-1"],
 		"cost": 0
 	},
 	{
@@ -227,7 +238,7 @@
 		"attacks": 1,
 		"hit": 3,
 		"crit": 6,
-		"rules": ["pierce-1"],
+		"rules": ["pierce-1", "poisoned"],
 		"cost": 0
 	},
 	{
@@ -245,7 +256,7 @@
 		"id": "bow",
 		"name": "Bow",
 		"type": "ranged",
-		"range": { "min": 3, "max": 18 },
+		"range": { "min": 1, "max": 18 },
 		"attacks": 2,
 		"hit": 2,
 		"crit": 3,
@@ -256,12 +267,12 @@
 		"id": "crossbow",
 		"name": "Crossbow",
 		"type": "ranged",
-		"range": { "min": 3, "max": 24 },
+		"range": { "min": 1, "max": 18 },
 		"attacks": 2,
 		"hit": 3,
-		"crit": 6,
+		"crit": 5,
 		"rules": ["reload", "pierce-1"],
-		"cost": 35
+		"cost": 30
 	},
 	{
 		"id": "pistol",
@@ -271,7 +282,7 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 6,
-		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
+		"rules": ["reload", "unreliable", "brace", "pierce-2"],
 		"cost": 30
 	},
 	{
@@ -281,9 +292,9 @@
 		"range": { "min": 0, "max": 6 },
 		"attacks": 2,
 		"hit": 3,
-		"crit": 5,
-		"rules": ["reload", "brace", "pierce-1", "point-blank"],
-		"cost": 15
+		"crit": 4,
+		"rules": ["reload", "brace", "pierce-1"],
+		"cost": 20
 	},
 	{
 		"id": "blunderbuss",
@@ -293,25 +304,25 @@
 		"attacks": 5,
 		"hit": 1,
 		"crit": 3,
-		"rules": ["blast", "one-use", "point-blank"],
-		"cost": 35
+		"rules": ["blast", "one-use"],
+		"cost": 30
 	},
 	{
 		"id": "handgun",
 		"name": "Handgun",
 		"type": "ranged",
-		"range": { "min": 3, "max": 24 },
+		"range": { "min": 1, "max": 18 },
 		"attacks": 2,
 		"hit": 4,
-		"crit": 8,
+		"crit": 6,
 		"rules": ["reload", "unreliable", "pierce-2"],
-		"cost": 55
+		"cost": 50
 	},
 	{
 		"id": "sling",
 		"name": "Sling",
 		"type": "ranged",
-		"range": { "min": 3, "max": 12 },
+		"range": { "min": 1, "max": 12 },
 		"attacks": 2,
 		"hit": 2,
 		"crit": 3,
@@ -324,8 +335,19 @@
 		"type": "ranged",
 		"range": { "min": 0, "max": 6 },
 		"attacks": 2,
+		"hit": 1,
+		"crit": 3,
+		"rules": ["poisoned"],
+		"cost": 20
+	},
+	{
+		"id": "throwing-dagger",
+		"name": "Throwing Dagger",
+		"type": "ranged",
+		"range": { "min": 0, "max": 6 },
+		"attacks": 2,
 		"hit": 2,
-		"crit": 4,
+		"crit": 3,
 		"rules": [],
 		"cost": 5
 	},
@@ -337,7 +359,7 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 7,
-		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
+		"rules": ["reload", "unreliable", "brace", "pierce-2"],
 		"cost": 35
 	},
 	{

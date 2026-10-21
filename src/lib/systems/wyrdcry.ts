@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -14,14 +14,13 @@ import items from '$lib/rules/wyrdcry/items.json';
 import universal from '$lib/rules/wyrdcry/universal-abilities.json';
 import campaign from '$lib/rules/wyrdcry/campaign.json';
 import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
-import curatedGrants from '$lib/rules/wyrdcry/item-grants.json';
 import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
 import underdogs from '$lib/rules/wyrdcry/underdogs.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
 	name: 'Wyrdcry',
-	edition: 'v0.9',
+	edition: 'v1.0',
 	author: 'Johan Markström',
 	currency: 'gc',
 	currencyName: 'gold coins',
@@ -115,7 +114,7 @@ export const game: GameSystem = {
 		gainLevels: (fighter, levels) => ({ ...fighter, tally: { ...fighter.tally, renown: (fighter.tally?.renown ?? 0) + levels } }),
 		shardNotes: (warband) =>
 			warband.fighters.flatMap((f) => shardRolls(f).map((name) => `${name} (${f.name.trim() || 'Unnamed fighter'}): on a 1–3 one shard fewer – count it in.`)),
-		/* Crimson Shade (Campaign Book, p. 29): on a 1–2 the 'Kleptomania' lasting injury, which the table calls Sticky Fingers. */
+		/* Crimson Shade (Campaign Book, p. 29): on a 1–2 the 'Sticky Fingers' lasting injury, `kleptomania` by its id. */
 		afterUse: [
 			{ wargear: 'item:crimson-shade', label: 'Crimson Shade roll', hit: '1–2 – Sticky Fingers', miss: '3–6 – nothing', injury: 'kleptomania' }
 		],
@@ -141,7 +140,7 @@ export const game: GameSystem = {
 	},
 	/* Underdogs (Campaign Book, p. 30), an optional rule: 5 reputation behind
 	   picks a bonus, each 5 more another, and every fighter adds 1 to its
-	   renown roll. Each bonus is picked once at most. */
+	   renown roll. Each bonus can be selected once. */
 	underdog: {
 		gap: underdogs.gap,
 		roll: underdogs.roll,
@@ -340,6 +339,8 @@ interface RawRow {
 	name: string;
 	text: string;
 	keywords?: string[];
+	/** Added to the profile, such as Daemonic Chitin's Armour. */
+	bonus?: Record<string, number>;
 	/** A weapon id from `weapons.json`. */
 	weapon?: string;
 }
@@ -420,12 +421,12 @@ interface RawAbility {
 }
 
 /**
- * What a weapon rule or an item adds in one situation only, and what an item
- * gives while carried, kept by hand as the Warband Deck keeps it: the game data
- * says it only in the text. Parry raises the defender's Fight when targeted in
- * melee; the Shield does the same, and against a ranged attack puts the bearer
- * in cover, which goes under Armour without a number, as the In cover mark does:
- * it changes the attacker's Shoot, not the bearer's figures. `expect` is the wording each
+ * What a weapon rule or an item adds in one situation only, kept by hand as the
+ * Warband Deck keeps it: the game data says it only in the text. Parry raises
+ * the defender's Fight when targeted in melee; the Shield does the same, and
+ * against a ranged attack puts the bearer in cover, as the Elven Cloak does
+ * beyond 6" – cover goes under Armour without a number, as the In cover mark
+ * does: it changes the attacker's Shoot, not the bearer's figures. `expect` is the wording each
  * entry was taken from: a development build says when the text has moved away
  * from it, which is the moment the entry is either wrong or no longer needed.
  */
@@ -447,17 +448,6 @@ const conditionsBy = new Map(
 	[...curated(curatedConditions, 'conditions')].map(([key, list]) => [
 		key,
 		list.map(({ entry, name, text }): StatCondition => ({ stat: entry.characteristic, ...(entry.bonus !== null ? { bonus: entry.bonus } : {}), name, text }))
-	])
-);
-
-/* Talents an item gives while it is carried, the Elven Cloak's Stealthy, as rules of their own. */
-const grantsBy = new Map(
-	[...curated(curatedGrants, 'grants')].map(([key, list]) => [
-		key,
-		list.flatMap(({ entry }): Rule[] => {
-			const talent = heroicTalents.find((t) => t.id === entry.talent);
-			return talent ? [{ name: talent.name, text: talent.text, type: talent.type }] : [];
-		})
 	])
 );
 
@@ -538,9 +528,9 @@ const catalogue = new Map<string, Wargear>([
 							text: i.text,
 							...(i.effects.length ? { effects: i.effects.map((e) => ({ stat: e.characteristic, bonus: e.bonus })) } : {}),
 							...(conditionsBy.has(`item:${i.id}`) ? { conditions: conditionsBy.get(`item:${i.id}`) } : {}),
-							...(grantsBy.has(`item:${i.id}`) ? { grants: grantsBy.get(`item:${i.id}`) } : {}),
 							...(i.rarity === 'rare' ? { found: 'a Rarity roll of 6+' } : {}),
-							...(i.type in TRADING_POST ? { group: TRADING_POST[i.type] } : {}),
+							/* A faction's own piece, such as Clan Eshin's Smoke Bomb, is sold in its faction entry only. */
+							...(i.type in TRADING_POST && !('faction' in i) ? { group: TRADING_POST[i.type] } : {}),
 							...(i.type === 'single-use' ? { singleUse: true as const } : {})
 						}
 					]
@@ -705,6 +695,7 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 			name: row.name,
 			text: row.text,
 			keywords: row.keywords,
+			bonus: row.bonus,
 			gear: row.weapon ? [`weapon:${row.weapon}`] : undefined
 		}));
 		return { ...base, roll: table?.name, options };

@@ -19,7 +19,7 @@
     "name": "Oppressor",
     "specialization": "strength",
     "type": "trait",
-    "text": "Once per battle round, when an enemy fighter makes the Retreat action, this fighter can make the 'Cut Them Down' reaction without having to forfeit an action to do so."
+    "text": "Once per battle round, when an enemy fighter makes the Retreat action, this fighter can make the 'Strike Them Down' reaction without having to forfeit an action to do so."
   },
   {
     "id": "staggering-blows",
@@ -34,7 +34,7 @@
     "specialization": "strength",
     "type": "trait",
     "weapon": "melee",
-    "text": "Select a melee weapon type. When making attack actions with weapons of that type, increase its critical damage characteristic by 1.",
+    "text": "Select a melee weapon type. When making attack actions with weapons of that type, add 1 to its critical damage characteristic.",
     "effects": [{ "kind": "crit", "bonus": 1 }]
   },
   {
@@ -42,7 +42,7 @@
     "name": "Shield Bash",
     "specialization": "strength",
     "type": "trait",
-    "text": "This fighter can use a shield to make off-hand attacks. If the off-hand attack scores a hit or critical hit, the target makes a free Retreat action directly away from this fighter."
+    "text": "This fighter can use a shield to make off-hand attacks. The attack deals no damage, but if the hit roll scores a hit or critical hit, the target makes a free Retreat action. You get to decide where it goes."
   },
   {
     "id": "maintain-momentum",
@@ -111,6 +111,13 @@
     "text": "Legendary ability. A fighter can only use this ability if an enemy fighter has been taken down by an attack action made by them this activation. Remove up to 10 damage points allocated to this fighter."
   },
   {
+    "id": "acrobatic",
+    "name": "Acrobatic",
+    "specialization": "agility",
+    "type": "trait",
+    "text": "This fighter can end Retreat actions within 1\" of enemy fighters."
+  },
+  {
     "id": "duelist",
     "name": "Duelist",
     "specialization": "agility",
@@ -122,14 +129,14 @@
     "name": "Infiltrator",
     "specialization": "agility",
     "type": "trait",
-    "text": "When this fighter is set up on the battlefield, it may immediately make a free move action, as long as it ends that move action more than 6\" from enemy fighters."
+    "text": "When this fighter is deployed to the battlefield, it may immediately make a free move action, as long as it ends that move action more than 6\" from enemy fighters."
   },
   {
     "id": "wall-runner",
     "name": "Wall-Runner",
     "specialization": "agility",
     "type": "trait",
-    "text": "This fighter may ignore the first 3\" moved vertically when climbing or falling."
+    "text": "When this fighter makes the Move action, they may ignore the first 3\" moved vertically when climbing or falling."
   },
   {
     "id": "stealthy",
@@ -158,14 +165,14 @@
     "specialization": "agility",
     "type": "quad",
     "legendary": true,
-    "text": "Legendary ability. A fighter cannot use this ability if equipped with a two-handed melee weapon. Add 3 to the Attacks characteristic of melee attack actions made by this fighter until the end of their activation."
+    "text": "Legendary ability. Add 3 to the Attacks characteristic of melee attack actions made by this fighter until the end of their activation."
   },
   {
     "id": "eagle-eyes",
     "name": "Eagle Eyes",
     "specialization": "perception",
     "type": "trait",
-    "text": "When making an attack action using a bow, crossbow or handgun, this fighter may ignore the maximum range of the weapon, but if they do, they must decrease their Shoot characteristic by 1."
+    "text": "When making an attack action using a bow, crossbow or handgun, this fighter may ignore the maximum range of the weapon, but if they do, they must subtract 1 from their Shoot characteristic."
   },
   {
     "id": "reckless",
@@ -193,9 +200,7 @@
     "name": "Surgical Precision",
     "specialization": "perception",
     "type": "trait",
-    "weapon": "ranged",
-    "text": "Select a ranged weapon type. When making attack actions with weapons of that type, increase its Critical Damage characteristic by 1.",
-    "effects": [{ "kind": "crit", "bonus": 1 }]
+    "text": "This fighter's weapons gain the Piercing 1 weapon rule."
   },
   {
     "id": "trick-shot",
@@ -209,7 +214,7 @@
     "name": "Patient Hunter",
     "specialization": "perception",
     "type": "reaction",
-    "text": "When an enemy fighter ends a move action visible to this fighter, this fighter can target that enemy fighter with a free ranged attack action. For that attack action, decrease this fighter's Shoot characteristic by 1."
+    "text": "Once per battle round, when an enemy fighter ends a move action visible to this fighter, this fighter can target that enemy fighter with a free ranged attack action. For that attack action, subtract 1 from this fighter's Shoot characteristic."
   },
   {
     "id": "killing-shot",
@@ -217,7 +222,7 @@
     "specialization": "perception",
     "type": "quad",
     "legendary": true,
-    "text": "Legendary ability. For this fighter's next ranged attack action, increase its Shoot, Hit Damage and Critical Damage characteristics by (X/2)."
+    "text": "Legendary ability. For this fighter's next ranged attack action, add (X/2) to its Shoot, Hit Damage and Critical Damage characteristics."
   },
   {
     "id": "bootlicker",

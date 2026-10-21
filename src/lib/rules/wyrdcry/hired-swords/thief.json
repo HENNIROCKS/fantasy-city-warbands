@@ -12,12 +12,12 @@
     "move": 6,
     "fight": 3,
     "shoot": 4,
-    "defense": 3,
+    "defense": 0,
     "health": 10,
     "bravery": 5
   },
   "keywords": ["human", "hired-sword", "hero"],
-  "gear": ["weapon:throwing-dagger", "weapon:shiv-and-club"],
+  "gear": ["weapon:throwing-dagger", "weapon:club", "weapon:dagger"],
   "choose": null,
   "abilities": [
     {
@@ -27,35 +27,18 @@
       "text": "This fighter may ignore the first 3\" moved vertically when climbing or falling."
     },
     {
+      "id": "fall-back",
+      "name": "Fall Back!",
+      "type": "reaction",
+      "text": "A fighter can make this reaction after they have been allocated the total damage points by a melee attack action. This fighter makes a free Retreat action."
+    },
+    {
       "id": "snatch",
       "name": "Snatch",
       "type": "double",
       "text": "A fighter can use this ability while within 1\" of an enemy fighter carrying a treasure or wyrdstone token. Roll a d6: on a 2+, this fighter steals the token. Then, this fighter makes a free Retreat action."
     }
   ],
-  "weapons": [
-    {
-      "id": "throwing-dagger",
-      "name": "Throwing Dagger",
-      "type": "ranged",
-      "range": { "min": 0, "max": 6 },
-      "attacks": 2,
-      "hit": 1,
-      "crit": 3,
-      "rules": [],
-      "cost": 0
-    },
-    {
-      "id": "shiv-and-club",
-      "name": "Shiv and Club",
-      "type": "melee",
-      "range": { "min": 0, "max": 1 },
-      "attacks": 4,
-      "hit": 2,
-      "crit": 3,
-      "rules": [],
-      "cost": 0
-    }
-  ],
+  "weapons": [],
   "items": []
 }

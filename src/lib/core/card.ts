@@ -5,7 +5,7 @@
  * formatted once, so the card and the roster print read the same.
  */
 
-import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
+import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
 import { LEADER, activeEffects, pickedStats, reaches, type ActiveEffect } from './effects';
 import { keywordsOf } from './leader';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
@@ -220,16 +220,9 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			};
 		});
 
-	/* A rule an item gives, the Elven Cloak's Stealthy, stands right under the
-	   item while it is carried, as on the Warband Deck's card – once, however
-	   many pieces give it. */
-	const given = new Set<string>();
 	const items = carried
 		.filter(({ wargear }) => wargear.kind === 'armour' || wargear.kind === 'item')
-		.flatMap(({ wargear, count }) => [
-			{ label: times(wargear.name, count), text: wargear.text ?? '' },
-			...ruleEntries((wargear.grants ?? []).filter((r) => !given.has(r.name) && given.add(r.name)))
-		]);
+		.map(({ wargear, count }) => ({ label: times(wargear.name, count), text: wargear.text ?? '' }));
 
 	/* As the levels make them – a henchman with three of Wyrdcry's renown is a HERO – and LEADER for one that took the lead. */
 	const keywords = [
@@ -271,13 +264,14 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		weapons.push({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
 	}
 
-	/* A pick that raises a characteristic is in the profile above, and the rule
-	   it comes out of says so. Any other pick – a spell, a mutation – is a rule
-	   of the fighter's own. */
-	const raised = options.some((o) => o.bonus) ? fighter?.choice?.source : undefined;
+	/* A pick that only raises a characteristic is in the profile above, and the
+	   rule it comes out of says so. Any other pick – a spell, a mutation, even
+	   one that raises a characteristic as well – is a rule of the fighter's own. */
+	const raises = (o: FighterChoiceOption) => o.bonus && !o.text;
+	const raised = options.some(raises) ? fighter?.choice?.source : undefined;
 	const ownRules = [
 		...(fighter?.rules ?? []),
-		...options.filter((o) => !o.bonus).map((o) => ({ name: o.name, text: o.text, type: o.type })),
+		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
 		...advanced.rules,
 		...injured.rules
 	];
@@ -305,7 +299,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
 	const statLayers = fighter ? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
-	const statConditions = conditionsOf(carried.map((c) => c.wargear), instance.wargear);
+	const statConditions = conditionsOf(carried.map((c) => c.wargear));
 
 	return {
 		kind: 'fighter',
@@ -388,8 +382,9 @@ function layersOf(
 		});
 	}
 	for (const rule of rules) add(rule.stat, { kind: 'permanent', source: rule.source, amount: rule.bonus });
+	/* What it carries from the start counts as what it bought, a hired sword's Heavy Armour as a warrior's. */
 	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
-	for (const id of instance.wargear) {
+	for (const id of [...fighter.gear, ...instance.wargear]) {
 		const piece = wargear.get(id);
 		for (const effect of piece?.effects ?? []) add(effect.stat, { kind: 'equipment', source: piece!.name, amount: effect.bonus });
 	}
@@ -398,11 +393,11 @@ function layersOf(
 
 /**
  * What can change a characteristic in one situation only: the rules of every
- * weapon the fighter has, its profile's and a mutation's included, and the bought
- * items. A rule two weapons share is named once for each weapon, a second copy of
- * the same weapon adds nothing the first did not say.
+ * weapon the fighter has, its profile's and a mutation's included, and the items
+ * it carries. A rule two weapons share is named once for each weapon, a second
+ * copy of the same weapon adds nothing the first did not say.
  */
-function conditionsOf(carried: Wargear[], bought: string[]): Map<string, CardCondition[]> {
+function conditionsOf(carried: Wargear[]): Map<string, CardCondition[]> {
 	const map = new Map<string, CardCondition[]>();
 	const add = (key: string, condition: CardCondition) => {
 		const list = map.get(key) ?? [];
@@ -413,7 +408,7 @@ function conditionsOf(carried: Wargear[], bought: string[]): Map<string, CardCon
 			for (const rule of piece.rules ?? []) {
 				for (const c of rule.conditions ?? []) add(c.stat, { source: piece.name, name: c.name, text: c.text, amount: c.bonus });
 			}
-		} else if (bought.includes(piece.id)) {
+		} else {
 			for (const c of piece.conditions ?? []) add(c.stat, { source: piece.name, name: c.name, text: c.text, amount: c.bonus });
 		}
 	}

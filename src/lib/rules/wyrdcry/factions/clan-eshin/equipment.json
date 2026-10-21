@@ -9,7 +9,9 @@
   { "id": "weapon:weeping-blade", "allow": "hero" },
   { "id": "weapon:sling", "allow": "all" },
   { "id": "weapon:throwing-stars", "allow": "hero" },
+  { "id": "weapon:throwing-dagger", "allow": "all" },
   { "id": "weapon:warplock-pistol", "allow": "hero" },
   { "id": "item:shield", "allow": "all" },
-  { "id": "item:light-armour", "allow": "hero" }
+  { "id": "item:light-armour", "allow": "hero" },
+  { "id": "item:smoke-bomb", "allow": "all" }
 ]

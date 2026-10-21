@@ -1,5 +1,5 @@
 /**
- * Spending Wyrdcry's renown as the Campaign Book 0.9 has it (pp. 11–15): which
+ * Spending Wyrdcry's renown as the Campaign Book 1.0 has it (pp. 11–15): which
  * levels a fighter has open, what each may raise or teach, and what a spent
  * level does to the card. A level asks for one or two parts – a characteristic,
  * and on some levels a heroic talent as well – and each part spent is an
@@ -34,7 +34,7 @@ function figure(stat: string, value: number): string {
 	return String(value);
 }
 
-/** The most heroic talents a fighter can have, and the specializations they may come from. */
+/** The most heroic talents a fighter can have, and the talent groups they may come from. */
 const MAX_TALENTS = 5;
 const MAX_SPECIALIZATIONS = 2;
 /** The level from which a legendary ability can be picked. */
@@ -42,11 +42,16 @@ const LEGENDARY_FROM = 5;
 /** The level that promotes a henchman to HERO. */
 const PROMOTION = 3;
 
-type Branch = 'henchman' | 'promotion' | 'hero' | 'none';
+type Branch = 'start' | 'henchman' | 'promotion' | 'hero' | 'none';
 type Part = 'stat' | 'rule';
 
-/** What the rules ask of a level: a characteristic always, a talent on a hero's odd levels and at the promotion. */
+/**
+ * What the rules ask of a level: a characteristic always, a talent on a hero's
+ * odd levels and at the promotion – but the level the leader arrives with buys
+ * a talent only (p. 7).
+ */
 function partsOf(branch: Branch, level: number): Part[] {
+	if (branch === 'start') return ['rule'];
 	if (branch === 'promotion' || (branch === 'hero' && level % 2 === 1)) return ['stat', 'rule'];
 	return ['stat'];
 }
@@ -55,6 +60,7 @@ function partsOf(branch: Branch, level: number): Part[] {
 function noteFor(branch: Branch, level: number, needs: Part[]): string {
 	if (branch === 'none') return 'This fighter has neither the HERO nor the HENCHMAN keyword, so the rules do not say what its renown is worth. A characteristic can be raised.';
 	if (branch === 'henchman') return 'A henchman raises a characteristic, and never the same one twice.';
+	if (branch === 'start') return 'The leader arrives with a level of renown, and picks a Heroic Talent with it.';
 	const both = partsOf(branch, level).length === 2;
 	const lead = branch === 'promotion' ? 'This level promotes the henchman to HERO – the card shows it already. ' : '';
 	if (!both) return `${lead}A hero raises a characteristic on every level, and picks a Heroic Talent on every odd one.`;
@@ -69,9 +75,11 @@ function recruited(instance: FighterInstance, fighter: Fighter): string[] {
 
 /**
  * The rule a level falls under, read off the keywords the fighter was recruited
- * with. A henchman's third level is its promotion; from the fourth it is a hero.
+ * with. A leader's first level is the one it was recruited with; a henchman's
+ * third level is its promotion, from the fourth it is a hero.
  */
 function branchOf(keywords: string[], level: number): Branch {
+	if (keywords.includes('leader') && level === 1) return 'start';
 	if (keywords.includes('hero')) return 'hero';
 	if (keywords.includes('henchman')) return level < PROMOTION ? 'henchman' : level === PROMOTION ? 'promotion' : 'hero';
 	return 'none';
@@ -215,7 +223,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		if (talent.legendary && level.level < LEGENDARY_FROM) return `From renown ${LEGENDARY_FROM}`;
 		if (talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)) return 'Another fighter of the warband has it';
 		if (held.length >= MAX_TALENTS) return `Already ${MAX_TALENTS} talents`;
-		if (!specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} specializations`;
+		if (!specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} talent groups`;
 		return null;
 	};
 	const talentRule = (talent: Talent): LevelRule => ({
@@ -251,7 +259,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		stats: offered,
 		rules: [...(abilities.length ? [{ heading: 'Magical abilities', options: abilities }] : []), ...groups],
 		rulesLabel: 'Heroic Talents',
-		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} specializations. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
+		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} talent groups. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
 	};
 }
 
@@ -266,7 +274,8 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 		if (!advance.rule || !ruleHolds(advance, fighter)) continue;
 		const talent = talentOf(advance.rule);
 		if (talent) {
-			const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
+			/* Only a talent that is taken for a weapon names it: one that no longer is, such as Surgical Precision, keeps a weapon picked earlier off the card. */
+			const weapon = advance.option && 'weapon' in talent && talent.weapon ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 			result.rules.push({ name: weapon ? `${talent.name} (${weapon.name})` : talent.name, text: talent.text, type: talent.type });
 			for (const effect of (talent.effects ?? []) as { kind: string; keyword?: string; characteristic?: string; bonus?: number }[]) {
 				if (effect.kind === 'keyword' && effect.keyword) result.keywords.push(effect.keyword);
@@ -304,7 +313,7 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 			talent?.name ??
 			fighter.choice?.options.find((o) => o.id === advance.rule)?.name ??
 			advance.rule.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
-		const weapon = advance.option ? faction.wargear.find((w) => w.id === advance.option) : undefined;
+		const weapon = advance.option && (!talent || ('weapon' in talent && talent.weapon)) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 		const named = weapon ? `${name} (${weapon.name})` : name;
 		if (ruleHolds(advance, fighter)) return named;
 		return talent ? `${named} – not before renown ${LEGENDARY_FROM}` : `${named} – no longer a heroic talent`;

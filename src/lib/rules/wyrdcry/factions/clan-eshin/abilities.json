@@ -9,7 +9,7 @@
     "id": "gnawdoom",
     "name": "Gnawdoom",
     "type": "double",
-    "text": "Magical ability. Select an enemy fighter within 6\" and roll (X) D6. For each roll that exceeds the target’s Armour characteristic, allocate 1 damage point to that enemy fighter."
+    "text": "Magical ability. Select a visible enemy fighter within 6\" and roll (X) dice. For each roll of 2+, allocate 1 damage point to that enemy fighter."
   },
   {
     "id": "one-with-the-shadows",

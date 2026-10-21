@@ -83,6 +83,7 @@
 - [x] 🛠️ Duplicate a fighter with its wargear and choice, and remove one by an icon beside it
 - [x] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included, the choice kept once the warband has fought
 - [x] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
+- [x] 📚 Wyrdcry 1.0: the Rulebook, the Campaign Book and the factions – prices, weapons, Brutal and Poisoned, the wizards' universal abilities, the hired swords as printed, a talent only for the leader's first level
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -106,5 +107,6 @@ Nothing promised, nothing planned.
 - ⚔️ Wyrdcry: Wounded at half Health as a band on the card
 - ⚔️ Wyrdcry: a reminder in round 4 that a dice decides on a fifth
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
-- 📚 Wyrdcry: Channel Magic and the wizards' own abilities, once the 1.0 rulebook fills them in
+- 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card
+- ⚔️ Wyrdcry: Poisoned as a state on the card, as Panicked is, with the roll on activation
 - 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding

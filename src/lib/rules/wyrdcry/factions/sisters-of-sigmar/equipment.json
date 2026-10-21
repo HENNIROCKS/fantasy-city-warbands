@@ -9,5 +9,6 @@
   { "id": "weapon:sling", "allow": "all" },
   { "id": "item:shield", "allow": "all" },
   { "id": "item:light-armour", "allow": "all" },
-  { "id": "item:heavy-armour", "allow": "hero" }
+  { "id": "item:heavy-armour", "allow": "hero" },
+  { "id": "item:prayer-beads", "allow": "all" }
 ]

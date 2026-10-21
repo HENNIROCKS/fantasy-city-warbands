@@ -4,52 +4,46 @@
   "origin": "official",
   "version": "1.0",
   "author": "Johan Markström",
-  "cost": 80,
+  "cost": 70,
   "limit": { "min": 0, "max": 1 },
-  "may_hire": [
-    "mercenaries",
-    "possessed",
-    "sisters-of-sigmar",
-    "undead",
-    "witch-hunters"
-  ],
+  "may_hire": ["mercenaries", "possessed", "sisters-of-sigmar", "undead", "witch-hunters"],
   "description": "A warband backed up by an Ogre makes a fearsome enemy, since Ogres are extremely dangerous fighters and a terrifying sight to behold when enraged.",
   "profile": {
     "move": 5,
     "fight": 5,
-    "shoot": 2,
-    "defense": 4,
-    "health": 20,
+    "shoot": 3,
+    "defense": 1,
+    "health": 18,
     "bravery": 4
   },
   "keywords": ["ogre", "hired-sword", "hero"],
-  "gear": ["weapon:ogre-great-weapon"],
+  "gear": ["weapon:ogre-weapon"],
   "choose": null,
   "abilities": [
-    {
-      "id": "whack",
-      "name": "Whack",
-      "type": "double",
-      "text": "Select an enemy fighter within 1\" of this fighter. That fighter makes a free move action directly away from this fighter, as if it jumped. When making that move action, it can move up to (X)\". If it cannot move away from this fighter, allocate (X/2) damage points to that fighter instead."
-    },
     {
       "id": "bodyguard",
       "name": "Bodyguard",
       "type": "reaction",
       "text": "A fighter can make this reaction when a friendly `HERO` within 1\" is targeted by an attack action. That attack action targets this fighter instead."
+    },
+    {
+      "id": "whack",
+      "name": "Whack",
+      "type": "double",
+      "text": "After this fighter's next melee attack action, if any damage was allocated to the target, it makes a free retreat action. You get to decide where it goes. For that retreat action the target may fly, however it cannot move vertically upwards more than 2\" when doing so. Allocate (X/2) damage points to the target if it is touching an obstacle or another fighter at the end of the retreat action."
     }
   ],
   "weapons": [
     {
-      "id": "ogre-great-weapon",
-      "name": "Ogre Great Weapon",
+      "id": "ogre-weapon",
+      "name": "Ogre Weapon",
       "type": "melee",
       "range": { "min": 0, "max": 1 },
       "attacks": 3,
       "hit": 3,
       "crit": 5,
-      "rules": ["pierce-1", "two-handed"],
-      "cost": 45
+      "rules": ["parry", "pierce-1"],
+      "cost": 0
     }
   ],
   "items": []

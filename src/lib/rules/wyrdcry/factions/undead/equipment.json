@@ -7,6 +7,7 @@
 	{ "id": "weapon:sword", "allow": "hero" },
 	{ "id": "weapon:flail", "allow": "hero" },
 	{ "id": "weapon:warhammer", "allow": "hero" },
+	{ "id": "weapon:morning-star", "allow": "hero" },
 	{ "id": "weapon:great-weapon", "allow": "hero" },
 	{ "id": "weapon:bow", "allow": "hero" },
 	{ "id": "item:shield", "allow": "hero" },

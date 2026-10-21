@@ -5,6 +5,6 @@
   "warband_size": { "min": 3, "max": 15 },
   "origin": "homebrew",
   "version": "0.2",
-  "may_hire": ["ogre-bodyguard", "warlock"],
+  "may_hire": ["ogre-bodyguard", "rat-ogre", "warlock"],
   "author": "Hendrik Berends"
 }

@@ -105,7 +105,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Game | Rules the data follows |
 | --- | --- |
 | Black Death City | Playtest v1.03 |
-| Wyrdcry | 0.9, core rules 1.0 WIP, Campaign Book 0.9 |
+| Wyrdcry | 1.0 – Rulebook, Campaign Book and the factions at wyrdcry.net |
 | Mordheim | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
@@ -191,10 +191,11 @@ first and publishes it to GitHub Pages.
 
 ## Where the rules come from
 
-- **Wyrdcry** – copied unchanged from the hand-kept ruleset of the
-  [Wyrdcry Warband Deck](https://github.com/HENNIROCKS/wyrdcry-warband-deck),
-  which follows the rules at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is
-  by Johan Markström; the rules belong to the Wyrdcry project.
+- **Wyrdcry** – kept by hand in the shape of the
+  [Wyrdcry Warband Deck](https://github.com/HENNIROCKS/wyrdcry-warband-deck)'s
+  ruleset, and following Wyrdcry 1.0: the Rulebook and the Campaign Book
+  1.0 and the factions at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is by
+  Johan Markström; the rules belong to the Wyrdcry project.
 - **Black Death City** – transcribed by hand from the Black Death City
   Playtest v1.03 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.

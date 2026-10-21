@@ -591,8 +591,6 @@ export interface Wargear {
 	effects?: StatEffect[];
 	/** What it adds in one situation only, such as the Shield's Fight against a melee attack. */
 	conditions?: StatCondition[];
-	/** Rules the bearer has while carrying it, such as the Elven Cloak's Stealthy. */
-	grants?: Rule[];
 	/** Whether it is used up once used, such as Wyrdcry's drugs and poisons: the aftermath asks who used one and strikes it. */
 	singleUse?: true;
 }

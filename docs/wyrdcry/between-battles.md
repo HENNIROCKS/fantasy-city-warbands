@@ -14,7 +14,8 @@ in the same visit.
 - write a name, fluff and notes, and add a photo of the model
 - move equipment to the stash and back
 - correct renown, injuries and why a fighter sits out
-- spend renown
+- spend renown. Your leader starts with one level, which buys a heroic
+  talent only
 - dismiss the fighter. Nothing is paid back.
 
 **The back of the warband card.** Name, colour, fluff and notes. You can also

@@ -33,18 +33,18 @@
     "id": "unfeeling-flesh",
     "name": "Unfeeling Flesh",
     "type": "trait",
-    "text": "When resolving an attack action against this fighter, if none of the hit rolls score a critical hit, this fighter's Armour characteristic is 1 for that attack action."
+    "text": "When resolving an attack action against this fighter, if none of the hit rolls score a critical hit, add 1 to this fighter's Armour characteristic."
   },
   {
     "id": "shambling-horde",
     "name": "Shambling Horde",
     "type": "double",
-    "text": "Select up to 3 visible friendly fighters with the `ZOMBIE` keyword. Those fighters can each immediately make a bonus move action of up to 3\", as long as they end that move action closer to this fighter."
+    "text": "Select up to (X/2) visible friendly fighters with the `ZOMBIE` keyword. Those fighters can each immediately make a free move action of up to 3\", as long as they end that move action closer to this fighter."
   },
   {
     "id": "bloody-feast",
-    "name": "Bloody Feast",
+    "name": "Gory Feast",
     "type": "double",
-    "text": "A `GHOUL` can use this ability if an enemy fighter was taken down by an attack action made by them this activation. Remove (X/2) damage points from each other visible friendly `GHOUL` within 2\" of this fighter."
+    "text": "A `GHOUL` can use this ability if an enemy fighter was taken down by an attack action made by them this activation. Remove (X/2) damage points from each friendly `GHOUL` within 2\" of this fighter."
   }
 ]

@@ -7,6 +7,7 @@
 	{ "id": "weapon:spear", "allow": "all" },
 	{ "id": "weapon:sword", "allow": "all" },
 	{ "id": "weapon:warhammer", "allow": "all" },
+	{ "id": "weapon:morning-star", "allow": "all" },
 	{ "id": "weapon:bow", "allow": "all" },
 	{ "id": "weapon:crossbow", "allow": "hero" },
 	{ "id": "weapon:crossbow-pistol", "allow": "hero" },

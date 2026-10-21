@@ -33,6 +33,6 @@
 		"id": "death-grip",
 		"name": "Death Grip",
 		"type": "double",
-		"text": "After this fighter's next melee attack action in this activation, if at least 1 hit roll from that attack action results in a hit or a critical hit, the target forfeits 1 of their actions in this battle round. If the target has already activated or if they have no more actions to forfeit, allocate 3 damage points to the target instead."
+		"text": "After this fighter's next melee attack action in this activation, if any hit roll results in a hit or a critical hit, they must forfeit 1 of their actions in this battle round."
 	}
 ]

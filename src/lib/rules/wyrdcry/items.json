@@ -14,7 +14,7 @@
     "slot": null,
     "name": "Crimson Shade",
     "type": "single-use",
-    "text": "The bearer may use this item as a free action. Until the end of the battle, increase the bearer's Move and Fight characteristics by 1. In the aftermath sequence, roll a dice. On a 1-2, the fighter gains the 'Kleptomania' lasting injury.",
+    "text": "The bearer may use this item as a free action. If they do, add 1 to their Move and Fight characteristics until the end of the battle. Then, in the aftermath sequence, roll a dice. On a 1-2, the fighter gains the 'Sticky Fingers' lasting injury.",
     "effects": [],
     "cost": 15,
     "rarity": "common"
@@ -24,9 +24,9 @@
     "slot": null,
     "name": "Dark Venom",
     "type": "single-use",
-    "text": "The bearer may use this item on one of their weapons as a free action. Until the end of the battle, add 1 to the damage points allocated to enemy fighters by each critical hit.",
+    "text": "The bearer may use this item on one of their weapons as a free action. Until the end of the battle, that weapon gains the poisoned weapon rule.",
     "effects": [],
-    "cost": 10,
+    "cost": 15,
     "rarity": "rare"
   },
   {
@@ -34,7 +34,7 @@
     "slot": null,
     "name": "Elven Cloak",
     "type": "miscellaneous",
-    "text": "While wearing this cloak, the bearer is considered to have the 'Stealthy' talent.",
+    "text": "When this fighter is targeted by a ranged attack action, it is considered to be in cover if it is more than 6\" away from the attacking fighter.",
     "effects": [],
     "cost": 50,
     "rarity": "rare"
@@ -74,7 +74,7 @@
     "slot": "body",
     "name": "Heavy Armour",
     "type": "armour",
-    "text": "Increase the bearer's Armour characteristic by 3, and decrease their Move characteristic by 1.",
+    "text": "Add 3 to the bearer's Armour characteristic, and subtract 1 from their Move characteristic.",
     "effects": [
       { "characteristic": "defense", "bonus": 3 },
       { "characteristic": "move", "bonus": -1 }
@@ -87,19 +87,29 @@
     "slot": null,
     "name": "Holy Relic",
     "type": "miscellaneous",
-    "text": "Start each battle with one additional Wyrd Dice.",
+    "text": "If the bearer is included in your warband, you begin each battle with 1 additional Wyrd dice.",
     "effects": [],
     "cost": 60,
     "rarity": "rare"
+  },
+  {
+    "id": "hunting-arrows",
+    "slot": null,
+    "name": "Hunting Arrows",
+    "type": "single-use",
+    "text": "The bearer may use this item on one of their ranged weapons as a free action. Until the end of the battle, that weapon gains the piercing 1 weapon rule.",
+    "effects": [],
+    "cost": 10,
+    "rarity": "common"
   },
   {
     "id": "lantern",
     "slot": null,
     "name": "Lantern",
     "type": "miscellaneous",
-    "text": "Friendly fighters may re-roll failed Bravery tests while within 3\" of this fighter. However, enemy fighters may increase their Shoot characteristic by 1 when targeting this fighter with ranged attack actions.",
+    "text": "Subtract 1 from the Bravery characteristic of friendly fighters within 3\" of this fighter. However, enemy fighters may add 1 to their Shoot characteristic when targeting this fighter with ranged attack actions.",
     "effects": [],
-    "cost": 20,
+    "cost": 10,
     "rarity": "common"
   },
   {
@@ -107,7 +117,7 @@
     "slot": "body",
     "name": "Light Armour",
     "type": "armour",
-    "text": "Increase the bearer's Armour characteristic by 1.",
+    "text": "Add 1 to the bearer's Armour characteristic.",
     "effects": [{ "characteristic": "defense", "bonus": 1 }],
     "cost": 30,
     "rarity": "common"
@@ -117,9 +127,9 @@
     "slot": null,
     "name": "Lucky Charm",
     "type": "single-use",
-    "text": "Once per battle, when the bearer is targeted by an attack action and after hit rolls have been made, you may use this item to turn one critical hit into a hit.",
+    "text": "The bearer may use this item when targeted by an attack action, after the hit rolls have been made, to turn one critical hit into a hit.",
     "effects": [],
-    "cost": 20,
+    "cost": 15,
     "rarity": "common"
   },
   {
@@ -127,9 +137,9 @@
     "slot": null,
     "name": "Mad Cap Mushrooms",
     "type": "single-use",
-    "text": "The bearer may use this item as a free action. Until the end of the battle, increase this fighter's Fight characteristic by 3. It also gains the 'Stupidity' trait for the duration of the battle.",
+    "text": "The bearer may use this item as a free action. Add 3 to this fighter's Fight characteristic until the end of the battle. It also gains the 'Stupidity' injury for the duration of the battle.",
     "effects": [],
-    "cost": 10,
+    "cost": 15,
     "rarity": "common"
   },
   {
@@ -137,7 +147,7 @@
     "slot": null,
     "name": "Master-Wrought Weapon",
     "type": "miscellaneous",
-    "text": "Purchase a weapon from the fighter's faction entry, and increase its gold coin cost by 100 gold coin. Then, increase its hit damage and critical damage characteristics by 1.",
+    "text": "Purchase a weapon from the fighter's faction entry, and increase its gold coin cost by 100 gold coin. Then, add 1 to its hit damage and critical damage characteristics.",
     "effects": [],
     "cost": "+100",
     "rarity": "rare"
@@ -147,17 +157,28 @@
     "slot": null,
     "name": "Mordheim Map",
     "type": "miscellaneous",
-    "text": "When setting up a battle, you may decide the orientation of the deployment map, regardless of you being the Attacker or the Defender. If both you and your opponent have a Mordheim Map, roll off.",
+    "text": "When this fighter's search party is deployed to the battlefield, each fighter in it can make a free Move action.",
     "effects": [],
     "cost": 80,
     "rarity": "rare"
+  },
+  {
+    "id": "prayer-beads",
+    "slot": null,
+    "name": "Prayer Beads",
+    "type": "miscellaneous",
+    "text": "Once per battle round, this fighter can re-roll a failed Bravery test.",
+    "effects": [],
+    "cost": 15,
+    "rarity": "common",
+    "faction": "sisters-of-sigmar"
   },
   {
     "id": "rope-and-hook",
     "slot": null,
     "name": "Rope and Hook",
     "type": "miscellaneous",
-    "text": "When the bearer climbs, the distance they move is not halved and always counts as climbing up or down a ladder.",
+    "text": "When the bearer climbs, they count as climbing a ladder. When climbing down, count only half of the vertical distance moved toward the fighter's Move characteristic (rounding up).",
     "effects": [],
     "cost": 10,
     "rarity": "common"
@@ -173,13 +194,24 @@
     "rarity": "common"
   },
   {
+    "id": "smoke-bomb",
+    "slot": null,
+    "name": "Smoke Bomb",
+    "type": "single-use",
+    "text": "The bearer may use this item to make a free Retreat action. During that action, enemy fighters within 3\" of the bearer cannot make reactions.",
+    "effects": [],
+    "cost": 15,
+    "rarity": "rare",
+    "faction": "clan-eshin"
+  },
+  {
     "id": "superior-blackpowder",
     "slot": null,
     "name": "Superior Blackpowder",
     "type": "single-use",
     "text": "The bearer may use this item as a free action. Until the end of the battle, remove the blackpowder special rule from all equipped blackpowder weapons.",
     "effects": [],
-    "cost": 10,
+    "cost": 15,
     "rarity": "common"
   },
   {
@@ -187,7 +219,7 @@
     "slot": null,
     "name": "Unholy Relic",
     "type": "miscellaneous",
-    "text": "Start each battle with one additional Wyrd Dice.",
+    "text": "If the bearer is included in your warband, you begin each battle with 1 additional Wyrd dice.",
     "effects": [],
     "cost": 60,
     "rarity": "rare"

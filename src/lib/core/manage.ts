@@ -1,5 +1,5 @@
 /**
- * Managing a warband between battles, as Wyrdcry's Campaign Book 0.9 has it
+ * Managing a warband between battles, as Wyrdcry's Campaign Book 1.0 has it
  * (step 5 of the aftermath, p. 10): fighters are recruited and equipped in the
  * builder under the same checks as when the warband was first built, and
  * dismissed on the back of their card, their equipment to the stash or with

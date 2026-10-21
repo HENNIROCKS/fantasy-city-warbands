@@ -178,7 +178,7 @@
 	   checkbox buys. */
 	let reading = $state<string | null>(null);
 
-	const readable = (w: Wargear) => !!(w.text || w.profile || w.rules?.length || w.grants?.length);
+	const readable = (w: Wargear) => !!(w.text || w.profile || w.rules?.length);
 
 	/** `Range 1" · Attacks 3 · Damage 2/4`, in the order the game prints a weapon. */
 	const profileLine = (w: Wargear) =>
@@ -481,7 +481,7 @@
 													<div id="read-{checkId(w.id)}" class="check-detail">
 														{#if w.profile}<p>{profileLine(w)}</p>{/if}
 														{#if w.text}<RichText text={w.text} />{/if}
-														{#each [...(w.rules ?? []), ...(w.grants ?? [])] as rule, i (i)}
+														{#each w.rules ?? [] as rule, i (i)}
 															<div><strong>{rule.name}</strong><RichText text={rule.text} /></div>
 														{/each}
 													</div>
