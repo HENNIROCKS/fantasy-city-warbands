@@ -138,6 +138,12 @@ zuerst am Deck verglichen. Abweichend vom Deck sind die Sheets über dem Deck
 (AftermathSheet, RenownSheet) als Kartenrückseite gesetzt (`.card.back.sheet`),
 nicht im Stil der App; das ist gewollt und wird nicht ans Deck angeglichen.
 
+Auf Kartenrückseiten und Sheets runden alle Buttons mit `--card-button-radius`,
+Felder und Kästen nicht. Ein Ja oder Nein ist eine `.switch-row`, eine Wahl
+zwischen mehreren Antworten ein Segment oder gestapelte Buttons. `.switch` ist
+der Schalter der Settings im App-Stil, global in `@layer components` – nicht für
+Karten.
+
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
 genau ausgelegt, eine Änderung an ihr wird gemessen.
