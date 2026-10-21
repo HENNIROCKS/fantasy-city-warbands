@@ -30,7 +30,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - See a faction before picking it: its fighters with their costs and limits,
   its choice and its rules
 - Recruit fighters and give them wargear from what their faction allows them,
-  with the fighter's profile in the game's own notation – `5"`, `3+`, `–`
+  with the fighter's profile in the game's own notation – `5"`, `3+`, `–`;
+  duplicate one to recruit another of its kind with the same wargear and
+  choice
 - Keep a Wyrdcry fighter within what it may carry: two hands and one ranged
   slot, one body armour, no armour for a WIZARD, nothing at all for a BEAST.
   Wargear is a checklist: what a fighter could never take is named in a hint

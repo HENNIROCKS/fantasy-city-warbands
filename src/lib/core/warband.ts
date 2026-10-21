@@ -197,6 +197,19 @@ export function withFighter(warband: Warband, fighterId: string, faction: Factio
 	return { ...warband, fighters: inRankOrder([...warband.fighters, recruit], faction, game) };
 }
 
+/**
+ * Another recruit of the fighter's type, picking and carrying what it does.
+ * Nothing it gained or lost in a campaign comes along, nor its name or texts.
+ */
+export function withCopy(warband: Warband, instanceId: string, faction: Faction, game: GameSystem): Warband {
+	const model = warband.fighters.find((f) => f.instanceId === instanceId);
+	if (!model) return warband;
+	const added = withFighter(warband, model.fighterId, faction, game);
+	const recruit = added.fighters.find((f) => !warband.fighters.includes(f))!;
+	const copy = { ...recruit, wargear: [...model.wargear], picks: [...(model.picks ?? [])] };
+	return { ...added, fighters: added.fighters.map((f) => (f === recruit ? copy : f)) };
+}
+
 export function withInstance(warband: Warband, instance: FighterInstance, index: number): Warband {
 	const fighters = [...warband.fighters];
 	fighters.splice(Math.min(index, fighters.length), 0, instance);

@@ -17,7 +17,9 @@
 		onsearch,
 		onbuy,
 		onremove,
-		removeBlocked = null
+		removeBlocked = null,
+		onduplicate,
+		duplicateBlocked = null
 	}: {
 		instance: FighterInstance;
 		game: GameSystem;
@@ -56,6 +58,10 @@
 		onremove: () => void;
 		/** What would stop this fighter from being removed, such as the GOBLINs it leaves without enough ORCs; null where nothing. */
 		removeBlocked?: Issue | null;
+		/** Recruits another of its type, picking and carrying what it does. */
+		onduplicate: () => void;
+		/** What would stop that recruit, such as the fighter's limit or the gold; null where nothing. */
+		duplicateBlocked?: Issue | null;
 	} = $props();
 
 	const KINDS: { kind: WargearKind; label: string }[] = [
@@ -235,19 +241,53 @@
 			placeholder="Name your {fighter?.name ?? instance.fighterId}"
 			aria-label="Fighter name"
 		/>
-		<div class="mt-1 flex items-center justify-between gap-2">
-			<p class="min-w-0 text-zinc-400">
+		<!-- Where two reasons leave the type too little room, the actions move under it. -->
+		<div class="mt-1 flex flex-wrap items-center justify-between gap-x-2">
+			<p class="text-zinc-400">
 				{fighter?.name ?? instance.fighterId} · {fighterCost(instance, faction)}&nbsp;{game.currency}
 			</p>
-			{#if !paid}
-				<button
-					type="button"
-					class="min-h-11 shrink-0 rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white disabled:pointer-events-none"
-					aria-label={removeBlocked ? `Remove ${label}: ${removeBlocked.message}` : `Remove ${label}`}
-					disabled={removeBlocked !== null}
-					onclick={onremove}>{#if removeBlocked}<span class="font-semibold" style="color: var(--ui-warn-text)">{removeBlocked.short}</span>{:else}Remove{/if}</button
-				>
-			{/if}
+			<!-- A blocked action says why in place of its icon. -->
+			<div class="ml-auto flex shrink-0 items-center">
+				{#if !closed}
+					<button
+						type="button"
+						class="flex min-h-11 min-w-11 items-center justify-center rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white disabled:pointer-events-none"
+						aria-label={duplicateBlocked ? `Duplicate ${label}: ${duplicateBlocked.message}` : `Duplicate ${label}`}
+						title="Duplicate"
+						disabled={duplicateBlocked !== null}
+						onclick={onduplicate}
+					>
+						{#if duplicateBlocked}
+							<span class="font-semibold" style="color: var(--ui-warn-text)">{duplicateBlocked.short}</span>
+						{:else}
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<rect x="5.5" y="5.5" width="8" height="8" rx="1" />
+								<path d="M10.5 2.5h-7a1 1 0 0 0-1 1v7" />
+							</svg>
+						{/if}
+					</button>
+				{/if}
+				{#if !paid}
+					<button
+						type="button"
+						class="flex min-h-11 min-w-11 items-center justify-center rounded px-3 text-zinc-400 transition hover:bg-zinc-700 hover:text-white focus-visible:bg-zinc-700 focus-visible:text-white disabled:pointer-events-none"
+						aria-label={removeBlocked ? `Remove ${label}: ${removeBlocked.message}` : `Remove ${label}`}
+						title="Remove"
+						disabled={removeBlocked !== null}
+						onclick={onremove}
+					>
+						{#if removeBlocked}
+							<span class="font-semibold" style="color: var(--ui-warn-text)">{removeBlocked.short}</span>
+						{:else}
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<line x1="2.5" y1="4" x2="13.5" y2="4" />
+								<path d="M6 4V2.5h4V4" />
+								<path d="M4 4l.8 9.5h6.4L12 4" />
+							</svg>
+						{/if}
+					</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 

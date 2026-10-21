@@ -26,6 +26,7 @@
 		fighterSections,
 		fighterType,
 		roleOf,
+		withCopy,
 		withFighter,
 		withInstance,
 		withPicks,
@@ -348,6 +349,37 @@
 		removed = { instance, index, label };
 	}
 
+	/**
+	 * The warband with a copy of the fighter, its found pieces counted as bought,
+	 * and what stops it: a rare piece with no copy found since the battle left to
+	 * buy, or any excess the copy brings.
+	 */
+	function copied(instanceId: string): { after: Warband; copy: FighterInstance | null; block: Issue | null } {
+		const before = $state.snapshot(warband) as Warband;
+		let after = withCopy(before, instanceId, faction!, system!.game);
+		const copy = after.fighters.find((f) => !before.fighters.some((g) => g.instanceId === f.instanceId)) ?? null;
+		for (const id of copy?.wargear ?? []) {
+			const piece = faction!.wargear.find((w) => w.id === id);
+			if (piece?.found && findsOf(before) && !leftOf(after, id)) {
+				const message = `${piece.name} is rare: no copy found since the last battle is left to buy.`;
+				return { after, copy, block: { code: 'wargear-unfound', kind: 'excess', message, short: 'None found left' } };
+			}
+			after = buy(after, id, 1);
+		}
+		return { after, copy, block: blockedBy(after) };
+	}
+
+	/* The copy falls in at the end of its role, maybe off screen, so the page follows it. */
+	async function duplicateFighter(instanceId: string) {
+		if (!warband || !faction || !system) return;
+		const { after, copy, block } = copied(instanceId);
+		if (!copy || block) return;
+		warband.fighters = after.fighters;
+		warband.finds = after.finds;
+		await tick();
+		document.getElementById(`fighter-${copy.instanceId}`)?.scrollIntoView({ block: 'nearest' });
+	}
+
 	function undoRemove() {
 		if (!warband || !removed) return;
 		warband.fighters = withInstance(warband, removed.instance, removed.index).fighters;
@@ -583,6 +615,8 @@
 						{onbuy}
 						onremove={() => removeFighter(instance.instanceId)}
 						removeBlocked={removeBlockedBy(instance.instanceId)}
+						onduplicate={() => duplicateFighter(instance.instanceId)}
+						duplicateBlocked={copied(instance.instanceId).block}
 					/>
 				{/each}
 			</div>

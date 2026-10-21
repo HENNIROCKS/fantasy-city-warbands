@@ -80,6 +80,7 @@
 - [x] 🛠️ What a piece of wargear does, unfolded in the builder's checklist before it is bought
 - [x] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
 - [x] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
+- [x] 🛠️ Duplicate a fighter with its wargear and choice, and remove one by an icon beside it
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -107,4 +108,3 @@ Nothing promised, nothing planned.
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
 - 📚 Wyrdcry: Channel Magic and the wizards' own abilities, once the 1.0 rulebook fills them in
 - 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding
-- ⚙️ Duplicate a fighter

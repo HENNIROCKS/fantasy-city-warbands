@@ -16,6 +16,17 @@ yet. Beside each warband:
 - ![Delete](icons/delete.svg) **Delete** removes it, after a question that
   offers the export first.
 
+## In the builder
+
+Beside each fighter's type and cost:
+
+- ![Duplicate](icons/duplicate.svg) **Duplicate** recruits another of its
+  kind, with the same wargear and choice, at its full price. Name it yourself.
+- ![Remove](icons/delete.svg) **Remove** takes it out again. After a battle a
+  fighter is paid for, and is dismissed on the back of its card instead.
+
+Where one would go too far, the button says why in place of its icon.
+
 ## At the top
 
 - ![Settings](icons/settings.svg) **Settings** – the settings, these guides

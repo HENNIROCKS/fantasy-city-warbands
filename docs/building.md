@@ -18,4 +18,8 @@ what it does – a weapon's profile and rules, an item's text – and tick the b
 to buy it. Where a fighter may carry two of a piece, a button under it adds
 the second.
 
+**Another of the same.** Duplicate beside a fighter recruits another of its
+kind with the same equipment and choice, at its full price. Give it a name of
+its own.
+
 [All guides](README.md)
