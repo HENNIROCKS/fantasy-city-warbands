@@ -205,9 +205,9 @@ export function withCopy(warband: Warband, instanceId: string, faction: Faction,
 	const model = warband.fighters.find((f) => f.instanceId === instanceId);
 	if (!model) return warband;
 	const added = withFighter(warband, model.fighterId, faction, game);
-	const recruit = added.fighters.find((f) => !warband.fighters.includes(f))!;
+	const recruit = added.fighters.find((f) => !warband.fighters.some((g) => g.instanceId === f.instanceId))!;
 	const copy = { ...recruit, wargear: [...model.wargear], picks: [...(model.picks ?? [])] };
-	return { ...added, fighters: added.fighters.map((f) => (f === recruit ? copy : f)) };
+	return { ...added, fighters: added.fighters.map((f) => (f.instanceId === recruit.instanceId ? copy : f)) };
 }
 
 export function withInstance(warband: Warband, instance: FighterInstance, index: number): Warband {

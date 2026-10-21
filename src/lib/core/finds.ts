@@ -11,6 +11,7 @@
  */
 
 import { keywordsOf } from './leader';
+import { withCopy } from './warband';
 import type { Faction, FighterInstance, Finds, GameSystem, Issue, Warband } from './types';
 
 /** The searches since the warband's last battle; none before its first or once another is written down. */
@@ -50,6 +51,30 @@ export function buy(warband: Warband, id: string, change: number): Warband {
 	if (!finds?.found.some((f) => f.id === id)) return warband;
 	const found = finds.found.map((f) => (f.id === id ? { ...f, bought: Math.max(0, (f.bought ?? 0) + change) } : f));
 	return { ...warband, finds: { ...finds, found } };
+}
+
+/**
+ * The warband with a copy of the fighter, its found pieces counted as bought.
+ * A rare piece with no copy found since the battle left to buy stops it; any
+ * other excess the copy brings is for `validate` to tell.
+ */
+export function copied(
+	warband: Warband,
+	instanceId: string,
+	faction: Faction,
+	game: GameSystem
+): { warband: Warband; copy: FighterInstance | null; issue: Issue | null } {
+	let after = withCopy(warband, instanceId, faction, game);
+	const copy = after.fighters.find((f) => !warband.fighters.some((g) => g.instanceId === f.instanceId)) ?? null;
+	for (const id of copy?.wargear ?? []) {
+		const piece = faction.wargear.find((w) => w.id === id);
+		if (piece?.found && findsOf(warband) && !leftOf(after, id)) {
+			const message = `${piece.name} is rare: no copy found since the last battle is left to buy.`;
+			return { warband: after, copy, issue: { code: 'wargear-unfound', kind: 'excess', message, short: 'None found left' } };
+		}
+		after = buy(after, id, 1);
+	}
+	return { warband: after, copy, issue: null };
 }
 
 /**

@@ -15,7 +15,7 @@
 	import { activeEffects, limitOf } from '$lib/core/effects';
 	import { deadLeaders } from '$lib/core/leader';
 	import { paidFor } from '$lib/core/manage';
-	import { buy, findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
+	import { buy, copied, findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
@@ -26,7 +26,6 @@
 		fighterSections,
 		fighterType,
 		roleOf,
-		withCopy,
 		withFighter,
 		withInstance,
 		withPicks,
@@ -349,31 +348,18 @@
 		removed = { instance, index, label };
 	}
 
-	/**
-	 * The warband with a copy of the fighter, its found pieces counted as bought,
-	 * and what stops it: a rare piece with no copy found since the battle left to
-	 * buy, or any excess the copy brings.
-	 */
-	function copied(instanceId: string): { after: Warband; copy: FighterInstance | null; block: Issue | null } {
-		const before = $state.snapshot(warband) as Warband;
-		let after = withCopy(before, instanceId, faction!, system!.game);
-		const copy = after.fighters.find((f) => !before.fighters.some((g) => g.instanceId === f.instanceId)) ?? null;
-		for (const id of copy?.wargear ?? []) {
-			const piece = faction!.wargear.find((w) => w.id === id);
-			if (piece?.found && findsOf(before) && !leftOf(after, id)) {
-				const message = `${piece.name} is rare: no copy found since the last battle is left to buy.`;
-				return { after, copy, block: { code: 'wargear-unfound', kind: 'excess', message, short: 'None found left' } };
-			}
-			after = buy(after, id, 1);
-		}
-		return { after, copy, block: blockedBy(after) };
+	/** What stops a copy of the fighter: a rare piece none is left of, or an excess the copy brings. */
+	function copyBlockedBy(instanceId: string): Issue | null {
+		const { warband: after, issue } = copied(warband!, instanceId, faction!, system!.game);
+		return issue ?? blockedBy(after);
 	}
 
 	/* The copy falls in at the end of its role, maybe off screen, so the page follows it. */
 	async function duplicateFighter(instanceId: string) {
 		if (!warband || !faction || !system) return;
-		const { after, copy, block } = copied(instanceId);
-		if (!copy || block) return;
+		if (copyBlockedBy(instanceId)) return;
+		const { warband: after, copy } = copied($state.snapshot(warband) as Warband, instanceId, faction, system.game);
+		if (!copy) return;
 		warband.fighters = after.fighters;
 		warband.finds = after.finds;
 		await tick();
@@ -616,7 +602,7 @@
 						onremove={() => removeFighter(instance.instanceId)}
 						removeBlocked={removeBlockedBy(instance.instanceId)}
 						onduplicate={() => duplicateFighter(instance.instanceId)}
-						duplicateBlocked={copied(instance.instanceId).block}
+						duplicateBlocked={copyBlockedBy(instance.instanceId)}
 					/>
 				{/each}
 			</div>
