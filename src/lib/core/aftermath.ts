@@ -14,6 +14,7 @@ import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
+import { standingRaised, type UnderdogState } from './underdog';
 import { newId } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
@@ -55,6 +56,8 @@ export interface AftermathDraft {
 	excluded: string[];
 	/** Who was hired for the battle and leaves with it, and the fee that comes off the gold left. */
 	hired: { name: string; fee: number }[];
+	/** The warband as the underdog of the battle: what it adds to each roll and the bonuses it picked. Null where it was not one. */
+	underdog: UnderdogState | null;
 	/** The fighters marked to roll twice, in the order they were marked. */
 	marked: string[];
 	/** Who takes the lead where the leader dies, by instance id; null while none is picked. */
@@ -93,7 +96,8 @@ export function startAftermath(
 	fighters: AftermathFighter[],
 	battle: BattleState | null,
 	history: BattleRecord[] = [],
-	hired: AftermathDraft['hired'] = []
+	hired: AftermathDraft['hired'] = [],
+	underdog: UnderdogState | null = null
 ): AftermathDraft {
 	const earns = (f: AftermathFighter) => !f.keywordIds.some((k) => rules.excluded.includes(k));
 	const since = today(battle ? new Date(battle.startedAt) : undefined);
@@ -113,6 +117,7 @@ export function startAftermath(
 			})),
 		excluded: fighters.filter((f) => !earns(f) && !f.away).map((f) => f.name),
 		hired,
+		underdog,
 		out: fighters.filter((f) => !f.away && stateOf(battle, f.instanceId).out).map((f) => f.instanceId),
 		injuries: {},
 		recovered: {},
@@ -228,9 +233,9 @@ export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, d
 	return purse(warband, game) - warbandCost(warband, faction) - spent;
 }
 
-/** The score a row's roll needs on the die: the game's target, less 1 for each modifier that holds. */
-export function scoreNeeded(row: AftermathRow, rules: Aftermath): number {
-	return rules.roll.target - Object.values(row.answers).filter(Boolean).length;
+/** The score a row's roll needs on the die: the game's target, less 1 for each modifier that holds and what the underdog adds. */
+export function scoreNeeded(row: AftermathRow, rules: Aftermath, draft: AftermathDraft): number {
+	return rules.roll.target - Object.values(row.answers).filter(Boolean).length - (draft.underdog?.roll ?? 0);
 }
 
 /** Who took part and was not taken out of action, by instance id. */
@@ -310,7 +315,7 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
 	if (!rules) return warband;
-	const earned = rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft));
+	const earned = rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft), standingRaised(draft.underdog));
 	const marks = marksOf(draft, extraMarksOf(warband, rules, draft));
 	const record = battleRecord(draft, at);
 	const heir = heirsOf(warband, game, faction, draft).find((f) => f.instanceId === draft.successor)?.instanceId ?? null;

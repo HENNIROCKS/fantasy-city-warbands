@@ -67,6 +67,10 @@
 			</div>
 		</div>
 
+		{#if card.reminders?.length}
+			<section class="reminders">{@render paragraphs(card.reminders)}</section>
+		{/if}
+
 		{#if card.notes}
 			<section class="notes">{@render paragraphs([{ label: 'Notes', text: card.notes }])}</section>
 		{/if}
@@ -341,7 +345,8 @@
 	}
 
 	/* The boxes' light wash sets the notes off from the paper, so they need no
-	   rule of their own. */
+	   rule of their own; what the battle brings is set as they are. */
+	.reminders,
 	.notes {
 		padding: calc(14 * var(--u)) calc(16 * var(--u));
 		border-radius: calc(7.5 * var(--u));

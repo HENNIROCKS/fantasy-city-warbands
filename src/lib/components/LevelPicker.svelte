@@ -91,7 +91,7 @@
 		min-height: 44px;
 		padding: 8px 14px;
 		border: 1px solid var(--card-green);
-		border-radius: 999px;
+		border-radius: var(--card-button-radius);
 		background: var(--card-field);
 		color: var(--card-ink);
 		font: inherit;

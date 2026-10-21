@@ -612,7 +612,7 @@
 		min-height: 40px;
 		padding: 0 calc(14 * var(--u));
 		border: 1px solid var(--card-link);
-		border-radius: 999px;
+		border-radius: var(--card-button-radius);
 		background: var(--card-field);
 		color: var(--card-link);
 		font-family: 'Alegreya', serif;

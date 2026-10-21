@@ -5,6 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
+	import RichText from '$lib/components/RichText.svelte';
 	import CardBack, {
 		type BackCampaign,
 		type BackDismissal,
@@ -21,6 +22,7 @@
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { adjustCounter, allocate, hire, isWavering, nextRound, release, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
+	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
@@ -131,6 +133,9 @@
 	);
 	/* What each hire of the battle costs, in the order they were hired. */
 	const hiredFees = $derived(warband && hiring && battle ? hiring.fees(warband, battle.hired) : []);
+	/* The warband as the underdog of the battle being set up or fought, and whether its debt still hires one for nothing. */
+	const underdog = $derived(warband && system ? underdogOf(system.game.underdog, warband, battle) : null);
+	const owedFree = $derived(freeHireOpen(underdog, battle));
 
 	/** What a hired fighter picked when it was hired, such as the Goblin Shaman's role, by name. */
 	const pickedName = (fighterId: string, picks: string[] = []) =>
@@ -165,7 +170,14 @@
 			leader: false
 		}));
 		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;
-		return [{ ...own, roster }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
+		/* The underdog's bonuses stand on the warband's card while the battle lasts, as reminders for the table. */
+		const reminders = underdog
+			? [
+					{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.` },
+					...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
+				]
+			: [];
+		return [{ ...own, roster, reminders }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
 	});
 	/** Where the builder names the warband, or the fighter in its editor. */
 	function nameField(card: DeckCard): string {
@@ -579,7 +591,7 @@
 			name: cards.find((c) => c.kind === 'fighter' && c.instanceId === h.instanceId)?.name ?? h.fighterId,
 			fee: hiredFees[i] ?? 0
 		}));
-		aftermath = startAftermath(rules, fighters, battle, warband.history ?? [], hired);
+		aftermath = startAftermath(rules, fighters, battle, warband.history ?? [], hired, underdog);
 	}
 
 	/* The warband first: only once it is stored does the battle go, so a failed
@@ -646,7 +658,7 @@
 		return [...offered].sort((a, b) => homebrew(a) - homebrew(b)).map((h) => {
 			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
 			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
-			const halved = rolledHalf && halving ? { halved: true as const } : {};
+			const halved = owedFree ? { free: true as const } : rolledHalf && halving ? { halved: true as const } : {};
 			const trial = hiring.fees(w, [...hired, { instanceId: '', fighterId: h.fighter.id, ...halved }]);
 			const added = sum(trial) - sum(hiredFees);
 			const refused = hiring.refuse?.(w, faction, h) ?? (added > goldFree ? 'Not enough gold' : null);
@@ -668,8 +680,9 @@
 			choosing = choosing === id ? null : id;
 			return;
 		}
-		setBattle(hire(battle, newId(), id, rolledHalf && halving !== null, picks));
-		rolledHalf = false;
+		/* The debt hires before the talent's half is spent, so a half rolled stays for the next one. */
+		setBattle(hire(battle, newId(), id, !owedFree && rolledHalf && halving !== null, picks, owedFree));
+		if (!owedFree) rolledHalf = false;
 		choosing = null;
 	}
 
@@ -686,6 +699,35 @@
 		hiringOpen = false;
 		await tick();
 		opener?.focus();
+	}
+
+	/* Whether the warband is the underdog, asked in a sheet while the battle is
+	   being set up: the opponent's reputation in, the bonuses it allows picked. */
+	let underdogOpen = $state(false);
+	/* As typed, so a figure that makes no underdog – and starts no battle – still says so. */
+	let opponentText = $state<number | null>(null);
+
+	function openUnderdog() {
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+		opponentText = battle?.underdog?.opponent ?? null;
+		underdogOpen = true;
+	}
+
+	async function closeUnderdog() {
+		underdogOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
+	/* An emptied field takes the question back, so the sheet never shows bonuses under no figure. */
+	function enterOpponent(value: string) {
+		const rules = system?.game.underdog;
+		const figure = value.trim() === '' ? null : Number(value);
+		if (!rules || !warband || (figure !== null && !Number.isFinite(figure))) return;
+		const next = setOpponent(battle, rules, warband, figure === null ? null : Math.max(0, Math.round(figure)));
+		if (next !== battle) setBattle(next);
 	}
 
 	function focusOnMount(node: HTMLElement) {
@@ -769,6 +811,7 @@
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
 				onlevels={() => (spending = true)}
+				onunderdog={system.game.underdog && settingUp(battle) ? openUnderdog : undefined}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
 				hireLabel={hiring?.label ?? ''}
 				editing={editingId !== null}
@@ -819,6 +862,57 @@
 	/>
 {/if}
 
+{#if underdogOpen && warband && system?.game.underdog}
+	{@const rules = system.game.underdog}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="underdog-title">
+			<h2 id="underdog-title">Underdog</h2>
+			<p class="count">Your reputation {rules.reputation(warband)} · {rules.gap} behind for each bonus</p>
+			<label class="field-label" for="underdog-opponent">Opponent's reputation</label>
+			<input
+				id="underdog-opponent"
+				class="field-input mb-3"
+				type="number"
+				inputmode="numeric"
+				min="0"
+				bind:value={opponentText}
+				oninput={(e) => enterOpponent(e.currentTarget.value)}
+				use:focusOnMount
+			/>
+			{#if underdog}
+				<p class="mb-3 text-zinc-400">
+					{underdog.behind} behind: {underdog.allowed}
+					{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.
+				</p>
+				<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
+					{#each rules.bonuses as bonus (bonus.id)}
+						{@const on = underdog.picked.some((b) => b.id === bonus.id)}
+						{@const blocked = bonusBlocked(rules, warband, battle, bonus)}
+						<button
+							type="button"
+							class="choice"
+							aria-pressed={on}
+							disabled={blocked !== null}
+							onclick={() => setBattle(toggleBonus(rules, warband!, battle, bonus))}
+						>
+							<span class="block font-semibold">{bonus.name}</span>
+							<span class="block text-zinc-400"><RichText text={bonus.text} /></span>
+							{#if blocked}
+								<span class="block font-semibold" style="color: var(--ui-warn-text)">{blocked}</span>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			{:else if opponentText !== null}
+				<p class="mb-3 text-zinc-400">Not the underdog: {rules.gap} or more behind makes it one.</p>
+			{/if}
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeUnderdog}>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 {#if hiringOpen && hiring && system}
 	<div class="sheet-backdrop">
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="hire-title">
@@ -826,6 +920,9 @@
 			<p class="count">{goldFree} {system.game.currency} left · paid in the aftermath</p>
 			{#if warband && hiring.discount(warband)}
 				<p class="notice mb-3">{hiring.discount(warband)}</p>
+			{/if}
+			{#if owedFree}
+				<p class="notice mb-3">{underdog?.picked.find((b) => b.effect === 'free-hire')?.name} (Underdog): the next one hired costs nothing.</p>
 			{/if}
 			<div class="max-h-[60dvh] space-y-2 overflow-y-auto">
 				{#if halving}

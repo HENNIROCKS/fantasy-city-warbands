@@ -11,9 +11,9 @@ playing** takes you back to the battle.
    injury table and tap the result. Some results ask one more question, such
    as the surgeon.
 3. **A new leader.** If your leader died, pick the hero who takes the lead.
-4. **Items used.** Tick the single-use items used up in the battle.
-5. **Renown.** Each fighter rolls. The page says what adds to the roll and
-   which score it needs. Tap what the dice show.
+4. **Items used.** Switch on the single-use items used up in the battle.
+5. **Renown.** Each fighter rolls. Switch on what adds to the roll, and the
+   page says which score it needs. Switch on each roll that reached it.
 
 **Apply** writes it all into the warband: gold, favour, injuries, the dead,
 the battle history. If a fighter has a level to spend, the app asks right away.

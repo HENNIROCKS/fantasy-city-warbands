@@ -154,6 +154,8 @@ export interface GameSystem {
 	 * nobody is hired.
 	 */
 	hiring?: Hiring;
+	/** Help for a warband that has fallen behind its opponent, set up with the battle. Without it, none. */
+	underdog?: Underdog;
 	/** What the game tracks in a battle beyond rounds, activations and damage. Without it, nothing more. */
 	battle?: {
 		/** Whether a fighter can wait, ending its activation without being done for the round. */
@@ -184,6 +186,33 @@ export interface GameSystem {
 	upgrade?: (warband: Warband, faction: Faction) => Warband;
 }
 
+/**
+ * Wyrdcry's optional Underdogs: a warband `gap` or more reputation behind its
+ * opponent picks a bonus for each `gap` it is behind, and each of its fighters
+ * adds `roll` to the aftermath's roll.
+ */
+export interface Underdog {
+	gap: number;
+	roll: number;
+	bonuses: UnderdogBonus[];
+	/** The figure compared with the opponent's: Wyrdcry's reputation. */
+	reputation: (warband: Warband) => number;
+	/** Why the warband gains nothing by a bonus, such as Bounty at the highest standing; null where it does. */
+	refuse?: (warband: Warband, bonus: UnderdogBonus) => string | null;
+}
+
+export interface UnderdogBonus {
+	id: string;
+	name: string;
+	text: string;
+	/**
+	 * What the app counts: `free-hire` takes the whole fee off one hire, `standing`
+	 * collects the income one standing higher. Without it, the bonus is a
+	 * reminder on the warband card.
+	 */
+	effect?: 'free-hire' | 'standing';
+}
+
 /** One fighter on offer for hire, with the wargear only it carries and the factions it fights for. */
 export interface Hireling {
 	/** Its `cost` is the fee for one battle. */
@@ -200,6 +229,8 @@ export interface Hire {
 	fighterId: string;
 	/** Hired at half the fee on a roll such as Wyrdcry's Well-Connected. */
 	halved?: true;
+	/** Hired without a fee, as the underdog's Calling in a debt. */
+	free?: true;
 	/** The option ids picked under the hired fighter's own `choice`, such as the Goblin Shaman's role. */
 	picks?: string[];
 }
@@ -295,9 +326,17 @@ export interface Aftermath {
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
 	 * `survivors` are the fighters that took part and were not taken out of
-	 * action, by instance id, for what only they bring in.
+	 * action, by instance id, for what only they bring in; `raised`, the
+	 * standings above its own the income is collected at, as the underdog's Bounty.
 	 */
-	income: (warband: Warband, game: GameSystem, result: BattleRecord['result'] | null, shards: number, survivors: string[]) => {
+	income: (
+		warband: Warband,
+		game: GameSystem,
+		result: BattleRecord['result'] | null,
+		shards: number,
+		survivors: string[],
+		raised: number
+	) => {
 		tally: Record<string, number>;
 		gold: number;
 		lines: { gain: string; why: string }[];

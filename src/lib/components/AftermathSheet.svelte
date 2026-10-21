@@ -24,6 +24,7 @@
 	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
+	import { standingRaised } from '$lib/core/underdog';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 
@@ -57,7 +58,7 @@
 		onclose: () => void;
 	} = $props();
 
-	const earned = $derived(rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft)));
+	const earned = $derived(rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft), standingRaised(draft.underdog)));
 	/* The marks beyond the first, and the marks that stand – both follow who came through the battle. */
 	const extra = $derived(extraMarksOf(warband, rules, draft));
 	const marks = $derived(marksOf(draft, extra));
@@ -150,7 +151,11 @@
 		if (marks.includes(row.instanceId)) draft.marked = marks.filter((id) => id !== row.instanceId);
 		else draft.marked = extra.notes.length ? [...marks, row.instanceId] : [row.instanceId];
 		const now = marksOf(draft, extra);
-		for (const r of draft.rows) r.levels = Math.min(r.levels, rollsOf(r, now));
+		for (const r of draft.rows) {
+			const rolls = rollsOf(r, now);
+			r.levels = Math.min(r.levels, rolls);
+			if ((hits[r.instanceId]?.length ?? 0) > rolls) delete hits[r.instanceId];
+		}
 	}
 
 	/* A fighter that sat the battle out rolls nothing, and loses its mark. */
@@ -159,11 +164,22 @@
 		if (!row.tookPart) {
 			row.levels = 0;
 			draft.marked = draft.marked.filter((id) => id !== row.instanceId);
+			delete hits[row.instanceId];
 		}
 	}
 
-	/* What each tap on the outcome says: for one roll whether it reached the score, for two how many did. */
-	const outcomes = (rolls: number) => (rolls === 2 ? ['No level', '1 level', '2 levels'] : ['Not reached', 'Reached']);
+	/* Which of a fighter's rolls reached the score, a switch each. The draft
+	   keeps only how many did; this keeps which, so switching the first off
+	   does not seem to switch off the second. */
+	let hits = $state<Record<string, boolean[]>>({});
+	const hit = (row: AftermathRow, roll: number) => hits[row.instanceId]?.[roll] ?? roll < row.levels;
+
+	function toggleHit(row: AftermathRow, roll: number, rolls: number) {
+		const now = Array.from({ length: rolls }, (_, n) => hit(row, n));
+		now[roll] = !now[roll];
+		hits[row.instanceId] = now;
+		row.levels = now.filter(Boolean).length;
+	}
 
 	/* A second tap while the write is still running would write the battle twice. */
 	let busy = $state(false);
@@ -197,6 +213,12 @@
 								<button class="segment" aria-pressed={draft.result === key} onclick={() => pick(key as BattleRecord['result'])}>{label}</button>
 							{/each}
 						</div>
+						{#if draft.underdog}
+							<p class="hint">
+								Underdog, {draft.underdog.behind} behind: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}{#if draft.underdog.picked.length}{' '}·
+									{draft.underdog.picked.map((b) => b.name).join(', ')}{/if}.
+							</p>
+						{/if}
 					</section>
 
 					<section>
@@ -212,35 +234,35 @@
 						{#each rules.shardNotes?.(warband) ?? [] as note (note)}
 							<p class="hint">{note}</p>
 						{/each}
-						{#if draft.result}
-							<ul class="list">
-								{#each earned.lines as line (line.gain)}
-									<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
-								{/each}
-							</ul>
-						{:else}
+						{#if !draft.result}
 							<p class="hint">What the battle brings in, once the result is picked.</p>
 						{/if}
-						{#if draft.hired.length}
+						<!-- One list, so the fees follow the income under the same rules. -->
+						{#if draft.result || draft.hired.length}
 							<ul class="list">
-								<li>
-									<span class="line"
-										><span class="gain">−{hireFees(draft)} {game.currency}</span> – hired for this battle: {draft.hired
-											.map((h) => `${h.name} (${h.fee})`)
-											.join(', ')}</span
-									>
-								</li>
+								{#if draft.result}
+									{#each earned.lines as line (line.gain)}
+										<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
+									{/each}
+								{/if}
+								{#if draft.hired.length}
+									<li>
+										<span class="line"
+											><span class="gain">−{hireFees(draft)} {game.currency}</span> – hired for this battle: {draft.hired
+												.map((h) => `${h.name} (${h.fee})`)
+												.join(', ')}</span
+										>
+									</li>
+								{/if}
 							</ul>
 						{/if}
 					</section>
 
 					<section>
 						<h3 class="heading"><span>Battle history</span><span class="rule"></span></h3>
-						<div class="toggles">
-							<button class="toggle" aria-pressed={draft.record} disabled={!draft.result} onclick={() => (draft.record = !draft.record)}>
-								Add to the battle history
-							</button>
-						</div>
+						<button class="switch-row" role="switch" aria-checked={draft.record} disabled={!draft.result} onclick={() => (draft.record = !draft.record)}>
+							Add to the battle history<span class="track" aria-hidden="true"></span>
+						</button>
 						{#if draft.recorded}
 							{@const r = draft.recorded}
 							<p class="note">Already in the history: {displayDate(r.date)} {opponent(r)} – {RESULT_LABELS[r.result]}</p>
@@ -420,10 +442,10 @@
 						{@const dies = diesOf(draft, game, faction, instance)}
 						<section>
 							<h3 class="heading"><span>{nameOf(id)}</span><span class="rule"></span></h3>
-							<div class="toggles" role="group" aria-label="Single-use items of {nameOf(id)}">
+							<div class="switches" role="group" aria-label="Single-use items of {nameOf(id)}">
 								{#each pieces as { index, wargear } (index)}
-									<button class="toggle" aria-pressed={draft.used[id]?.includes(index) ?? false} onclick={() => toggleUsed(draft, id, index)}>
-										{wargear.name} used
+									<button class="switch-row" role="switch" aria-checked={draft.used[id]?.includes(index) ?? false} onclick={() => toggleUsed(draft, id, index)}>
+										{wargear.name} used<span class="track" aria-hidden="true"></span>
 									</button>
 								{/each}
 							</div>
@@ -459,8 +481,11 @@
 				<h2 class="name" id="aftermath-title">Renown</h2>
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
-					{#if extra.notes.length}
+					{#if extra.notes.length || draft.underdog}
 						<section>
+							{#if draft.underdog}
+								<p class="note">Underdog: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}, counted into the score each one needs.</p>
+							{/if}
 							{#each extra.notes as note (note)}
 								<p class="note">{note}</p>
 							{/each}
@@ -475,23 +500,32 @@
 								<span>{row.name}</span><span class="rule"></span>
 								<span class="gain" class:none={levels === 0}>+{levels} {levels === 1 ? 'level' : 'levels'}</span>
 							</h3>
-							<div class="toggles" role="group" aria-label="{rules.roll.label} of {row.name}">
-								<button class="toggle" aria-pressed={row.tookPart} onclick={() => toggleTookPart(row)}>Took part</button>
+							<div class="switches" role="group" aria-label="What adds to the {rules.roll.label.toLowerCase()} of {row.name}">
+								<button class="switch-row" role="switch" aria-checked={row.tookPart} onclick={() => toggleTookPart(row)}>
+									Took part<span class="track" aria-hidden="true"></span>
+								</button>
 								{#if row.tookPart}
 									{#each rules.modifiers as modifier (modifier.key)}
 										<button
-											class="toggle"
-											aria-pressed={row.answers[modifier.key] ?? false}
+											class="switch-row"
+											role="switch"
+											aria-checked={row.answers[modifier.key] ?? false}
 											onclick={() =>
 												modifier.start === 'not-out' ? toggleOut(draft, rules, row.instanceId) : (row.answers[modifier.key] = !row.answers[modifier.key])}
 										>
-											{modifier.label}
+											{modifier.label}<span class="track" aria-hidden="true"></span>
 										</button>
 									{/each}
 									{#if rules.marked}
-										<button class="toggle" aria-pressed={marks.includes(row.instanceId)} disabled={blocked !== null && extra.notes.length > 0} onclick={() => toggleMarked(row)}
-											>{rules.marked}</button
+										<button
+											class="switch-row"
+											role="switch"
+											aria-checked={marks.includes(row.instanceId)}
+											disabled={blocked !== null && extra.notes.length > 0}
+											onclick={() => toggleMarked(row)}
 										>
+											{rules.marked}<span class="track" aria-hidden="true"></span>
+										</button>
 									{/if}
 								{/if}
 							</div>
@@ -499,12 +533,12 @@
 								<p class="hint">{blocked}.</p>
 							{/if}
 							{#if rolls}
-								<p class="note" id="roll-{row.instanceId}">
-									{rules.roll.label}{rolls === 2 ? ', twice' : ''}: needs {scoreNeeded(row, rules)}+
-								</p>
-								<div class="results" role="group" aria-labelledby="roll-{row.instanceId}">
-									{#each outcomes(rolls) as label, n (label)}
-										<button class="segment" aria-pressed={row.levels === n} onclick={() => (row.levels = n)}>{label}</button>
+								<!-- The result rather than what adds to it: set off by a rule, a switch for each roll, on where it reached the score. -->
+								<div class="switches rolls" role="group" aria-label="{rules.roll.label} of {row.name}">
+									{#each Array.from({ length: rolls }, (_, n) => n) as n (n)}
+										<button class="switch-row" role="switch" aria-checked={hit(row, n)} onclick={() => toggleHit(row, n, rolls)}>
+											{rules.roll.label}{rolls > 1 ? ` ${n + 1}` : ''} · needs {scoreNeeded(row, rules, draft)}+<span class="track" aria-hidden="true"></span>
+										</button>
 									{/each}
 								</div>
 							{/if}

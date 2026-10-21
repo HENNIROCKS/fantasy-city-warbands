@@ -66,6 +66,8 @@ export interface BattleState extends BattleRound {
 	undo: BattleRound | null;
 	/** Who was hired for this battle, in the order they were hired. Their states are kept under `fighters` like anyone's. */
 	hired: Hire[];
+	/** The opponent's figure the underdog is worked out from, and the bonuses picked, by id; missing where nobody asked. */
+	underdog?: { opponent: number; bonuses: string[] };
 }
 
 /** What a fighter carries before anything has happened to it. */
@@ -88,7 +90,8 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		fighters: stored.fighters ?? {},
 		morale: stored.morale ?? false,
 		undo: stored.undo ?? null,
-		hired: stored.hired ?? []
+		hired: stored.hired ?? [],
+		...(stored.underdog ? { underdog: stored.underdog } : {})
 	};
 }
 
@@ -118,9 +121,14 @@ function write(battle: BattleState | null, instanceId: string, patch: Partial<Fi
  * hire is the first thing set up. Only while nothing has been played past the
  * first round – the rules hire in the battle's setup.
  */
-export function hire(battle: BattleState | null, instanceId: string, fighterId: string, halved = false, picks: string[] = []): BattleState {
+export function hire(battle: BattleState | null, instanceId: string, fighterId: string, halved = false, picks: string[] = [], free = false): BattleState {
 	const current = battle ?? start();
-	const hired = { instanceId, fighterId, ...(halved ? { halved: true as const } : {}), ...(picks.length ? { picks } : {}) };
+	const hired = {
+		instanceId,
+		fighterId,
+		...(free ? { free: true as const } : halved ? { halved: true as const } : {}),
+		...(picks.length ? { picks } : {})
+	};
 	return { ...current, hired: [...current.hired, hired] };
 }
 

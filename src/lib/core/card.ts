@@ -452,6 +452,8 @@ export interface WarbandCardData {
 	/** A heading of null where the game lists its fighters as one. */
 	roster: { title: string | null; entries: RosterEntry[] }[];
 	fluff: string;
+	/** What the battle running brings besides its fighters, such as the underdog's bonuses; the deck sets it while the battle lasts. */
+	reminders?: CardEntry[];
 	notes: string;
 	/** The battles fought, newest first, as the card lists them. */
 	battles: { id: string; date: string; opponent: string; result: string }[];

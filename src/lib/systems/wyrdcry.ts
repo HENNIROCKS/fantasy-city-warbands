@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -16,6 +16,7 @@ import campaign from '$lib/rules/wyrdcry/campaign.json';
 import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
 import curatedGrants from '$lib/rules/wyrdcry/item-grants.json';
 import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
+import underdogs from '$lib/rules/wyrdcry/underdogs.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -138,6 +139,19 @@ export const game: GameSystem = {
 		halving,
 		refuse: refuseHire
 	},
+	/* Underdogs (Campaign Book, p. 30), an optional rule: 5 reputation behind
+	   picks a bonus, each 5 more another, and every fighter adds 1 to its
+	   renown roll. Each bonus is picked once at most. */
+	underdog: {
+		gap: underdogs.gap,
+		roll: underdogs.roll,
+		bonuses: underdogs.bonuses as UnderdogBonus[],
+		reputation: (warband) => figures(warband).reputation,
+		refuse: (warband, bonus) =>
+			bonus.effect === 'standing' && tierFor(warband.tally?.favour ?? 0) === campaign.favour_tiers.at(-1)
+				? `${campaign.favour_tiers.at(-1)!.label} is the highest standing`
+				: null
+	},
 	/* Unbending Will is an ability of the fighter's type, which the shared form
 	   carries only as a rule's text; the raw fighter still has its id. */
 	injuries: wyrdcryInjuries({
@@ -201,23 +215,27 @@ function holdersOf(warband: Warband, talent: string, among: string[]): string[] 
 /**
  * Step 4 of the aftermath: a favour for each shard, one more for a win and one
  * for each Bootlicker that came through (p. 15), then the income of the standing
- * the warband now holds, so a rise counts at once. The gold goes into the purse,
+ * the warband now holds, so a rise counts at once – `raised` standings higher
+ * for the underdog's Bounty, the highest at most. The gold goes into the purse,
  * which counts the warband's value in.
  */
-function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number, survivors: string[]) {
+function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number, survivors: string[], raised: number) {
 	const before = warband.tally?.favour ?? 0;
 	const bootlickers = holdersOf(warband, 'bootlicker', survivors);
 	const favour = shards + (result === 'win' ? 1 : 0) + bootlickers.length;
-	const tier = tierFor(before + favour);
+	const held = tierFor(before + favour);
+	const tiers = campaign.favour_tiers;
+	const tier = tiers[Math.min(tiers.indexOf(held) + raised, tiers.length - 1)];
 	const gold = tier.income + tier.per_shard * shards;
-	const rises = tier.label !== tierFor(before).label;
+	const rises = held.label !== tierFor(before).label;
 	const licked = bootlickers.length ? ` – ${bootlickers.length} for Bootlicker (${bootlickers.join(', ')})` : '';
+	const bounty = tier !== held ? ` as ${tier.label} (Bounty)` : '';
 	return {
 		tally: { ...warband.tally, favour: before + favour },
 		gold: purse(warband, game) + gold,
 		lines: [
-			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${tier.label}${rises ? ' (a rise in standing)' : ''}${licked}` },
-			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}` }
+			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${held.label}${rises ? ' (a rise in standing)' : ''}${licked}` },
+			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}${bounty}` }
 		]
 	};
 }
@@ -242,16 +260,17 @@ function refuseHire(warband: Warband, faction: Faction, hireling: Hireling): str
 const half = (fee: number) => Math.ceil(fee / 2);
 
 /**
- * What each hire costs: a fee halved on the talent's roll stays halved, and
- * where the warband picked Well-connected the dearest of the others is halved
- * too – worked out afresh, so sending one away moves it to the next.
+ * What each hire costs: one hired on the underdog's debt costs nothing, a fee
+ * halved on the talent's roll stays halved, and where the warband picked
+ * Well-connected the dearest of the others is halved too – worked out afresh,
+ * so sending one away moves it to the next.
  */
 function fees(warband: Warband, hires: Hire[]): number[] {
 	const base = hires.map((h) => hirelings.find((x) => x.fighter.id === h.fighterId)?.fighter.cost ?? 0);
 	const halves = warband.picks[HALF_FEE_PICK.choice]?.includes(HALF_FEE_PICK.option);
-	const open = base.map((fee, i) => (hires[i].halved ? -1 : fee));
+	const open = base.map((fee, i) => (hires[i].halved || hires[i].free ? -1 : fee));
 	const dearest = halves ? open.indexOf(Math.max(...open)) : -1;
-	return base.map((fee, i) => (hires[i].halved || (i === dearest && open[i] >= 0) ? half(fee) : fee));
+	return base.map((fee, i) => (hires[i].free ? 0 : hires[i].halved || (i === dearest && open[i] >= 0) ? half(fee) : fee));
 }
 
 /** Who in the warband holds the talent that rolls for half a fee, leaving out whoever sits this battle out. */

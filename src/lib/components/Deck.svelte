@@ -36,6 +36,7 @@
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
+		onunderdog,
 		onhire,
 		hireLabel = '',
 		editing = false,
@@ -73,6 +74,8 @@
 		levelsOpen?: number;
 		levelLabel?: string;
 		onlevels?: () => void;
+		/** Opens the question whether the warband is the underdog, where the game has one and the battle is still being set up. */
+		onunderdog?: () => void;
 		/** Opens what is on offer for hire, where the game hires and the battle is still being set up. */
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
@@ -418,6 +421,7 @@
 		{closed}
 		editable={!topFighter?.hired}
 		onedit={() => onedit?.(cards[current].instanceId)}
+		{onunderdog}
 		{onhire}
 		{hireLabel}
 		{ondone}

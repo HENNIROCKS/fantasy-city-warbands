@@ -117,6 +117,9 @@ html {
 	/* What the back's fields and outlined buttons sit on, so they stand out from
 	   the texture where it darkens towards the card's foot. */
 	--card-field: rgba(255, 255, 255, 0.45);
+	/* Every button on a back, a pill of one line and a tile of two alike: half
+	   the 40px a one-line button stands, so that one stays a pill. */
+	--card-button-radius: 20px;
 	--card-wash-2: color-mix(in srgb, var(--card-green) 12%, transparent);
 	/* A weapon whose name opens its rules. The one signal colour on a green and
 	   paper card. */
@@ -1035,11 +1038,11 @@ html {
 }
 
 .card.back .segment:first-child {
-	border-radius: 999px 0 0 999px;
+	border-radius: var(--card-button-radius) 0 0 var(--card-button-radius);
 }
 
 .card.back .segment:last-child {
-	border-radius: 0 999px 999px 0;
+	border-radius: 0 var(--card-button-radius) var(--card-button-radius) 0;
 }
 
 /* Two neighbouring frames share one line instead of doubling it. */
@@ -1083,7 +1086,7 @@ html {
 	min-height: 40px;
 	padding: 0 calc(14 * var(--u));
 	border: 1px solid var(--card-green);
-	border-radius: 999px;
+	border-radius: var(--card-button-radius);
 	background: var(--card-green);
 	color: var(--card-paper);
 	font-family: 'Alegreya', serif;
@@ -1213,7 +1216,7 @@ html {
 	min-height: 48px;
 	padding: calc(6 * var(--u)) calc(18 * var(--u));
 	border: 1px solid var(--card-green);
-	border-radius: 999px;
+	border-radius: var(--card-button-radius);
 	background: var(--card-field);
 	font-family: 'Alegreya', serif;
 	font-size: calc(18 * var(--t));
@@ -1326,7 +1329,7 @@ html {
 	min-height: 40px;
 	padding: 0 calc(14 * var(--u));
 	border: 1px solid var(--card-green);
-	border-radius: 999px;
+	border-radius: var(--card-button-radius);
 	background: var(--card-field);
 	color: var(--card-green);
 	font-family: 'Alegreya', serif;
@@ -1347,6 +1350,79 @@ html {
 	flex-direction: column;
 }
 
+/* An answer that holds or not, as a line with a switch at its end: what the
+   battle brought a fighter, a roll that reached its score, a piece used up.
+   The whole line is the button. */
+.card.back .switches {
+	display: flex;
+	flex-direction: column;
+}
+
+.card.back .switch-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: calc(12 * var(--u));
+	width: 100%;
+	min-height: 40px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--card-ink);
+	font-family: 'Alegreya', serif;
+	font-size: calc(17 * var(--t));
+	line-height: 1.25;
+	text-align: left;
+}
+
+.card.back .switch-row:disabled {
+	opacity: 0.5;
+}
+
+.card.back .switch-row .track {
+	flex: none;
+	position: relative;
+	width: 40px;
+	height: 24px;
+	box-sizing: border-box;
+	border: 1.5px solid var(--card-green);
+	border-radius: 12px;
+	background: var(--card-field);
+}
+
+.card.back .switch-row .track::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 2.5px;
+	width: 16px;
+	height: 16px;
+	margin-top: -8px;
+	border-radius: 50%;
+	background: var(--card-green);
+}
+
+.card.back .switch-row[aria-checked='true'] .track {
+	background: var(--card-green);
+}
+
+.card.back .switch-row[aria-checked='true'] .track::after {
+	left: auto;
+	right: 2.5px;
+	background: var(--card-paper);
+}
+
+/* The rolls under what adds to them: the result, set off by a dashed rule. */
+.card.back .switches.rolls {
+	margin-top: calc(8 * var(--u));
+	padding-top: calc(8 * var(--u));
+	border-top: 1px dashed #000;
+}
+
+.card.back .switches.rolls .switch-row {
+	font-weight: 700;
+}
+
 /* An answer may run to two lines, as a surgeon's does. */
 .card.back .toggle {
 	padding-block: calc(4 * var(--u));
@@ -1354,7 +1430,6 @@ html {
 }
 
 .card.back .toggles.stacked .toggle {
-	border-radius: calc(20 * var(--u));
 	text-align: left;
 }
 
@@ -1373,17 +1448,16 @@ html {
 	color: inherit;
 }
 
-/* A choice that is a pill until it is picked; picked, the same outline holds
-   what it does and asks, and becomes a box – a heroic talent, an injury. */
+/* A choice in an outline that, once picked, holds what it does and asks – a
+   heroic talent, an injury. */
 .card.back .unfold {
 	border: 1px solid var(--card-green);
-	border-radius: 999px;
+	border-radius: var(--card-button-radius);
 	background: var(--card-field);
 	overflow: hidden;
 }
 
 .card.back .unfold.open {
-	border-radius: calc(24 * var(--u));
 	box-shadow: inset 0 0 0 1px var(--card-green);
 }
 

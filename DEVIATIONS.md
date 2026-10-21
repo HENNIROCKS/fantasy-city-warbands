@@ -25,6 +25,7 @@ The data is the Warband Deck's hand-kept ruleset, brought up to the core rules 1
 - [ ] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword and is rounded up, as Well-Connected rounds it, where the rule says only "one Hired Sword for half its normal hiring fee"
 - [ ] Morale with half fighters (Clan Pestilens' Doomed, the Greenskin Marauders' Not Orcs): a count such as 3½ is compared as more than half the warband rounded up – 3½ of 6 wavers – where the rules count whole fighters only
 - [ ] Unyielding (Mercenaries' State Pride): a hired sword taken along keeps its own Bravery, where the rule raises that of "all fighters"
+- [ ] Underdogs: each bonus is picked once at most, where the rule says only "for each 5-point difference … select a bonus from the list"
 
 ### Open upstream
 
@@ -39,6 +40,7 @@ The data is the Warband Deck's hand-kept ruleset, brought up to the core rules 1
 - [ ] Campaign Book 0.9: Superior Blackpowder removes a "blackpowder" special rule that no weapon rule is called
 - [ ] Campaign Book 0.9: Oppressor lets the fighter make a "Cut Them Down" reaction, which the core rules 1.0 call Strike them down
 - [ ] Hired Swords: the Campaign Book lists eight at its own fees (Rat Ogre 90gc), the 0.9 data ten, the Thief among them (Rat Ogre 80gc)
+- [ ] Campaign Book 0.9: whether the underdog may pick the same bonus twice, two Bountys or two hired swords for nothing
 - [ ] Hero costs: in the 0.9 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 
 ## Black Death City

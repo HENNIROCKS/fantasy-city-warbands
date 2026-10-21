@@ -82,11 +82,11 @@
 - [x] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
 - [x] 🛠️ Duplicate a fighter with its wargear and choice, and remove one by an icon beside it
 - [x] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included, the choice kept once the warband has fought
+- [x] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
-- [ ] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
 - [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [ ] 📄 The roster per game, as each game's own sheet has it

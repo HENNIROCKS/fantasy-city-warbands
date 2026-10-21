@@ -33,6 +33,7 @@
 		levelsOpen = 0,
 		levelLabel = '',
 		onlevels,
+		onunderdog,
 		onhire,
 		hireLabel = '',
 		editing = false,
@@ -79,6 +80,8 @@
 		levelLabel?: string;
 		/** Opens the sheet that spends them. */
 		onlevels?: () => void;
+		/** Opens the question whether the warband is the underdog; given while the battle is still being set up. */
+		onunderdog?: () => void;
 		/** Opens what is on offer for hire; given while the battle is still being set up. */
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
@@ -229,6 +232,9 @@
 						{/if}
 					{:else if !closed}
 						<button onclick={() => onstart?.()}>Start battle</button>
+					{/if}
+					{#if onunderdog && !closed}
+						<button onclick={() => onunderdog?.()}>Underdog…</button>
 					{/if}
 					{#if onhire && !closed}
 						<button onclick={() => onhire?.()}>{hireLabel}…</button>

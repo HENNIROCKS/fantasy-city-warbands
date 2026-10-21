@@ -1,0 +1,28 @@
+{
+  "gap": 5,
+  "roll": 1,
+  "bonuses": [
+    {
+      "id": "informants",
+      "name": "Informants",
+      "text": "Before the first battle round, each fighter in your warband can make a free action."
+    },
+    {
+      "id": "calling-in-a-debt",
+      "name": "Calling in a debt",
+      "text": "You may recruit a `HIRED SWORD` without paying its listed recruitment fee.",
+      "effect": "free-hire"
+    },
+    {
+      "id": "saboteurs",
+      "name": "Saboteurs",
+      "text": "Select one fighter in the enemy warband without the `LEADER` keyword. That fighter misses the battle."
+    },
+    {
+      "id": "bounty",
+      "name": "Bounty",
+      "text": "When collecting income in the aftermath sequence, you may consider your standing to be one level higher.",
+      "effect": "standing"
+    }
+  ]
+}
