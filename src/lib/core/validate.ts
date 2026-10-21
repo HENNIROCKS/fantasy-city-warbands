@@ -13,6 +13,7 @@
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
+import { fighterCost } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -48,14 +49,11 @@ function compare(count: number, span: Span): 'missing' | 'excess' | null {
  * everything in its stash.
  */
 export function warbandCost(warband: Warband, faction: Faction): number {
-	const fighters = new Map(faction.fighters.map((f) => [f.id, f]));
+	const effects = activeEffects(warband, faction);
 	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
 
 	let total = 0;
-	for (const instance of warband.fighters) {
-		total += fighters.get(instance.fighterId)?.cost ?? 0;
-		for (const id of instance.wargear) total += wargear.get(id)?.cost ?? 0;
-	}
+	for (const instance of warband.fighters) total += fighterCost(instance, faction, effects);
 	for (const id of warband.stash ?? []) total += wargear.get(id)?.cost ?? 0;
 	return total;
 }

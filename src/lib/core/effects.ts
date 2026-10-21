@@ -1,11 +1,12 @@
 /**
  * What the options a warband has picked change about the fighters it may
  * have: who leads it, how many of a fighter it may take, who counts towards a
- * group. The checks and the recruiting step both read the limits from here, so
- * the warband is never offered what the check would then refuse.
+ * group, what a fighter costs and what its profile adds. The checks and the
+ * recruiting step both read the limits from here, so the warband is never
+ * offered what the check would then refuse.
  */
 
-import type { ChoiceEffect, Faction, Fighter, Span, Warband } from './types';
+import type { ChoiceEffect, ChoiceStat, Faction, Fighter, Span, Warband } from './types';
 
 /** Both games mark the fighter that leads a warband with this keyword. */
 export const LEADER = 'leader';
@@ -17,7 +18,7 @@ export interface ActiveEffect {
 }
 
 /** The effects of every option the warband has picked. */
-export function activeEffects(warband: Warband, faction: Faction): ActiveEffect[] {
+export function activeEffects(warband: Pick<Warband, 'picks'>, faction: Faction): ActiveEffect[] {
 	return faction.choices.flatMap((choice) =>
 		choice.options
 			.filter((o) => o.effect && warband.picks[choice.id]?.includes(o.id))
@@ -45,6 +46,28 @@ export function limitOf(fighter: Fighter, effects: ActiveEffect[]): EffectiveLim
 		}
 	}
 	return result;
+}
+
+/** What recruiting a fighter costs with the picks counted in, rounded as the Warband Deck rounds it. */
+export function recruitCost(fighter: Fighter, effects: ActiveEffect[]): number {
+	let cost = fighter.cost;
+	for (const { effect } of effects) {
+		const share = effect.costs?.find((c) => c.fighter === fighter.id);
+		if (share) cost = Math.round(cost * share.factor);
+	}
+	return cost;
+}
+
+/** Whether a picked characteristic reaches this fighter. */
+export function reaches(stat: ChoiceStat, fighterId: string): boolean {
+	return stat.fighters === 'all' || stat.fighters.includes(fighterId);
+}
+
+/** What the picks add to a fighter's characteristics, each by the option's name. */
+export function pickedStats(fighter: Fighter, effects: ActiveEffect[]): { stat: string; bonus: number; source: string }[] {
+	return effects.flatMap(({ source, effect }) =>
+		(effect.stats ?? []).filter((s) => reaches(s, fighter.id)).map((s) => ({ stat: s.stat, bonus: s.bonus, source }))
+	);
 }
 
 /** Whether a fighter counts towards the game's groups. */

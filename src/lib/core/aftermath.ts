@@ -9,7 +9,7 @@
  */
 
 import { stateOf, type BattleState } from './battle';
-import { LEADER } from './effects';
+import { LEADER, activeEffects, recruitCost } from './effects';
 import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
@@ -319,6 +319,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	   purse with it, so the gold left stays where it was; a fee comes off the
 	   gold left. */
 	let spent = hireFees(draft);
+	const effects = activeEffects(warband, faction);
 	const stash = [...(warband.stash ?? [])];
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
@@ -342,7 +343,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			if (dies) {
 				const kept = surgeon === 'died' || draft.recovered[id];
 				if (kept) stash.push(...fighter.wargear);
-				spent += type.cost + (kept ? 0 : carried);
+				spent += recruitCost(type, effects) + (kept ? 0 : carried);
 				return [];
 			}
 			if (outcome === 'robbed') {

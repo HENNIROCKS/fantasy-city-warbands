@@ -23,6 +23,7 @@
 		type SurgeonAnswer
 	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
+	import { activeEffects, recruitCost } from '$lib/core/effects';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 
@@ -351,7 +352,7 @@
 												<p class="unfold-text">{bought.length ? `Lost: ${bought.join(', ')}.` : 'Nothing bought to lose.'}</p>
 											{:else if outcome === 'captured'}
 												<p class="unfold-text">
-													Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(roller.type.cost / 2)}
+													Marked Captured until you get {nameOf(id)} back – for half its recruitment cost, {Math.floor(recruitCost(roller.type, activeEffects(warband, faction)) / 2)}
 													{game.currency}, or 1 favour – on the back of its card.
 												</p>
 											{:else if outcome === 'miss-next-battle'}

@@ -8,6 +8,7 @@
  * where the level was used up, which settles the whole level.
  */
 
+import { activeEffects } from '$lib/core/effects';
 import { chosenOptions, profileOf } from '$lib/core/warband';
 import { racialLimits as limits } from './wyrdcry-homebrew';
 import { injuryBonus } from './wyrdcry-injuries';
@@ -175,7 +176,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 	const branch = branchOf(base, level.level);
 	const needs = needsOf(instance, fighter, level.level);
 	const advances = instance.advances ?? [];
-	const profile = profileOf(instance, fighter);
+	const profile = profileOf(instance, fighter, activeEffects(warband, faction));
 	const limit = limitFor(base);
 	/* A henchman never raises the same characteristic twice, at its henchman levels only – a promotion starts clean. */
 	const taken = new Set(advances.filter((a) => a.stat && a.level > 0 && branchOf(base, a.level) === 'henchman').map((a) => a.stat));
@@ -285,12 +286,12 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 }
 
 /** A characteristic from the figure the advances before it left to the one it made, a rule by name. */
-function describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number): string {
+function describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number, warband: Warband): string {
 	const advances = instance.advances ?? [];
 	const advance = advances[index];
 	if (!advance) return '';
 	if (advance.stat) {
-		const start = profileOf(instance, fighter)[advance.stat];
+		const start = profileOf(instance, fighter, activeEffects(warband, faction))[advance.stat];
 		if (typeof start !== 'number') return LABEL[advance.stat] ?? advance.stat;
 		const from = advances.slice(0, index).filter((a) => a.stat === advance.stat).reduce((sum, a) => sum + (a.bonus ?? 0), start);
 		const to = from + (advance.bonus ?? 0);

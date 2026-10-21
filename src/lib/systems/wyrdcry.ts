@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Rule, StatCondition, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -330,7 +330,7 @@ interface RawRule {
 	name: string;
 	text: string;
 	pick: number | null;
-	options: { id: string; name: string; text: string }[];
+	options: { id: string; name: string; text: string; effect?: RawOptionEffect | null }[];
 	table?: RawRow[];
 	/** What the rule does that the app counts. */
 	effect?: RawEffect | null;
@@ -360,6 +360,36 @@ interface RawEffect {
 	keyword?: string;
 	per?: string;
 	max?: number;
+}
+
+/**
+ * What an option of a picked rule does that the app counts, as the Warband
+ * Deck's ruleset writes it: a characteristic raised for some fighters, or who
+ * may not be recruited and who at a share of the cost. Huntsmen, Desperate.
+ */
+interface RawOptionEffect {
+	kind: string;
+	/** With `kind: 'stat'`. */
+	characteristic?: string;
+	bonus?: number;
+	fighters?: string[] | 'all';
+	/** With `kind: 'recruit'`, fighter ids. */
+	forbid?: string[];
+	discount?: { fighter: string; factor: number }[];
+}
+
+/** An option's effect in the shared form: a ban as a limit of none. */
+function optionEffect(raw: RawOptionEffect | null | undefined): ChoiceEffect | undefined {
+	if (raw?.kind === 'stat' && raw.characteristic && raw.bonus && raw.fighters) {
+		return { stats: [{ stat: raw.characteristic, bonus: raw.bonus, fighters: raw.fighters }] };
+	}
+	if (raw?.kind === 'recruit') {
+		return {
+			...(raw.forbid?.length ? { limits: raw.forbid.map((fighter) => ({ fighter, limit: { min: 0, max: 0 } })) } : {}),
+			...(raw.discount?.length ? { costs: raw.discount } : {})
+		};
+	}
+	return undefined;
 }
 
 interface RawAbility {
@@ -696,7 +726,16 @@ function build(
 		size: meta.warband_size,
 		choices: rules
 			.filter((r) => r.pick !== null)
-			.map((r) => ({ id: r.id, name: r.name, text: r.text, pick: r.pick as number, options: r.options })),
+			.map((r) => ({
+				id: r.id,
+				name: r.name,
+				text: r.text,
+				pick: r.pick as number,
+				options: r.options.map((o) => {
+					const effect = optionEffect(o.effect);
+					return { id: o.id, name: o.name, text: o.text, ...(effect ? { effect } : {}) };
+				})
+			})),
 		fighters: fighters.map((f) => ({
 			id: f.id,
 			name: f.name,

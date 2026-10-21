@@ -5,7 +5,7 @@
  * the abilities of the leader's own type stay with that type.
  */
 
-import { LEADER } from './effects';
+import { LEADER, activeEffects } from './effects';
 import { chosenOptions, fighterCost } from './warband';
 import type { Faction, Fighter, FighterInstance, GameSystem, Warband } from './types';
 
@@ -75,9 +75,10 @@ export function deadLeaders(warband: Warband, faction: Faction): FighterInstance
  */
 export function takeLead(warband: Warband, faction: Faction, game: GameSystem, instanceId: string, recovered: boolean): Warband {
 	const dead = deadLeaders(warband, faction);
+	const effects = activeEffects(warband, faction);
 	const stash = [...(warband.stash ?? []), ...(recovered ? dead.flatMap((f) => f.wargear) : [])];
-	const kept = (f: FighterInstance) => (recovered ? fighterCost(f, faction) - fighterCost({ ...f, wargear: [] }, faction) : 0);
-	const spent = dead.reduce((sum, f) => sum + fighterCost(f, faction) - kept(f), 0);
+	const kept = (f: FighterInstance) => (recovered ? fighterCost(f, faction, effects) - fighterCost({ ...f, wargear: [] }, faction, effects) : 0);
+	const spent = dead.reduce((sum, f) => sum + fighterCost(f, faction, effects) - kept(f), 0);
 	return {
 		...warband,
 		...(spent ? { gold: (warband.gold ?? game.budget) - spent } : {}),

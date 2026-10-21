@@ -115,6 +115,8 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 		const tag = match ? (match[1] === '[' ? `[${type}]` : `(${type})`) : (FALLBACK_TAG[fallback] ?? '');
 		const key = `${type}|${name}`;
 		const rule = rules.get(key) ?? { name, type, tag, text: entry.text, note: entry.note, carriers: [], weapons: [] };
+		/* A faction pick that raises some fighters only, Huntsmen the Marksmen, is in their figures on the sheet. */
+		if (fallback === 'Faction rule' && !rule.note && entry.note) rule.note = entry.note;
 		if (!rule.carriers.includes(carrier)) rule.carriers.push(carrier);
 		if (weapon && !rule.weapons.includes(weapon)) rule.weapons.push(weapon);
 		rules.set(key, rule);

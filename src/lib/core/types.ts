@@ -321,8 +321,8 @@ export interface Advancement {
 	keywords(instance: FighterInstance, keywords: string[]): string[];
 	/** What the spent levels add to the card besides characteristics: rules, keywords, a weapon's figures. */
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): AdvanceEffects;
-	/** What the fighter's advance at `index` was spent on, in a line: `Fight 4 → 5`, `Fearsome`, `used up`. */
-	describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number): string;
+	/** What the fighter's advance at `index` was spent on, in a line: `Fight 4 → 5`, `Fearsome`, `used up` – from the figure the warband's picks start it at. */
+	describe(instance: FighterInstance, fighter: Fighter, faction: Faction, index: number, warband: Warband): string;
 	/** What the warband's spent levels break among its fighters, such as an ability only one of them may have; `validate` reports it. */
 	check?(warband: Warband, faction: Faction): Issue[];
 }
@@ -499,6 +499,18 @@ export interface ChoiceEffect {
 	limits?: { fighter: string; limit: Span }[];
 	/** Fighters that do not count towards the game's groups, such as Dire Wolves towards the Beasts. */
 	ungrouped?: string[];
+	/** What the option adds to the profiles of the fighters it names, such as Huntsmen's Shoot +1 for every Marksman. */
+	stats?: ChoiceStat[];
+	/** Fighters the option recruits at a share of their cost, rounded, such as Desperate's Youngbloods at half. */
+	costs?: { fighter: string; factor: number }[];
+}
+
+/** A characteristic a picked option raises, keyed by the game's `StatDef.key`. */
+export interface ChoiceStat {
+	stat: string;
+	bonus: number;
+	/** Fighter ids, or every fighter of the warband. */
+	fighters: string[] | 'all';
 }
 
 export interface ChoiceOption {

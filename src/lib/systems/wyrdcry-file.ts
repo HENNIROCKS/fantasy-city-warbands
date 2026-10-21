@@ -9,6 +9,7 @@
  */
 
 import { readColour } from '$lib/colour';
+import { activeEffects, recruitCost, type ActiveEffect } from '$lib/core/effects';
 import { profileOf } from '$lib/core/warband';
 import type { Advance, BattleRecord, Faction, FighterInstance, Warband } from '$lib/core/types';
 import { factions, game, wargearId } from './wyrdcry';
@@ -57,6 +58,10 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	const selections = meta && isObject(meta.selections) ? meta.selections : null;
 	const fighterPicks = selections && isObject(selections.fighters) ? selections.fighters : {};
 	const modifiers = selections && Array.isArray(selections.modifiers) ? selections.modifiers.filter(isObject) : [];
+	const picks = Object.fromEntries(
+		faction.choices.map((c) => [c.id, selections && isObject(selections.rules) ? strings(selections.rules[c.id]) : []])
+	);
+	const effects = activeEffects({ picks }, faction);
 	const renownHistory = meta && Array.isArray(meta.renownHistory) ? meta.renownHistory.filter(isObject) : [];
 	const fluff = meta && isObject(meta.fluff) ? meta.fluff : null;
 	const fighterFluff = fluff && isObject(fluff.fighters) ? fluff.fighters : {};
@@ -74,7 +79,10 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		if (raw.isPending === true) pending += 1;
 		const pendingGear = strings(raw.pendingEquipment);
 		pending += pendingGear.length;
-		if (number(raw.costOverride) !== undefined) overridden += 1;
+		/* The deck writes a price the picks cut, Desperate's Youngblood, as an override; the app cuts it alike. */
+		const override = number(raw.costOverride);
+		const type = faction.fighters.find((f) => f.id === text(raw.fighterId));
+		if (override !== undefined && !(type && override === recruitCost(type, effects))) overridden += 1;
 
 		const instance: FighterInstance = {
 			instanceId,
@@ -91,7 +99,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		const renown = number(raw.renown);
 		if (renown) instance.tally = { renown };
 
-		const advances = advancesOf(instance, raw, faction, renownHistory, modifiers, selections !== null);
+		const advances = advancesOf(instance, raw, faction, effects, renownHistory, modifiers, selections !== null);
 		if (advances.length) instance.advances = advances;
 		/* A level the file holds no record of was spent elsewhere, or is lost with the deck's open ones: either way not open here. */
 		const unrecorded = usedUp(instance);
@@ -120,9 +128,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		game: game.id,
 		factionId,
 		name: text(parsed.name),
-		picks: Object.fromEntries(
-			faction.choices.map((c) => [c.id, selections && isObject(selections.rules) ? strings(selections.rules[c.id]) : []])
-		),
+		picks,
 		fighters,
 		...(colour ? { colour } : {}),
 		...(warbandFluff ? { fluff: warbandFluff } : {}),
@@ -181,6 +187,7 @@ function advancesOf(
 	instance: FighterInstance,
 	raw: Raw,
 	faction: Faction,
+	effects: ActiveEffect[],
 	renownHistory: Raw[],
 	modifiers: Raw[],
 	fromWizard: boolean
@@ -201,7 +208,7 @@ function advancesOf(
 	/* The wizard's modifiers stand for the picks and the faction's rules, which
 	   this app works out from the picks itself; without them, the picks are all
 	   the file can say. */
-	const base = fromWizard ? fighter.profile : profileOf(instance, fighter);
+	const base = fromWizard ? fighter.profile : profileOf(instance, fighter, effects);
 	for (const [key, value] of Object.entries(overrides)) {
 		const figure = number(value);
 		const start = base[key];

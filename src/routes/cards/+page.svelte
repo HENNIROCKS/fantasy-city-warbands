@@ -324,7 +324,7 @@
 			label: advancement.label,
 			next: open[0] ? { level: open[0], offer: advancement.offer(now, profile, faction, open[0], warband) } : null,
 			waiting: open.length,
-			spent: values.advances.map((a, i) => ({ level: a.level, text: advancement.describe(now, profile, faction, i) }))
+			spent: values.advances.map((a, i) => ({ level: a.level, text: advancement.describe(now, profile, faction, i, warband!) }))
 		};
 	});
 

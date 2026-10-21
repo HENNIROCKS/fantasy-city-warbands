@@ -12,7 +12,7 @@
 	import RichText from '$lib/components/RichText.svelte';
 	import Stepper, { type Step } from '$lib/components/Stepper.svelte';
 	import { areas, coverage } from '$lib/core/coverage';
-	import { activeEffects, limitOf } from '$lib/core/effects';
+	import { activeEffects, limitOf, recruitCost } from '$lib/core/effects';
 	import { deadLeaders } from '$lib/core/leader';
 	import { paidFor } from '$lib/core/manage';
 	import { buy, copied, findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
@@ -389,7 +389,7 @@
 		const max = limitOf(f, effects).limit.max;
 		return [
 			headed ? null : roleOf(f, system.game),
-			`${f.cost}\u00a0${system.game.currency}`,
+			`${recruitCost(f, effects)}\u00a0${system.game.currency}`,
 			/* A limit of 0 is a fighter the picks rule out; the tile says why instead. */
 			max ? `${n} / ${max}` : n > 0 ? `${n} recruited` : null
 		]
@@ -543,12 +543,17 @@
 	{:else if step === 'choice'}
 		{#each faction.choices as choice (choice.id)}
 			{@const picked = warband.picks[choice.id] ?? []}
+			<!-- Picked when the warband was founded: once it has fought, what is picked stays and only an open place is filled. -->
+			{@const settled = !!paid && picked.length >= choice.pick}
 			<section>
 				<p class="field-label">
 					{choice.name}
 					<span class="font-normal normal-case text-zinc-400">{picked.length} / {choice.pick}</span>
 				</p>
 				<div class="mb-3 text-zinc-400"><RichText text={choice.text} /></div>
+				{#if settled && !warband.disbanded}
+					<p class="mb-3 text-zinc-400">This warband has fought: its {choice.name} stays as picked.</p>
+				{/if}
 				<div class="grid gap-2 sm:grid-cols-2">
 					{#each choice.options as option (option.id)}
 						{@const on = picked.includes(option.id)}
@@ -558,14 +563,14 @@
 							type="button"
 							class="choice"
 							aria-pressed={on}
-							disabled={!!block || !!warband.disbanded}
+							disabled={!!block || !!warband.disbanded || (!!paid && (on || settled))}
 							onclick={() => {
 								if (warband) warband.picks[choice.id] = next;
 							}}
 						>
 							<span class="block font-semibold">{option.name}</span>
 							<span class="block text-zinc-400"><RichText text={option.text} /></span>
-							{#if block}
+							{#if block && !settled}
 								<!-- On an option the reason lies in the fighters already there, so the whole
 								     sentence names them; only a full pick needs no more than its short form. -->
 								<span class="mt-1 block font-semibold" style="color: var(--ui-warn-text)">
@@ -591,6 +596,7 @@
 						{instance}
 						game={system.game}
 						{faction}
+						{effects}
 						issues={issues.filter((i) => i.instanceId === instance.instanceId)}
 						blocked={(wargearId) => blockedBy(withWargear(warband!, instance.instanceId, wargearId))}
 						paid={paid?.get(instance.instanceId) ?? null}
@@ -820,7 +826,7 @@
 								<span class="block font-semibold text-zinc-200">{instance.name.trim() || 'Unnamed fighter'}</span>
 								<span class="block text-zinc-400">{overviewLine(instance)}</span>
 							</div>
-							<span class="whitespace-nowrap text-zinc-300">{fighterCost(instance, faction)}&nbsp;{system.game.currency}</span>
+							<span class="whitespace-nowrap text-zinc-300">{fighterCost(instance, faction, effects)}&nbsp;{system.game.currency}</span>
 							<span aria-hidden="true" class="text-zinc-400">›</span>
 						</a>
 					</li>

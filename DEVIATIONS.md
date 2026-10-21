@@ -24,6 +24,7 @@ The data is the Warband Deck's hand-kept ruleset, brought up to the core rules 1
 - [ ] Thief and Troll Slayer (hired swords): Fall Back and Slayer Oath, which the 0.9 data names without a text, are left out
 - [ ] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword and is rounded up, as Well-Connected rounds it, where the rule says only "one Hired Sword for half its normal hiring fee"
 - [ ] Morale with half fighters (Clan Pestilens' Doomed, the Greenskin Marauders' Not Orcs): a count such as 3½ is compared as more than half the warband rounded up – 3½ of 6 wavers – where the rules count whole fighters only
+- [ ] Unyielding (Mercenaries' State Pride): a hired sword taken along keeps its own Bravery, where the rule raises that of "all fighters"
 
 ### Open upstream
 

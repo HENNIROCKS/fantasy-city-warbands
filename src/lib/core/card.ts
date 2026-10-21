@@ -6,7 +6,7 @@
  */
 
 import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
-import { LEADER } from './effects';
+import { LEADER, activeEffects, pickedStats, reaches, type ActiveEffect } from './effects';
 import { keywordsOf } from './leader';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
 import { purse, warbandCost } from './validate';
@@ -181,6 +181,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
 	const options = fighter ? chosenOptions(instance, fighter) : [];
+	const effects = activeEffects({ picks }, faction);
 	/* What the fighter's spent levels bring besides characteristics. */
 	const advanced = fighter && game.advancement ? game.advancement.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [], stats: [] };
 	/* What the injuries it keeps do to it. */
@@ -237,7 +238,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 	/* The faction's standing rules, then what the warband picked under its
 	   choices. A rule that leaves this fighter out keeps its line, with a hint
-	   where its text would stand – Sudden Accusation on a War Hound. */
+	   where its text would stand – Sudden Accusation on a War Hound. A pick that
+	   raises this fighter's characteristics says it is in the profile above. */
 	const named = (keyword: string) => `\`${keyword.replaceAll('-', ' ').toUpperCase()}\``;
 	const factionRules: CardEntry[] = [
 		...faction.rules.map((r) => ({
@@ -250,7 +252,13 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 						: r.text
 		})),
 		...faction.choices.flatMap((c) =>
-			c.options.filter((o) => picks[c.id]?.includes(o.id)).map((o) => ({ label: `(${c.name}) ${o.name}`, text: o.text }))
+			c.options
+				.filter((o) => picks[c.id]?.includes(o.id))
+				.map((o) => ({
+					label: `(${c.name}) ${o.name}`,
+					text: o.text,
+					...(fighter && o.effect?.stats?.some((s) => reaches(s, fighter.id)) ? { note: 'Already included.' } : {})
+				}))
 		)
 	];
 	const universal = game.universal.filter((u) => u.keyword === 'any' || keywords.includes(u.keyword));
@@ -295,8 +303,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		] satisfies CardSection[]
 	).filter((s) => s.entries.length);
 
-	const profile = fighter ? profileOf(instance, fighter) : undefined;
-	const statLayers = fighter ? layersOf(instance, fighter, faction, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
+	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
+	const statLayers = fighter ? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
 	const statConditions = conditionsOf(carried.map((c) => c.wargear), instance.wargear);
 
 	return {
@@ -333,7 +341,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		/* As on the Warband Deck's card: what the fighter carries out of a game
 		   rather than into one, where the game keeps a campaign. */
 		campaign: [
-			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction)) },
+			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction, effects)) },
 			...(game.campaign?.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
 		],
 		weapons,
@@ -346,11 +354,17 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 
 /**
  * How each numeric characteristic is made up, as the Warband Deck's card has it:
- * the profile, what the fighter's own pick, its levels, its talents and its
- * injuries add, then what its bought wargear adds whenever it is carried. Wargear on the profile is not
+ * the profile, what the fighter's own pick, the warband's picks, its levels, its
+ * talents and its injuries add, then what its bought wargear adds whenever it is carried. Wargear on the profile is not
  * counted: the profile already carries it.
  */
-function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction, rules: AdvanceEffects['stats']): Map<string, StatLayer[]> {
+function layersOf(
+	instance: FighterInstance,
+	fighter: Fighter,
+	faction: Faction,
+	effects: ActiveEffect[],
+	rules: AdvanceEffects['stats']
+): Map<string, StatLayer[]> {
 	const map = new Map<string, StatLayer[]>();
 	for (const [key, value] of Object.entries(fighter.profile)) {
 		if (typeof value === 'number') map.set(key, [{ kind: 'base', source: 'Profile', amount: value }]);
@@ -363,6 +377,7 @@ function layersOf(instance: FighterInstance, fighter: Fighter, faction: Faction,
 	for (const option of chosenOptions(instance, fighter)) {
 		for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: source ?? option.name, amount: bonus });
 	}
+	for (const { stat, bonus, source } of pickedStats(fighter, effects)) add(stat, { kind: 'permanent', source, amount: bonus });
 	for (const advance of instance.advances ?? []) {
 		if (!advance.stat) continue;
 		add(advance.stat, {

@@ -11,6 +11,11 @@ says which.
 **Something is still missing.** A leader, enough henchmen, an open choice: the
 app never blocks these. It lists them on every step and again at the end.
 
+**The warband's choice.** What it changes is counted in: a fighter it rules
+out is greyed out, a characteristic it raises is in the fighter's figures,
+and a fighter it makes cheaper is recruited at that price. Once the warband
+has fought, the choice stays as it was picked.
+
 **Equipment.** Each fighter gets a checklist of what its faction allows. What a
 fighter can never take is named under the list. What its current gear rules
 out stays in the list, greyed out with the reason. Tap a piece's name to see

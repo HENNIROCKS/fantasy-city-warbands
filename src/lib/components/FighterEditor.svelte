@@ -1,5 +1,6 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
+	import type { ActiveEffect } from '$lib/core/effects';
 	import type { Faction, FighterInstance, GameSystem, Issue, Wargear, WargearKind } from '$lib/core/types';
 	import { fighterCost, fighterName, formatStat, neverCarried, profileOf } from '$lib/core/warband';
 	import { tick } from 'svelte';
@@ -8,6 +9,7 @@
 		instance,
 		game,
 		faction,
+		effects,
 		issues,
 		blocked,
 		paid,
@@ -24,6 +26,8 @@
 		instance: FighterInstance;
 		game: GameSystem;
 		faction: Faction;
+		/** What the warband's picks change, such as a cheaper fighter or a raised characteristic. */
+		effects: ActiveEffect[];
 		/** Only the issues that belong to this fighter. */
 		issues: Issue[];
 		/** What would stop this fighter from being given a piece of wargear, or null. */
@@ -75,7 +79,7 @@
 	const label = $derived(fighterName(instance, faction));
 	/* An open choice says so under its own options. */
 	const listed = $derived(issues.filter((i) => i.code !== 'fighter-choice' || i.kind === 'excess'));
-	const profile = $derived(fighter ? profileOf(instance, fighter) : undefined);
+	const profile = $derived(fighter ? profileOf(instance, fighter, effects) : undefined);
 
 	function nameOf(id: string): string {
 		return faction.wargear.find((w) => w.id === id)?.name ?? id;
@@ -244,7 +248,7 @@
 		<!-- Where two reasons leave the type too little room, the actions move under it. -->
 		<div class="mt-1 flex flex-wrap items-center justify-between gap-x-2">
 			<p class="text-zinc-400">
-				{fighter?.name ?? instance.fighterId} · {fighterCost(instance, faction)}&nbsp;{game.currency}
+				{fighter?.name ?? instance.fighterId} · {fighterCost(instance, faction, effects)}&nbsp;{game.currency}
 			</p>
 			<!-- A blocked action says why in place of its icon. -->
 			<div class="ml-auto flex shrink-0 items-center">

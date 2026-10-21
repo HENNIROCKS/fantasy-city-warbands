@@ -3,6 +3,7 @@
  * stores ids; costs and names are looked up from its faction.
  */
 
+import { pickedStats, recruitCost, type ActiveEffect } from './effects';
 import type { Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
 
 /**
@@ -52,15 +53,20 @@ export function chosenOptions(instance: FighterInstance, fighter: Fighter): Figh
 	return fighter.choice?.options.filter((o) => picks.includes(o.id)) ?? [];
 }
 
-/** The fighter's profile with what its picks add, such as Fight +1 from Martial Discipline. */
-export function profileOf(instance: FighterInstance, fighter: Fighter): Fighter['profile'] {
+/**
+ * The fighter's profile with what its own picks add, such as Fight +1 from
+ * Martial Discipline, and what the warband's add, such as Huntsmen's Shoot +1.
+ */
+export function profileOf(instance: FighterInstance, fighter: Fighter, effects: ActiveEffect[]): Fighter['profile'] {
 	const profile = { ...fighter.profile };
+	const raise = (key: string, bonus: number) => {
+		const value = profile[key];
+		if (typeof value === 'number') profile[key] = value + bonus;
+	};
 	for (const option of chosenOptions(instance, fighter)) {
-		for (const [key, bonus] of Object.entries(option.bonus ?? {})) {
-			const value = profile[key];
-			if (typeof value === 'number') profile[key] = value + bonus;
-		}
+		for (const [key, bonus] of Object.entries(option.bonus ?? {})) raise(key, bonus);
 	}
+	for (const { stat, bonus } of pickedStats(fighter, effects)) raise(stat, bonus);
 	return profile;
 }
 
@@ -74,9 +80,10 @@ export function fighterName(instance: FighterInstance, faction: Faction): string
 	return instance.name.trim() || `Unnamed ${fighterType(instance, faction)}`;
 }
 
-/** What one fighter costs with everything it carries. */
-export function fighterCost(instance: FighterInstance, faction: Faction): number {
-	const base = faction.fighters.find((f) => f.id === instance.fighterId)?.cost ?? 0;
+/** What one fighter costs with everything it carries, the warband's picks counted into its own price. */
+export function fighterCost(instance: FighterInstance, faction: Faction, effects: ActiveEffect[]): number {
+	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+	const base = fighter ? recruitCost(fighter, effects) : 0;
 	return instance.wargear.reduce((sum, id) => sum + (faction.wargear.find((w) => w.id === id)?.cost ?? 0), base);
 }
 
