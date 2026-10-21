@@ -11,7 +11,7 @@
 import { readColour } from '$lib/colour';
 import { activeEffects, recruitCost, type ActiveEffect } from '$lib/core/effects';
 import { profileOf } from '$lib/core/warband';
-import type { Advance, BattleRecord, Faction, FighterInstance, Warband } from '$lib/core/types';
+import type { Advance, BattleRecord, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 import { factions, game, wargearId } from './wyrdcry';
 import { usedUp } from './wyrdcry-renown';
 
@@ -80,8 +80,8 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		const pendingGear = strings(raw.pendingEquipment);
 		pending += pendingGear.length;
 		/* The deck writes a price the picks cut, Desperate's Youngblood, as an override; the app cuts it alike. */
-		const override = number(raw.costOverride);
 		const type = faction.fighters.find((f) => f.id === text(raw.fighterId));
+		const override = number(raw.costOverride);
 		if (override !== undefined && !(type && override === recruitCost(type, effects))) overridden += 1;
 
 		const instance: FighterInstance = {
@@ -99,7 +99,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		const renown = number(raw.renown);
 		if (renown) instance.tally = { renown };
 
-		const advances = advancesOf(instance, raw, faction, effects, renownHistory, modifiers, selections !== null);
+		const advances = advancesOf(instance, raw, type, effects, renownHistory, modifiers, selections !== null);
 		if (advances.length) instance.advances = advances;
 		/* A level the file holds no record of was spent elsewhere, or is lost with the deck's open ones: either way not open here. */
 		const unrecorded = usedUp(instance);
@@ -186,7 +186,7 @@ function isRecord(v: unknown): v is BattleRecord {
 function advancesOf(
 	instance: FighterInstance,
 	raw: Raw,
-	faction: Faction,
+	fighter: Fighter | undefined,
 	effects: ActiveEffect[],
 	renownHistory: Raw[],
 	modifiers: Raw[],
@@ -201,7 +201,6 @@ function advancesOf(
 			...(typeof e.choice === 'string' ? { option: gear([e.choice])[0] } : {})
 		}));
 
-	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const overrides = isObject(raw.statOverrides) ? raw.statOverrides : {};
 	if (!fighter) return advances;
 

@@ -116,6 +116,11 @@ gesperrt wird nur beim Bauen. Entfernen wird nur gesperrt, wo es eine vorher
 eingehaltene Grenze bräche, etwa die Pecking Order; was eine Bande schon
 bricht, lässt sich abbauen.
 
+Was schon bezahlt ist, schützt dagegen die Oberfläche, nicht `validate`: Hat
+eine Bande gekämpft, sind Fraktion, ihre Wahl und die bezahlte Ausrüstung im
+Builder gesperrt. Eine Bande mit anderer Wahl ist nicht ungültig, sie lässt
+sich nur nicht mehr so bauen; ein Import bringt sie deshalb ohne Meldung mit.
+
 ## Oberfläche
 
 Farben und Formularelemente folgen dem Wyrdcry Card Creator. Der helle Modus
