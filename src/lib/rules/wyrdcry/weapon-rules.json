@@ -64,6 +64,12 @@
     "effect": null
   },
   {
+    "id": "point-blank",
+    "name": "POINT BLANK",
+    "text": "This ranged weapon may be used for melee attack actions: set the weapon's Range characteristic to 1\", and use the bearer's Fight characteristic for the hit rolls.",
+    "effect": null
+  },
+  {
     "id": "poisoned",
     "name": "POISONED",
     "text": "When making an attack action with this weapon, if any damage is allocated to the target, they are poisoned. When a poisoned fighter is activated, roll a dice. On a 1, the fighter is no longer poisoned. On a 2+, allocate 2 damage points to that fighter.",
@@ -85,6 +91,12 @@
     "id": "unreliable",
     "name": "UNRELIABLE",
     "text": "When making an attack action with this weapon, if any hit rolls result in a 1, all hit rolls are discarded and the attack action ends.",
+    "effect": null
+  },
+  {
+    "id": "unwieldy",
+    "name": "UNWIELDY",
+    "text": "This weapon cannot be used as part of a dual wielding attack, either as the main hand or the off-hand weapon.",
     "effect": null
   },
   {
