@@ -87,6 +87,7 @@
 - [x] 🛠️ A link to where the rules are written, beside each faction and each group of hired swords
 - [x] 📚 Greenskin Marauders 0.4: the Morning Star for ORC fighters
 - [x] ⚔️ Wyrdcry: Poisoned as a state on the card, with the roll on activation under Health
+- [x] 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card, under Universal Actions
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -110,5 +111,4 @@ Nothing promised, nothing planned.
 - ⚔️ Wyrdcry: Wounded at half Health as a band on the card
 - ⚔️ Wyrdcry: a reminder in round 4 that a dice decides on a fifth
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
-- 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card
 - 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding

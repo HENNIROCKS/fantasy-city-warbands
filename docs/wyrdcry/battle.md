@@ -22,6 +22,10 @@ round each card asks for its Bravery test, and a failed test is marked
 *Panicked*. A Plague Novice, or a Goblin among the Greenskin Marauders, counts
 as half a fighter out of action, as their faction rules say.
 
+**Channel Magic.** A wizard's card has it under **Universal Actions**, with
+the Magical Calamity table to roll on. Damage the table deals goes on with
+**−** like any other.
+
 **Zeal.** Witch Hunters count their Zeal with **−** and **+** under the warband
 card. The cards add what it gives.
 

@@ -1,5 +1,12 @@
 [
 	{
+		"id": "channel-magic",
+		"name": "Channel Magic",
+		"type": "action",
+		"keyword": "wizard",
+		"text": "A `WIZARD` can channel magic to generate or upgrade ability dice to be used for magical abilities. When making the Channel action, you may add a new [Double] with a value of 3 to your ability dice, or choose one existing ability dice and apply one of the following effects to it:\n- Upgrade a [Double] to a [Triple], or a [Triple] to a [Quad].\n- Increase the value of an ability dice by 3 (to a maximum of 6).\n\nThen, you must roll 2D6 and consult the Magical Calamity table:\n- **2: Calamitous Detonation.** Allocate 5 damage points to each fighter within 3\" of the `WIZARD`. Then, the `WIZARD` is taken out of action.\n- **3–4: Miscast.** Allocate 5 damage points to the `WIZARD`. The Channel action ends and no ability dice are added or upgraded.\n- **5–9: Barely Contained Power.** Allocate 3 damage points to the `WIZARD`.\n- **10–12: Controlled Channeling.** The `WIZARD` suffers no ill effects.\n\nThe channeled ability dice must be used for a magical ability during the `WIZARD`'s activation; they cannot be saved for another fighter and are discarded if unused. A `WIZARD` can channel magic multiple times for the same ability dice (e.g., a [Double] can first be upgraded to a [Triple], and then have its value increased)."
+	},
+	{
 		"id": "rush",
 		"name": "Rush",
 		"type": "double",

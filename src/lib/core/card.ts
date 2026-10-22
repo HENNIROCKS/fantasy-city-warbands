@@ -114,7 +114,7 @@ export interface CardWeapon {
  * universal rules are reference and fold away under a title.
  */
 export interface CardSection {
-	kind: 'fighter' | 'equipment' | 'faction' | 'universal' | 'universal-reaction' | 'notes';
+	kind: 'fighter' | 'equipment' | 'faction' | 'universal-action' | 'universal' | 'universal-reaction' | 'notes';
 	entries: CardEntry[];
 }
 
@@ -153,6 +153,8 @@ export interface FighterCardData {
 /** In the order the Warband Deck lists abilities, injuries after the traits; a type it does not know comes first. */
 const TYPE_ORDER = ['trait', 'injury', 'double', 'triple', 'quad', 'reaction'];
 const REACTION = 'reaction';
+/* An action any fighter of a keyword can make, such as a WIZARD's Channel Magic: a heading of its own, as the rules set actions apart from abilities. */
+const ACTION = 'action';
 
 const typeRank = (type = '') => TYPE_ORDER.indexOf(type.toLowerCase());
 const titleCase = (word: string) => word[0].toUpperCase() + word.slice(1).toLowerCase();
@@ -284,13 +286,15 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		});
 	const fighterRules = ruleEntries(ownRules, new Map([...(raised ? [[raised, 'Already included.'] as const] : []), ...barred(ownRules)]));
 	const universalReactions = universal.filter((u) => u.type === REACTION);
+	const universalActions = universal.filter((u) => u.type === ACTION);
 
 	const sections: CardSection[] = (
 		[
 			{ kind: 'fighter', entries: fighterRules },
 			{ kind: 'equipment', entries: items },
 			{ kind: 'faction', entries: factionRules },
-			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION)) },
+			{ kind: 'universal-action', entries: ruleEntries(universalActions, new Map(barred(universalActions))) },
+			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION && u.type !== ACTION)) },
 			{ kind: 'universal-reaction', entries: ruleEntries(universalReactions, new Map(barred(universalReactions))) },
 			/* The player's own text, not the game's – the card gives it its own ground. */
 			{ kind: 'notes', entries: instance.notes?.trim() ? [{ label: 'Notes', text: instance.notes.trim() }] : [] }

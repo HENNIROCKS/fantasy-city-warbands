@@ -79,6 +79,7 @@
 	   the rule that separates the sections. */
 	const COLLAPSIBLE: Partial<Record<CardSection['kind'], string>> = {
 		faction: 'Faction Rules',
+		'universal-action': 'Universal Actions',
 		universal: 'Universal Abilities',
 		'universal-reaction': 'Universal Reactions'
 	};
