@@ -260,7 +260,6 @@ export interface Hiring {
 	refuse?: (warband: Warband, faction: Faction, hireling: Hireling) => string | null;
 }
 
-/** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */
 /**
  * How long a battle runs: from round `decide` on, the end of each round asks
  * for a roll – `goOn` plays another, `end` ends it – and `last` is the last
@@ -271,11 +270,13 @@ export interface BattleRounds {
 	last: number;
 	/** What is rolled, as the question names it: `roll a dice`. */
 	roll: string;
-	/** The results that play another round, `3+`, and that end the battle, `1–2`. */
+	/** The results that play another round: `3+`. */
 	goOn: string;
+	/** The results that end the battle: `1–2`. */
 	end: string;
 }
 
+/** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */
 export interface BattleMark {
 	key: string;
 	/** In the menu and on the card's band. */
