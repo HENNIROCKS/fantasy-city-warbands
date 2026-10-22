@@ -28,7 +28,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - See on the start page when the app was last updated, with a link to the
   roadmap; dismissed, the bar stays away until the next update
 - See a faction before picking it: its fighters with their costs and limits,
-  its choice and its rules
+  its choice, its rules and a link to where they are written
 - Recruit fighters and give them wargear from what their faction allows them,
   with the fighter's profile in the game's own notation – `5"`, `3+`, `–`;
   duplicate one to recruit another of its kind with the same wargear and
@@ -82,7 +82,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is
-  hired – listed on the warband card, its fee paid in the aftermath – see
+  hired, each source linked – listed on the warband card, its fee paid in
+  the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)
 - End a Wyrdcry battle in a few pages: result, income, injuries, a new
   leader, items used up and renown, written in with Apply – see

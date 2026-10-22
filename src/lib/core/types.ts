@@ -221,6 +221,7 @@ export interface Hireling {
 	factions: string[];
 	/** Whether the game's own rules print this fighter or it is written by fans. */
 	origin: 'official' | 'homebrew';
+	source?: Source;
 }
 
 /** One fighter hired into the battle running, as stored with it. */
@@ -659,6 +660,12 @@ export interface Fighter {
 	choice?: FighterChoice;
 }
 
+/** Where the rules for a faction or a hired sword can be read, linked where it is picked. */
+export interface Source {
+	name: string;
+	url: string;
+}
+
 export interface Faction {
 	id: string;
 	/** The `GameSystem.id` this faction belongs to. */
@@ -668,6 +675,7 @@ export interface Faction {
 	origin: 'official' | 'homebrew';
 	/** Who wrote the rules this faction comes from. */
 	author: string;
+	source?: Source;
 	/**
 	 * The faction's own rules, shown as text when it is picked. `except` is a
 	 * keyword id whose carriers a rule leaves out, `only` one only whose carriers

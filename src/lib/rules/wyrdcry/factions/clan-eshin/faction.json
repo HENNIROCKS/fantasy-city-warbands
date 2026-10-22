@@ -4,5 +4,6 @@
   "keyword": "CLAN ESHIN",
   "warband_size": { "min": 3, "max": 20 },
   "origin": "official",
-  "author": "Johan Markström"
+  "author": "Johan Markström",
+  "source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/warbands/factions/clan-eshin/" }
 }

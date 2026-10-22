@@ -4,6 +4,7 @@
   "origin": "homebrew",
   "version": "0.3",
   "author": "Hendrik Berends",
+  "source": { "name": "New Hired Swords", "url": "https://drive.google.com/file/d/1SUOpYp5GM-2PpFm7XGrCUjMng79XsnLJ/view" },
   "cost": 85,
   "limit": { "min": 0, "max": 1 },
   "may_hire": ["clan-eshin", "clan-pestilens"],

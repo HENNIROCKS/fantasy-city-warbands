@@ -3,6 +3,6 @@
 	"name": "Verminkin",
 	"keyword": "verminkin",
 	"origin": "official",
-	"source": "Black Death City Playtest v1.03",
+	"source": { "name": "Black Death City Playtest v1.03", "url": "https://www.blackdeathcity.com/" },
 	"author": "Sam Pearson"
 }

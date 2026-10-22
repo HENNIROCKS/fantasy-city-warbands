@@ -4,7 +4,8 @@
   "keyword": "GREENSKIN MARAUDERS",
   "warband_size": { "min": 3, "max": 15 },
   "origin": "homebrew",
-  "version": "0.3",
+  "version": "0.4",
   "may_hire": ["ogre-bodyguard", "warlock"],
-  "author": "Hendrik Berends"
+  "author": "Hendrik Berends",
+  "source": { "name": "Greenskin Marauders", "url": "https://drive.google.com/file/d/1nfMRp_2J2XE6HLq6nqBQJtzBGldJMWAn/view" }
 }

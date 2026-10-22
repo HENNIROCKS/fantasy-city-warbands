@@ -4,6 +4,7 @@
   { "id": "weapon:axe", "allow": "all" },
   { "id": "weapon:spear", "allow": "all" },
   { "id": "weapon:sword", "allow": "all" },
+  { "id": "weapon:morning-star", "allow": "all", "restrict": "orc" },
   { "id": "weapon:ball-and-chain", "allow": "all", "restrict": "goblin" },
   { "id": "weapon:great-weapon", "allow": "all" },
   { "id": "weapon:bow", "allow": "all" },

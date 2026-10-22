@@ -84,6 +84,8 @@
 - [x] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included, the choice kept once the warband has fought
 - [x] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
 - [x] 📚 Wyrdcry 1.0: the Rulebook, the Campaign Book and the factions – prices, weapons, Brutal and Poisoned, the wizards' universal abilities, the hired swords as printed, a talent only for the leader's first level
+- [x] 🛠️ A link to where the rules are written, beside each faction and each group of hired swords
+- [x] 📚 Greenskin Marauders 0.4: the Morning Star for ORC fighters
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost

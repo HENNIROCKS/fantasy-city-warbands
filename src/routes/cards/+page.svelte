@@ -647,7 +647,7 @@
 	/* The gold left to hire with: the purse, less what the warband is worth and what is hired already. */
 	const goldFree = $derived(warband && system && faction ? purse(warband, system.game) - warbandCost(warband, faction) - sum(hiredFees) : 0);
 
-	/* Each one the faction may hire, the official ones ahead of the homebrew: hired already with its fee, or what
+	/* Each one the faction may hire, the official ones ahead of the homebrew and each source's together: hired already with its fee, or what
 	   hiring it adds to the fees and whether the gold holds it – more than its own fee where Well-connected's half
 	   moves over to it from one hired before. */
 	const hireOffers = $derived.by(() => {
@@ -655,7 +655,8 @@
 		if (!w || !hiring || !faction) return [];
 		const hired = battle?.hired ?? [];
 		const homebrew = (h: (typeof offered)[number]) => Number(h.origin === 'homebrew');
-		return [...offered].sort((a, b) => homebrew(a) - homebrew(b)).map((h) => {
+		const source = (h: (typeof offered)[number]) => h.source?.name ?? '';
+		return [...offered].sort((a, b) => homebrew(a) - homebrew(b) || source(a).localeCompare(source(b))).map((h) => {
 			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
 			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
 			const halved = owedFree ? { free: true as const } : rolledHalf && halving ? { halved: true as const } : {};
@@ -935,8 +936,18 @@
 					{@const choice = offer.hireling.fighter.choice}
 					{@const open = choosing === offer.hireling.fighter.id}
 					{@const picked = offer.held ? pickedName(offer.hireling.fighter.id, offer.held.picks) : ''}
-					{#if offer.hireling.origin === 'homebrew' && hireOffers[i - 1]?.hireling.origin !== 'homebrew'}
-						<p class="field-label pt-4">Homebrew</p>
+					{@const source = offer.hireling.source}
+					{@const before = hireOffers[i - 1]?.hireling}
+					<!-- A heading for each source, with a link to where its rules can be read. -->
+					{#if !before || before.origin !== offer.hireling.origin || before.source?.url !== source?.url}
+						<div class="flex items-baseline justify-between gap-3 {before ? 'pt-4' : ''}">
+							<p class="field-label">{offer.hireling.origin === 'homebrew' ? 'Homebrew' : 'Official'}</p>
+							{#if source}
+								<a class="text-zinc-400 underline" href={source.url} target="_blank" rel="noopener"
+									>{source.name}<span aria-hidden="true"> ↗</span></a
+								>
+							{/if}
+						</div>
 					{/if}
 					<button
 						type="button"

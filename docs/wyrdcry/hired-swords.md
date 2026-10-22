@@ -14,7 +14,8 @@ weapon that come with it. To pick again, send it away and hire it anew.
 
 **Homebrew.** Six of them are homebrew, listed under their own heading at the
 end. Greenskin Marauders with a wizard of their own cannot hire another one:
-the button says *A WIZARD is on the roster*.
+the button says *A WIZARD is on the roster*. Each heading links to where its
+hired swords are written: wyrdcry.net, or the PDF of the homebrew ones.
 
 You can hire before the battle starts and during the first round. Hiring also
 starts the battle, as the first tap at the table does.

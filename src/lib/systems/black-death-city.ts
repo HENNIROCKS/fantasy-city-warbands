@@ -4,7 +4,7 @@
  * `factions/` is one faction.
  */
 
-import type { Faction, Fighter, GameSystem, Rule, Wargear, Warband } from '$lib/core/types';
+import type { Faction, Fighter, GameSystem, Rule, Source, Wargear, Warband } from '$lib/core/types';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 
@@ -60,6 +60,7 @@ interface RawFaction {
 	name: string;
 	origin: 'official' | 'homebrew';
 	author: string;
+	source?: Source;
 }
 
 interface RawFighter {
@@ -214,6 +215,7 @@ function build(
 		name: meta.name,
 		origin: meta.origin,
 		author: meta.author,
+		...(meta.source ? { source: meta.source } : {}),
 		rules: [],
 		size: SIZE,
 		choices: [

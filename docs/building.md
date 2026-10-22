@@ -4,6 +4,10 @@
 the choice the whole warband makes, fighters, finish. You can come back to any
 step later.
 
+**Where the rules are.** At the foot of each faction a link leads to where
+its rules are written: its page on wyrdcry.net, the Black Death City site, or
+the PDF of a homebrew faction.
+
 **A button is greyed out.** Tapping it would take the warband too far – over
 its budget, past a fighter's limit, beyond what a fighter may carry. The button
 says which.

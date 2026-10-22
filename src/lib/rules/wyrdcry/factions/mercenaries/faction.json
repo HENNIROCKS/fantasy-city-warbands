@@ -4,5 +4,6 @@
   "keyword": "MERCENARIES",
   "warband_size": { "min": 3, "max": 15 },
   "origin": "official",
-  "author": "Johan Markström"
+  "author": "Johan Markström",
+  "source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/warbands/factions/mercenaries/" }
 }

@@ -3,6 +3,7 @@
   "name": "Troll Slayer",
   "origin": "official",
   "author": "Johan Markström",
+  "source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/campaigns/hired-swords/" },
   "version": "1.0",
   "cost": 50,
   "limit": { "min": 0, "max": 1 },

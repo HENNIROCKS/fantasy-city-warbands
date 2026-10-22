@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -287,6 +287,7 @@ interface RawFaction {
 	warband_size: { min: number; max: number | null };
 	origin: 'official' | 'homebrew';
 	author: string;
+	source?: Source;
 	/** Hired swords a homebrew faction adds itself to, beside those whose own file names it. */
 	may_hire?: string[];
 }
@@ -469,6 +470,7 @@ interface RawHiredSword {
 	id: string;
 	name: string;
 	origin: 'official' | 'homebrew';
+	source?: Source;
 	cost: number;
 	limit: { min: number; max: number | null };
 	may_hire: string[];
@@ -729,6 +731,7 @@ function build(
 		name: meta.name,
 		origin: meta.origin,
 		author: meta.author,
+		...(meta.source ? { source: meta.source } : {}),
 		/* A rule with a pick is asked for as a choice; the rest is read, not decided. */
 		rules: rules
 			.filter((r) => r.pick === null)
@@ -858,7 +861,8 @@ const hirelings: Hireling[] = hiredSwords
 			},
 			wargear: [...new Set([...h.gear, ...(choice?.options ?? []).flatMap((o) => o.gear ?? [])])].flatMap((id) => catalogue.get(id) ?? []),
 			factions: [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)],
-			origin: h.origin
+			origin: h.origin,
+			...(h.source ? { source: h.source } : {})
 		};
 	})
 	.sort((a, b) => a.fighter.name.localeCompare(b.fighter.name));
