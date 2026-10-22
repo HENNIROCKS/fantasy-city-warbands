@@ -17,6 +17,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [ ] Hired swords' Armour and Move: the Freelance Knight, the Warrior Priest and the Beastman carry their armour and the Knight his shield, on a profile without them, so the card arrives at what the Campaign Book prints – the Knight at 4" and Armour 3
 - [ ] Thief (hired sword): Fall Back! has the text of the Wits talent of that name, which the 1.0 data names without a text
 - [ ] A leader recruited under the Campaign Book 0.9, who raised a characteristic as well as taking a talent with the first level of renown, keeps both
+- [ ] Spear: no weapon rule, as the Rulebook 1.0's example on page 13 prints it, so it goes with a shield or a second melee weapon, at 15gc, where the 1.0 weapon data has it Two Handed at 10gc
 - [ ] Favour tiers: 0–5, 6–15, 16–30 and 31+ with their income, as the Campaign Book 1.0 and the site's Collect Income page print them, where the 1.0 campaign rules data still has the playtest's five tiers, so the Warband Builder shows another standing for a favour of 6–40 and offers other income above 5
 
 ### Open upstream
@@ -29,7 +30,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Underdogs: each bonus can be selected once, as the Campaign Book 1.0 now says
 - [ ] Hero costs: in the 0.9 and the 1.0 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 - [ ] Crossbow and Handgun: 1–18" in the 1.0 weapon data, followed here, where the Rulebook 1.0's example on page 13 prints the Crossbow at 1–24"
-- [ ] Spear: Two Handed in the 1.0 weapon data, followed here, where the Rulebook 1.0's example on page 13 prints it without a weapon rule
+- [ ] Spear: Two Handed in the 1.0 weapon data, where the Rulebook 1.0's example on page 13 prints it without a weapon rule
 - [ ] Great Claw (Possessed): the 1.0 launch post calls it brutal, the faction page gives it Piercing 3 only – followed here
 
 ## Black Death City

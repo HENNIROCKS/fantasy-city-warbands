@@ -40,8 +40,8 @@
 		"attacks": 3,
 		"hit": 2,
 		"crit": 3,
-		"rules": ["two-handed"],
-		"cost": 10
+		"rules": [],
+		"cost": 15
 	},
 	{
 		"id": "halberd",
