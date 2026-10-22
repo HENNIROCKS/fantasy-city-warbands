@@ -90,6 +90,9 @@
 - [x] 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card, under Universal Actions
 - [x] ⚔️ Wyrdcry: Wounded at half Health, named first on the card's band
 - [x] ⚔️ Wyrdcry: the roll for a fifth round asked at the end of round 4, and no sixth
+- [x] 🃏 Wyrdcry: homebrew fighters and hired swords with the fluff their rules give them, ready to rewrite on the back
+- [x] 🛠️ Wyrdcry: the Dark Warrior refused to the Mercenaries beside an Elf Ranger, Troll Slayer, Warrior Priest or Holy Relic, and they beside her
+- [x] 🃏 Wyrdcry: the Dark Warrior with a picture on her card, its ink in the warband's colour
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -112,3 +115,4 @@ Nothing promised, nothing planned.
 - 🎨 Virtual tuck box for each deck
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
 - 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding
+- 🃏 A picture on every other hired sword's card, black on white beside its file

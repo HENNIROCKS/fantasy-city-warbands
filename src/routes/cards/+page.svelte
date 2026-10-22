@@ -123,6 +123,8 @@
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	/** A piece's name as the faction lists it, its id where the faction has none. */
 	const wargearName = (id: string) => faction?.wargear.find((w) => w.id === id)?.name ?? id;
+	/** The background the fighter's rules give it, which its back starts from and does not store unchanged. */
+	const givenFluff = (fighter: FighterInstance) => faction?.fighters.find((f) => f.id === fighter.fighterId)?.fluff ?? '';
 	/* What the faction may hire, and the faction with them added, so a hired fighter's card finds its profile and weapons. */
 	const hiring = $derived(system?.game.hiring ?? null);
 	const offered = $derived(hiring && faction ? hiring.hirelings.filter((h) => h.factions.includes(faction.id)) : []);
@@ -224,7 +226,7 @@
 		if (!fighter) return;
 		draft = {
 			name: fighter.name,
-			fluff: fighter.fluff ?? '',
+			fluff: fighter.fluff ?? givenFluff(fighter),
 			notes: fighter.notes ?? '',
 			tally: { ...fighter.tally },
 			wargear: [...fighter.wargear],
@@ -369,15 +371,17 @@
 	/**
 	 * The fighter with the back's text and campaign; a field left blank is left
 	 * out, as it is on a fighter never written on, and so are counters at none
-	 * where the fighter had none.
+	 * where the fighter had none. Fluff as its rules give it is left out as
+	 * well, so the card goes on reading the rules' own.
 	 */
 	function written(fighter: FighterInstance, { name, fluff, notes, tally, wargear, advances, injuries, away }: BackDraft): FighterInstance {
 		const { fluff: _fluff, notes: _notes, tally: _tally, advances: _advances, injuries: _injuries, away: _away, ...rest } = fighter;
 		const counted = Object.fromEntries(Object.entries(tally).filter(([key, value]) => value !== 0 || fighter.tally?.[key] !== undefined));
+		const own = fluff.trim() === givenFluff(fighter) ? '' : fluff.trim();
 		return {
 			...rest,
 			name: name.trim(),
-			...(fluff.trim() ? { fluff: fluff.trim() } : {}),
+			...(own ? { fluff: own } : {}),
 			...(notes.trim() ? { notes: notes.trim() } : {}),
 			...(Object.keys(counted).length || fighter.tally ? { tally: counted } : {}),
 			...(advances.length || fighter.advances ? { advances } : {}),
@@ -662,7 +666,7 @@
 			const halved = owedFree ? { free: true as const } : rolledHalf && halving ? { halved: true as const } : {};
 			const trial = hiring.fees(w, [...hired, { instanceId: '', fighterId: h.fighter.id, ...halved }]);
 			const added = sum(trial) - sum(hiredFees);
-			const refused = hiring.refuse?.(w, faction, h) ?? (added > goldFree ? 'Not enough gold' : null);
+			const refused = hiring.refuse?.(w, faction, h, hired) ?? (added > goldFree ? 'Not enough gold' : null);
 			return { hireling: h, held, fee: added, refused };
 		});
 	});

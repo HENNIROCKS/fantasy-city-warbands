@@ -47,6 +47,9 @@
 	   red to half its height. */
 	const wound = $derived(card.health.value > 0 ? Math.min(1, state.damage / card.health.value) : 0);
 
+	/* The player's photo, else the picture the fighter's data brings, filling the field. */
+	const shown = $derived(photo ?? (card.image ? { url: card.image, size: 'cover', position: '50% 50%' } : null));
+
 	/* Each figure as the Warband Deck's card reads it: the layers the card was
 	   built with, then the battle's own – what a mark or a stage of the faction's
 	   count adds, kept above the game's floor, and last the damage Health counts
@@ -102,9 +105,10 @@
 		<div class="image-box">
 			<div
 				class="image-inner"
-				class:photo={photo !== null}
-				style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};{photo
-					? ` --photo: url(${photo.url}); --photo-size: ${photo.size}; --photo-pos: ${photo.position};`
+				class:photo={shown !== null}
+				class:preset={photo === null && shown !== null}
+				style="mask-image: {imageFieldMask}; -webkit-mask-image: {imageFieldMask};{shown
+					? ` --photo: url(${shown.url}); --photo-size: ${shown.size}; --photo-pos: ${shown.position};`
 					: ''}"
 			></div>
 		</div>
@@ -198,11 +202,11 @@
 		top: calc(10 * var(--u));
 	}
 
-	/* The Card Creator's image field, cut from its mask. Without a photo it is a
-	   field of the card's colour. The blood stands in it as high as the damage the
-	   fighter holds, with a hard edge: a level is read off at a glance, a blend
-	   has to be compared to something. Over a photo the blood is translucent,
-	   denser the more Health is lost. */
+	/* The Card Creator's image field, cut from its mask. Without a photo or a
+	   picture it is a field of the card's colour. The blood stands in it as high
+	   as the damage the fighter holds, with a hard edge: a level is read off at a
+	   glance, a blend has to be compared to something. Over a photo the blood is
+	   translucent, denser the more Health is lost. */
 	.image-inner {
 		position: absolute;
 		inset: 0;
@@ -226,6 +230,12 @@
 			),
 			var(--photo) var(--photo-pos) / var(--photo-size) no-repeat,
 			var(--card-green);
+	}
+
+	/* A picture from the data is black on white: screened over the card's colour,
+	   its ink takes the warband's colour and its paper stays white. */
+	.image-inner.preset {
+		background-blend-mode: normal, screen;
 	}
 
 	.image-header {
