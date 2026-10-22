@@ -138,8 +138,10 @@ export interface FighterCardData {
 	campaign: CardValue[];
 	weapons: CardWeapon[];
 	sections: CardSection[];
-	/** The player's own background text, empty where there is none. */
+	/** The player's own background text, else the one its rules give it; empty where there is neither. */
 	fluff: string;
+	/** The picture the fighter's data brings, for the image field where there is no photo; null where there is none. */
+	image: string | null;
 	/** Why the fighter sits out, for the band across its card; null where it does not. */
 	away: string | null;
 	/** Set where the faction no longer has the fighter's type. */
@@ -344,7 +346,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		],
 		weapons,
 		sections,
-		fluff: instance.fluff?.trim() ?? '',
+		fluff: instance.fluff?.trim() || fighter?.fluff || '',
+		image: fighter?.image ?? null,
 		away: instance.away ? AWAY_LABELS[instance.away] : null,
 		unknown: !fighter
 	};

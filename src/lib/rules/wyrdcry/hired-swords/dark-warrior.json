@@ -14,7 +14,12 @@
     "possessed",
     "undead"
   ],
-  "description": "Few walk away from the Shadowlord's blessings. Most come apart under them and are last seen dragging themselves back towards the Pit. She kept her shape, kept the horns and the fused plate, and hires out her maul to anyone in the ruins who can meet her price.\n\nMERCENARIES may only hire her if their warband includes no Elf Ranger, Troll Slayer or Warrior Priest, and no Holy Relic.",
+  "not_with": {
+    "factions": ["mercenaries"],
+    "hired": ["elf-ranger", "troll-slayer", "warrior-priest"],
+    "carried": ["item:holy-relic"]
+  },
+  "description": "Few walk away from the Shadowlord's blessings. Most come apart under them and are last seen dragging themselves back towards the Pit. She kept her shape, kept the horns and the fused plate, and hires out her maul to anyone in the ruins who can meet her price.",
   "profile": {
     "move": 5,
     "fight": 6,

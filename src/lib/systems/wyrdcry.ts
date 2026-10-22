@@ -268,12 +268,41 @@ const HALF_FEE_TALENT = 'underground-contacts';
 /* The Greenskin Marauders' Hired Swords: no WIZARD for hire where one is on the roster. */
 const ONE_WIZARD = { faction: 'greenskin-marauders', keyword: 'wizard' };
 
-function refuseHire(warband: Warband, faction: Faction, hireling: Hireling): string | null {
+function refuseHire(warband: Warband, faction: Faction, hireling: Hireling, hires: Hire[]): string | null {
+	return refuseWizard(warband, faction, hireling) ?? refuseBeside(warband, faction, hireling, hires);
+}
+
+function refuseWizard(warband: Warband, faction: Faction, hireling: Hireling): string | null {
 	if (faction.id !== ONE_WIZARD.faction || !hireling.fighter.keywords.includes(ONE_WIZARD.keyword)) return null;
 	const own = warband.fighters.some(
 		(i) => i.away !== 'dead' && faction.fighters.find((f) => f.id === i.fighterId)?.keywords.includes(ONE_WIZARD.keyword)
 	);
 	return own ? `A ${ONE_WIZARD.keyword.toUpperCase()} is on the roster` : null;
+}
+
+const article = (name: string) => (/^[AEIOU]/.test(name) ? 'an' : 'a');
+
+/*
+ * A hired sword's `notWith`, both ways: it is refused beside what it names,
+ * and what it names is refused once it is hired – the Dark Warrior and the
+ * Mercenaries' Elf Ranger, Troll Slayer, Warrior Priest and Holy Relic.
+ */
+function refuseBeside(warband: Warband, faction: Faction, hireling: Hireling, hires: Hire[]): string | null {
+	const own = hireling.notWith;
+	if (own?.factions.includes(faction.id)) {
+		const hired = hires.find((h) => own.hired.includes(h.fighterId));
+		const name = hired && hirelings.find((x) => x.fighter.id === hired.fighterId)?.fighter.name;
+		if (name) return `Not with ${article(name)} ${name} hired`;
+		const owned = [...warband.fighters.filter((f) => f.away !== 'dead').flatMap((f) => f.wargear), ...(warband.stash ?? [])];
+		const carried = own.carried.find((id) => owned.includes(id));
+		const piece = carried && (catalogue.get(carried)?.name ?? carried);
+		if (piece) return `Not with ${article(piece)} ${piece} in the warband`;
+	}
+	for (const h of hires) {
+		const other = hirelings.find((x) => x.fighter.id === h.fighterId);
+		if (other?.notWith?.factions.includes(faction.id) && other.notWith.hired.includes(hireling.fighter.id)) return `Not with the ${other.fighter.name} hired`;
+	}
+	return null;
 }
 
 /** Half a fee, rounded up, as Well-Connected rounds it. */
@@ -331,6 +360,7 @@ interface RawFighter {
 	/** Prefixed `weapon:` or `item:`, like the rows of `equipment.json`. */
 	gear: string[];
 	choose: RawChoice | null;
+	description: string;
 }
 
 /**
@@ -502,11 +532,20 @@ interface RawHiredSword {
 	choose: RawChoice | null;
 	abilities: RawAbility[];
 	weapons: (typeof weapons)[number][];
+	description: string;
+	not_with?: { factions: string[]; hired: string[]; carried: string[] };
 }
 
 const hiredSwords = Object.values(
 	import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.json', { eager: true, import: 'default' })
 ) as RawHiredSword[];
+
+/* A hired sword's picture lies beside its file, named by its id: `dark-warrior.jpg`. */
+const hiredImages = new Map(
+	Object.entries(import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.jpg', { eager: true, import: 'default', query: '?url' }) as Record<string, string>).map(
+		([path, url]) => [path.replace(/^.*\/|\.jpg$/g, ''), url]
+	)
+);
 
 /* A hired sword's own weapon goes into the shared list; one whose id is
    taken there already is left out, so the game's own weapon keeps its profile. */
@@ -736,6 +775,16 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 	return undefined;
 }
 
+/*
+ * A fighter's background from its file, for homebrew only: the official
+ * factions' texts are not all there yet, and a card should not read one and
+ * miss the next.
+ */
+function fluffOf(origin: RawFaction['origin'], description: string | undefined): { fluff?: string } {
+	const text = description?.trim();
+	return origin === 'homebrew' && text ? { fluff: text } : {};
+}
+
 function build(
 	meta: RawFaction,
 	fighters: RawFighter[],
@@ -781,6 +830,7 @@ function build(
 				const a = ability.get(id);
 				return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
 			}),
+			...fluffOf(meta.origin, f.description),
 			/* Offered whether the fighter may take it or not: a player looking for a
 			   Handgun needs to read that it is for HEROes, not to find it missing. */
 			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost])],
@@ -875,6 +925,8 @@ const hirelings: Hireling[] = hiredSwords
 				keywords: h.keywords,
 				profile: h.profile,
 				rules: h.abilities.filter((a) => !roles.has(a.id)).map((a) => ({ name: a.name, text: a.text, type: a.type })),
+				...fluffOf(h.origin, h.description),
+				...(hiredImages.has(h.id) ? { image: hiredImages.get(h.id) } : {}),
 				wargear: [],
 				unequipped: 'A HIRED SWORD comes with its own equipment',
 				gear: h.gear,
@@ -883,7 +935,8 @@ const hirelings: Hireling[] = hiredSwords
 			wargear: [...new Set([...h.gear, ...(choice?.options ?? []).flatMap((o) => o.gear ?? [])])].flatMap((id) => catalogue.get(id) ?? []),
 			factions: [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)],
 			origin: h.origin,
-			...(h.source ? { source: h.source } : {})
+			...(h.source ? { source: h.source } : {}),
+			...(h.not_with ? { notWith: h.not_with } : {})
 		};
 	})
 	.sort((a, b) => a.fighter.name.localeCompare(b.fighter.name));

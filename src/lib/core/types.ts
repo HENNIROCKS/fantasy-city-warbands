@@ -229,6 +229,12 @@ export interface Hireling {
 	/** Whether the game's own rules print this fighter or it is written by fans. */
 	origin: 'official' | 'homebrew';
 	source?: Source;
+	/**
+	 * What keeps a warband of these factions from hiring it, and it from being
+	 * hired beside: the hirelings by fighter id, the wargear by id, carried or
+	 * in the stash.
+	 */
+	notWith?: { factions: string[]; hired: string[]; carried: string[] };
 }
 
 /** One fighter hired into the battle running, as stored with it. */
@@ -257,7 +263,7 @@ export interface Hiring {
 	 */
 	halving: (warband: Warband) => { name: string; holders: string[] } | null;
 	/** Why the warband may not hire this one, in a few words for its button; null where it may. */
-	refuse?: (warband: Warband, faction: Faction, hireling: Hireling) => string | null;
+	refuse?: (warband: Warband, faction: Faction, hireling: Hireling, hires: Hire[]) => string | null;
 }
 
 /**
@@ -667,6 +673,10 @@ export interface Fighter {
 	profile: Record<string, number | string | null>;
 	/** Shown as text, not applied. */
 	rules: Rule[];
+	/** The background its rules give it, on its card and the back's field until the player writes their own. */
+	fluff?: string;
+	/** The URL of a picture its data brings, black on white, in the image field where there is no photo. */
+	image?: string;
 	/**
 	 * The wargear ids offered to this fighter. Whether it may take one, and
 	 * beside what, is the game's `carry`.
