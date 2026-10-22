@@ -137,6 +137,8 @@ gekürzt. Eine Änderung am Kartenaufbau wird
 zuerst am Deck verglichen. Abweichend vom Deck sind die Sheets über dem Deck
 (AftermathSheet, RenownSheet) als Kartenrückseite gesetzt (`.card.back.sheet`),
 nicht im Stil der App; das ist gewollt und wird nicht ans Deck angeglichen.
+Ebenso stehen die Zustände einer Schlacht in einem Band, durch „·“ getrennt,
+nicht je eines wie im Deck.
 
 Auf Kartenrückseiten und Sheets runden alle Buttons mit `--card-button-radius`,
 Felder und Kästen nicht. Ein Ja oder Nein ist eine `.switch-row`, eine Wahl

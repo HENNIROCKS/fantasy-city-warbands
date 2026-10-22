@@ -23,7 +23,7 @@
 		columns: string[];
 		/** What the fighter has taken in the battle. The bar below the deck sets it. */
 		state?: FighterBattleState;
-		/** The marks it carries, by label, in the order the bands stack. */
+		/** The marks it carries, by label, in the order the band names them. */
 		marks?: string[];
 		/** What the battle adds to its characteristics, and from what. */
 		layers?: BattleLayer[];
@@ -93,9 +93,9 @@
 	{:else if test}
 		<p class="band" aria-hidden="true">{test}</p>
 	{/if}
-	{#each marks as label, slot (label)}
-		<p class="band quiet" style:--slot={slot} aria-hidden="true">{label}</p>
-	{/each}
+	{#if marks.length}
+		<p class="band quiet" aria-hidden="true">{marks.join(' · ')}</p>
+	{/if}
 
 	<div class="image-section">
 		<div class="image-box">
@@ -504,19 +504,18 @@
 
 	/* The same ribbon, held back: half the type size, a thinner ink and no second
 	   pair of rules, so the state of the round keeps the eye and this one is read
-	   after it rather than with it.
+	   after it rather than with it. One band names every mark, so however many
+	   there are it ends above the keywords; a long list breaks onto a second
+	   line, kept off the card's edges by the inline padding, since the band
+	   reaches past them.
 
 	   `top` adds the first band's own box – its padding, line height and border –
 	   plus a fixed clearance, rather than naming a unit offset of its own: below
 	   529px card width `--t` floors while `--u` keeps shrinking, so a flat number
-	   that clears the box at one width closes the gap at another. Each further
-	   `--slot` carries the sum on by one quiet band's box – 8u padding, 21t type,
-	   2px border – and the same 8u clearance. */
+	   that clears the box at one width closes the gap at another. */
 	.band.quiet {
-		top: calc(
-			(94 + 16 * var(--slot)) * var(--u) + (40 + 21 * var(--slot)) * var(--t) + (2 + 2 * var(--slot)) * 1px
-		);
-		padding: calc(4 * var(--u)) 0;
+		top: calc(94 * var(--u) + 40 * var(--t) + 2px);
+		padding: calc(4 * var(--u)) calc(30 * var(--u));
 		background: rgba(18, 18, 22, 0.58);
 		border-top-color: transparent;
 		border-bottom-color: transparent;
