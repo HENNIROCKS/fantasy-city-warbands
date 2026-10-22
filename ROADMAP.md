@@ -89,6 +89,7 @@
 - [x] ⚔️ Wyrdcry: Poisoned as a state on the card, with the roll on activation under Health
 - [x] 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card, under Universal Actions
 - [x] ⚔️ Wyrdcry: Wounded at half Health, named first on the card's band
+- [x] ⚔️ Wyrdcry: the roll for a fifth round asked at the end of round 4, and no sixth
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -109,6 +110,5 @@ Nothing promised, nothing planned.
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 🎨 Virtual tuck box for each deck
-- ⚔️ Wyrdcry: a reminder in round 4 that a dice decides on a fifth
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
 - 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding

@@ -10,7 +10,7 @@
  * marks and stages a game declares arrive the same way, handed in.
  */
 
-import type { BattleMark, CounterStage, Hire, StatCondition } from './types';
+import type { BattleMark, BattleRounds, CounterStage, Hire, StatCondition } from './types';
 
 /**
  * What a fighter carries in the battle running right now. `activated` and
@@ -259,6 +259,16 @@ export interface BattleLayer {
 /** A rule of the battle that changes a characteristic in one situation only, such as cover. */
 export interface BattleCondition extends StatCondition {
 	source: string;
+}
+
+/**
+ * What the end of `round` asks for: another round, a roll that decides on
+ * one, or nothing more after the last round the game has.
+ */
+export function roundEnd(round: number, rounds: BattleRounds | undefined): 'next' | 'roll' | 'last' {
+	if (!rounds) return 'next';
+	if (round >= rounds.last) return 'last';
+	return round >= rounds.decide ? 'roll' : 'next';
 }
 
 /**

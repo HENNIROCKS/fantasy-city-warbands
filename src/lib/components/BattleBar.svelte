@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MenuButton from '$lib/components/MenuButton.svelte';
-	import type { BattleState, FighterBattleState } from '$lib/core/battle';
-	import type { FactionCounter } from '$lib/core/types';
+	import { roundEnd, type BattleState, type FighterBattleState } from '$lib/core/battle';
+	import type { BattleRounds, FactionCounter } from '$lib/core/types';
 
 	/*
 	 * The battle under the thumb, below the deck, as the Wyrdcry Warband Deck
@@ -15,6 +15,7 @@
 		health = 0,
 		waiting = false,
 		marks = [],
+		rounds,
 		counter,
 		stage = null,
 		wavering = false,
@@ -53,6 +54,8 @@
 		waiting?: boolean;
 		/** The marks the fighter on top can carry, and whether it does. */
 		marks?: { key: string; label: string; on: boolean }[];
+		/** When the battle ends by the game's rules; without it, rounds go on until it is ended. */
+		rounds?: BattleRounds;
 		/** What the faction counts through the battle; the warband card counts it in place of the round. */
 		counter?: FactionCounter;
 		/** The highest stage of it reached, by its label. */
@@ -105,6 +108,7 @@
 	   damage point puts it out, so only being out holds the stepper back. */
 	const left = $derived(fighter ? Math.max(0, health - fighter.damage) : 0);
 	const unknown = $derived(health <= 0);
+	const ends = $derived(battle ? roundEnd(battle.round, rounds) : 'next');
 
 	const BUTTON = 'border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 focus-visible:bg-zinc-700';
 </script>
@@ -226,7 +230,16 @@
 						<p>{@render standing()}</p>
 					{/if}
 					{#if battle}
-						<button onclick={() => onnext?.()}>Next round</button>
+						<!-- Where the game decides on another round by a roll, the end of the
+						     round asks for it, and its answers lead on or out; after the last
+						     round there is no next. -->
+						{#if ends === 'roll' && rounds}
+							<p>End of round {battle.round} – {rounds.roll}:</p>
+							<button onclick={() => onnext?.()}>{rounds.goOn}: Round {battle.round + 1}</button>
+							<button onclick={() => onend?.()}>{rounds.end}: End battle…</button>
+						{:else if ends === 'next'}
+							<button onclick={() => onnext?.()}>Next round</button>
+						{/if}
 						{#if battle.undo}
 							<button onclick={() => onundo?.()}>Back to round {battle.undo.round}</button>
 						{/if}
@@ -245,7 +258,7 @@
 					{/if}
 					{#if battle}
 						<hr />
-						<button onclick={() => onend?.()}>End battle…</button>
+						{#if ends !== 'roll'}<button onclick={() => onend?.()}>End battle…</button>{/if}
 						{#if oncancelbattle}
 							<button onclick={() => oncancelbattle?.()}>Cancel battle…</button>
 						{/if}

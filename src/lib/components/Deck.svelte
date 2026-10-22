@@ -399,6 +399,7 @@
 		health={topFighter?.health.value ?? 0}
 		waiting={rules?.waiting ?? false}
 		marks={topMarks}
+		rounds={rules?.rounds}
 		{counter}
 		stage={stage?.label ?? null}
 		{wavering}

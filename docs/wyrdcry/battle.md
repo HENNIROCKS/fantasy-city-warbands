@@ -18,6 +18,10 @@ mark, and so do the strokes above the deck.
 out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Back
 to round …** undoes it, until you tap something new.
 
+**The end of round 4.** Roll a dice, as the rules say. In round 4, **Battle**
+offers **3+: Round 5** and **1–2: End battle…** – tap the one you rolled.
+Round 5 is the last: after it, only **End battle…** is left.
+
 **Morale.** The app tells you when your warband wavers. In the next
 round each card asks for its Bravery test, and a failed test is marked
 *Panicked*. A Plague Novice, or a Goblin among the Greenskin Marauders, counts

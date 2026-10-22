@@ -167,6 +167,8 @@ export interface GameSystem {
 		 * named first on the card's band from `at` damage points on, never set by hand.
 		 */
 		wounded?: { label: string; at: (health: number) => number };
+		/** When the battle ends by the rules. Without it, rounds go on until it is ended by hand. */
+		rounds?: BattleRounds;
 		/**
 		 * When the warband's morale breaks, and what it asks of each fighter then.
 		 * Whether it wavers now is worked out rather than latched, so taking back
@@ -259,6 +261,21 @@ export interface Hiring {
 }
 
 /** A state a fighter can be marked with in a battle, such as Wyrdcry's In cover. */
+/**
+ * How long a battle runs: from round `decide` on, the end of each round asks
+ * for a roll – `goOn` plays another, `end` ends it – and `last` is the last
+ * round there is.
+ */
+export interface BattleRounds {
+	decide: number;
+	last: number;
+	/** What is rolled, as the question names it: `roll a dice`. */
+	roll: string;
+	/** The results that play another round, `3+`, and that end the battle, `1–2`. */
+	goOn: string;
+	end: string;
+}
+
 export interface BattleMark {
 	key: string;
 	/** In the menu and on the card's band. */

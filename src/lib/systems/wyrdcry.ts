@@ -196,6 +196,9 @@ export const game: GameSystem = {
 		   wounded; some talents, injuries and hired swords read it (core rules
 		   1.0, p. 10). */
 		wounded: { label: 'Wounded', at: (health) => Math.ceil(health / 2) },
+		/* At least four rounds; at the end of the fourth a dice decides on a fifth,
+		   and the fifth is the last (core rules 1.0, p. 16). */
+		rounds: { decide: 4, last: 5, roll: 'roll a dice', goOn: '3+', end: '1–2' },
 		/* More than half the warband out of action, rounding up, in the morale
 		   phase that ends a round: each fighter takes a Bravery test, and a fail
 		   panics it until the next morale phase – the next round clears it, as
