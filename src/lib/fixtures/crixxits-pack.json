@@ -30,7 +30,10 @@
 			"wargear": [
 				"weapon:fighting-claws"
 			],
-			"picks": []
+			"picks": [],
+			"injuries": [
+				"terrible-scars"
+			]
 		},
 		{
 			"instanceId": "ab61862c-c2a2-403a-bc9e-7416386cedd2",
@@ -39,7 +42,10 @@
 			"wargear": [
 				"weapon:fighting-claws"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 1
+			}
 		},
 		{
 			"instanceId": "4f254868-67b3-4300-a121-caca58f9a4aa",
@@ -49,7 +55,10 @@
 				"weapon:sword",
 				"weapon:sword"
 			],
-			"picks": []
+			"picks": [],
+			"injuries": [
+				"terrible-scars"
+			]
 		},
 		{
 			"instanceId": "0f1799b4-cd9a-44f6-a962-c10be773609e",
@@ -79,5 +88,19 @@
 			"picks": []
 		}
 	],
-	"notes": "- TODO: Collect income, spend 1 renown for Niritik\n- Battle history: 260919 Draw – Undead\n- Niritik, Grask: [Trait] Terrible scars: This fighter gains the Terrifying keyword."
+	"gold": 1000,
+	"stash": [],
+	"history": [
+		{
+			"id": "crixxit-260919",
+			"date": "2026-09-19",
+			"result": "draw",
+			"opponentWarband": "Undead",
+			"opponentPlayer": ""
+		}
+	],
+	"tally": {
+		"favour": 3
+	},
+	"notes": "- TODO: Collect income"
 }

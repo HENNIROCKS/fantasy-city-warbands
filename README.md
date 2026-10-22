@@ -182,8 +182,9 @@ The code is split into what every game shares and what each game brings:
 - `src/lib/fixtures/` – warbands to test with, as the app stores them: put one
   into localStorage under `fantasy-city-warbands:warbands` as an array, and
   the next visit carries it over into IndexedDB. Taken from the
-  Wyrdcry Warband Deck's fixtures; `maximum.json` breaks the budget and the
-  limits on purpose, and Crixxit's Pack leaves its sorcerer's spell open
+  Wyrdcry Warband Deck's fixtures with their campaign, so both have fought;
+  `maximum.json` breaks the limits on purpose, and Crixxit's Pack leaves its
+  sorcerer's spell open
 
 ## Deployment
 

@@ -17,7 +17,10 @@
 			],
 			"picks": [
 				"soulfire"
-			]
+			],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-01",
@@ -29,7 +32,10 @@
 				"item:heavy-armour",
 				"item:shield"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-02",
@@ -41,7 +47,10 @@
 				"item:heavy-armour",
 				"item:shield"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-03",
@@ -53,7 +62,10 @@
 				"item:heavy-armour",
 				"item:shield"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-04",
@@ -65,7 +77,10 @@
 				"item:heavy-armour",
 				"item:shield"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-05",
@@ -77,7 +92,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-06",
@@ -89,7 +107,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-07",
@@ -101,7 +122,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-08",
@@ -113,7 +137,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-09",
@@ -125,7 +152,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-10",
@@ -137,7 +167,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-11",
@@ -149,7 +182,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-12",
@@ -161,7 +197,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-13",
@@ -173,7 +212,10 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		},
 		{
 			"instanceId": "max-14",
@@ -185,8 +227,46 @@
 				"item:light-armour",
 				"weapon:dagger"
 			],
-			"picks": []
+			"picks": [],
+			"tally": {
+				"renown": 9
+			}
 		}
 	],
-	"notes": "- TODO: Collect income, promote two Novices, spend renown on the Matriarch\n- Battle history: 260901 Win – Possessed, 260908 Loss – Undead, 260915 Draw – Witch Hunters\n- The Augurs still owe the Temple of Sigmar a tithe of 120 gold crowns"
+	"gold": 9999,
+	"stash": [
+		"weapon:great-weapon",
+		"weapon:flail",
+		"weapon:warhammer",
+		"item:heavy-armour",
+		"item:light-armour",
+		"item:shield"
+	],
+	"history": [
+		{
+			"id": "maximum-260901",
+			"date": "2026-09-01",
+			"result": "win",
+			"opponentWarband": "Possessed",
+			"opponentPlayer": ""
+		},
+		{
+			"id": "maximum-260908",
+			"date": "2026-09-08",
+			"result": "loss",
+			"opponentWarband": "Undead",
+			"opponentPlayer": ""
+		},
+		{
+			"id": "maximum-260915",
+			"date": "2026-09-15",
+			"result": "draw",
+			"opponentWarband": "Witch Hunters",
+			"opponentPlayer": ""
+		}
+	],
+	"tally": {
+		"favour": 10
+	},
+	"notes": "- TODO: Collect income, promote two Novices, spend renown on the Matriarch\n- The Augurs still owe the Temple of Sigmar a tithe of 120 gold crowns"
 }
