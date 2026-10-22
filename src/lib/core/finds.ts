@@ -2,9 +2,11 @@
  * Looking for a piece marked `found` between battles, as Wyrdcry's rarity
  * roll has it (Campaign Book, p. 27): a fighter carrying the game's `rarity`
  * keyword searches, others carrying it help, and each of them does so once
- * until the next battle. The roll is made at the table; the app keeps who
- * searched and what was found, and counts the copies bought from it – not
- * what the warband holds, which a fighter dismissed or a piece sold lowers.
+ * until the next battle – the aftermath ends the searches, whether or not the
+ * battle goes into the history (`applyAftermath`). The roll is made at the
+ * table; the app keeps who searched and what was found, and counts the copies
+ * bought from it – not what the warband holds, which a fighter dismissed or a
+ * piece sold lowers.
  *
  * A warband that has not fought sets out with common pieces only (p. 6), so a
  * piece marked `found` is none of its own yet.

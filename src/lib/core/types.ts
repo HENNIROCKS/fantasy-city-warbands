@@ -757,7 +757,7 @@ export interface BattleRecord {
 
 /**
  * The searches since a battle: who searched or helped, and what was found.
- * Stale once another battle is written down.
+ * Ended by the next battle – its aftermath, or a battle written down by hand.
  */
 export interface Finds {
 	/** The id of the battle the searches followed. */

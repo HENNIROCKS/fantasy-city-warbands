@@ -310,7 +310,9 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * takes what the fighter bought, and a capture or a missed battle marks it.
  * A single-use piece used up is struck before any of it, so a dead fighter
  * leaves none to the stash; a roll it asked for that brought an injury adds
- * that injury to a fighter that lives, unless it has it already.
+ * that injury to a fighter that lives, unless it has it already. The battle
+ * ends the searches made since the one before, whether or not it goes into
+ * the history.
  */
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
@@ -367,8 +369,9 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		const levels = row ? levelsEarned(row, marks) : 0;
 		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];
 	});
+	const { finds: _finds, ...rest } = warband;
 	const applied: Warband = {
-		...warband,
+		...rest,
 		gold: earned.gold - spent,
 		tally: earned.tally,
 		...(stash.length || warband.stash ? { stash } : {}),
