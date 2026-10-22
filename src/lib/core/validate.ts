@@ -258,7 +258,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
  * The first excess a change would bring that the warband does not have yet, or
  * null where the change keeps it within its limits. Excesses already there –
  * a warband saved before a limit was known – do not block every other change;
- * one more of the same, on another fighter or a second time, does.
+ * one more of the same, on another fighter or a second time, does – also
+ * where a piece moved to that fighter takes the excess along with it.
  */
 export function newExcess(before: Issue[], after: Warband, game: GameSystem, faction: Faction): Issue | null {
 	const key = (i: Issue) => `${i.code}|${i.instanceId ?? ''}|${i.message}`;
