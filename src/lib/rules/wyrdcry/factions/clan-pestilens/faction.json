@@ -5,7 +5,7 @@
   "warband_size": { "min": 3, "max": 15 },
   "origin": "homebrew",
   "version": "0.3",
-  "may_hire": ["ogre-bodyguard", "rat-ogre", "warlock"],
+  "may_hire": ["arch-warlock", "dark-warrior", "master-moulder", "ogre-bodyguard", "rat-ogre", "warlock"],
   "author": "Hendrik Berends",
   "source": { "name": "Clan Pestilens", "url": "https://drive.google.com/file/d/1JrJZnc6c7qMS6Jx4JJV4xeuy80dWBMDQ/view" }
 }

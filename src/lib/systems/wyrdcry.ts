@@ -836,7 +836,7 @@ export const factions: Faction[] = folders.map((folder) =>
 	)
 );
 
-/* A homebrew faction may add itself to an official hired sword, which keeps what the game prints. */
+/* A homebrew faction may add itself to a hired sword, which keeps what its own source prints. */
 const addedHires = folders.map((folder) => file<RawFaction>(folder, 'faction')).filter((f) => f.may_hire?.length);
 
 /* A hired sword arrives with what it carries and takes nothing more. */

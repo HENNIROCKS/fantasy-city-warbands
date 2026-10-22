@@ -7,7 +7,7 @@
   "source": { "name": "New Hired Swords", "url": "https://drive.google.com/file/d/1SUOpYp5GM-2PpFm7XGrCUjMng79XsnLJ/view" },
   "cost": 60,
   "limit": { "min": 0, "max": 1 },
-  "may_hire": ["clan-eshin", "clan-pestilens"],
+  "may_hire": ["clan-eshin"],
   "description": "Clan Moulder sells monsters, and a Master Moulder is the one who decides when a monster is finished. He comes to Mordheim for the wyrdstone and stays for the material, and whatever he leads out of the ruins is rarely what he led in.",
   "profile": {
     "move": 6,
