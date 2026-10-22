@@ -24,6 +24,16 @@ mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
 Roadmap; was dort steht, gleicht keine Session wieder an. Darunter steht unter
 „Open upstream“, was nur der Autor klären kann und hier noch nichts ändert.
 
+Was bei Wyrdcry unter „Open upstream“ steht, und jede Lesart `[ ]`, die nur
+der Autor klären kann, steht zugleich als Frage in
+`_works/wyrdcry-questions-<datum>.txt` – ein Post für den Discord des Autors:
+englisch, einfache Sprache, keine Anrede, kein Begleittext, keine
+Ausrufezeichen, keine Gedankenstriche, unter 2000 Zeichen. Je Frage eine
+nummerierte Zeile mit der Quelle (Seite, Datei) in Klammern, gegliedert nach
+Rulebook, Campaign Book, Daten und Fraktionen. Kommt eine Frage dazu oder
+fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
+entsteht eine neue Datei mit dem Datum des Tages; die älteren bleiben liegen.
+
 Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
 (`docs/<spiel>/`), dann nach Themen, eine Seite je Thema; was für alle Spiele
 gleich gilt, liegt direkt in `docs/`. Die App liest dieselben Dateien beim
