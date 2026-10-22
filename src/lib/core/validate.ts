@@ -257,9 +257,18 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 /**
  * The first excess a change would bring that the warband does not have yet, or
  * null where the change keeps it within its limits. Excesses already there –
- * a warband saved before a limit was known – do not block every other change.
+ * a warband saved before a limit was known – do not block every other change;
+ * one more of the same, on another fighter or a second time, does.
  */
 export function newExcess(before: Issue[], after: Warband, game: GameSystem, faction: Faction): Issue | null {
-	const known = new Set(before.filter((i) => i.kind === 'excess').map((i) => i.message));
-	return validate(after, game, faction).find((i) => i.kind === 'excess' && !known.has(i.message)) ?? null;
+	const key = (i: Issue) => `${i.code}|${i.instanceId ?? ''}|${i.message}`;
+	const known = new Map<string, number>();
+	for (const i of before) if (i.kind === 'excess') known.set(key(i), (known.get(key(i)) ?? 0) + 1);
+	for (const i of validate(after, game, faction)) {
+		if (i.kind !== 'excess') continue;
+		const left = known.get(key(i)) ?? 0;
+		if (!left) return i;
+		known.set(key(i), left - 1);
+	}
+	return null;
 }
