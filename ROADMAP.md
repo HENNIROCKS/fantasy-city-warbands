@@ -93,6 +93,7 @@
 - [x] 🃏 Wyrdcry: homebrew fighters and hired swords with the fluff their rules give them, ready to rewrite on the back
 - [x] 🛠️ Wyrdcry: the Dark Warrior refused to the Mercenaries beside an Elf Ranger, Troll Slayer, Warrior Priest or Holy Relic, and they beside her
 - [x] 🃏 Wyrdcry: the Dark Warrior with a picture on her card, its ink in the warband's colour
+- [x] 📚 Wyrdcry Rulebook 1.0.1: the Spear Unwieldy and never taken twice, Point Blank on the pistols
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost

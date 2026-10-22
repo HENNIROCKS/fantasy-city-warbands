@@ -605,8 +605,8 @@ const catalogue = new Map<string, Wargear>([
  * What a fighter may carry, as the Warband Deck's `build/equipment.ts` has it:
  * two melee slots, one ranged, a shield in a melee slot, a two-handed weapon in
  * both, a BRACE pair in one. The same melee weapon may be taken twice – that is
- * what makes a fighter dual wielding – a ranged one may not, unless it braces,
- * where the pair is the point.
+ * what makes a fighter dual wielding – unless it is UNWIELDY and cannot be; a
+ * ranged one may not, unless it braces, where the pair is the point.
  */
 
 const MELEE_SLOTS = 2;
@@ -701,6 +701,7 @@ function refuse(raw: RawFighter, equipment: Allowance[], held: string[], id: str
 	if (weapon.type === 'melee') {
 		const cost = weapon.rules.includes('two-handed') ? 2 : 1;
 		if (cost === 2 && carried) return same('A two handed weapon fills both hands');
+		if (weapon.rules.includes('unwieldy') && carried) return { message: 'An unwieldy weapon cannot be dual wielded', short: 'Cannot be dual wielded' };
 		if (free.melee < cost) return same(cost === 2 ? 'Needs both hands' : 'No hand free');
 		return null;
 	}

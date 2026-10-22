@@ -197,8 +197,8 @@ first and publishes it to GitHub Pages.
 
 - **Wyrdcry** – kept by hand in the shape of the
   [Wyrdcry Warband Deck](https://github.com/HENNIROCKS/wyrdcry-warband-deck)'s
-  ruleset, and following Wyrdcry 1.0: the Rulebook and the Campaign Book
-  1.0 and the factions at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is by
+  ruleset, and following Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign
+  Book 1.0 and the factions at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is by
   Johan Markström; the rules belong to the Wyrdcry project.
 - **Black Death City** – transcribed by hand from the Black Death City
   Playtest v1.03 by Sam Pearson. Where the playtest contradicts itself, the

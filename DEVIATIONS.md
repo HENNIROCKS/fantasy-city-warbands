@@ -4,7 +4,7 @@ Where the app deliberately differs from what a game prints or ships as data, or 
 
 ## Wyrdcry
 
-The data is kept in the shape of the Warband Deck's hand-kept ruleset and follows Wyrdcry 1.0: the Rulebook and the Campaign Book 1.0 and the site repo's 1.0 data. Where it differs from them:
+The data is kept in the shape of the Warband Deck's hand-kept ruleset and follows Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book 1.0 and the site repo's 1.0 data. Where it differs from them:
 
 - [ ] Unarmed: the weapon profile the site repo's weapon data carries (1", 2 attacks, 1/2), which the hand-kept weapons leave out
 - [ ] Injuries: a second Hardened, Hatred or Horrible Scars counts as a Flesh Wound, as a repeated [Injury] does, where the rules say so only of results marked [Injury]
@@ -12,12 +12,12 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [ ] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword and is rounded up, as Well-Connected rounds it, where the rule says only "one Hired Sword for half of their recruitment fee"
 - [ ] Morale with half fighters (Clan Pestilens' Doomed, the Greenskin Marauders' Not Orcs): a count such as 3½ is compared as more than half the warband rounded up – 3½ of 6 wavers – where the rules count whole fighters only
 - [ ] Unyielding (Mercenaries' State Pride): a hired sword taken along keeps its own Bravery, where the rule raises that of "all fighters"
-- [ ] Crossbow Pistol: no Point-Blank, a weapon rule the Rulebook 1.0 no longer has, where the 1.0 weapon data still lists it
+- [ ] Point Blank: on the Pistol, the Warplock Pistol and the Crossbow Pistol, as the Rulebook 1.0.1's changelog gives it to pistols, where the 1.0 weapon data has it on the Crossbow Pistol only
 - [ ] Lucky Charm: common, as the Campaign Book 1.0 prints it, where the 1.0 item data has it rare
 - [ ] Hired swords' Armour and Move: the Freelance Knight, the Warrior Priest and the Beastman carry their armour and the Knight his shield, on a profile without them, so the card arrives at what the Campaign Book prints – the Knight at 4" and Armour 3
 - [ ] Thief (hired sword): Fall Back! has the text of the Wits talent of that name, which the 1.0 data names without a text
 - [ ] A leader recruited under the Campaign Book 0.9, who raised a characteristic as well as taking a talent with the first level of renown, keeps both
-- [ ] Spear: no weapon rule, as the Rulebook 1.0's example on page 13 prints it, so it goes with a shield or a second melee weapon, at 15gc, where the 1.0 weapon data has it Two Handed at 10gc
+- [ ] Spear: Unwieldy, as the Rulebook 1.0.1 prints it, so it goes with a shield or another melee weapon but never twice, at 15gc, where the 1.0 weapon data has it Two Handed at 10gc
 - [ ] Favour tiers: 0–5, 6–15, 16–30 and 31+ with their income, as the Campaign Book 1.0 and the site's Collect Income page print them, where the 1.0 campaign rules data still has the playtest's five tiers, so the Warband Builder shows another standing for a favour of 6–40 and offers other income above 5
 
 ### Open upstream
@@ -29,8 +29,12 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [ ] Campaign Book 1.0: Superior Blackpowder removes a "blackpowder" special rule that no weapon rule is called
 - [x] Underdogs: each bonus can be selected once, as the Campaign Book 1.0 now says
 - [ ] Hero costs: in the 0.9 and the 1.0 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
-- [ ] Crossbow and Handgun: 1–18" in the 1.0 weapon data, followed here, where the Rulebook 1.0's example on page 13 prints the Crossbow at 1–24"
-- [ ] Spear: Two Handed in the 1.0 weapon data, where the Rulebook 1.0's example on page 13 prints it without a weapon rule
+- [ ] Crossbow and Handgun: 1–18" in the 1.0 weapon data, followed here, where the Rulebook 1.0.1's example on page 13 prints the Crossbow at 1–24"
+- [x] Spear: Unwieldy, not Two Handed, as the Rulebook 1.0.1 prints it
+- [ ] Spear: its price – 10gc in the 1.0 weapon data, where it is Two Handed; 15gc here
+- [ ] Point Blank: which weapons carry it – the Rulebook 1.0.1's changelog names pistols, the 1.0 weapon data the Crossbow Pistol only, the 1.0 release's data also the Blunderbuss
+- [ ] Blast: missing from the Rulebook 1.0.1's Common Weapon Rules, which page 13 calls a comprehensive list, while the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it – its text here is the Rulebook 1.0's
+- [ ] Minimum range: the Rulebook 1.0.1 prints the Bow at 1–18" on page 13 without a rule for what a minimum range does
 - [ ] Great Claw (Possessed): the 1.0 launch post calls it brutal, the faction page gives it Piercing 3 only – followed here
 
 ## Black Death City

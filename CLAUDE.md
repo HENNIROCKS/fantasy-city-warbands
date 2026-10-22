@@ -91,7 +91,7 @@ Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
 ein negativer Bonus: Bravery ist ein Wurfziel.
 Die App folgt Wyrdcry 1.0, die PDFs liegen unter `_works/Rulebooks/`. Die
 Kernregeln – Deckung, Moral, Universal Abilities und Reactions, Waffenregeln –
-folgen dem Rulebook 1.0; Kampagne, Renown, Heroic Talents, Lasting Injuries,
+folgen dem Rulebook 1.0.1; Kampagne, Renown, Heroic Talents, Lasting Injuries,
 Trading Post und die acht Hired Swords, die es druckt, dem Campaign Book 1.0.
 Fraktionen, ihre Kämpfer und Waffen folgen den 1.0-Daten und Fraktionsseiten
 des Site-Repos, von Hand übertragen; ebenso Thief und Beastman, die beiden

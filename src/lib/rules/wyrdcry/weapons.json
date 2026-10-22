@@ -40,7 +40,7 @@
 		"attacks": 3,
 		"hit": 2,
 		"crit": 3,
-		"rules": [],
+		"rules": ["unwieldy"],
 		"cost": 15
 	},
 	{
@@ -282,7 +282,7 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 6,
-		"rules": ["reload", "unreliable", "brace", "pierce-2"],
+		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
 		"cost": 30
 	},
 	{
@@ -293,7 +293,7 @@
 		"attacks": 2,
 		"hit": 3,
 		"crit": 4,
-		"rules": ["reload", "brace", "pierce-1"],
+		"rules": ["reload", "brace", "pierce-1", "point-blank"],
 		"cost": 20
 	},
 	{
@@ -359,7 +359,7 @@
 		"attacks": 2,
 		"hit": 4,
 		"crit": 7,
-		"rules": ["reload", "unreliable", "brace", "pierce-2"],
+		"rules": ["reload", "unreliable", "brace", "pierce-2", "point-blank"],
 		"cost": 35
 	},
 	{
