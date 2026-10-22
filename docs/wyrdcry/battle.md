@@ -10,8 +10,8 @@ tap on a fighter starts it too.
 scream. You can switch the scream off under the gear, in Settings.
 
 **State.** **State** marks a fighter as activated or waiting, in cover,
-panicked or with its heroic reaction used. The card shows every mark,
-and so do the strokes above the deck.
+panicked, poisoned or with its heroic reaction used. The card shows every
+mark, and so do the strokes above the deck.
 
 **Rounds.** The warband card shows the round, who still has to act and who is
 out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Back

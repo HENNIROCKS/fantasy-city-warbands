@@ -176,7 +176,21 @@ export const game: GameSystem = {
 					}
 				]
 			},
-			{ key: 'panicked', label: 'Panicked', lasts: 'round', bonus: { fight: -1, shoot: -1 } }
+			{ key: 'panicked', label: 'Panicked', lasts: 'round', bonus: { fight: -1, shoot: -1 } },
+			/* Taken off by hand once the activation roll comes up 1; the 2 damage
+			   points of a 2+ are allocated by hand too (core rules 1.0, p. 25). */
+			{
+				key: 'poisoned',
+				label: 'Poisoned',
+				lasts: 'battle',
+				conditions: [
+					{
+						stat: 'health',
+						name: 'Poisoned',
+						text: 'When this fighter is activated, roll a dice. On a 1, it is no longer poisoned. On a 2+, allocate 2 damage points to it.'
+					}
+				]
+			}
 		],
 		/* More than half the warband out of action, rounding up, in the morale
 		   phase that ends a round: each fighter takes a Bravery test, and a fail
