@@ -29,6 +29,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Underdogs: each bonus can be selected once, as the Campaign Book 1.0 now says
 - [ ] Hero costs: in the 0.9 and the 1.0 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – whether that surcharge is meant
 - [ ] Crossbow and Handgun: 1–18" in the 1.0 weapon data, followed here, where the Rulebook 1.0's example on page 13 prints the Crossbow at 1–24"
+- [ ] Spear: Two Handed in the 1.0 weapon data, followed here, where the Rulebook 1.0's example on page 13 prints it without a weapon rule
 - [ ] Great Claw (Possessed): the 1.0 launch post calls it brutal, the faction page gives it Piercing 3 only – followed here
 
 ## Black Death City
