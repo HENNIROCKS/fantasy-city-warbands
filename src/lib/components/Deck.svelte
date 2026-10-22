@@ -4,7 +4,7 @@
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
-	import { battleEffects, isWavering, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
+	import { battleEffects, isWavering, isWounded, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard, FighterCardData } from '$lib/core/card';
 	import type { FactionCounter, GameSystem } from '$lib/core/types';
 	import { explanation } from '$lib/explanation';
@@ -159,7 +159,8 @@
 		   due until the fighter has acted or waited – it rolled then – or failed it. */
 		const morale = rules?.wavering;
 		const due = morale && battle?.morale && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
-		return { state, ...effects, test: due ? morale.test : null };
+		const wounded = rules?.wounded && isWounded(state, card.health.value, rules.wounded) ? [rules.wounded.label] : [];
+		return { state, ...effects, labels: [...wounded, ...effects.labels], test: due ? morale.test : null };
 	}
 
 	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers. */

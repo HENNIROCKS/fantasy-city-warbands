@@ -6,8 +6,9 @@ The cards count the battle for you. You still roll the dice and move the models.
 tap on a fighter starts it too.
 
 **Damage.** Under a fighter's card, **−** takes one point of health and
-**+** gives it back. At none the fighter is out of action, and you hear a
-scream. You can switch the scream off under the gear, in Settings.
+**+** gives it back. From half its health on, rounding up, the card says
+*Wounded*. At none the fighter is out of action, and you hear a scream. You
+can switch the scream off under the gear, in Settings.
 
 **State.** **State** marks a fighter as activated or waiting, in cover,
 panicked, poisoned or with its heroic reaction used. The card shows every

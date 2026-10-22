@@ -192,6 +192,10 @@ export const game: GameSystem = {
 				]
 			}
 		],
+		/* Damage points of half the Health or more, rounding up, make a fighter
+		   wounded; some talents, injuries and hired swords read it (core rules
+		   1.0, p. 10). */
+		wounded: { label: 'Wounded', at: (health) => Math.ceil(health / 2) },
 		/* More than half the warband out of action, rounding up, in the morale
 		   phase that ends a round: each fighter takes a Bravery test, and a fail
 		   panics it until the next morale phase – the next round clears it, as

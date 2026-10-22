@@ -163,6 +163,11 @@ export interface GameSystem {
 		/** States a fighter can be marked with, in the order the menu lists them. */
 		marks: BattleMark[];
 		/**
+		 * A state the damage alone brings about, as Wyrdcry's Wounded at half Health:
+		 * named first on the card's band from `at` damage points on, never set by hand.
+		 */
+		wounded?: { label: string; at: (health: number) => number };
+		/**
 		 * When the warband's morale breaks, and what it asks of each fighter then.
 		 * Whether it wavers now is worked out rather than latched, so taking back
 		 * a mistaken wound takes the warband back out of it as well; the test is

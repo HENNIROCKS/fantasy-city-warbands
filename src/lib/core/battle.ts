@@ -262,6 +262,15 @@ export interface BattleCondition extends StatCondition {
 }
 
 /**
+ * Whether the damage a fighter holds makes it wounded, where the game knows
+ * such a state: read off the damage, so taking a point back undoes it. A
+ * fighter out of action is that rather than wounded.
+ */
+export function isWounded(state: FighterBattleState, health: number, wounded: { at: (health: number) => number } | undefined): boolean {
+	return !!wounded && !state.out && state.damage >= wounded.at(health);
+}
+
+/**
  * What the battle does to one fighter's card: the marks it carries, by label –
  * those of the round first, as the band above them belongs to the round – and
  * what the marks and the faction's reached stages add to its characteristics,
