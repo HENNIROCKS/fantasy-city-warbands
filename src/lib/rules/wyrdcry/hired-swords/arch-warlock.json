@@ -2,7 +2,7 @@
   "id": "arch-warlock",
   "name": "Arch-Warlock",
   "origin": "homebrew",
-  "version": "0.3",
+  "version": "0.4",
   "author": "Hendrik Berends",
   "source": { "name": "New Hired Swords", "url": "https://drive.google.com/file/d/1SUOpYp5GM-2PpFm7XGrCUjMng79XsnLJ/view" },
   "cost": 85,
@@ -25,7 +25,7 @@
       "id": "warp-energy-harness",
       "name": "Warp-Energy Harness",
       "type": "trait",
-      "text": "When this fighter makes the Channel action, if the result on the Magical Calamity table is a 1, treat it as a 2 instead."
+      "text": "When this fighter makes the Channel action, if the 2D6 roll on the Magical Calamity table is a 2, treat it as a 3 instead."
     },
     {
       "id": "death-frenzy",

@@ -2,7 +2,7 @@
   "id": "squig-herder",
   "name": "Squig Herder",
   "origin": "homebrew",
-  "version": "0.3",
+  "version": "0.4",
   "author": "Hendrik Berends",
   "source": { "name": "New Hired Swords", "url": "https://drive.google.com/file/d/1SUOpYp5GM-2PpFm7XGrCUjMng79XsnLJ/view" },
   "cost": 55,
