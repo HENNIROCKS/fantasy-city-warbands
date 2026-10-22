@@ -655,7 +655,7 @@
 		if (!w || !hiring || !faction) return [];
 		const hired = battle?.hired ?? [];
 		const homebrew = (h: (typeof offered)[number]) => Number(h.origin === 'homebrew');
-		const source = (h: (typeof offered)[number]) => h.source?.name ?? '';
+		const source = (h: (typeof offered)[number]) => h.source?.url ?? '';
 		return [...offered].sort((a, b) => homebrew(a) - homebrew(b) || source(a).localeCompare(source(b))).map((h) => {
 			const held = hired.find((x) => x.fighterId === h.fighter.id) ?? null;
 			if (held) return { hireling: h, held, fee: hiredFees[hired.indexOf(held)] ?? 0, refused: null };
@@ -940,11 +940,11 @@
 					{@const before = hireOffers[i - 1]?.hireling}
 					<!-- A heading for each source, with a link to where its rules can be read. -->
 					{#if !before || before.origin !== offer.hireling.origin || before.source?.url !== source?.url}
-						<div class="flex items-baseline justify-between gap-3 {before ? 'pt-4' : ''}">
-							<p class="field-label">{offer.hireling.origin === 'homebrew' ? 'Homebrew' : 'Official'}</p>
+						<div class="flex items-center justify-between gap-3 {before ? 'pt-4' : ''}">
+							<p class="field-label mb-0">{offer.hireling.origin === 'homebrew' ? 'Homebrew' : 'Official'}</p>
 							{#if source}
-								<a class="text-zinc-400 underline" href={source.url} target="_blank" rel="noopener"
-									>{source.name}<span aria-hidden="true"> ↗</span></a
+								<a class="inline-flex min-h-11 items-center gap-1 text-zinc-400 underline" href={source.url} target="_blank" rel="noopener"
+									>{source.name}<span aria-hidden="true">↗</span></a
 								>
 							{/if}
 						</div>
