@@ -181,9 +181,13 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		} else if (heir && game.succession) {
 			message = `No leader: a ${game.succession.keyword.toUpperCase()} takes the lead on the back of its card.`;
 			short = 'No leader';
-		} else if (lost && game.succession) {
+		} else if (lost && game.succession && warband.disbanded) {
 			message = game.succession.none;
 			short = 'Disbanded';
+		} else if (lost && game.succession) {
+			/* Taken back from disbanding, or brought in without it: the warband builds on. */
+			message = `No leader: recruit a ${game.succession.keyword.toUpperCase()} to take the lead.`;
+			short = 'No leader';
 		} else if (source && limit.max === 0) {
 			message = `${fighter.name} cannot be recruited with ${source}.`;
 			short = `Not with ${source}`;

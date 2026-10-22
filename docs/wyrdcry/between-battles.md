@@ -27,6 +27,6 @@ Nothing on a back is saved until **Done**. **Cancel** drops it.
 **No hero left.** If your leader is gone and no hero can take over, the
 warband is disbanded. It stays in the list to look at, and the builder offers
 a new warband of the same faction. Was it a mistake? The back of the warband
-card takes it back.
+card takes it back. Then recruit a hero to take the lead.
 
 [All Wyrdcry guides](README.md) · [Files and the roster](../files-and-roster.md)
