@@ -122,3 +122,4 @@ Nothing promised, nothing planned.
 - 🎨 Virtual tuck box for each deck
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
 - 🃏 A picture on every other hired sword's card, black on white beside its file
+- 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged
