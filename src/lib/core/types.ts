@@ -638,6 +638,10 @@ export interface FighterChoiceOption {
 	keywords?: string[];
 	/** Wargear ids the option is, such as a mutation that attacks like a weapon. Free, like `gear`. */
 	gear?: string[];
+	/** What the fighter is called once it has picked this, in place of its type: a hired sword's role, `River Troll`. */
+	title?: string;
+	/** A picture of its own, in place of the fighter's `image`: a hired sword's role. */
+	image?: string;
 }
 
 /** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */

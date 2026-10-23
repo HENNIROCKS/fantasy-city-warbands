@@ -47,7 +47,7 @@
 		"name": "Mutant",
 		"cost": 70,
 		"limit": { "min": 0, "max": null },
-		"description": "Hollowed out by daemonic possession, these revered warriors have become instruments of violence, free from fear or mercy.",
+		"description": "Scorned by society, these wretches have found solace as embodiments of the shadowlord's will.",
 		"profile": { "move": 5, "fight": 3, "shoot": 3, "defense": 0, "health": 10, "bravery": 5 },
 		"keywords": ["human", "possessed", "henchman", "mutant"],
 		"abilities": [],

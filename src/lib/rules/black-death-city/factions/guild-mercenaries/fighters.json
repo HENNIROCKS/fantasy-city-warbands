@@ -2,6 +2,7 @@
 	{
 		"id": "guild-captain",
 		"name": "Guild Captain",
+		"description": "“Stay in formation, and you might live to see the next dawn.”",
 		"cost": 140,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human"],
@@ -12,6 +13,7 @@
 	{
 		"id": "noble",
 		"name": "Noble",
+		"description": "“I didn't come this far to die a beggar!”",
 		"cost": 120,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "aristocrat"],
@@ -22,6 +24,7 @@
 	{
 		"id": "witch-hunter",
 		"name": "Witch Hunter",
+		"description": "“Cast out the wretch. Burn the unholy.”",
 		"cost": 140,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "witch-hunter"],
@@ -32,6 +35,7 @@
 	{
 		"id": "high-wizard",
 		"name": "High Wizard of the Guild",
+		"description": "“I have spent a lifetime studying matters beyond your comprehension.”",
 		"cost": 165,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "wizard"],
@@ -42,6 +46,7 @@
 	{
 		"id": "guild-wizard",
 		"name": "Guild Wizard",
+		"description": "“Magic cannot be tamed, even by one such as myself.”",
 		"cost": 120,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "mercenary", "human", "wizard"],
@@ -52,6 +57,7 @@
 	{
 		"id": "guild-cleric",
 		"name": "Guild Cleric",
+		"description": "“The Saints walk beside those who keep the faith.”",
 		"cost": 120,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "mercenary", "human", "priest"],
@@ -62,6 +68,7 @@
 	{
 		"id": "guild-champion",
 		"name": "Guild Champion",
+		"description": "“Give the order, and I'll see it done.”",
 		"cost": 90,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "mercenary", "human"],
@@ -72,6 +79,7 @@
 	{
 		"id": "plague-doctor",
 		"name": "Plague Doctor",
+		"description": "“There's no saving this leg. We'll have to amputate it.”",
 		"cost": 65,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "mercenary", "human"],
@@ -82,6 +90,7 @@
 	{
 		"id": "witch-hunters-apprentice",
 		"name": "Witch Hunter's Apprentice",
+		"description": "“Let not the wicked rest.”",
 		"cost": 80,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "human", "mercenary", "witch-hunter"],
@@ -92,6 +101,7 @@
 	{
 		"id": "guild-mercenary",
 		"name": "Guild Mercenary",
+		"description": "“Fifty silver, and my blade is yours.”",
 		"cost": 50,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "mercenary", "human"],
@@ -102,6 +112,7 @@
 	{
 		"id": "guild-recruit",
 		"name": "Guild Recruit",
+		"description": "“I'll earn my keep.”",
 		"cost": 30,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "mercenary", "human"],
@@ -112,6 +123,7 @@
 	{
 		"id": "mercenary-ogre",
 		"name": "Mercenary Ogre",
+		"description": "“Whose bones you want me to break next, Boss?”",
 		"cost": 100,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "mercenary", "ogre"],

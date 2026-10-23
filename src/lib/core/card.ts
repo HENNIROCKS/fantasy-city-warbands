@@ -125,7 +125,7 @@ export interface FighterCardData {
 	name: string;
 	/** Set where the fighter has no name of its own; the card then leads to where it is named. */
 	unnamed: boolean;
-	/** The fighter's type. */
+	/** The fighter's type, or the role it picked. */
 	subtitle: string;
 	/** Readable: `clan eshin`, not `clan-eshin`. */
 	keywords: string[];
@@ -313,7 +313,8 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		weight: faction.weights?.[instance.fighterId] ?? 1,
 		name: instance.name.trim() || 'Unnamed fighter',
 		unnamed: !instance.name.trim(),
-		subtitle: type,
+		/* Named after its role where it picked one: River Troll. */
+		subtitle: options.find((o) => o.title)?.title ?? type,
 		keywords: keywords.map((k) => k.replaceAll('-', ' ')),
 		keywordIds: keywords,
 		stats: game.stats.map((s) => {
@@ -347,7 +348,7 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 		weapons,
 		sections,
 		fluff: instance.fluff?.trim() || fighter?.fluff || '',
-		image: fighter?.image ?? null,
+		image: options.find((o) => o.image)?.image ?? fighter?.image ?? null,
 		away: instance.away ? AWAY_LABELS[instance.away] : null,
 		unknown: !fighter
 	};

@@ -95,6 +95,9 @@
 - [x] 🃏 Wyrdcry: the Dark Warrior with a picture on her card, its ink in the warband's colour
 - [x] 📚 Wyrdcry Rulebook 1.0.1: the Spear Unwieldy and never taken twice, Point Blank on the pistols
 - [x] 📚 Wyrdcry: the author's answers and data of 23 October – Point Blank on the Blunderbuss, ranges without a minimum, cheaper Spear, Blunderbuss and Crossbow Pistol, the Thief reworked, the Great Claw brutal
+- [x] 🃏 Fluff from the rules on every fighter that has one, Black Death City's from the scroll's quote
+- [x] 🃏 Wyrdcry: a picture on the card of each homebrew hired sword, a role's own, and the Rat Ogre's
+- [x] 🃏 Wyrdcry: a hired sword's card named after its role, River Troll or Brewgit, its fee beneath it on the warband card
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost

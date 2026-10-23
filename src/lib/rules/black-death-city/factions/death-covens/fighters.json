@@ -2,6 +2,7 @@
 	{
 		"id": "bloodcursed-noble",
 		"name": "Bloodcursed Noble",
+		"description": "“The City belongs to the night.”",
 		"cost": 185,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "undead", "wizard", "vampyre", "aristocrat"],
@@ -12,6 +13,7 @@
 	{
 		"id": "necromancer",
 		"name": "Necromancer",
+		"description": "“I have studied the art of death longer than you have drawn breath.”",
 		"cost": 165,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "human", "wizard"],
@@ -22,6 +24,7 @@
 	{
 		"id": "lycanfell-noble",
 		"name": "Lycanfell Noble",
+		"description": "“The wind bears the scent of blood. The hunt calls me once more.”",
 		"cost": 170,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "undead", "werwulf", "aristocrat"],
@@ -32,6 +35,7 @@
 	{
 		"id": "barrow-lord",
 		"name": "Barrow Lord",
+		"description": "“I command thee to rise again.”",
 		"cost": 130,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "undead", "skeleton"],
@@ -42,6 +46,7 @@
 	{
 		"id": "necromancers-apprentice",
 		"name": "Necromancer's Apprentice",
+		"description": "“The secrets of the grave shall be mine in time.”",
 		"cost": 120,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "human", "wizard"],
@@ -52,6 +57,7 @@
 	{
 		"id": "barrow-champion",
 		"name": "Barrow Champion",
+		"description": "“Death does not relinquish duty.”",
 		"cost": 85,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "undead", "skeleton"],
@@ -62,6 +68,7 @@
 	{
 		"id": "bloodcursed-courtesan",
 		"name": "Bloodcursed Courtesan",
+		"description": "“Come hither... I insist.”",
 		"cost": 125,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "undead", "wizard", "vampyre", "aristocrat"],
@@ -72,6 +79,7 @@
 	{
 		"id": "bloodcursed-knight",
 		"name": "Bloodcursed Knight",
+		"description": "“Kneel, and I may grant you a swift death.”",
 		"cost": 95,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "undead", "vampyre", "aristocrat"],
@@ -82,6 +90,7 @@
 	{
 		"id": "misbegotten",
 		"name": "Misbegotten",
+		"description": "“No... look not upon me...”",
 		"cost": 65,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "undead", "vampyre"],

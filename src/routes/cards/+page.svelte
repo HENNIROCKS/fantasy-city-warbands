@@ -164,11 +164,11 @@
 		});
 		/* The hired ones under their own heading on the warband's card, leading to their cards as the rest do. */
 		const own = warbandCard(w, faction, system.game);
-		/* Under the name what it was hired as, or else its fee, so each entry has a line beneath like the rest. */
+		/* Under the name its fee, so each entry has a line beneath like the rest. */
 		const listed = (battle?.hired ?? []).map((h, i) => ({
 			instanceId: h.instanceId,
 			name: hired[i].name,
-			type: pickedName(h.fighterId, h.picks) || `${hiredFees[i] ?? 0} ${system.game.currency}`,
+			type: `${hiredFees[i] ?? 0} ${system.game.currency}`,
 			leader: false
 		}));
 		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;

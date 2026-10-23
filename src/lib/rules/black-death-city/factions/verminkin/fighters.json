@@ -2,6 +2,7 @@
 	{
 		"id": "pox-priest",
 		"name": "Pox Priest",
+		"description": "“Scurry forth, and bear the Black Rot!”",
 		"cost": 170,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "verminkin", "priest"],
@@ -12,6 +13,7 @@
 	{
 		"id": "nightfang-assassin",
 		"name": "Nightfang Assassin",
+		"description": "“Splatter the cobbles with their blood!”",
 		"cost": 140,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "verminkin", "assassin"],
@@ -22,6 +24,7 @@
 	{
 		"id": "ironfang-warlord",
 		"name": "Ironfang Warlord",
+		"description": "“Bring me the head of a Guilder, or I'll take yours!”",
 		"cost": 135,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "verminkin"],
@@ -32,6 +35,7 @@
 	{
 		"id": "sparkseer",
 		"name": "Sparkseer",
+		"description": "“One more adjustment... just one...”",
 		"cost": 130,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "verminkin"],
@@ -42,6 +46,7 @@
 	{
 		"id": "verminkin-warlock",
 		"name": "Verminkin Warlock",
+		"description": "“The void-chasm whispers to me...”",
 		"cost": 125,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "verminkin", "wizard"],
@@ -52,6 +57,7 @@
 	{
 		"id": "pox-priests-apprentice",
 		"name": "Pox Priest's Apprentice",
+		"description": "“Bring them boils! Bring them death!”",
 		"cost": 125,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "verminkin", "priest"],
@@ -62,6 +68,7 @@
 	{
 		"id": "verminkin-champion",
 		"name": "Verminkin Champion",
+		"description": "“Let not a manling live!”",
 		"cost": 95,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "verminkin"],
@@ -72,6 +79,7 @@
 	{
 		"id": "assassins-apprentice",
 		"name": "Assassin's Apprentice",
+		"description": "“You won't see me coming, Guilder...”",
 		"cost": 90,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "verminkin", "assassin"],
@@ -82,6 +90,7 @@
 	{
 		"id": "sparkseers-apprentice",
 		"name": "Sparkseer's Apprentice",
+		"description": "“Hmmm... this screw is probably unnecessary...”",
 		"cost": 85,
 		"limit": { "min": 0, "max": 2 },
 		"keywords": ["champion", "verminkin"],
@@ -92,6 +101,7 @@
 	{
 		"id": "verminkin-warrior",
 		"name": "Verminkin Warrior",
+		"description": "“We rise from below!”",
 		"cost": 40,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "verminkin"],
@@ -102,6 +112,7 @@
 	{
 		"id": "rat-mutant",
 		"name": "Rat-Mutant",
+		"description": "“Head... hurts...”",
 		"cost": 105,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "verminkin", "ogre"],
@@ -112,6 +123,7 @@
 	{
 		"id": "rolling-contraption",
 		"name": "Rolling-Contraption",
+		"description": "“screeeeeeeeeeeee-!”",
 		"cost": 150,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["brute", "verminkin", "contraption"],

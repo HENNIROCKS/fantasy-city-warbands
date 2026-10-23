@@ -540,7 +540,10 @@ const hiredSwords = Object.values(
 	import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.json', { eager: true, import: 'default' })
 ) as RawHiredSword[];
 
-/* A hired sword's picture lies beside its file, named by its id: `dark-warrior.jpg`. */
+/*
+ * A hired sword's picture lies beside its file, named by its id: `dark-warrior.jpg`;
+ * a role's by both ids: `troll-river-troll.jpg`.
+ */
 const hiredImages = new Map(
 	Object.entries(import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.jpg', { eager: true, import: 'default', query: '?url' }) as Record<string, string>).map(
 		([path, url]) => [path.replace(/^.*\/|\.jpg$/g, ''), url]
@@ -769,21 +772,17 @@ function choiceOf(raw: RawChoice | null, rules: RawRule[], ability: Map<string, 
 			if (!a) return [];
 			/* The card lists the pick as a rule of the fighter's: the role, and the talent where it has a name of its own. */
 			const name = a.name === role.name ? role.name : `${role.name} – ${a.name}`;
-			return [{ id: role.id, name, text: a.text, type: a.type, gear: role.gear }];
+			return [{ id: role.id, name, title: role.name, text: a.text, type: a.type, gear: role.gear }];
 		});
 		return { ...base, options, noun: { one: 'role', many: 'roles' } };
 	}
 	return undefined;
 }
 
-/*
- * A fighter's background from its file, for homebrew only: the official
- * factions' texts are not all there yet, and a card should not read one and
- * miss the next.
- */
-function fluffOf(origin: RawFaction['origin'], description: string | undefined): { fluff?: string } {
+/* A fighter's background from its file, where its source prints one. */
+function fluffOf(description: string | undefined): { fluff?: string } {
 	const text = description?.trim();
-	return origin === 'homebrew' && text ? { fluff: text } : {};
+	return text ? { fluff: text } : {};
 }
 
 function build(
@@ -831,7 +830,7 @@ function build(
 				const a = ability.get(id);
 				return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
 			}),
-			...fluffOf(meta.origin, f.description),
+			...fluffOf(f.description),
 			/* Offered whether the fighter may take it or not: a player looking for a
 			   Handgun needs to read that it is for HEROes, not to find it missing. */
 			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost])],
@@ -916,7 +915,11 @@ const hirelings: Hireling[] = hiredSwords
 	.map((h) => {
 		/* An ability a role brings is the role's, not the hired sword's own. */
 		const roles = new Set((h.choose?.roles ?? []).map((r) => r.ability));
-		const choice = choiceOf(h.choose, [], new Map(h.abilities.map((a) => [a.id, a])));
+		const chosen = choiceOf(h.choose, [], new Map(h.abilities.map((a) => [a.id, a])));
+		const choice = chosen && {
+			...chosen,
+			options: chosen.options.map((o) => (hiredImages.has(`${h.id}-${o.id}`) ? { ...o, image: hiredImages.get(`${h.id}-${o.id}`) } : o))
+		};
 		return {
 			fighter: {
 				id: h.id,
@@ -926,7 +929,7 @@ const hirelings: Hireling[] = hiredSwords
 				keywords: h.keywords,
 				profile: h.profile,
 				rules: h.abilities.filter((a) => !roles.has(a.id)).map((a) => ({ name: a.name, text: a.text, type: a.type })),
-				...fluffOf(h.origin, h.description),
+				...fluffOf(h.description),
 				...(hiredImages.has(h.id) ? { image: hiredImages.get(h.id) } : {}),
 				wargear: [],
 				unequipped: 'A HIRED SWORD comes with its own equipment',

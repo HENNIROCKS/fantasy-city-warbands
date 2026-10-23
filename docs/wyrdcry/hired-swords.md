@@ -9,17 +9,17 @@ up the battle.
 3. Tap one to hire it. Tap it again to send it away.
 
 **A pick.** The Goblin Shaman comes in one of six roles, the Troll as a Stone
-or a River Troll. Tap it, then tap the role: its card shows the talent and the
-weapon that come with it. To pick again, send it away and hire it anew.
+or a River Troll. Tap it, then tap the role: its card is named after it and
+shows the talent, the weapon and the picture that come with it. To pick again,
+send it away and hire it anew.
 
 **Homebrew.** Six of them are homebrew, listed under their own heading at the
-end, and their cards carry the fluff their rules give them. Greenskin
-Marauders with a wizard of their own cannot hire another one: the button says
-*A WIZARD is on the roster*. Mercenaries cannot hire the Dark Warrior beside
-an Elf Ranger, a Troll Slayer, a Warrior Priest or a Holy Relic, and none of
-the three once she is hired: the button says what stands in the way. Each
-heading links to where its hired swords are written: wyrdcry.net, or the PDF
-of the homebrew ones.
+end. Greenskin Marauders with a wizard of their own cannot hire another one:
+the button says *A WIZARD is on the roster*. Mercenaries cannot hire the Dark
+Warrior beside an Elf Ranger, a Troll Slayer, a Warrior Priest or a Holy Relic,
+and none of the three once she is hired: the button says what stands in the
+way. Each heading links to where its hired swords are written: wyrdcry.net, or
+the PDF of the homebrew ones.
 
 You can hire before the battle starts and during the first round. Hiring also
 starts the battle, as the first tap at the table does.
@@ -37,7 +37,9 @@ sword.
 next one you hire costs nothing. Send it away and the next one is free instead.
 
 **In the battle.** Its card comes after your fighters, and the warband card
-lists it under *Hired swords*; tap its name to go there. Count its damage and
+lists it under *Hired swords*; tap its name to go there. It carries the fluff
+its rules give it, and the Rat Ogre and the homebrew ones a picture whose ink
+takes your warband's colour. Count its damage and
 mark it activated like any fighter. It does not count when the app checks
 whether your warband wavers, and it has nothing to write on its back.
 
