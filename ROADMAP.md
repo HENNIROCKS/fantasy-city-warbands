@@ -99,6 +99,7 @@
 - [x] 🃏 Wyrdcry: a picture on the card of each homebrew hired sword, a role's own, and the Rat Ogre's
 - [x] 🃏 Wyrdcry: a hired sword's card named after its role, River Troll or Brewgit, its fee beneath it on the warband card
 - [x] 📚 Wyrdcry: the Squig Herder's squig as a second weapon, New Hired Swords 0.5
+- [x] 🎨 A new app icon that reaches installed apps
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -120,5 +121,4 @@ Nothing promised, nothing planned.
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 🎨 Virtual tuck box for each deck
 - ⚔️ Wyrdcry: a single-use item used from the fighter's bar during the battle, its effect on the card and the aftermath asking from there
-- 🎨 A new app icon that reaches installed apps – new file names, the manifest's id kept, iOS only on re-adding
 - 🃏 A picture on every other hired sword's card, black on white beside its file
