@@ -208,8 +208,8 @@ first and publishes it to GitHub Pages.
 Where the app reads a game differently from its page or its data, or settles a
 contradiction one way, [`DEVIATIONS.md`](DEVIATIONS.md) says so.
 
-A wrong number or rules text is worth a [bug report](https://github.com/HENNIROCKS/fantasy-city-warbands/issues/new/choose);
-quote the rulebook and name the page if you can.
+A wrong number or rules text is worth a
+[report](https://github.com/HENNIROCKS/fantasy-city-warbands/issues/new?template=rules.yml).
 
 ## Licence
 
