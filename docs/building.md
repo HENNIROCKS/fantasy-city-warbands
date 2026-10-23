@@ -4,6 +4,9 @@
 the choice the whole warband makes, fighters, finish. You can come back to any
 step later.
 
+**The ring beside a game** shows roughly how much of it the app carries: each
+piece is one area of the game, filled once it is built.
+
 **Where the rules are.** At the foot of each faction a link leads to where
 its rules are written: its page on wyrdcry.net, the Black Death City site, or
 the PDF of a homebrew faction.

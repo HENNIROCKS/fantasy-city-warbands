@@ -13,7 +13,7 @@ interface Area {
 
 const fighters = (factions: Faction[]) => factions.flatMap((f) => f.fighters);
 
-/** In the order the About page lists them. */
+/** In the order of the ring's pieces, from twelve o'clock. */
 export const areas: Area[] = [
 	{ label: 'Building a warband', built: (_, factions) => factions.length > 0 },
 	{ label: 'What a fighter may carry', built: (game) => !!game.carry },

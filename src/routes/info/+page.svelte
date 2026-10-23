@@ -3,7 +3,6 @@
 	import type { Snippet } from 'svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
-	// import { areas } from '$lib/core/coverage';
 	import { planned, systems } from '$lib/systems';
 	import { loadSound, saveSound } from '$lib/core/storage.svelte';
 	import { theme } from '$lib/theme.svelte';
@@ -23,12 +22,6 @@
 		'black-death-city': 'https://www.blackdeathcity.com/',
 		mordheim: 'https://mordheimer.net/',
 		necropolis: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/'
-	};
-
-	const SOURCES: Record<string, string> = {
-		// wyrdcry:
-		// 	'The rules here are copied from the hand-kept ruleset of the Wyrdcry Warband Deck, which follows the rules at wyrdcry.net.',
-		// 'black-death-city': 'Transcribed by hand from the Black Death City Playtest v1.03.'
 	};
 
 	/** Playable games and those still to come in one list, by name. */
@@ -52,11 +45,11 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It knows the profiles, costs, limits and what each faction sells to each fighter, how much a fighter may carry at once, what an Origin or State Pride changes about the roster, the profiles and the prices, the spell, characteristic or mutation a Wyrdcry fighter brings on recruitment, the Greenskin Marauders’ two GOBLINs per ORC and who counts as half a fighter in a Wyrdcry warband’s morale, and in Wyrdcry the renown, favour and income a battle brings and the fees of the hired swords taken along and the optional Underdogs, as the Campaign Book 1.0 has them. A Wyrdcry fighter’s characteristics count in its pick, its renown, its injuries and its armour; tap one to see how it adds up, and a star marks one a situation can still change, such as Parry or a shield. A faction rule that leaves a fighter out keeps its line on that fighter’s card, with a hint where its text would stand, such as Sudden Accusation on a War Hound. The special rules of Black Death City’s fighters, the skills and spells they pick on recruitment, the cost of a Misbegotten’s bloodline mutation and Black Death City’s campaign are still to come.'
+				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Still to come are exploring the city and the loot in Wyrdcry, and in Black Death City the fighters’ special rules, their picks on recruitment and the campaign.'
 		},
 		{
 			question: 'Which rules does the app follow?',
-			answer: `Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook and the Campaign Book 1.0, and the factions as wyrdcry.net has them. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
+			answer: `Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook 1.0.1, the Campaign Book 1.0 and the factions as wyrdcry.net has them. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
 		}
 	];
 
@@ -120,7 +113,7 @@
 		Safari can remove the data of a site that has not been opened for seven days, and grants the
 		request to keep it mostly to the app on the home screen. Installed, the app also opens full
 		screen, without the browser bars. Once it has been opened with a network, it also starts
-		without one, the roster included; a new version comes with the next start online.
+		without one, the roster included; a new version is offered as soon as it is online.
 	</p>
 	<ul class="list-disc space-y-1 pl-5">
 		<li><strong>iPhone, iPad:</strong> Share, then “Add to Home Screen”.</li>
@@ -175,7 +168,7 @@
 
 	<section class="space-y-3 border-t border-zinc-700 pt-10" aria-labelledby="docs-heading">
 		<h2 id="docs-heading" class="text-lg font-semibold text-zinc-200">Docs</h2>
-		<p>Short guides to playing with the app, game by game: hired swords, the battle, the aftermath and what comes between battles.</p>
+		<p>Short guides to playing with the app, game by game.</p>
 		<a class={linkClass} href={resolve('/docs')}>Read the guides</a>
 	</section>
 
@@ -234,21 +227,9 @@
 								rel="noopener">{domain(SITES[game.id])} <span aria-hidden="true">↗</span></a
 							>
 						{/if}
-						{#if SOURCES[game.id]}
-							<p class="mt-2">{SOURCES[game.id]}</p>
-						{/if}
 					</li>
 				{/each}
 			</ul>
-			<!-- <p>
-				The ring beside a game when you pick it is a rough count of how much of the game the app carries:
-				one piece for each of these, filled where it is built.
-			</p>
-			<ul class="list-disc space-y-1 pl-5">
-				{#each areas as area (area.label)}
-					<li>{area.label}</li>
-				{/each}
-			</ul> -->
 		</section>
 
 		<section class="space-y-3">
