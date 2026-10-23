@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How to use the app
+    url: https://hennirocks.github.io/fantasy-city-warbands/docs
+    about: Short guides through building a warband, a battle and the time between battles.
+  - name: What is planned
+    url: https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/ROADMAP.md
+    about: What the app does already and what comes next.
+  - name: Where the app reads the rules its own way
+    url: https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/DEVIATIONS.md
+    about: Deliberate differences from the books, game by game.
