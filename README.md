@@ -1,7 +1,7 @@
 # Fantasy City Warbands (Early)
 
-Build a warband for a skirmish game set in a fantasy city, step by step, with
-the budget and the roster limits checked as you go. Two games so far:
+Build a warband for a skirmish game set in a fantasy city, play its battles
+from a deck of cards and carry it through a campaign. Two games so far:
 [Wyrdcry](https://wyrdcry.net) and [Black Death City](https://www.blackdeathcity.com/).
 Mordheim will follow eventually.
 
