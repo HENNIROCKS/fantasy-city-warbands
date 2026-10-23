@@ -209,7 +209,7 @@
     "slot": null,
     "name": "Superior Blackpowder",
     "type": "single-use",
-    "text": "The bearer may use this item as a free action. Until the end of the battle, remove the blackpowder special rule from all equipped blackpowder weapons.",
+    "text": "Use this item during the ‘Present Warbands’ step. Until the end of the battle, remove the Unreliable weapon rule from all equipped weapons.",
     "effects": [],
     "cost": 15,
     "rarity": "common"
