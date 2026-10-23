@@ -64,8 +64,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   where it is named
 - See the warband as a deck of cards laid out as the Wyrdcry Warband Deck's: a
   card for the warband with its fighters, figures, fluff and notes, then one
-  for each fighter with its fluff – a Wyrdcry homebrew fighter's from its
-  rules until you write your own – its profile, its cost – in Wyrdcry beside its renown –
+  for each fighter with its fluff – from its rules, where they give one, until
+  you write your own – its profile, its cost – in Wyrdcry beside its renown –
   its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
@@ -83,8 +83,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is
-  hired, each source linked, the Dark Warrior with a picture of her own and
-  refused beside what her rules forbid – listed on the warband card, its fee
+  hired, each source linked, the homebrew ones and the Rat Ogre with a picture
+  of their own, the Dark Warrior refused beside what her rules forbid – listed
+  on the warband card, its fee
   paid in the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)
 - End a Wyrdcry battle in a few pages: result, income, injuries, a new

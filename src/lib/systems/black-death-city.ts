@@ -66,6 +66,8 @@ interface RawFaction {
 interface RawFighter {
 	id: string;
 	name: string;
+	/** The line its Fighter Scroll quotes, marks included. */
+	description?: string;
 	cost: number;
 	limit: { min: number; max: number | null };
 	keywords: string[];
@@ -240,6 +242,7 @@ function build(
 			keywords: f.keywords,
 			profile: f.profile,
 			rules: [],
+			...(f.description ? { fluff: f.description } : {}),
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear
 		})),

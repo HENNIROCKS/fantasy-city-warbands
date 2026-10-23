@@ -2,6 +2,7 @@
 	{
 		"id": "knight-abbot",
 		"name": "Knight-Abbot",
+		"description": "“Blessed are they whom the Black Rot hath chosen.”",
 		"cost": 190,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "cloister", "human", "knight"],
@@ -12,6 +13,7 @@
 	{
 		"id": "high-sorcerer",
 		"name": "High Sorcerer",
+		"description": "“Count thy afflictions as blessings.”",
 		"cost": 175,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "cloister", "human", "wizard"],
@@ -22,6 +24,7 @@
 	{
 		"id": "cloister-sorcerer",
 		"name": "Cloister Sorcerer",
+		"description": "“I'll see thy flesh boil and burn.”",
 		"cost": 140,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "human", "wizard"],
@@ -32,6 +35,7 @@
 	{
 		"id": "cloister-champion",
 		"name": "Cloister Champion",
+		"description": "“Corruption grants me strength.”",
 		"cost": 145,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "cloister", "human", "knight"],
@@ -42,6 +46,7 @@
 	{
 		"id": "darkcloven-shaman",
 		"name": "Darkcloven Shaman",
+		"description": "“Tonight the herd shall feast on blood and marrow.”",
 		"cost": 145,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "beastman", "wizard"],
@@ -52,6 +57,7 @@
 	{
 		"id": "demonic-rot-herald",
 		"name": "Demonic Rot-Herald",
+		"description": "“Thy flesh and thy soul shall know corruption, mortal.”",
 		"cost": 175,
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "demon", "wizard"],
@@ -62,6 +68,7 @@
 	{
 		"id": "cloister-knight",
 		"name": "Cloister Knight",
+		"description": "“My blade serves the Living Saints.”",
 		"cost": 95,
 		"limit": { "min": 0, "max": 3 },
 		"keywords": ["henchman", "cloister", "human", "knight"],
@@ -72,6 +79,7 @@
 	{
 		"id": "dreg-cultist",
 		"name": "Dreg Cultist",
+		"description": "“The afflicted shall inherit the City.”",
 		"cost": 30,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "cloister", "human"],
@@ -82,6 +90,7 @@
 	{
 		"id": "darkcloven-beastman",
 		"name": "Darkcloven Beastman",
+		"description": "“Feast on flesh!”",
 		"cost": 55,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "cloister", "beastman"],
@@ -92,6 +101,7 @@
 	{
 		"id": "rot-demon",
 		"name": "Rot Demon",
+		"description": "“Once more do I tread the mortal plane.”",
 		"cost": 120,
 		"limit": { "min": 0, "max": 3 },
 		"keywords": ["henchman", "cloister", "demon"],
@@ -102,6 +112,7 @@
 	{
 		"id": "demonic-rotspawn",
 		"name": "Demonic Rotspawn",
+		"description": "“Sate... my... hunger...”",
 		"cost": 130,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "cloister", "demon"],
@@ -112,6 +123,7 @@
 	{
 		"id": "demonic-rot-colossal",
 		"name": "Demonic Rot-Colossal",
+		"description": "“Come hither, little mortal.”",
 		"cost": 200,
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "cloister", "demon"],

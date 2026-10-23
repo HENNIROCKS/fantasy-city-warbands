@@ -6,7 +6,8 @@ keeps your Origin's limits for you.
 
 **The back of a fighter's card.** Tap the pencil under the card. There you can
 write a name, fluff and notes, add a photo of the model, and move equipment to
-the stash and back.
+the stash and back. The fluff starts with the line the fighter's scroll quotes,
+ready to rewrite.
 
 **The back of the warband card.** Name, colour, fluff and notes. You can also
 add gold, throw away what lies in the stash, and add or strike battles. The
