@@ -108,7 +108,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Game | Rules the data follows |
 | --- | --- |
 | Black Death City | Playtest v1.03 |
-| Wyrdcry | 1.0 – Rulebook, Campaign Book and the factions at wyrdcry.net |
+| Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net |
 | Mordheim | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
