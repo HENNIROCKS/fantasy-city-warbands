@@ -41,7 +41,7 @@
 		"hit": 2,
 		"crit": 3,
 		"rules": ["unwieldy"],
-		"cost": 15
+		"cost": 10
 	},
 	{
 		"id": "halberd",
@@ -216,7 +216,7 @@
 		"attacks": 2,
 		"hit": 3,
 		"crit": 4,
-		"rules": ["pierce-3"],
+		"rules": ["pierce-3", "brutal"],
 		"cost": 0
 	},
 	{
@@ -256,7 +256,7 @@
 		"id": "bow",
 		"name": "Bow",
 		"type": "ranged",
-		"range": { "min": 1, "max": 18 },
+		"range": { "min": 0, "max": 18 },
 		"attacks": 2,
 		"hit": 2,
 		"crit": 3,
@@ -267,7 +267,7 @@
 		"id": "crossbow",
 		"name": "Crossbow",
 		"type": "ranged",
-		"range": { "min": 1, "max": 18 },
+		"range": { "min": 0, "max": 18 },
 		"attacks": 2,
 		"hit": 3,
 		"crit": 5,
@@ -294,7 +294,7 @@
 		"hit": 3,
 		"crit": 4,
 		"rules": ["reload", "brace", "pierce-1", "point-blank"],
-		"cost": 20
+		"cost": 10
 	},
 	{
 		"id": "blunderbuss",
@@ -304,14 +304,14 @@
 		"attacks": 5,
 		"hit": 1,
 		"crit": 3,
-		"rules": ["blast", "one-use"],
-		"cost": 30
+		"rules": ["blast", "one-use", "point-blank"],
+		"cost": 20
 	},
 	{
 		"id": "handgun",
 		"name": "Handgun",
 		"type": "ranged",
-		"range": { "min": 1, "max": 18 },
+		"range": { "min": 0, "max": 18 },
 		"attacks": 2,
 		"hit": 4,
 		"crit": 6,
@@ -322,7 +322,7 @@
 		"id": "sling",
 		"name": "Sling",
 		"type": "ranged",
-		"range": { "min": 1, "max": 12 },
+		"range": { "min": 0, "max": 12 },
 		"attacks": 2,
 		"hit": 2,
 		"crit": 3,

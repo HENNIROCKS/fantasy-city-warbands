@@ -45,7 +45,7 @@
       "id": "elven-bow",
       "name": "Elven Bow",
       "type": "ranged",
-      "range": { "min": 1, "max": 18 },
+      "range": { "min": 0, "max": 18 },
       "attacks": 2,
       "hit": 2,
       "crit": 4,
