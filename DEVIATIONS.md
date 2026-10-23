@@ -1,6 +1,6 @@
 # Deviations
 
-Where the app deliberately differs from what a game prints or ships as data, or settles a contradiction in it one way. No session evens these out again. Ticked: confirmed by the rules author. Below each game, what only the author can settle and changes nothing here yet – ticked where they have answered.
+Where the app deliberately differs from what a game prints or ships as data, or settles a contradiction in it one way. No session evens these out again. Ticked: confirmed by the rules author. Below each game, what only the author can settle and changes nothing here yet; an answered question leaves that list, into the one above where the app still differs from what is printed.
 
 ## Wyrdcry
 
@@ -17,23 +17,11 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [ ] A leader recruited under the Campaign Book 0.9, who raised a characteristic as well as taking a talent with the first level of renown, keeps both
 - [x] Favour tiers: 0–5, 6–15, 16–30 and 31+ with their income, as the Campaign Book 1.0 and the site's Collect Income page print them, where the 1.0 campaign rules data still has the playtest's five tiers, so the Warband Builder shows another standing for a favour of 6–40 and offers other income above 5
 - [x] Superior Blackpowder: used while presenting warbands, it removes Unreliable from all equipped weapons, as the site's item data gives it, where the Campaign Book 1.0 makes it a free action removing a "blackpowder" special rule
-
-### Open upstream
-
-- [x] Pierce: one rule, Pierce X, in place of Pierce 1 and Pierce 2
-- [x] Injury 34: Alcoholic, and it cannot make reactions; the id amnesia is left over from an injury roller – kept here, as saved warbands carry it
-- [x] Deep Wound: "the fighter survives" on a 3+ means no lasting effect; the 15gc come "from the warband stash", which in the Campaign Book holds the gold
-- [x] Robbed: "all equipment carried" includes items – everything the fighter bought
-- [x] Campaign Book 1.0: Superior Blackpowder removes a "blackpowder" special rule that no weapon rule is called – meant is Unreliable, as the site prints it
-- [x] Underdogs: each bonus can be selected once, as the Campaign Book 1.0 now says
-- [x] Hero costs: in the 0.9 and the 1.0 fighter data every henchman costs its statline plus power level, while a hero costs 5gc more, a leader 10gc and a wizard 10–15gc – the costs stand as they are
-- [x] Crossbow and Handgun: 18" as the weapon data gives them, where the Rulebook 1.0.1's example on page 13 prints the Crossbow at 1–24"
-- [x] Spear: Unwieldy, not Two Handed, as the Rulebook 1.0.1 prints it
-- [x] Spear: its price – 10gc, Unwieldy, as the weapon data now gives it
-- [x] Point Blank: which weapons carry it – the Pistol, the Warplock Pistol, the Crossbow Pistol and the Blunderbuss, as the weapon data now gives it
-- [x] Blast: missing from the Rulebook 1.0.1's Common Weapon Rules, while the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it – still a rule, explained on the site and inline where a weapon has it; its text here is the Rulebook 1.0's
-- [x] Minimum range: the Rulebook 1.0.1 prints the Bow at 1–18" on page 13 without a rule for what a minimum range does – Point Blank replaces it
-- [x] Great Claw (Possessed): the 1.0 launch post calls it brutal, the faction page gives it Piercing 3 only – it has both
+- [x] Injury 34: Alcoholic keeps the id amnesia, which saved warbands carry, where the site's injury table now anchors it as alcoholic
+- [x] Deep Wound: "the fighter survives" on a 3+ is read as no lasting effect, and the 15gc come from the gold, which the Campaign Book calls "the warband stash"
+- [x] Robbed: "all equipment carried" is read as everything the fighter bought, items included
+- [x] Crossbow and Handgun: 18", as the weapon data gives them, where the Rulebook 1.0.1's example on page 13 prints the Crossbow at 1–24"
+- [x] Blast: with the Rulebook 1.0's text, as the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it, where the Rulebook 1.0.1's Common Weapon Rules leave it out; the site explains it, and a faction's own PDF where a weapon has it
 
 ## Black Death City
 

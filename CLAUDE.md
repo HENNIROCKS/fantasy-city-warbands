@@ -22,7 +22,11 @@ mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
 `DEVIATIONS.md` – je Spiel ein Abschnitt, `[x]` vom Autor der Regeln bestätigt,
 `[ ]` eigene Lesart. Eine neue Abweichung bekommt dort eine Zeile, nicht in der
 Roadmap; was dort steht, gleicht keine Session wieder an. Darunter steht unter
-„Open upstream“, was nur der Autor klären kann und hier noch nichts ändert.
+„Open upstream“, was nur der Autor klären kann und hier noch nichts ändert –
+nur Offenes. Eine beantwortete Frage verlässt die Liste: Weicht die App danach
+weiter von Gedrucktem ab, wandert sie als `[x]` darüber, sonst wird sie
+gelöscht; die Antwort steht in der Vault-Notiz. Ist nichts offen, entfällt die
+Überschrift.
 
 Was bei Wyrdcry unter „Open upstream“ steht, und jede Lesart `[ ]`, die nur
 der Autor klären kann, steht zugleich als Frage in
@@ -32,7 +36,8 @@ Ausrufezeichen, keine Gedankenstriche, unter 2000 Zeichen. Je Frage eine
 nummerierte Zeile mit der Quelle (Seite, Datei) in Klammern, gegliedert nach
 Rulebook, Campaign Book, Daten und Fraktionen. Kommt eine Frage dazu oder
 fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
-entsteht eine neue Datei mit dem Datum des Tages; die älteren bleiben liegen.
+entsteht eine neue Datei mit dem Datum des Tages, und die vorige geht per
+`trash` in den Papierkorb; ist keine Frage mehr offen, liegt keine Datei dort.
 
 Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
 (`docs/<spiel>/`), dann nach Themen, eine Seite je Thema; was für alle Spiele
