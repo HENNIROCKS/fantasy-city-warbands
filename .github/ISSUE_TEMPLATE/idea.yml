@@ -1,0 +1,54 @@
+name: Idea or wish
+description: Something the app could do, or do better.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        [ROADMAP.md](https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/ROADMAP.md) lists what is already planned. Have a look there first.
+
+  - type: textarea
+    id: wish
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+
+  - type: textarea
+    id: when
+    attributes:
+      label: When would you use it?
+      description: While building a warband, at the table, between battles. What would it make easier?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where in the app?
+      options:
+        - Start page and saved warbands
+        - Building a warband (game, warband, choice, fighters, finish)
+        - The cards and a battle
+        - The back of a card (notes, photo, stash, renown, dismiss)
+        - After a battle (aftermath)
+        - Files (export, import, PDF roster)
+        - Guides, settings or the About page
+        - Installing the app or updates
+        - Look (light or dark mode, layout)
+        - A game or faction that is missing
+        - Something else
+
+  - type: dropdown
+    id: game
+    attributes:
+      label: Which game?
+      options:
+        - Wyrdcry
+        - Black Death City
+        - Another game
+        - Doesn't depend on the game
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Sketch or example
+      description: A drawing, a screenshot or another app that does it. Drag an image in here, or paste it.

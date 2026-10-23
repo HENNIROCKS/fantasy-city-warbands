@@ -1,0 +1,61 @@
+name: A rule or number is wrong
+description: A cost, a characteristic, a weapon, a limit or a rule text doesn't match the book.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        In a few places the app reads the rules its own way on purpose, or settles where the books disagree.
+        Have a look at [DEVIATIONS.md](https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/DEVIATIONS.md) first, your point may be listed there.
+
+  - type: dropdown
+    id: game
+    attributes:
+      label: Which game?
+      options:
+        - Wyrdcry
+        - Black Death City
+    validations:
+      required: true
+
+  - type: input
+    id: faction
+    attributes:
+      label: Which faction or hired sword?
+      placeholder: Clan Eshin
+    validations:
+      required: true
+
+  - type: input
+    id: what
+    attributes:
+      label: Which fighter, weapon or rule?
+      placeholder: Night Runner, Move
+
+  - type: textarea
+    id: app
+    attributes:
+      label: What does the app show?
+    validations:
+      required: true
+
+  - type: textarea
+    id: book
+    attributes:
+      label: What does the book say?
+      description: Quote it if you can.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: Which book and page?
+      description: The app follows Wyrdcry Rulebook 1.0.1 and Campaign Book 1.0, and the Black Death City Playtest v1.03. Homebrew factions and hired swords follow their own documents, linked where the app shows the faction.
+      placeholder: Rulebook 1.0.1, page 24
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image in here, or paste it.

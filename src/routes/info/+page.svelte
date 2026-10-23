@@ -235,7 +235,7 @@
 		<section class="space-y-3">
 			<h3 class="field-label">Links</h3>
 			<ul class="space-y-2">
-				<li><a class={linkClass} href="{REPO}/issues" target="_blank" rel="noopener">{@render github()}Feedback and bug reports</a></li>
+				<li><a class={linkClass} href="{REPO}/issues/new/choose" target="_blank" rel="noopener">{@render github()}Feedback and bug reports</a></li>
 				<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md" target="_blank" rel="noopener">{@render github()}What is planned</a></li>
 				<li><a class={linkClass} href="{REPO}/blob/main/DEVIATIONS.md" target="_blank" rel="noopener">{@render github()}Where the app reads the rules its own way</a></li>
 				<li><a class={linkClass} href={REPO} target="_blank" rel="noopener">{@render github()}Source code</a></li>
