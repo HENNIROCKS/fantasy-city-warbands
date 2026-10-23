@@ -189,8 +189,8 @@
 				{['by Hendrik Berends', `Version ${__APP_VERSION__}`, BUILD_DATE ? `Build ${BUILD_DATE}` : null].filter(Boolean).join(' · ')}
 			</p>
 			<p>
-				Build a warband for a skirmish game set in a fantasy city, step by step, with the budget and
-				the roster limits checked as you go.
+				Build a warband for a skirmish game set in a fantasy city, play its battles from a deck of
+				cards and carry it through a campaign.
 			</p>
 			<p class="text-zinc-400">
 				An unofficial fan project, not commercial, with no affiliation with or endorsement from Games
