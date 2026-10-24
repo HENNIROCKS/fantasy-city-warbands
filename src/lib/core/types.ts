@@ -621,8 +621,26 @@ export interface Wargear {
 	effects?: StatEffect[];
 	/** What it adds in one situation only, such as the Shield's Fight against a melee attack. */
 	conditions?: StatCondition[];
-	/** Whether it is used up once used, such as Wyrdcry's drugs and poisons: the aftermath asks who used one and strikes it. */
+	/**
+	 * Whether it is used up once used, such as Wyrdcry's drugs and poisons: ticked
+	 * off on the card in a battle, it is struck there, and the aftermath strikes
+	 * it from the fighter's equipment.
+	 */
 	singleUse?: true;
+	/** What a single-use piece does from the moment it is used until the battle ends. */
+	used?: WargearUse;
+}
+
+/** What using a single-use piece does to its bearer for the rest of the battle, such as Crimson Shade's Move and Fight. */
+export interface WargearUse {
+	/** Added to the characteristics, by stat key. */
+	bonus?: Record<string, number>;
+	/** A rule one of the bearer's weapons gains, picked when the piece is used, of these kinds: Dark Venom's Poisoned. */
+	weapon?: { kinds: WargearKind[]; rule: Rule };
+	/** A weapon rule, by name, none of the bearer's weapons has: Superior Blackpowder's `UNRELIABLE`. */
+	strips?: string;
+	/** Rules the bearer gains, such as Mad Cap Mushrooms' Stupidity. */
+	rules?: Rule[];
 }
 
 /** One of the options a fighter's own choice offers: a spell, a characteristic, a row of a table. */

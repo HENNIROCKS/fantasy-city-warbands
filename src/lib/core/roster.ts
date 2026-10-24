@@ -74,11 +74,7 @@ function entries(card: FighterCardData, kind: string): CardEntry[] {
 	return card.sections.filter((s) => s.kind === kind).flatMap((s) => s.entries);
 }
 
-/** An entry whose label names its type, `[Trait] Stealthy`. */
-const isTyped = (entry: CardEntry) => entry.label.startsWith('[');
-
 function toFighter(card: FighterCardData): RosterFighter {
-	const equipment = entries(card, 'equipment');
 	return {
 		name: card.name,
 		type: card.subtitle,
@@ -86,15 +82,9 @@ function toFighter(card: FighterCardData): RosterFighter {
 		cost: card.campaign.find((v) => v.key === 'cost')?.value ?? '',
 		campaign: card.campaign.filter((v) => v.key !== 'cost').map((v) => v.value),
 		keywords: card.keywords.join(', '),
-		/* A rule an item gives stands under the item on the card, and with the
-		   abilities here, as on the Warband Deck's roster: it is what the fighter
-		   can do, not what it carries. */
-		abilities: [...entries(card, 'fighter'), ...equipment.filter(isTyped)].map((e) => e.label),
+		abilities: entries(card, 'fighter').map((e) => e.label),
 		weapons: card.weapons.map((w) => ({ name: w.name, values: w.values })),
-		items: equipment
-			.filter((e) => !isTyped(e))
-			.map((e) => e.label)
-			.join(', '),
+		items: card.items.map((i) => (i.count > 1 ? `${i.name} ×${i.count}` : i.name)).join(', '),
 		/* Why the fighter sits out, as the band across its card says it, ahead of the player's own notes. */
 		notes: [...(card.away ? [card.away] : []), ...entries(card, 'notes').map((e) => e.text)]
 	};
@@ -130,7 +120,7 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 			const name = weapon.name.replace(/ ×\d+$/, '');
 			for (const e of weapon.explanation?.rules ?? []) add(e, 'Weapon rule', card.instanceId, name);
 		}
-		for (const e of entries(card, 'equipment')) if (e.text) add(e, 'Item', card.instanceId);
+		for (const item of card.items) if (item.text) add({ label: item.name, text: item.text }, 'Item', card.instanceId);
 	}
 
 	/* The card's `Unnamed fighter` would not tell two fighters apart in a list. */

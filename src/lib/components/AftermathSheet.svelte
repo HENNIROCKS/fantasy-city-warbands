@@ -435,7 +435,7 @@
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<section>
-						<p class="note">What was used up in the battle. It is struck from the fighter's equipment.</p>
+						<p class="note">What was used up in the battle, as ticked off on the cards. It is struck from the fighter's equipment.</p>
 					</section>
 					{#each carrying as { instance, pieces } (instance.instanceId)}
 						{@const id = instance.instanceId}

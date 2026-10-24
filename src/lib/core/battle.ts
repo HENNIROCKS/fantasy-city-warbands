@@ -36,6 +36,19 @@ export interface FighterBattleState {
 	out: boolean;
 	/** By the key of a `BattleMark`; a missing key is not marked. */
 	marks: Record<string, boolean>;
+	/**
+	 * The single-use pieces used, in the order they were used: the piece by its
+	 * wargear id, and the weapon it was used on where it picks one. A piece the
+	 * fighter no longer carries, or a weapon it no longer holds, is ignored on read.
+	 */
+	used: UsedPiece[];
+}
+
+/** One single-use piece used in the battle. */
+export interface UsedPiece {
+	wargear: string;
+	/** The weapon it was used on, by wargear id, where the piece picks one. */
+	on?: string;
 }
 
 /** One round: its number, and what each fighter carries in it. */
@@ -71,7 +84,7 @@ export interface BattleState extends BattleRound {
 }
 
 /** What a fighter carries before anything has happened to it. */
-export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {} };
+export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {}, used: [] };
 
 export function start(): BattleState {
 	return { startedAt: new Date().toISOString(), round: 1, counter: 0, fighters: {}, undo: null, hired: [] };
@@ -161,6 +174,16 @@ export function toggleWaiting(battle: BattleState | null, instanceId: string): B
 export function toggleMark(battle: BattleState | null, instanceId: string, key: string): BattleState {
 	const marks = stateOf(battle, instanceId).marks;
 	return write(battle, instanceId, { marks: { ...marks, [key]: !marks[key] } });
+}
+
+/** A single-use piece used, on the weapon it picks where it picks one. It belongs to the battle, as the next round keeps it. */
+export function useItem(battle: BattleState | null, instanceId: string, wargear: string, on?: string): BattleState {
+	return write(battle, instanceId, { used: [...stateOf(battle, instanceId).used, { wargear, ...(on ? { on } : {}) }] });
+}
+
+/** A use taken back, by its place in the fighter's `used`. */
+export function unuseItem(battle: BattleState | null, instanceId: string, at: number): BattleState {
+	return write(battle, instanceId, { used: stateOf(battle, instanceId).used.filter((_, i) => i !== at) });
 }
 
 /** Counts the faction's count up or down, starting a battle if none is running. It cannot fall below nothing. */

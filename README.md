@@ -79,7 +79,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 - Turn the warband card over to name it, pick its colour, set favour, add gold
   and sell from the stash – see the same guides
 - Track a battle on the cards: damage, states, rounds with one step back, and
-  in Wyrdcry morale and Zeal – see [The battle in Black Death City](docs/black-death-city/battle.md)
+  in Wyrdcry morale, Zeal and the single-use items ticked off – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is

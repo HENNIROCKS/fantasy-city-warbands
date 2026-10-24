@@ -1,10 +1,11 @@
 /**
  * A warband and its fighters as cards, laid out as the Wyrdcry Warband Deck lays
  * out its own. A fighter's: name and type, keywords, the profile, the cost, the
- * weapons, then the rules in paragraphs. Looked up from the faction and
- * formatted once, so the card and the roster print read the same.
+ * weapons and the items, then the rules in paragraphs. Looked up from the
+ * faction and formatted once, so the card and the roster print read the same.
  */
 
+import type { BattleLayer, UsedPiece } from './battle';
 import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
 import { LEADER, activeEffects, pickedStats, reaches, type ActiveEffect } from './effects';
 import { keywordsOf } from './leader';
@@ -114,8 +115,27 @@ export interface CardWeapon {
  * universal rules are reference and fold away under a title.
  */
 export interface CardSection {
-	kind: 'fighter' | 'equipment' | 'faction' | 'universal-action' | 'universal' | 'universal-reaction' | 'notes';
+	kind: 'fighter' | 'faction' | 'universal-action' | 'universal' | 'universal-reaction' | 'notes';
 	entries: CardEntry[];
+}
+
+/** A piece of armour or an item, as the box under the weapons lists it. */
+export interface CardItem {
+	wargear: string;
+	name: string;
+	count: number;
+	/** Empty where the game gives the piece no text of its own. */
+	text: string;
+	/** Set where the piece has a text, opened when its name is tapped. */
+	explanation?: CardExplanation;
+	/**
+	 * For a single-use piece, one box for each copy carried: for a copy used in
+	 * the battle running, the use's place in the fighter's `used` and the weapon
+	 * it was used on by name; null for one not used. The used ones first.
+	 */
+	copies?: ({ at: number; on?: string } | null)[];
+	/** The weapons it can be used on, where using it picks one: those without the rule it gives; empty where none is left. */
+	weapons?: { id: string; name: string }[];
 }
 
 export interface FighterCardData {
@@ -137,6 +157,12 @@ export interface FighterCardData {
 	/** What the fighter carries out of a game rather than into one; for now its cost. */
 	campaign: CardValue[];
 	weapons: CardWeapon[];
+	items: CardItem[];
+	/**
+	 * What the single-use pieces used in the battle running do until it ends:
+	 * their names for the card's band, and what they add to the characteristics.
+	 */
+	inUse: { labels: string[]; layers: BattleLayer[] };
 	sections: CardSection[];
 	/** The player's own background text, else the one its rules give it; empty where there is neither. */
 	fluff: string;
@@ -181,7 +207,39 @@ function counted(ids: string[], faction: Faction): { wargear: Wargear; count: nu
 
 const times = (name: string, count: number) => (count > 1 ? `${name} ×${count}` : name);
 
-export function fighterCard(instance: FighterInstance, faction: Faction, game: GameSystem, picks: Record<string, string[]> = {}): FighterCardData {
+/** The wargear ids a fighter carries, a copy each: its profile's, its pick's, then what it bought. */
+export function carriedIds(instance: FighterInstance, faction: Faction): string[] {
+	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
+	const options = fighter ? chosenOptions(instance, fighter) : [];
+	return [...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear];
+}
+
+/**
+ * The uses that still hold, each with its place in `used`: of a single-use
+ * piece the fighter carries, no more than it carries copies, and on a weapon it
+ * still holds where the piece picks one. `carried` are the wargear ids it
+ * carries, a copy each.
+ */
+export function heldUses(used: UsedPiece[], carried: string[], faction: Faction): (UsedPiece & { at: number })[] {
+	const left = new Map<string, number>();
+	for (const id of carried) left.set(id, (left.get(id) ?? 0) + 1);
+	return used.flatMap((use, at) => {
+		const piece = faction.wargear.find((w) => w.id === use.wargear);
+		if (!piece?.singleUse || !left.get(use.wargear)) return [];
+		if (piece.used?.weapon && !(use.on && carried.includes(use.on))) return [];
+		left.set(use.wargear, left.get(use.wargear)! - 1);
+		return [{ ...use, at }];
+	});
+}
+
+/** `used` are the single-use pieces the fighter used in the battle running. */
+export function fighterCard(
+	instance: FighterInstance,
+	faction: Faction,
+	game: GameSystem,
+	picks: Record<string, string[]> = {},
+	used: UsedPiece[] = []
+): FighterCardData {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
 	const options = fighter ? chosenOptions(instance, fighter) : [];
@@ -191,7 +249,12 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	/* What the injuries it keeps do to it. */
 	const injured = fighter && game.injuries ? game.injuries.effects(instance, fighter, faction) : { rules: [], keywords: [], weapons: [], stats: [], forbid: [] };
 	const changed = [...advanced.weapons, ...injured.weapons];
-	const carried = counted([...(fighter?.gear ?? []), ...options.flatMap((o) => o.gear ?? []), ...instance.wargear], faction);
+	const ids = carriedIds(instance, faction);
+	const carried = counted(ids, faction);
+	/* The single-use pieces used, each with what it does until the battle ends. */
+	const uses = heldUses(used, ids, faction).map((use) => ({ ...use, piece: faction.wargear.find((w) => w.id === use.wargear)! }));
+	const stripped = uses.flatMap(({ piece }) => (piece.used?.strips ? [{ rule: piece.used.strips, source: piece.name }] : []));
+	const nameOf = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 
 	/* Ranged ahead of melee, otherwise in the order they are carried. */
 	const weapons = carried
@@ -207,12 +270,24 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 				const value = own ?? wargear.profile?.[s.key] ?? '–';
 				return dual?.stat === s.key && /^\d+$/.test(value) ? String(Number(value) + 1) : value;
 			});
+			/* A rule a single-use piece gave the weapon, and one a piece took off it for the battle, which keeps its line and says so. */
+			const own = [...(wargear.rules ?? []), ...(dual ? [dual.rule] : [])];
+			const gained = uses
+				.flatMap(({ piece, on }) => {
+					const rule = on === wargear.id ? piece.used?.weapon?.rule : undefined;
+					return rule ? [{ rule, source: piece.name }] : [];
+				})
+				.filter(({ rule }, i, all) => !own.some((r) => r.name === rule.name) && all.findIndex((g) => g.rule.name === rule.name) === i)
+				.map(({ rule, source }) => ({ name: rule.name, text: `${rule.text} From ${source}, until the battle ends.` }));
 			const rules = [
-				...(wargear.rules ?? []),
-				...(dual ? [dual.rule] : []),
+				...own,
+				...gained,
 				...raised.map((w) => ({ name: w.source, text: `Counted into the ${game.weaponStats.find((s) => s.key === w.stat)?.label ?? w.stat} above.` }))
 			]
-				.map((r) => ({ label: r.name, text: r.text }))
+				.map((r) => {
+					const off = stripped.find((s) => s.rule === r.name);
+					return { label: r.name, text: off ? `Not in this battle: ${off.source}.` : r.text };
+				})
 				.sort((a, b) => a.label.localeCompare(b.label));
 			const name = times(wargear.name, count);
 			return {
@@ -224,9 +299,36 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			};
 		});
 
+	/* Whether a weapon has a rule, its own or one a single-use piece gave it for the battle. */
+	const holds = (weapon: Wargear, name: string) =>
+		(weapon.rules ?? []).some((r) => r.name === name) || uses.some(({ piece, on }) => on === weapon.id && piece.used?.weapon?.rule.name === name);
+
 	const items = carried
 		.filter(({ wargear }) => wargear.kind === 'armour' || wargear.kind === 'item')
-		.map(({ wargear, count }) => ({ label: times(wargear.name, count), text: wargear.text ?? '' }));
+		.map(({ wargear, count }): CardItem => {
+			const mine = uses.filter((u) => u.wargear === wargear.id);
+			const gives = wargear.used?.weapon;
+			return {
+				wargear: wargear.id,
+				name: wargear.name,
+				count,
+				text: wargear.text ?? '',
+				...(wargear.text
+					? { explanation: { title: wargear.name, rules: [{ label: wargear.singleUse ? 'Single use' : wargear.kind === 'armour' ? 'Armour' : 'Item', text: wargear.text }] } }
+					: {}),
+				...(wargear.singleUse
+					? { copies: Array.from({ length: count }, (_, i) => (mine[i] ? { at: mine[i].at, ...(mine[i].on ? { on: nameOf(mine[i].on) } : {}) } : null)) }
+					: {}),
+				/* A weapon that has the rule already gains nothing from it. */
+				...(gives
+					? {
+							weapons: carried
+								.filter((c) => gives.kinds.includes(c.wargear.kind) && !holds(c.wargear, gives.rule.name))
+								.map((c) => ({ id: c.wargear.id, name: c.wargear.name }))
+						}
+					: {})
+			};
+		});
 
 	/* As the levels make them – a henchman with three of Wyrdcry's renown is a HERO – and LEADER for one that took the lead. */
 	const keywords = [
@@ -273,12 +375,17 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 	   one that raises a characteristic as well – is a rule of the fighter's own. */
 	const raises = (o: FighterChoiceOption) => o.bonus && !o.text;
 	const raised = options.some(raises) ? fighter?.choice?.source : undefined;
-	const ownRules = [
+	const standing = [
 		...(fighter?.rules ?? []),
 		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
 		...advanced.rules,
 		...injured.rules
 	];
+	/* A rule a single-use piece gives for the battle, as Mad Cap Mushrooms' Stupidity, unless the fighter has it already. */
+	const lent = uses
+		.flatMap(({ piece }) => (piece.used?.rules ?? []).map((rule) => ({ rule, source: piece.name })))
+		.filter(({ rule }, i, all) => !standing.some((r) => r.name === rule.name) && all.findIndex((l) => l.rule.name === rule.name) === i);
+	const ownRules = [...standing, ...lent.map(({ rule }) => rule)];
 	/* An injury that bars a type of ability, as Alcoholic bars reactions, leaves
 	   them on the card and says so under each. */
 	const barred = (rules: Rule[]) =>
@@ -286,14 +393,20 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			const by = injured.forbid.find((f) => f.type === r.type?.toLowerCase());
 			return by ? [[r.name, `Cannot be used: ${by.source}.`] as const] : [];
 		});
-	const fighterRules = ruleEntries(ownRules, new Map([...(raised ? [[raised, 'Already included.'] as const] : []), ...barred(ownRules)]));
+	const fighterRules = ruleEntries(
+		ownRules,
+		new Map([
+			...(raised ? [[raised, 'Already included.'] as const] : []),
+			...lent.map(({ rule, source }) => [rule.name, `For this battle: ${source}.`] as const),
+			...barred(ownRules)
+		])
+	);
 	const universalReactions = universal.filter((u) => u.type === REACTION);
 	const universalActions = universal.filter((u) => u.type === ACTION);
 
 	const sections: CardSection[] = (
 		[
 			{ kind: 'fighter', entries: fighterRules },
-			{ kind: 'equipment', entries: items },
 			{ kind: 'faction', entries: factionRules },
 			{ kind: 'universal-action', entries: ruleEntries(universalActions, new Map(barred(universalActions))) },
 			{ kind: 'universal', entries: ruleEntries(universal.filter((u) => u.type !== REACTION && u.type !== ACTION)) },
@@ -346,6 +459,11 @@ export function fighterCard(instance: FighterInstance, faction: Faction, game: G
 			...(game.campaign?.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
 		],
 		weapons,
+		items,
+		inUse: {
+			labels: [...new Set(uses.filter(({ piece }) => piece.used).map(({ piece }) => piece.name))],
+			layers: uses.flatMap(({ piece }) => Object.entries(piece.used?.bonus ?? {}).map(([stat, amount]) => ({ stat, source: piece.name, amount })))
+		},
 		sections,
 		fluff: instance.fluff?.trim() || fighter?.fluff || '',
 		image: options.find((o) => o.image)?.image ?? fighter?.image ?? null,

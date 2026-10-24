@@ -14,6 +14,13 @@ can switch the scream off under the gear, in Settings.
 panicked, poisoned or with its heroic reaction used. The card shows every
 mark, and so do the strokes above the deck.
 
+**Items.** Under the weapons, the card lists what the fighter carries. Tap a
+name to read what it does. In a battle, a single-use item has a box: tick it
+when the fighter uses the item. The item is struck through, and the card
+counts what it does until the battle ends, such as the Move and Fight of
+Crimson Shade. An item for a weapon, such as Dark Venom, asks which weapon
+first. Tap the box again to take it back.
+
 **Rounds.** The warband card shows the round, who still has to act and who is
 out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Back
 to round …** undoes it, until you tap something new.

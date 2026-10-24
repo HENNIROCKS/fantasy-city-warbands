@@ -94,6 +94,11 @@
 		background: var(--ui-surface);
 		color: var(--ui-text);
 		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+		/* The app's type wherever the trigger sits, a card's cell included, whose
+		   lettering it would otherwise inherit. */
+		font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif);
+		line-height: 1.5;
+		font-variant-numeric: normal;
 	}
 
 	.menu:not(:popover-open) {

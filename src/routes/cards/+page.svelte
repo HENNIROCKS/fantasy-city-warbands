@@ -20,8 +20,8 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { adjustCounter, allocate, hire, isWavering, nextRound, release, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, type BattleState } from '$lib/core/battle';
-	import { applyAftermath, startAftermath, type AftermathDraft } from '$lib/core/aftermath';
+	import { adjustCounter, allocate, hire, isWavering, nextRound, release, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
+	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { today } from '$lib/core/history';
@@ -152,7 +152,13 @@
 		const w = warband;
 		if (!w || !system || !faction || !hiringFaction) return [];
 		const hired = (battle?.hired ?? []).map((h, i): DeckCard => {
-			const card = fighterCard({ instanceId: h.instanceId, fighterId: h.fighterId, name: '', wargear: [], picks: h.picks }, hiringFaction, system.game);
+			const card = fighterCard(
+				{ instanceId: h.instanceId, fighterId: h.fighterId, name: '', wargear: [], picks: h.picks },
+				hiringFaction,
+				system.game,
+				{},
+				stateOf(battle, h.instanceId).used
+			);
 			return {
 				...card,
 				name: card.subtitle,
@@ -179,7 +185,7 @@
 					...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
 				]
 			: [];
-		return [{ ...own, roster, reminders }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks)), ...hired];
+		return [{ ...own, roster, reminders }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks, stateOf(battle, f.instanceId).used)), ...hired];
 	});
 	/** Where the builder names the warband, or the fighter in its editor. */
 	function nameField(card: DeckCard): string {
@@ -595,7 +601,7 @@
 			name: cards.find((c) => c.kind === 'fighter' && c.instanceId === h.instanceId)?.name ?? h.fighterId,
 			fee: hiredFees[i] ?? 0
 		}));
-		aftermath = startAftermath(rules, fighters, battle, warband.history ?? [], hired, underdog);
+		aftermath = { ...startAftermath(rules, fighters, battle, warband.history ?? [], hired, underdog), used: faction ? usedInBattle(warband, faction, battle) : {} };
 	}
 
 	/* The warband first: only once it is stored does the battle go, so a failed
@@ -806,6 +812,8 @@
 				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
 				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
 				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key))}
+				onuse={(instanceId, wargear, on) => setBattle(useItem(battle, instanceId, wargear, on))}
+				onunuse={(instanceId, at) => setBattle(unuseItem(battle, instanceId, at))}
 				oncount={(delta) => setBattle(adjustCounter(battle, delta))}
 				onstart={() => setBattle(start())}
 				closed={warband.disbanded ? DISBANDED : null}

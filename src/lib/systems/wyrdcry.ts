@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, WargearUse, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -14,6 +14,7 @@ import items from '$lib/rules/wyrdcry/items.json';
 import universal from '$lib/rules/wyrdcry/universal-abilities.json';
 import campaign from '$lib/rules/wyrdcry/campaign.json';
 import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
+import heroInjuries from '$lib/rules/wyrdcry/injuries-hero.json';
 import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
 import underdogs from '$lib/rules/wyrdcry/underdogs.json';
 
@@ -560,6 +561,32 @@ const hiredWeapons = hiredSwords
 		return !taken;
 	});
 
+/**
+ * What a single-use item does once used, as `items.json` writes it under
+ * `used`: what it adds, the weapon rule a weapon of the bearer's picking gains,
+ * the rule it takes off every weapon, and an injury for the battle, as Mad Cap
+ * Mushrooms' Stupidity, by its id on the hero table.
+ */
+function usedOf(raw: {
+	effects?: { characteristic: string; bonus: number }[];
+	weapon_rule?: string;
+	weapon_type?: string;
+	removes_rule?: string;
+	injury?: string;
+}): WargearUse {
+	const rule = raw.weapon_rule ? weaponRule.get(raw.weapon_rule) : undefined;
+	const stripped = raw.removes_rule ? weaponRule.get(raw.removes_rule) : undefined;
+	const injury = raw.injury ? heroInjuries.find((i) => i.id === raw.injury) : undefined;
+	if (import.meta.env.DEV && ((raw.weapon_rule && !rule) || (raw.removes_rule && !stripped) || (raw.injury && !injury)))
+		console.warn('a single-use item names a rule or injury the data does not have', raw);
+	return {
+		...(raw.effects?.length ? { bonus: Object.fromEntries(raw.effects.map((e) => [e.characteristic, e.bonus])) } : {}),
+		...(rule ? { weapon: { kinds: raw.weapon_type === 'ranged' ? ['ranged' as const] : ['melee' as const, 'ranged' as const], rule } } : {}),
+		...(stripped ? { strips: stripped.name } : {}),
+		...(injury ? { rules: [{ name: injury.name, text: injury.text, ...(injury.type ? { type: injury.type } : {}) }] } : {})
+	};
+}
+
 /* The Trading Post's two lists, under the Warband Deck's headings. */
 const TRADING_POST: Record<string, string> = { miscellaneous: 'Trading Post', 'single-use': 'Trading Post – single use' };
 
@@ -596,7 +623,8 @@ const catalogue = new Map<string, Wargear>([
 							...(i.rarity === 'rare' ? { found: 'a Rarity roll of 6+' } : {}),
 							/* A faction's own piece, such as Clan Eshin's Smoke Bomb, is sold in its faction entry only. */
 							...(i.type in TRADING_POST && !('faction' in i) ? { group: TRADING_POST[i.type] } : {}),
-							...(i.type === 'single-use' ? { singleUse: true as const } : {})
+							...(i.type === 'single-use' ? { singleUse: true as const } : {}),
+							...('used' in i && i.used ? { used: usedOf(i.used) } : {})
 						}
 					]
 				]

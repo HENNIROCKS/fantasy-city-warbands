@@ -11,7 +11,8 @@ playing** takes you back to the battle.
    injury table and tap the result. Some results ask one more question, such
    as the surgeon.
 3. **A new leader.** If your leader died, pick the hero who takes the lead.
-4. **Items used.** Switch on the single-use items used up in the battle.
+4. **Items used.** The single-use items you ticked on the cards are already
+   switched on. Switch on any you forgot to tick.
 5. **Renown.** Each fighter rolls. Switch on what adds to the roll, and the
    page says which score it needs. Switch on each roll that reached it.
 
