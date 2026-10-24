@@ -37,6 +37,7 @@
 		oncancelbattle,
 		levelsOpen = 0,
 		levelLabel = '',
+		healthLabel = '',
 		onlevels,
 		onunderdog,
 		onhire,
@@ -79,6 +80,8 @@
 		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
 		levelsOpen?: number;
 		levelLabel?: string;
+		/** What the game calls the characteristic damage counts down: `Health`, `Life`. */
+		healthLabel?: string;
 		onlevels?: () => void;
 		/** Opens the question whether the warband is the underdog, where the game has one and the battle is still being set up. */
 		onunderdog?: () => void;
@@ -409,6 +412,7 @@
 		{battle}
 		fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
 		health={topFighter?.health.value ?? 0}
+		{healthLabel}
 		waiting={rules?.waiting ?? false}
 		marks={topMarks}
 		rounds={rules?.rounds}

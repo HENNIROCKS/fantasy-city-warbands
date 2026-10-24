@@ -823,6 +823,7 @@
 				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
+				healthLabel={system.game.stats.find((s) => s.key === system.game.health)?.label ?? ''}
 				onlevels={() => (spending = true)}
 				onunderdog={system.game.underdog && settingUp(battle) ? openUnderdog : undefined}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}

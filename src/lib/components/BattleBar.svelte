@@ -13,6 +13,7 @@
 		battle = null,
 		fighter = null,
 		health = 0,
+		healthLabel = '',
 		waiting = false,
 		marks = [],
 		rounds,
@@ -50,6 +51,8 @@
 		fighter?: FighterBattleState | null;
 		/** Health as that fighter's card works it out. */
 		health?: number;
+		/** What the game calls that characteristic: `Health`, `Life`. */
+		healthLabel?: string;
 		/** Whether the game lets a fighter wait. */
 		waiting?: boolean;
 		/** The marks the fighter on top can carry, and whether it does. */
@@ -143,12 +146,15 @@
 				>
 					&minus;
 				</button>
-				<span class="readout" aria-live="polite">
-					{#if unknown}
-						&mdash;
-					{:else}
-						{left} <span class="of text-zinc-400">({health})</span>
-					{/if}
+				<span class="readout border-zinc-700 bg-zinc-800" aria-live="polite">
+					<span class="figure">
+						{#if unknown}
+							&mdash;
+						{:else}
+							{left} <span class="of text-zinc-400">({health})</span>
+						{/if}
+					</span>
+					{#if healthLabel}<span class="sub">{healthLabel}</span>{/if}
 				</span>
 				<button
 					class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
@@ -200,8 +206,10 @@
 					>
 						&minus;
 					</button>
-					<span class="readout wide" aria-live="polite">
-						<span class="of text-zinc-400">{counter.label}</span> {battle?.counter ?? 0}
+					<!-- The stage it has reached under the count, inside the stepper. -->
+					<span class="readout border-zinc-700 bg-zinc-800" aria-live="polite">
+						<span class="figure"><span class="of text-zinc-400">{counter.label}</span> {battle?.counter ?? 0}</span>
+						{#if battle && stage}<span class="sub">{stage}</span>{/if}
 					</span>
 					<button
 						class="step border-zinc-700 bg-zinc-800 text-zinc-200 enabled:hover:bg-zinc-700 focus-visible:bg-zinc-700"
@@ -210,7 +218,6 @@
 					>
 						+
 					</button>
-					<span class="stage" aria-live="polite">{battle ? (stage ?? '') : ''}</span>
 				</div>
 			{:else}
 				<p class="summary text-zinc-400" aria-live="polite">
@@ -296,7 +303,6 @@
 		padding: 4px var(--deck-gutter);
 	}
 
-	.wounds,
 	.actions {
 		display: flex;
 		align-items: center;
@@ -313,27 +319,63 @@
 		flex: 1;
 	}
 
+	/* A stepper as the card backs have it: both steps and the figure joined into
+	   one control, rounded only at its ends, as wide as what it shows. */
+	.wounds {
+		display: flex;
+		align-items: center;
+	}
+
 	.step {
 		width: 44px;
 		height: 44px;
 		padding: 0;
 		border-width: 1px;
-		border-radius: 6px;
+		border-radius: 0;
 		font-size: 1.5rem;
 		line-height: 1;
 	}
 
+	.step:first-child {
+		border-radius: 6px 0 0 6px;
+	}
+
+	.step:last-child {
+		border-radius: 0 6px 6px 0;
+	}
+
+	/* Only the sign fades: the frame is also the figure's edge. */
 	.step:disabled {
-		opacity: 0.4;
+		color: color-mix(in srgb, var(--ui-text) 35%, transparent);
 		cursor: not-allowed;
 	}
 
 	.readout {
-		min-width: 5ch;
-		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 44px;
+		padding: 0 10px;
+		border-block-width: 1px;
+		line-height: 1.05;
+		white-space: nowrap;
+	}
+
+	.figure {
+		display: flex;
+		align-items: baseline;
+		gap: 0.3em;
 		font-size: 1.25rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* What the figure counts, or the stage it has reached. */
+	.sub {
+		font-size: 0.75rem;
+		font-weight: 600;
+		opacity: 0.85;
 	}
 
 	/* The ceiling, not the reading: it is there to say what the figure counts down
@@ -377,16 +419,6 @@
 		stroke-width: 1.8;
 		stroke-linecap: round;
 		stroke-linejoin: round;
-	}
-
-	/* Wide enough for two digits, so the + under the thumb stays where it is. */
-	.readout.wide {
-		min-width: 7ch;
-	}
-
-	.stage {
-		font-size: 0.875rem;
-		font-weight: 600;
 	}
 
 	/* The one state of the warband that asks something of every fighter: in the

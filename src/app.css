@@ -349,19 +349,21 @@ html {
 		cursor: not-allowed;
 	}
 
-	/* A counter the player sets by hand, such as favour: −, the figure, +. */
+	/* A counter the player sets by hand, such as favour: −, the figure and +
+	   joined into one control across the width, rounded only at its ends, as
+	   the battle bar's stepper. */
 	.tally-row {
 		display: flex;
-		align-items: center;
-		gap: 8px;
+		align-items: stretch;
 	}
 
 	.tally-step {
+		flex: none;
 		width: 44px;
 		height: 44px;
 		background: var(--ui-surface);
 		border: 1px solid var(--ui-border);
-		border-radius: 6px;
+		border-radius: 0;
 		color: var(--ui-text);
 		font-size: 1.25rem;
 		line-height: 1;
@@ -369,8 +371,19 @@ html {
 		transition: border-color 0.15s;
 	}
 
+	.tally-step:first-child {
+		border-radius: 6px 0 0 6px;
+	}
+
+	.tally-step:last-child {
+		border-radius: 0 6px 6px 0;
+	}
+
+	/* Above its neighbour, so the lighter frame shows on all four sides. */
 	.tally-step:hover:not(:disabled),
 	.tally-step:focus-visible {
+		position: relative;
+		z-index: 1;
 		border-color: var(--ui-text-subtle);
 	}
 
@@ -379,14 +392,19 @@ html {
 		outline-offset: 2px;
 	}
 
+	/* Only the sign fades: the frame is also the figure's edge. */
 	.tally-step:disabled {
-		opacity: 0.4;
+		color: color-mix(in srgb, var(--ui-text) 35%, transparent);
 		cursor: not-allowed;
 	}
 
 	.tally-count {
-		min-width: 3ch;
-		text-align: center;
+		display: flex;
+		flex: 1;
+		align-items: center;
+		justify-content: center;
+		background: var(--ui-surface);
+		border-block: 1px solid var(--ui-border);
 		font-size: 1.125rem;
 		font-variant-numeric: tabular-nums;
 		color: var(--ui-text);

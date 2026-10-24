@@ -766,7 +766,7 @@
 			</section>
 		{/if}
 		{#if !fluffOpen || !notesOpen}
-			<div class="flex gap-2">
+			<div class="grid grid-cols-2 gap-2">
 				{#if !fluffOpen}
 					<button type="button" class="wargear-add" onclick={() => write('fluff')}>+ Add fluff</button>
 				{/if}
@@ -779,7 +779,7 @@
 		<section>
 			<p class="field-label">Check</p>
 			<div
-				class="rounded-md border p-3"
+				class="rounded-md border p-4 text-base"
 				style={issues.length
 					? 'background: var(--ui-warn-bg); border-color: var(--ui-warn-border); color: var(--ui-warn-text)'
 					: 'background: var(--ui-sel-bg); border-color: var(--ui-sel-border); color: var(--ui-sel-text)'}
