@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ItemTable from '$lib/components/ItemTable.svelte';
 	import RuleText from '$lib/components/RuleText.svelte';
 	import ValueTable from '$lib/components/ValueTable.svelte';
 	import WeaponTable from '$lib/components/WeaponTable.svelte';
@@ -17,7 +18,9 @@
 		conditions = [],
 		test = null,
 		photo = null,
-		edit
+		edit,
+		onuse,
+		onunuse
 	}: {
 		card: FighterCardData;
 		columns: string[];
@@ -35,6 +38,10 @@
 		photo?: PhotoView | null;
 		/** Where the fighter is named, for a fighter without a name. */
 		edit?: string;
+		/** Given while a battle runs: ticks off a single-use piece, on the weapon picked where it picks one. */
+		onuse?: (wargear: string, on?: string) => void;
+		/** Takes a single-use piece's use back, by its place among the fighter's uses. */
+		onunuse?: (at: number) => void;
 	} = $props();
 
 	/* The card names the state, the bar changes it – one band, the worst of the
@@ -145,6 +152,10 @@
 			{#if card.weapons.length}
 				<WeaponTable weapons={card.weapons} {columns} />
 			{/if}
+
+			{#if card.items.length}
+				<ItemTable items={card.items} {onuse} {onunuse} />
+			{/if}
 		</div>
 
 		{#each card.sections as section, i (section.kind)}
@@ -160,15 +171,6 @@
 				</details>
 			{:else if section.kind === 'notes'}
 				<section class="notes">{@render paragraphs(section.entries)}</section>
-			{:else if section.kind === 'equipment'}
-				<!-- Titled like the folded sections, but open for good: what the
-				     fighter carries is in play. -->
-				<p class="divider">
-					<span class="rule"></span>
-					<span class="legend">Items</span>
-					<span class="rule"></span>
-				</p>
-				<section>{@render paragraphs(section.entries)}</section>
 			{:else}
 				{#if i > 0}<hr />{/if}
 				<section>{@render paragraphs(section.entries)}</section>
@@ -402,8 +404,7 @@
 		margin: calc(10 * var(--t)) 0;
 	}
 
-	summary,
-	.divider {
+	summary {
 		display: flex;
 		align-items: center;
 		gap: calc(8 * var(--t));
@@ -415,11 +416,6 @@
 		line-height: 1;
 		letter-spacing: 0.04em;
 		color: var(--card-green);
-	}
-
-	.divider {
-		margin: calc(10 * var(--t)) 0;
-		cursor: auto;
 	}
 
 	summary::-webkit-details-marker {

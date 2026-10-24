@@ -9,6 +9,7 @@
  */
 
 import { stateOf, type BattleState } from './battle';
+import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
 import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
@@ -180,6 +181,25 @@ export function singleUseOf(warband: Warband, faction: Faction): { instance: Fig
 		});
 		return pieces.length ? [{ instance, pieces }] : [];
 	});
+}
+
+/**
+ * The single-use pieces ticked off on the cards in the battle, as the
+ * aftermath's `used` starts them: by fighter, the place of each in its wargear.
+ * A piece its profile carries is not bought, and is not struck.
+ */
+export function usedInBattle(warband: Warband, faction: Faction, battle: BattleState | null): AftermathDraft['used'] {
+	return Object.fromEntries(
+		warband.fighters.flatMap((instance) => {
+			if (instance.away) return [];
+			const places: number[] = [];
+			for (const use of heldUses(stateOf(battle, instance.instanceId).used, carriedIds(instance, faction), faction)) {
+				const index = instance.wargear.findIndex((id, i) => id === use.wargear && !places.includes(i));
+				if (index >= 0) places.push(index);
+			}
+			return places.length ? [[instance.instanceId, places]] : [];
+		})
+	);
 }
 
 /** Marks a piece as used up or takes it back, and with it what its roll came to. */

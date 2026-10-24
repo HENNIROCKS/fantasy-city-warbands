@@ -27,6 +27,8 @@
 		onactivated,
 		onwaiting,
 		onmark,
+		onuse,
+		onunuse,
 		oncount,
 		onstart,
 		onnext,
@@ -62,6 +64,10 @@
 		onactivated?: (instanceId: string) => void;
 		onwaiting?: (instanceId: string) => void;
 		onmark?: (instanceId: string, key: string) => void;
+		/** Ticks off a fighter's single-use piece, on the weapon picked where it picks one; offered while a battle runs. */
+		onuse?: (instanceId: string, wargear: string, on?: string) => void;
+		/** Takes a fighter's use of a piece back, by its place among the fighter's uses. */
+		onunuse?: (instanceId: string, at: number) => void;
 		oncount?: (delta: number) => void;
 		onstart?: () => void;
 		onnext?: () => void;
@@ -151,7 +157,7 @@
 	const wavering = $derived(rules?.wavering ? isWavering(battle, roster, rules.wavering.wavers) : false);
 	const stage = $derived(counter && battle ? (reached(counter.stages, battle.counter).at(-1) ?? null) : null);
 
-	/** What the battle does to one fighter's card, and whether the wavering warband asks it for a test. */
+	/** What the battle does to one fighter's card – its single-use pieces used after the marks – and whether the wavering warband asks it for a test. */
 	function inBattle(card: FighterCardData) {
 		const state = stateOf(battle, card.instanceId);
 		const effects = battleEffects(state, rules?.marks ?? [], battle ? (counter?.stages ?? []) : [], { label: counter?.label ?? '', value: battle?.counter ?? 0 }, card.keywordIds);
@@ -160,7 +166,13 @@
 		const morale = rules?.wavering;
 		const due = morale && battle?.morale && !state.out && !state.activated && !state.waiting && !state.marks[morale.failed];
 		const wounded = rules?.wounded && isWounded(state, card.health.value, rules.wounded) ? [rules.wounded.label] : [];
-		return { state, ...effects, labels: [...wounded, ...effects.labels], test: due ? morale.test : null };
+		return {
+			state,
+			...effects,
+			labels: [...wounded, ...effects.labels, ...card.inUse.labels],
+			layers: [...effects.layers, ...card.inUse.layers],
+			test: due ? morale.test : null
+		};
 	}
 
 	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers. */
@@ -446,6 +458,8 @@
 			test={view.test}
 			photo={photos?.get(data.instanceId) ?? null}
 			edit={edit?.(data)}
+			onuse={battle && onuse ? (wargear, on) => onuse(data.instanceId, wargear, on) : undefined}
+			onunuse={(at) => onunuse?.(data.instanceId, at)}
 		/>
 	{/if}
 {/snippet}
