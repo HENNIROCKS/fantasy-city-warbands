@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
@@ -176,18 +176,24 @@
 		<h2 id="about-heading" class="text-lg font-semibold text-zinc-200">About</h2>
 
 		<section class="space-y-3">
-			<h3 class="text-base font-semibold text-zinc-200">
-				{APP_NAME}
-				{#if STAGE}
-					<span
-						class="ml-1 rounded border border-zinc-600 bg-zinc-800 px-2 py-0.5 align-middle text-xs font-semibold tracking-wider text-zinc-400 uppercase"
-						>{STAGE}</span
-					>
-				{/if}
-			</h3>
-			<p class="text-zinc-400">
-				{['by Hendrik Berends', `Version ${__APP_VERSION__}`, BUILD_DATE ? `Build ${BUILD_DATE}` : null].filter(Boolean).join(' · ')}
-			</p>
+			<!-- The home-screen icon beside the name; its file name changes with the icon. -->
+			<div class="flex items-center gap-3">
+				<img class="size-13 flex-none rounded-xl" src={asset('/web-app-manifest-192x192-v3.png')} alt="" width="52" height="52" />
+				<div class="space-y-0.5">
+					<h3 class="text-base font-semibold text-zinc-200">
+						{APP_NAME}
+						{#if STAGE}
+							<span
+								class="ml-1 rounded border border-zinc-600 bg-zinc-800 px-2 py-0.5 align-middle text-xs font-semibold tracking-wider text-zinc-400 uppercase"
+								>{STAGE}</span
+							>
+						{/if}
+					</h3>
+					<p class="text-zinc-400">
+						{['by Hendrik Berends', `Version ${__APP_VERSION__}`, BUILD_DATE ? `Build ${BUILD_DATE}` : null].filter(Boolean).join(' · ')}
+					</p>
+				</div>
+			</div>
 			<p>
 				Build a warband for a skirmish game set in a fantasy city, play its battles from a deck of
 				cards and carry it through a campaign.
