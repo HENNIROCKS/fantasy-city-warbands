@@ -102,6 +102,7 @@
 - [x] 🎨 A new app icon that reaches installed apps
 - [x] 🃏 Armour and items in a box under the weapons, what each does behind its name
 - [x] ⚔️ Wyrdcry: a single-use item ticked off on the card during the battle, its effect on the card and the aftermath asking from there
+- [x] 🎨 The app icon beside the app's name on the About page
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
