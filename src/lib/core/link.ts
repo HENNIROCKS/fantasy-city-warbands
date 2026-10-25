@@ -3,18 +3,28 @@
  * to keep it, so the link carries the warband itself: in the fragment, which a
  * browser never sends, packed small enough for a QR code.
  *
- * It is the export's envelope with what the opponent does not need left out –
- * the campaign's record, the player's own texts, the dates – so a link is not
- * a way to move a warband between devices; the file is.
+ * It is the export's warband with what the opponent does not need left out –
+ * the campaign's record, the player's own texts, the dates, the ids – so a
+ * link is not a way to move a warband between devices; the file is. Instead of
+ * the export's envelope, the fragment starts with the file version and a dot,
+ * which base64url never holds; a fragment without it is the whole envelope.
  */
 
-import { readWarbandFile, toFile, type Known, type ReadResult } from './transfer';
+import { readWarbandFile, toFile, VERSION, type Known, type ReadResult } from './transfer';
 import type { Warband } from './types';
 
+/** The warband a link carries: no ids, which, random, take more room than the rest packed. */
+type Shown = Omit<Warband, 'id' | 'fighters'> & { fighters: Omit<Warband['fighters'][number], 'instanceId'>[] };
+
 /** The warband as the opponent sees it: what its cards need, nothing to remember it by. */
-function shown(warband: Warband): Warband {
-	const { fluff: _fluff, notes: _notes, history: _history, finds: _finds, updatedAt: _updatedAt, ...rest } = warband;
-	return { ...rest, fighters: warband.fighters.map(({ fluff: _fluff, notes: _notes, ...fighter }) => fighter) };
+function shown(warband: Warband): Shown {
+	const { id: _id, fluff: _fluff, notes: _notes, history: _history, finds: _finds, updatedAt: _updatedAt, ...rest } = warband;
+	return { ...rest, fighters: warband.fighters.map(({ instanceId: _instanceId, fluff: _fluff, notes: _notes, ...fighter }) => fighter) };
+}
+
+/** Ids for the cards to tell apart, in the fighters' order; the page keeps nothing under them. */
+function withIds(warband: Shown): Warband {
+	return { ...warband, id: 'shown', fighters: warband.fighters.map((fighter, i) => ({ ...fighter, instanceId: `shown-${i}` })) };
 }
 
 async function pipe(bytes: Uint8Array<ArrayBuffer>, stream: CompressionStream | DecompressionStream): Promise<Uint8Array<ArrayBuffer>> {
@@ -35,15 +45,15 @@ function fromBase64Url(text: string): Uint8Array<ArrayBuffer> {
 
 /** The fragment that carries the warband, without its `#`. */
 export async function toFragment(warband: Warband): Promise<string> {
-	const json = JSON.stringify(toFile(shown(warband)));
-	return toBase64Url(await pipe(new TextEncoder().encode(json), new CompressionStream('deflate-raw')));
+	const json = JSON.stringify(shown(warband));
+	return `${VERSION}.` + toBase64Url(await pipe(new TextEncoder().encode(json), new CompressionStream('deflate-raw')));
 }
 
 const BROKEN: ReadResult = { ok: false, message: 'This link holds no warband. Ask for a new code.' };
 
 /** Reads a fragment back, with or without its `#`, as an import reads a file. */
 export async function fromFragment(fragment: string, known: Known): Promise<ReadResult> {
-	const text = fragment.replace(/^#/, '');
+	const [, version, text] = fragment.replace(/^#/, '').match(/^(?:(\d+)\.)?(.*)$/s)!;
 	if (!text) return BROKEN;
 	let json: string;
 	try {
@@ -52,5 +62,14 @@ export async function fromFragment(fragment: string, known: Known): Promise<Read
 		/* Cut short or mistyped: neither base64 nor the stream says which. */
 		return BROKEN;
 	}
-	return readWarbandFile(json, known);
+	if (version === undefined) return readWarbandFile(json, known);
+	let parsed: Shown;
+	try {
+		parsed = JSON.parse(json);
+	} catch {
+		return BROKEN;
+	}
+	if (typeof parsed !== 'object' || parsed === null || !Array.isArray(parsed.fighters)) return BROKEN;
+	const file = { ...toFile(withIds(parsed)), version: Number(version) };
+	return readWarbandFile(JSON.stringify(file), known);
 }
