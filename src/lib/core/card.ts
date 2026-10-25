@@ -38,6 +38,8 @@ export interface CardValue {
 	conditions?: CardCondition[];
 	/** Opened when the value is tapped. */
 	explanation?: CardExplanation;
+	/** A part of the same card the value stands for, which tapping it scrolls to. */
+	target?: 'stash';
 }
 
 /**
@@ -575,6 +577,8 @@ export interface WarbandCardData {
 	fluff: string;
 	/** What the battle running brings besides its fighters, such as the underdog's bonuses; the deck sets it while the battle lasts. */
 	reminders?: CardEntry[];
+	/** `35 gc, Sword, Lucky Charm`: the gold left, then the weapons and the rest in the stash; empty where there is neither. */
+	stash: string;
 	notes: string;
 	/** The battles fought, newest first, as the card lists them. */
 	battles: { id: string; date: string; opponent: string; result: string }[];
@@ -632,6 +636,18 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 
 	const values = game.campaign?.values?.(warband) ?? [];
 
+	/* As on the Warband Deck's card: the gold left, then the weapons ahead of the
+	   rest, each in the order the warband stores them; an id the faction does not
+	   know stands there as itself. */
+	const left = Math.max(0, purse(warband, game) - cost);
+	const pieces = (warband.stash ?? []).map((id) => faction.wargear.find((w) => w.id === id) ?? { name: id, kind: 'item' });
+	const weapon = (p: { kind: string }) => p.kind === 'melee' || p.kind === 'ranged';
+	const stash = [
+		...(left ? [`${left} ${game.currency}`] : []),
+		...pieces.filter(weapon).map((p) => p.name),
+		...pieces.filter((p) => !weapon(p)).map((p) => p.name)
+	].join(', ');
+
 	/* A name that is only the faction's is no name of the warband's own. */
 	const own = warband.name.trim();
 	const unnamed = !own || own === faction.name;
@@ -656,12 +672,15 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 				...values
 			],
 			[
-				/* As on the Warband Deck's card: what is left to spend, and what the warband is worth. */
-				{ key: 'left', label: game.costLabel, value: String(Math.max(0, purse(warband, game) - cost)) },
-				{ key: 'value', label: 'Value', value: String(cost) }
+				/* As on the Warband Deck's card: what is left to spend, what the warband
+				   is worth, and the way to the stash, which holds the gold as well. */
+				{ key: 'left', label: game.costLabel, value: String(left) },
+				{ key: 'value', label: 'Value', value: String(cost) },
+				...(stash ? [{ key: 'stash', label: 'Stash', value: 'View', target: 'stash' as const }] : [])
 			]
 		],
 		roster: unknown.length ? [...roster, { title: 'Other', entries: unknown }] : roster,
+		stash,
 		fluff: warband.fluff?.trim() ?? '',
 		notes: warband.notes?.trim() ?? '',
 		battles: newestFirst(warband.history ?? []).map((record) => ({

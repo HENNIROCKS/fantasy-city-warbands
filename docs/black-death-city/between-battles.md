@@ -13,6 +13,9 @@ ready to rewrite.
 add gold, throw away what lies in the stash, and add or strike battles. The
 playtest has no rule for selling yet.
 
+**The stash on the front.** The warband card lists the silver left and what
+lies in the stash. Tap **View** beside **Stash** to get there.
+
 Nothing on a back is saved until **Done**. **Cancel** drops it.
 
 [All Black Death City guides](README.md) · [Files and the roster](../files-and-roster.md)

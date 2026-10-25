@@ -105,6 +105,7 @@
 - [x] 🎨 The app icon beside the app's name on the About page
 - [x] 🎨 Steppers joined into one control – health, zeal and its stage inside under the cards, favour across the width in the builder – and a roomier finish step
 - [x] 🔗 Showing an opponent the warband's cards over a read-only link, as a QR code
+- [x] 🃏 The stash on the front of the warband card, reached from its figures, and on the roster PDF
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
