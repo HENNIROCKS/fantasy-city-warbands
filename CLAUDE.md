@@ -4,10 +4,11 @@ Eine SvelteKit-App, mit der man eine Bande für ein Skirmish-Spiel in einer
 Fantasy-Stadt baut und umbaut: Wyrdcry und Black Death City, Mordheim irgendwann.
 Was die App kann und wie sie deployt wird, steht in der `README.md`.
 
-Sie löst das Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`) auf Dauer
-ab: Wyrdcry soll hier den Stand des Decks erreichen, und die App wird so
+Sie löst das Wyrdcry Warband Deck (Archiv auf GitHub, `HENNIROCKS/wyrdcry-warband-deck`)
+auf Dauer ab: Wyrdcry soll hier den Stand des Decks erreichen, und die App wird so
 gebaut, dass sie alle Spiele trägt. Was dem Deck gegenüber noch fehlt, steht in
-der `ROADMAP.md`. Beim Übertragen einer Funktion zuerst den Code des Decks lesen.
+der `ROADMAP.md`. Beim Übertragen einer Funktion zuerst den Code des Decks lesen,
+nur lesend über `gh api repos/HENNIROCKS/wyrdcry-warband-deck/contents/<pfad>`.
 
 Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 `ROADMAP.md`: eine Zeile je Punkt, keine Unterpunkte, keine Begründungen, keine
@@ -97,7 +98,7 @@ anderen Spiele durch die geänderten Funktionen, je eine Bande auf jeder
 geänderten Seite.
 
 **Wyrdcry** wird hier gepflegt. Der Bestand stammt aus dem handgepflegten
-Regelbestand des Warband Decks (`~/Sites/wyrdcry-warband-deck/src/lib/rules/`),
+Regelbestand des Warband Decks (`src/lib/rules/` im Archiv),
 dessen Daten eingefroren sind; sein Repo ist seit 12.10.2026 ein öffentliches
 Archiv, nur lesend. Eine Korrektur gehört hierher, nicht ins Deck.
 Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
@@ -144,7 +145,7 @@ im hellen Modus dunkel. Für eine neue Zink-Klasse, auch als `hover:` oder
 `focus-visible:`, die Übersetzung mitliefern – oder die Theme-Variablen
 (`--ui-*`) nutzen.
 
-Die Karten folgen dem Wyrdcry Warband Deck (`~/Sites/wyrdcry-warband-deck`):
+Die Karten folgen dem Wyrdcry Warband Deck (Archiv auf GitHub):
 Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, WarbandBack,
 BattleBar, MenuButton, ValueTable, WeaponTable, Explanation, RenownSheet,
 LevelPicker – im Deck TalentPicker –, fit-text) sind dort übernommen und
