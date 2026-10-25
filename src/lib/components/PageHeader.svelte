@@ -5,7 +5,8 @@
 		title,
 		badge,
 		back,
-		onback
+		onback,
+		menu = true
 	}: {
 		title: string;
 		/** A word beside the title, such as the app's stage. It stays whole while the title truncates. */
@@ -13,6 +14,8 @@
 		back?: string;
 		/** Runs before the back link is followed, and may take its place, such as by going back in the history. */
 		onback?: (event: MouseEvent) => void;
+		/** Whether the app's own links stand at the right; a page shown outside the app has none. */
+		menu?: boolean;
 	} = $props();
 </script>
 
@@ -36,5 +39,5 @@
 			>
 		{/if}
 	</div>
-	<HeaderMenu />
+	{#if menu}<HeaderMenu />{/if}
 </header>
