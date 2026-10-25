@@ -34,6 +34,11 @@
 	}
 	read();
 
+	/* Opened from a scanned code, the page is in the browser rather than the
+	   installed app – on iOS always – and the browser keeps other warbands than
+	   the app does. There it leads nowhere, and says why. */
+	const installed = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
+
 	const system = $derived(warband ? systems[warband.game] : null);
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	const title = $derived(warband?.name.trim() || faction?.name || 'Warband');
@@ -52,7 +57,10 @@
 <svelte:window onhashchange={read} />
 
 <div class="flex h-dvh flex-col">
-	<PageHeader {title} badge="Read only" back={resolve('/')} />
+	<PageHeader {title} badge="Read only" back={installed ? resolve('/') : undefined} menu={installed} />
+	{#if !installed}
+		<p class="px-5 pt-2.5 text-sm text-zinc-400">Opened in the browser – warbands kept in the installed app are not here.</p>
+	{/if}
 
 	{#if message}
 		<p class="p-5 text-sm text-zinc-400">{message}</p>

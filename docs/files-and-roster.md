@@ -20,7 +20,9 @@ print or to share.
 opponent…**. Your opponent scans the code with their phone's camera and sees
 your cards, read only. The code holds the warband as it is now, without
 photos, notes, background or past battles, and nothing is saved on their
-phone. **Share link** sends the same as a link.
+phone. It may open in their browser rather than their app; then they switch
+to the app to get back to their own warbands. **Share link** sends the same as
+a link.
 
 **Home screen.** Add the app to your home screen. Safari can delete a site's
 data after seven days without a visit, but mostly keeps it for an installed
