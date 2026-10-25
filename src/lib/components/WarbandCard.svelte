@@ -7,7 +7,7 @@
 	/*
 	 * The warband itself as the first card of the deck, as the Warband Deck lays
 	 * it out: the name in a banderole, the fluff, two boxes of figures with the
-	 * roster across them, then the notes.
+	 * roster across them, then the stash and the notes.
 	 */
 	let {
 		card,
@@ -23,9 +23,17 @@
 	/* The torn banner shape of the Card Creator's text card. Inlined as a data URL
 	   because a mask cannot point at a Svelte import. */
 	const mask = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(bannerMask)}")`;
+
+	let article: HTMLElement | undefined = $state();
+
+	/* Within this card only: the deck draws the card beneath as well. */
+	function jump(target: string) {
+		const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		article?.querySelector(`[data-anchor="${target}"]`)?.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
+	}
 </script>
 
-<article class="card">
+<article class="card" bind:this={article}>
 	<div class="image-section">
 		<div class="banderole">
 			<div class="banderole-bg" style="mask-image: {mask}; -webkit-mask-image: {mask};"></div>
@@ -46,7 +54,14 @@
 				<dl class="stats">
 					{#each rows as row (row.key)}
 						<dt>{row.label}</dt>
-						<dd use:fitText><span data-fit>{row.value}</span></dd>
+						<dd use:fitText>
+							{#if row.target}
+								{@const target = row.target}
+								<button class="jump" onclick={() => jump(target)}><span data-fit>{row.value}</span></button>
+							{:else}
+								<span data-fit>{row.value}</span>
+							{/if}
+						</dd>
 					{/each}
 				</dl>
 			{/each}
@@ -69,6 +84,10 @@
 
 		{#if card.reminders?.length}
 			<section class="reminders">{@render paragraphs(card.reminders)}</section>
+		{/if}
+
+		{#if card.stash}
+			<section class="stash" data-anchor="stash"><p class="entry"><strong>Stash</strong>: {card.stash}</p></section>
 		{/if}
 
 		{#if card.notes}
@@ -259,6 +278,19 @@
 		text-overflow: ellipsis;
 	}
 
+	/* A value that leads to a part of the card further down, set as a link. */
+	.jump {
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		font: inherit;
+		color: var(--card-link);
+		text-align: left;
+	}
+
 	/* The groups one under the other, each across the full width in two
 	   columns, as far apart as the box is padded. */
 	.roster {
@@ -345,8 +377,9 @@
 	}
 
 	/* The boxes' light wash sets the notes off from the paper, so they need no
-	   rule of their own; what the battle brings is set as they are. */
+	   rule of their own; what the battle brings and the stash are set as they are. */
 	.reminders,
+	.stash,
 	.notes {
 		padding: calc(14 * var(--u)) calc(16 * var(--u));
 		border-radius: calc(7.5 * var(--u));

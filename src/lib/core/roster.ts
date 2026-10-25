@@ -49,6 +49,8 @@ export interface Roster {
 	subtitle: string;
 	/** The warband card's figures, each a heading and its value, and the battles won, drawn and lost where the game keeps a campaign. */
 	figures: { label: string; value: string }[];
+	/** The warband card's stash, the gold left first; empty where there is neither. */
+	stash: string;
 	statLabels: string[];
 	weaponLabels: string[];
 	/** The headings over the fighters' campaign counters, none where the game keeps no campaign. */
@@ -145,9 +147,13 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		name: card.unnamed ? faction.name : card.name,
 		subtitle: card.subtitle,
 		figures: [
-			...card.tables.flat().map((v) => ({ label: v.label, value: v.value })),
+			...card.tables
+				.flat()
+				.filter((v) => !v.target)
+				.map((v) => ({ label: v.label, value: v.value })),
 			...(game.campaign ? [{ label: 'Won / Drawn / Lost', value: card.results.join(' / ') }] : [])
 		],
+		stash: card.stash,
 		statLabels: game.roster.stats,
 		weaponLabels: game.roster.weapons,
 		/* One heading per counter the card carries; where the game names no short

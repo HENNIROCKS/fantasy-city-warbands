@@ -14,7 +14,7 @@ you have. It asks before an older file replaces a newer one.
 **Not in the file:** photos and a battle still running.
 
 **The roster.** The page icon beside a warband makes a PDF of its roster, to
-print or to share.
+print or to share. Under the warband's figures it lists the stash.
 
 **Show your opponent.** Under the warband card, tap **Battle**, then **Show to
 opponent…**. Your opponent scans the code with their phone's camera and sees

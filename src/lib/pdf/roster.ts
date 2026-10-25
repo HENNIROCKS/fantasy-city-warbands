@@ -82,7 +82,11 @@ function warbandTable(roster: Roster): Content {
 			widths: ['*', ...roster.figures.map(() => 'auto')],
 			body: [
 				[th('Warband / Game & Faction'), ...roster.figures.map((f) => th(figure(f.label)))],
-				[nameCell(roster.name, roster.subtitle), ...roster.figures.map((f) => figure(f.value))]
+				[nameCell(roster.name, roster.subtitle), ...roster.figures.map((f) => figure(f.value))],
+				/* As on the Warband Deck's sheet: the stash on a line of its own, across the table. */
+				...(roster.stash
+					? [[{ text: [{ text: 'Stash: ', bold: true }, roster.stash], colSpan: roster.figures.length + 1 }, ...roster.figures.map(() => '')]]
+					: [])
 			]
 		},
 		layout: ruled(),

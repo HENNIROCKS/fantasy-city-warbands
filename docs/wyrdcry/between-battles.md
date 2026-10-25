@@ -23,6 +23,9 @@ in the same visit.
 set the favour, add gold, sell or throw away what lies in the stash, and add or
 strike battles.
 
+**The stash on the front.** The warband card lists the gold left and what lies
+in the stash. Tap **View** beside **Stash** to get there.
+
 Nothing on a back is saved until **Done**. **Cancel** drops it.
 
 **No hero left.** If your leader is gone and no hero can take over, the
