@@ -41,6 +41,6 @@ Where one would go too far, the button says why in place of its icon.
 - **−** and **+** take a point of health off a fighter, or give it back.
 - **State** marks a fighter, such as activated.
 - **Battle**, under the warband card, starts the battle, moves to the next
-  round and ends it.
+  round and ends it, and shows your opponent the warband.
 
 [All guides](README.md)

@@ -24,6 +24,7 @@
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
+	import { toFragment } from '$lib/core/link';
 	import { today } from '$lib/core/history';
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
@@ -33,6 +34,7 @@
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
+	import { shareLink } from '$lib/share';
 	import { systems, upgraded } from '$lib/systems';
 
 	/*
@@ -741,6 +743,40 @@
 		if (next !== battle) setBattle(next);
 	}
 
+	/* The code an opponent scans to see the warband's cards, with the link it
+	   holds; `copied` and `failed` say what handing the link on came to. Without
+	   a code – a browser that cannot pack the warband, a link too long for one –
+	   the sheet says so in its place. */
+	let showing = $state<{ url: string; svg: string; result: 'copied' | 'failed' | null } | { error: string } | null>(null);
+
+	async function openShow() {
+		if (!warband) return;
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+		try {
+			const url = location.origin + resolve('/view') + '#' + (await toFragment($state.snapshot(warband) as Warband));
+			/* Loaded on the first code, so the cards do not carry it. */
+			const QRCode = await import('qrcode');
+			const svg = await QRCode.toString(url, { type: 'svg', errorCorrectionLevel: 'L', margin: 4 });
+			showing = { url, svg, result: null };
+		} catch (error) {
+			showing = { error: `This browser could not make the code: ${error instanceof Error ? error.message : error}` };
+		}
+	}
+
+	async function shareShown() {
+		if (!showing || 'error' in showing) return;
+		const result = await shareLink(showing.url);
+		if (showing && !('error' in showing)) showing.result = result === 'copied' || result === 'failed' ? result : null;
+	}
+
+	async function closeShow() {
+		showing = null;
+		await tick();
+		opener?.focus();
+	}
+
 	function focusOnMount(node: HTMLElement) {
 		node.focus();
 	}
@@ -783,10 +819,11 @@
 		else if (hiringOpen) closeHiring();
 		else if (asking) keepPlaying();
 		else if (spending) spending = false;
+		else if (showing) closeShow();
 	}}
 />
 
-<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || hiringOpen || aftermath !== null || (spending && levels.length > 0)}>
+<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || hiringOpen || aftermath !== null || (spending && levels.length > 0) || showing !== null}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -828,6 +865,7 @@
 				onunderdog={system.game.underdog && settingUp(battle) ? openUnderdog : undefined}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
 				hireLabel={hiring?.label ?? ''}
+				onshow={openShow}
 				editing={editingId !== null}
 				doneDisabled={backBlocked}
 				onedit={edit}
@@ -994,6 +1032,35 @@
 			</div>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeHiring} use:focusOnMount>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if showing}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="show-title">
+			<h2 id="show-title">Show to opponent</h2>
+			<p class="count">{title} as it is now – without photos, notes, background or past battles</p>
+			{#if 'error' in showing}
+				<p class="notice">{showing.error}</p>
+			{:else}
+				<!-- White in either theme, as a camera reads a code: dark on light. -->
+				<div class="mx-auto w-full max-w-80 bg-white [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" role="img" aria-label="QR code">
+					{@html showing.svg}
+				</div>
+				{#if showing.result === 'copied'}
+					<p class="mt-3 text-zinc-400">Link copied.</p>
+				{:else if showing.result === 'failed'}
+					<label class="field-label mt-3" for="show-link">Copy the link</label>
+					<input id="show-link" class="field-input" readonly value={showing.url} onfocus={(e) => e.currentTarget.select()} />
+				{/if}
+			{/if}
+			<div class="sheet-actions">
+				{#if !('error' in showing)}
+					<button type="button" class="btn" onclick={shareShown}>Share link</button>
+				{/if}
+				<button type="button" class="btn" onclick={closeShow} use:focusOnMount>Done</button>
 			</div>
 		</div>
 	</div>

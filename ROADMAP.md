@@ -104,6 +104,7 @@
 - [x] ⚔️ Wyrdcry: a single-use item ticked off on the card during the battle, its effect on the card and the aftermath asking from there
 - [x] 🎨 The app icon beside the app's name on the About page
 - [x] 🎨 Steppers joined into one control – health, zeal and its stage inside under the cards, favour across the width in the builder – and a roomier finish step
+- [x] 🔗 Showing an opponent the warband's cards over a read-only link, as a QR code
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
@@ -119,7 +120,6 @@
 Nothing promised, nothing planned.
 
 - 📱 NFC tags under the model bases, so holding the phone to a model opens its card
-- 🔗 Showing an opponent the warband over a read-only link, as a QR code
 - 🃏 Faction rules on the warband card as well, not only on every fighter card
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark

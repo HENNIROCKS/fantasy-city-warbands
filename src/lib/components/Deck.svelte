@@ -42,6 +42,8 @@
 		onunderdog,
 		onhire,
 		hireLabel = '',
+		onshow,
+		readonly = false,
 		editing = false,
 		doneDisabled = false,
 		closed = null,
@@ -89,6 +91,10 @@
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
 		hireLabel?: string;
+		/** Opens the code that shows the opponent the warband, while no battle runs. */
+		onshow?: () => void;
+		/** Cards only to look at, as an opponent sees them: no battle bar, nothing to turn over. */
+		readonly?: boolean;
 		/** Whether the card on top is turned over to its back, to be written on. */
 		editing?: boolean;
 		/** Holds that button back while what the turned card holds would break the warband's limits. */
@@ -408,43 +414,47 @@
 		{/if}
 	</div>
 
-	<BattleBar
-		{battle}
-		fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
-		health={topFighter?.health.value ?? 0}
-		{healthLabel}
-		waiting={rules?.waiting ?? false}
-		marks={topMarks}
-		rounds={rules?.rounds}
-		{counter}
-		stage={stage?.label ?? null}
-		{wavering}
-		{toAct}
-		{out}
-		onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
-		onactivated={() => topFighter && onactivated?.(topFighter.instanceId)}
-		onwaiting={() => topFighter && onwaiting?.(topFighter.instanceId)}
-		onmark={(key) => topFighter && onmark?.(topFighter.instanceId, key)}
-		{oncount}
-		{onstart}
-		{onnext}
-		{onundo}
-		onend={() => onend?.(out)}
-		oncancelbattle={oncancelbattle && (() => oncancelbattle(out))}
-		{levelsOpen}
-		{levelLabel}
-		{onlevels}
-		{editing}
-		{doneDisabled}
-		{closed}
-		editable={!topFighter?.hired}
-		onedit={() => onedit?.(cards[current].instanceId)}
-		{onunderdog}
-		{onhire}
-		{hireLabel}
-		{ondone}
-		{oncancel}
-	/>
+	<!-- An opponent's view of the cards has nothing to count and nothing to turn over. -->
+	{#if !readonly}
+		<BattleBar
+			{battle}
+			fighter={topFighter ? stateOf(battle, topFighter.instanceId) : null}
+			health={topFighter?.health.value ?? 0}
+			{healthLabel}
+			waiting={rules?.waiting ?? false}
+			marks={topMarks}
+			rounds={rules?.rounds}
+			{counter}
+			stage={stage?.label ?? null}
+			{wavering}
+			{toAct}
+			{out}
+			onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
+			onactivated={() => topFighter && onactivated?.(topFighter.instanceId)}
+			onwaiting={() => topFighter && onwaiting?.(topFighter.instanceId)}
+			onmark={(key) => topFighter && onmark?.(topFighter.instanceId, key)}
+			{oncount}
+			{onstart}
+			{onnext}
+			{onundo}
+			onend={() => onend?.(out)}
+			oncancelbattle={oncancelbattle && (() => oncancelbattle(out))}
+			{levelsOpen}
+			{levelLabel}
+			{onlevels}
+			{editing}
+			{doneDisabled}
+			{closed}
+			editable={!topFighter?.hired}
+			onedit={() => onedit?.(cards[current].instanceId)}
+			{onunderdog}
+			{onhire}
+			{hireLabel}
+			{onshow}
+			{ondone}
+			{oncancel}
+		/>
+	{/if}
 </div>
 
 {#snippet front(data: DeckCard)}

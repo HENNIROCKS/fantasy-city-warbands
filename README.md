@@ -97,6 +97,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   the Warband Deck's and the Warband Builder's files – see
   [Files and the roster](docs/files-and-roster.md) and
   [From the Warband Deck or the Builder](docs/wyrdcry/from-the-deck.md)
+- Show an opponent the warband's cards, read only, through a QR code or a
+  link that carries the warband itself – see
+  [Files and the roster](docs/files-and-roster.md)
 - Get a warband's roster as a PDF, laid out as the Wyrdcry Warband Deck's
 - Delete a warband after a question that says what is lost and offers the
   export first

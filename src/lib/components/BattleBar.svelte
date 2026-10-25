@@ -38,6 +38,7 @@
 		onunderdog,
 		onhire,
 		hireLabel = '',
+		onshow,
 		editing = false,
 		editable = true,
 		doneDisabled = false,
@@ -92,6 +93,8 @@
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
 		hireLabel?: string;
+		/** Opens the code that shows the opponent the warband; given while no battle runs. */
+		onshow?: () => void;
 		/** Whether the card on top is turned over to be written on. */
 		editing?: boolean;
 		/** Whether the card on top has a back to write on; a hired fighter's has none. */
@@ -259,9 +262,12 @@
 					{#if onhire && !closed}
 						<button onclick={() => onhire?.()}>{hireLabel}…</button>
 					{/if}
+					{#if onshow && !battle && !closed}
+						<button onclick={() => onshow?.()}>Show to opponent…</button>
+					{/if}
 					{#if levelsOpen > 0}
 						{#if battle || !closed}<hr />{/if}
-						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
+						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})…</button>
 					{/if}
 					{#if battle}
 						<hr />

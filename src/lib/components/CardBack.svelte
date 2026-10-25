@@ -403,7 +403,7 @@
 						</ul>
 					{/if}
 					{#if renown?.next}
-						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})</button>
+						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})…</button>
 					{/if}
 				</section>
 			{/if}
