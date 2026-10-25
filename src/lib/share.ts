@@ -1,6 +1,7 @@
 /**
- * Hands a file to the person: the system share sheet – where "Save to Files",
- * Drive, AirDrop and Mail live – or, where there is none (desktop), a download.
+ * Hands a file or a link to the person: the system share sheet – where "Save
+ * to Files", Drive, AirDrop and Mail live – or, where there is none (desktop),
+ * a download or the clipboard.
  */
 
 export type ShareResult = 'shared' | 'downloaded' | 'cancelled';
@@ -34,6 +35,29 @@ export async function shareFile(file: File): Promise<ShareResult> {
 	anchor.remove();
 	setTimeout(() => URL.revokeObjectURL(url), 10_000);
 	return 'downloaded';
+}
+
+export type LinkResult = 'shared' | 'copied' | 'cancelled' | 'failed';
+
+/**
+ * Hands a link on: the share sheet under a finger, the clipboard elsewhere.
+ * 'failed' leaves it to the page to show the link to be copied by hand.
+ */
+export async function shareLink(url: string): Promise<LinkResult> {
+	if (matchMedia('(pointer: coarse)').matches && navigator.share) {
+		try {
+			await navigator.share({ url });
+			return 'shared';
+		} catch (error) {
+			if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
+		}
+	}
+	try {
+		await navigator.clipboard.writeText(url);
+		return 'copied';
+	} catch {
+		return 'failed';
+	}
 }
 
 /** A name with what a file system refuses replaced. */

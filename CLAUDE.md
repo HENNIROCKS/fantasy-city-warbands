@@ -163,6 +163,10 @@ der Schalter der Settings im App-Stil, global in `@layer components` – nicht f
 Karten.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
+Ein beschrifteter Eintrag oder Button, der erst ein Sheet der App öffnet oder
+nachfragt, endet auf „…“, auch hinter einer Zahl in Klammern; einer, der sofort
+handelt oder nur die Dateiauswahl des Systems öffnet („Import warband“), nicht.
+Reine Icon-Buttons wie Edit und Delete tragen kein „…“.
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
 genau ausgelegt, eine Änderung an ihr wird gemessen.
 

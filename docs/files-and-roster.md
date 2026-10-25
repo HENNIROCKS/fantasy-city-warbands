@@ -16,6 +16,12 @@ you have. It asks before an older file replaces a newer one.
 **The roster.** The page icon beside a warband makes a PDF of its roster, to
 print or to share.
 
+**Show your opponent.** Under the warband card, tap **Battle**, then **Show to
+opponent…**. Your opponent scans the code with their phone's camera and sees
+your cards, read only. The code holds the warband as it is now, without
+photos, notes, background or past battles, and nothing is saved on their
+phone. **Share link** sends the same as a link.
+
 **Home screen.** Add the app to your home screen. Safari can delete a site's
 data after seven days without a visit, but mostly keeps it for an installed
 app. In Settings, under About, *How do I install the app?* says how.
