@@ -17,7 +17,9 @@ a file, imports it again and prints its roster as a PDF, all in a first
 version. In Wyrdcry, ending a battle brings renown, favour and income, rolls
 injuries and loot and adds it to the warband's history, and renown is spent on a
 characteristic and a heroic talent. It imports the Warband Deck's and the
-Warband Builder's files. It does not yet know Black Death City's campaign.
+Warband Builder's files. In Black Death City it asks for each recruit's
+starting experience roll and counts the warband rating; it does not yet know
+that game's campaign.
 
 ## What it does
 

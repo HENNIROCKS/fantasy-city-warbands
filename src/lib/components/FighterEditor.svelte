@@ -77,8 +77,13 @@
 
 	const fighter = $derived(faction.fighters.find((f) => f.id === instance.fighterId));
 	const label = $derived(fighterName(instance, faction));
-	/* An open choice says so under its own options. */
-	const listed = $derived(issues.filter((i) => i.code !== 'fighter-choice' || i.kind === 'excess'));
+	/* An open choice or roll says so under its own buttons. */
+	const listed = $derived(issues.filter((i) => (i.code !== 'fighter-choice' && i.code !== 'start-roll') || i.kind === 'excess'));
+	/* A counter that starts from a roll at the table, as Black Death City's experience: asked
+	   while the fighter can still be taken back whole, and after that only while it is open. */
+	const start = $derived(fighter ? (game.campaign?.start?.(fighter, faction) ?? null) : null);
+	const started = $derived(start ? instance.tally?.[start.key] : undefined);
+	const startOpen = $derived(!!start && started === undefined);
 	const profile = $derived(fighter ? profileOf(instance, fighter, effects) : undefined);
 
 	function nameOf(id: string): string {
@@ -231,6 +236,10 @@
 		document.getElementById(optionId(id))?.focus();
 	}
 
+	function rolled(n: number) {
+		if (start) instance.tally = { ...instance.tally, [start.key]: start.base + n };
+	}
+
 	const optionId = (id: string) => `pick-${instance.instanceId}-${id}`;
 
 	function focusOnMount(node: HTMLElement, on = true) {
@@ -377,6 +386,30 @@
 				</div>
 				{#if picks.length < choice.pick}
 					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {choice.pick} to carry on.</p>
+				{/if}
+			</section>
+		{/if}
+
+		{#if start && (paid === null || startOpen)}
+			{@const label = game.campaign?.fighter.find((c) => c.key === start.key)?.label.toLowerCase() ?? start.key}
+			<section>
+				<p class="sublabel" id="start-{instance.instanceId}">
+					Starting {label} · {start.base ? `${start.base}+` : ''}d{start.die}{#if started !== undefined}{` = ${started}`}{/if}
+				</p>
+				<p class="mb-2 text-zinc-400">The d{start.die} rolled when it was recruited.</p>
+				<div class="grid grid-cols-6 gap-2" role="group" aria-labelledby="start-{instance.instanceId}">
+					{#each Array.from({ length: start.die }, (_, i) => i + 1) as n (n)}
+						<button
+							type="button"
+							class="choice text-center font-semibold"
+							aria-pressed={started === start.base + n}
+							disabled={closed}
+							onclick={() => rolled(n)}>{n}</button
+						>
+					{/each}
+				</div>
+				{#if startOpen}
+					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Enter the roll to carry on.</p>
 				{/if}
 			</section>
 		{/if}

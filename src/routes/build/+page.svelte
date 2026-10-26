@@ -703,7 +703,8 @@
 
 		<!-- The warband's campaign counters, such as Wyrdcry's favour, for what the
 		     aftermath did not count, as the Warband Deck has it in its finish step;
-		     under them what the warband card works out from them. -->
+		     under them what the warband card works out from them, on their own where
+		     the game keeps no counter for the warband, as Black Death City's rating. -->
 		{#if system.game.campaign}
 			{@const campaign = system.game.campaign}
 			{@const own = new Set(campaign.warband.map((c) => c.key))}
@@ -732,6 +733,13 @@
 						<p class="mt-2 text-zinc-400">{derived.map((v) => `${v.label} ${v.value}`).join(' · ')}</p>
 					{/if}
 				</section>
+			{:else}
+				{#each derived as value (value.key)}
+					<section>
+						<p class="field-label">{value.label}</p>
+						<p>{value.value}</p>
+					</section>
+				{/each}
 			{/each}
 		{/if}
 
