@@ -243,6 +243,7 @@
     "text": "After making an exploration roll in the aftermath sequence, if the bearer is in the search party, you may add or subtract 1 from one dice result.",
     "effects": [],
     "cost": 20,
-    "rarity": "rare"
+    "rarity": "rare",
+    "explore": { "adjust": 1 }
   }
 ]

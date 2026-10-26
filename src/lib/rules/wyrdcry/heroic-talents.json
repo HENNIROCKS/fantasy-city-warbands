@@ -193,7 +193,8 @@
     "name": "Scout",
     "specialization": "perception",
     "type": "trait",
-    "text": "After making an exploration roll in the aftermath sequence, if the bearer is in the search party, you may resolve two encounters instead of one, even if one of the encounters is a mishap."
+    "text": "After making an exploration roll in the aftermath sequence, if the bearer is in the search party, you may resolve two encounters instead of one, even if one of the encounters is a mishap.",
+    "explore": { "encounters": 2 }
   },
   {
     "id": "surgical-precision",

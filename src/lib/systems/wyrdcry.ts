@@ -17,6 +17,8 @@ import curatedConditions from '$lib/rules/wyrdcry/conditions.json';
 import heroInjuries from '$lib/rules/wyrdcry/injuries-hero.json';
 import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
 import underdogs from '$lib/rules/wyrdcry/underdogs.json';
+import magicItems from '$lib/rules/wyrdcry/magic-items.json';
+import loot from '$lib/rules/wyrdcry/loot.json';
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -26,6 +28,7 @@ export const game: GameSystem = {
 	currency: 'gc',
 	currencyName: 'gold coins',
 	budget: 1000,
+	uniqueName: 'magic item',
 	stats: [
 		{ key: 'move', label: 'Move', format: 'inches' },
 		{ key: 'fight', label: 'Fight', format: 'plain' },
@@ -119,6 +122,8 @@ export const game: GameSystem = {
 		afterUse: [
 			{ wargear: 'item:crimson-shade', label: 'Crimson Shade roll', hit: '1–2 – Sticky Fingers', miss: '3–6 – nothing', injury: 'kleptomania' }
 		],
+		/* Magic items (Campaign Book, p. 25): a bearer taken out of action loses it on a 4+. */
+		theft: { target: 4 },
 		income
 	},
 	advancement,
@@ -210,12 +215,22 @@ export const game: GameSystem = {
 
 type FavourTier = (typeof campaign.favour_tiers)[number];
 
-/** The warband's favour, the standing it buys, and its reputation: every fighter's renown and the favour, as the builder counts it. */
+/**
+ * The warband's favour, the standing it buys, and its reputation: every
+ * fighter's renown and the favour, as the builder counts it, and 5 for each
+ * magic item in its possession, borne or in the stash (Campaign Book, p. 25),
+ * which the builder does not know.
+ */
 function figures(warband: Warband) {
 	const favour = warband.tally?.favour ?? 0;
-	const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour);
+	const held = [...warband.fighters.filter((f) => f.away !== 'dead').flatMap((f) => f.wargear), ...(warband.stash ?? [])];
+	const magic = held.filter((id) => catalogue.get(id)?.unique).length;
+	const reputation = warband.fighters.reduce((sum, f) => sum + (f.tally?.renown ?? 0), favour) + MAGIC_REPUTATION * magic;
 	return { favour, standing: tierFor(favour).label, reputation };
 }
+
+/** What each magic item adds to the reputation. */
+const MAGIC_REPUTATION = 5;
 
 /**
  * The standing a favour score is in, off the Campaign Book's four tiers (p. 10).
@@ -633,6 +648,56 @@ const catalogue = new Map<string, Wargear>([
 ]);
 
 /*
+ * What is only ever found (Campaign Book, pp. 24–26): the magic items, one of
+ * each in the campaign, and the loot that is not a piece of the Trading Post.
+ * Neither is bought, so neither adds to what the warband is worth. A magic
+ * item that counts as another piece takes its profile – the Sceptre's club
+ * master-wrought, 1 more hit and critical damage – and its own text.
+ */
+for (const m of magicItems) {
+	const base = 'counts_as' in m && m.counts_as ? catalogue.get(m.counts_as) : undefined;
+	if (import.meta.env.DEV && 'counts_as' in m && !base) console.warn(`magic item "${m.id}" counts as a piece the data does not have`);
+	const profile =
+		base?.profile && 'master_wrought' in m
+			? { ...base.profile, damage: base.profile.damage.replace(/(\d+)\/(\d+)/, (_, hit, crit) => `${+hit + 1}/${+crit + 1}`) }
+			: base?.profile;
+	catalogue.set(`magic:${m.id}`, {
+		id: `magic:${m.id}`,
+		name: m.name,
+		kind: base?.kind ?? 'item',
+		cost: 0,
+		text: m.text,
+		...(profile ? { profile } : {}),
+		/* A weapon's text is read from its rules, as its name on the card is tapped. */
+		...(profile ? { rules: [...(base?.rules ?? []), { name: m.name, text: m.text }] } : {}),
+		unique: true,
+		foundOnly: true
+	});
+}
+for (const p of loot.pieces) {
+	catalogue.set(`loot:${p.id}`, {
+		id: `loot:${p.id}`,
+		name: p.name,
+		kind: 'item',
+		cost: 0,
+		text: p.text,
+		foundOnly: true,
+		...('sale' in p ? { sale: p.sale } : {})
+	});
+}
+/** The magic items a fighter with these keywords may bear: any, except one it is barred from, as the Phylactery is from VAMPIRES. */
+const magicFor = (keywords: string[]) =>
+	magicItems.filter((m) => !('not_for' in m && m.not_for?.some((k) => keywords.includes(k)))).map((m) => `magic:${m.id}`);
+
+/* A piece from the loot tables, such as the pistol, comes into the stash of a
+   faction that does not sell it too, to be sold from there. */
+const findable = [
+	...magicItems.map((m) => `magic:${m.id}`),
+	...loot.pieces.map((p) => `loot:${p.id}`),
+	...loot.tables.flatMap((t) => t.rows.flatMap((r) => r.gain.flatMap((g) => ('wargear' in g && g.wargear ? [g.wargear] : []))))
+];
+
+/*
  * What a fighter may carry, as the Warband Deck's `build/equipment.ts` has it:
  * two melee slots, one ranged, a shield in a melee slot, a two-handed weapon in
  * both, a BRACE pair in one. The same melee weapon may be taken twice – that is
@@ -861,17 +926,18 @@ function build(
 			...fluffOf(f.description),
 			/* Offered whether the fighter may take it or not: a player looking for a
 			   Handgun needs to read that it is for HEROes, not to find it missing. */
-			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost])],
+			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost, ...magicFor(f.keywords)])],
 			unequipped: takesNothing(f),
 			gear: f.gear,
 			choice: choiceOf(f.choose, rules, ability)
 		})),
-		/* What a fighter carries from the start, or gets from a table row, has to
-		   resolve as well as what it can buy. */
+		/* What a fighter carries from the start, gets from a table row or finds
+		   has to resolve as well as what it can buy. */
 		wargear: [
 			...new Set([
 				...equipment.map((e) => e.id),
 				...tradingPost,
+				...findable,
 				...fighters.flatMap((f) => f.gear),
 				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
 			])

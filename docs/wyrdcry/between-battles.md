@@ -23,6 +23,11 @@ in the same visit.
 set the favour, add gold, sell or throw away what lies in the stash, and add or
 strike battles.
 
+**Magic items.** Took one from your opponent? Tap **Add a magic item…** on the
+back of the warband card. It goes to the stash. Give it to a fighter on the
+back of that fighter's card. A fighter bears one at most, and a magic item
+cannot be sold. Each one adds 5 to your reputation.
+
 **The stash on the front.** The warband card lists the gold left and what lies
 in the stash. Tap **View** beside **Stash** to get there.
 
