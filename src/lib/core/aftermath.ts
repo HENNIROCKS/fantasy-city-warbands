@@ -12,7 +12,7 @@
 import { stateOf, type BattleState } from './battle';
 import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
-import { encountersOf, findsOf, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type Finds } from './explore';
+import { encountersOf, findsOf, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type FighterFind, type Finds } from './explore';
 import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
@@ -162,19 +162,56 @@ export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: s
 	for (const modifier of rules.modifiers) if (row && modifier.start === 'not-out') row.answers[modifier.key] = !out;
 }
 
+/**
+ * Which roll on the injury table is meant: the battle's, answered under the
+ * fighter's instance id for one taken out of action, or one an encounter of
+ * the search party asks, answered under `exploreKey`, with the results the
+ * encounter reads as others – Captured as Dead – in `treat`.
+ */
+export interface InjuryAt {
+	key: string;
+	treat: Record<string, string>;
+	battle: boolean;
+}
+
+export const battleAt = (instance: FighterInstance): InjuryAt => ({ key: instance.instanceId, treat: {}, battle: true });
+export const exploreKey = (instanceId: string) => `explore:${instanceId}`;
+
+/** The result tapped at a roll, as the encounter reads it; undefined where none is, or the battle's roll is not the fighter's. */
+export function rolledAt(draft: AftermathDraft, instance: FighterInstance, at: InjuryAt): string | undefined {
+	const tapped = at.battle && !draft.out.includes(instance.instanceId) ? undefined : draft.injuries[at.key];
+	return tapped === undefined ? undefined : (at.treat[tapped] ?? tapped);
+}
+
 /** What the result a fighter was given comes to, as the game resolves it; null where it was given none or rolls none. */
-export function injuryOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): InjuryResolution | null {
-	const rolled = draft.out.includes(instance.instanceId) ? draft.injuries[instance.instanceId] : undefined;
+export function injuryOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance, at = battleAt(instance)): InjuryResolution | null {
+	const rolled = rolledAt(draft, instance, at);
 	const type = faction.fighters.find((f) => f.id === instance.fighterId);
 	if (!rolled || !type || !game.injuries?.table(instance, type, faction)) return null;
 	return game.injuries.resolve(instance, type, faction, rolled);
 }
 
 /** Whether the result a fighter was given, as answered, kills it: dead on the table, or no surgeon, or a surgeon who failed. */
-export function diesOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): boolean {
-	const outcome = injuryOf(draft, game, faction, instance)?.result.outcome;
-	const surgeon = outcome === 'surgeon' ? draft.surgeon[instance.instanceId] : undefined;
+export function diesOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance, at = battleAt(instance)): boolean {
+	const outcome = injuryOf(draft, game, faction, instance, at)?.result.outcome;
+	const surgeon = outcome === 'surgeon' ? draft.surgeon[at.key] : undefined;
 	return outcome === 'dead' || surgeon === 'none' || surgeon === 'died';
+}
+
+/** The rolls on the injury table the search party's encounters ask, by the fighter's instance id. */
+export function exploreRolls(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): Map<string, InjuryAt> {
+	const found = foundOf(warband, game, faction, draft);
+	return new Map(
+		(found?.fighters ?? []).flatMap((f) => (f.roll ? [[f.instanceId, { key: exploreKey(f.instanceId), treat: f.roll.treat, battle: false }] as const] : []))
+	);
+}
+
+/** Whether the fighter leaves the warband with the aftermath: dead after the battle or after an encounter, or taken by one. */
+export function lostOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, instance: FighterInstance): boolean {
+	if (diesOf(draft, game, faction, instance)) return true;
+	const at = exploreRolls(warband, game, faction, draft).get(instance.instanceId);
+	if (at && diesOf(draft, game, faction, instance, at)) return true;
+	return !!foundOf(warband, game, faction, draft)?.fighters.some((f) => f.instanceId === instance.instanceId && f.remove);
 }
 
 /** The key of one piece of a fighter's wargear, for the roll it asks for once used. */
@@ -229,27 +266,27 @@ export function toggleUsed(draft: AftermathDraft, instanceId: string, index: num
 /** Whether a fighter that dies stays on the roster, marked dead: a leader, where the game has no one take its place. */
 export const staysDead = (game: GameSystem, type: Fighter) => !game.succession && type.keywords.includes(LEADER);
 
-/** The fighter leading the warband, where the answers have it die; null where it lives, or the game has no one take its place. */
+/** The fighter leading the warband, where the answers have it leave – after the battle or exploring; null where it stays, or the game has no one take its place. */
 export function fallenLeader(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): FighterInstance | null {
 	const leader = game.succession ? leaderOf(warband, faction) : null;
-	return leader && diesOf(draft, game, faction, leader) ? leader : null;
+	return leader && lostOf(warband, game, faction, draft, leader) ? leader : null;
 }
 
 /**
  * Who may take the lead from a fallen leader: a fighter that can lead and
- * lives through the injuries, with the keywords it has before the renown
- * roll – Death of a leader comes in the first step of the aftermath.
+ * stays, with the keywords it has before the renown roll – Death of a leader
+ * comes in the first step of the aftermath.
  */
 export function heirsOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): FighterInstance[] {
 	const fallen = fallenLeader(warband, game, faction, draft);
 	if (!fallen) return [];
-	return warband.fighters.filter((f) => f !== fallen && canLead(f, faction, game) && !diesOf(draft, game, faction, f));
+	return warband.fighters.filter((f) => f !== fallen && canLead(f, faction, game) && !lostOf(warband, game, faction, draft, f));
 }
 
 /** What a fighter's result costs as answered, such as a surgeon paid for; 0 where nothing is paid. */
-function feeOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance): number {
-	const resolution = injuryOf(draft, game, faction, instance);
-	const answer = draft.surgeon[instance.instanceId];
+function feeOf(draft: AftermathDraft, game: GameSystem, faction: Faction, instance: FighterInstance, at = battleAt(instance)): number {
+	const resolution = injuryOf(draft, game, faction, instance, at);
+	const answer = draft.surgeon[at.key];
 	return resolution?.result.outcome === 'surgeon' && (answer === 'died' || answer === 'survived') ? (resolution.result.cost ?? 0) : 0;
 }
 
@@ -261,10 +298,15 @@ export function hireFees(draft: AftermathDraft): number {
 /**
  * The gold the warband has left before the battle's income – the purse less
  * what the warband is worth – less the hires' fees and what the answers
- * already spend for every fighter but `instanceId`.
+ * already spend at every roll but the one under `key`.
  */
-export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, instanceId: string): number {
-	const spent = warband.fighters.reduce((sum, f) => sum + (f.instanceId === instanceId ? 0 : feeOf(draft, game, faction, f)), hireFees(draft));
+export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, key: string): number {
+	const rolls = exploreRolls(warband, game, faction, draft);
+	const fees = (f: FighterInstance) => {
+		const explore = rolls.get(f.instanceId);
+		return (f.instanceId === key ? 0 : feeOf(draft, game, faction, f)) + (explore && explore.key !== key ? feeOf(draft, game, faction, f, explore) : 0);
+	};
+	const spent = warband.fighters.reduce((sum, f) => sum + fees(f), hireFees(draft));
 	return purse(warband, game) - warbandCost(warband, faction) - spent;
 }
 
@@ -345,7 +387,7 @@ export function foundOf(warband: Warband, game: GameSystem, faction: Faction, dr
 	const explore = game.aftermath?.explore;
 	const exploration = explorationOf(warband, game, draft);
 	if (!explore || !exploration) return null;
-	return findsOf(explore, exploration.encounters, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency);
+	return findsOf(explore, exploration.encounters, exploration.party, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency);
 }
 
 /** The pieces of the stash given up on the exploration roll, such as an Ornate Key, that the stash still holds. */
@@ -374,6 +416,25 @@ export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, d
 	return { ...earned, gold: earned.gold + kept, found };
 }
 
+/**
+ * The fighter with what an encounter did to it: a characteristic changed for
+ * good, as a level-0 advance naming the encounter; results
+ * of the injury table it keeps, unless it has them already; an [injury] taken
+ * away; levels.
+ */
+function withFind(fighter: FighterInstance, find: FighterFind, rules: Aftermath): FighterInstance {
+	let next = fighter;
+	if (find.stats.length) next = { ...next, advances: [...(next.advances ?? []), ...find.stats.map((s) => ({ level: 0, stat: s.key, bonus: s.bonus, source: find.source }))] };
+	const held = [...(next.injuries ?? [])];
+	for (const id of find.heal) {
+		const at = held.indexOf(id);
+		if (at >= 0) held.splice(at, 1);
+	}
+	for (const id of find.injuries) if (!held.includes(id)) held.push(id);
+	if (find.heal.length || find.injuries.length) next = { ...next, injuries: held };
+	return find.levels > 0 ? rules.gainLevels(next, find.levels) : next;
+}
+
 /** The battle's line in the history, or null where none is to be added. */
 export function battleRecord(draft: AftermathDraft, at = new Date()): BattleRecord | null {
 	if (!draft.record || !draft.result) return null;
@@ -400,7 +461,9 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * leaves none to the stash; a roll it asked for that brought an injury adds
  * that injury to a fighter that lives, unless it has it already. A unique
  * piece the opponent stole is struck before the injury as well. What the
- * search party found comes in with the income (`earnedOf`). The battle
+ * search party found comes in with the income (`earnedOf`); what an encounter
+ * does to the fighter it picked, its injury roll included, comes after the
+ * fighter's renown, as exploring follows the renown roll. The battle
  * ends the searches made since the one before, whether or not it goes into
  * the history.
  */
@@ -424,6 +487,31 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		if (at >= 0) stash.splice(at, 1);
 	}
 	stash.push(...(earned.found?.stash ?? []));
+	const rolls = exploreRolls(warband, game, faction, draft);
+	/* A roll on the injury table as answered, the battle's or an encounter's: the fighter as it comes out of it, or null where it leaves the roster. */
+	const injure = (fighter: FighterInstance, type: Fighter, roll: InjuryAt): FighterInstance | null => {
+		const resolution = injuryOf(draft, game, faction, fighter, roll);
+		if (!resolution || !game.injuries) return fighter;
+		const { outcome } = resolution.result;
+		const surgeon = outcome === 'surgeon' ? draft.surgeon[roll.key] : undefined;
+		spent += feeOf(draft, game, faction, fighter, roll);
+		const dies = diesOf(draft, game, faction, fighter, roll);
+		const hurt = game.injuries.apply(fighter, type, faction, rolledAt(draft, fighter, roll)!);
+		const carried = hurt.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
+		if (dies && staysDead(game, type)) return { ...hurt, away: 'dead' };
+		if (dies) {
+			const kept = surgeon === 'died' || draft.recovered[roll.key];
+			if (kept) stash.push(...hurt.wargear);
+			spent += recruitCost(type, effects) + (kept ? 0 : carried);
+			return null;
+		}
+		if (outcome === 'robbed') {
+			spent += carried;
+			return { ...hurt, wargear: [] };
+		}
+		if (outcome === 'captured' || outcome === 'miss-next-battle') return { ...hurt, away: outcome };
+		return hurt;
+	};
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
 		let fighter: FighterInstance = away === 'miss-next-battle' ? back : before;
@@ -439,26 +527,11 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			fighter = { ...fighter, wargear: fighter.wargear.filter((piece) => !taken.includes(piece)) };
 		}
 		const type = faction.fighters.find((f) => f.id === before.fighterId);
-		const resolution = injuryOf(draft, game, faction, fighter);
-		if (resolution && type && game.injuries) {
-			fighter = game.injuries.apply(fighter, type, faction, draft.injuries[id]);
-			const { outcome } = resolution.result;
-			const surgeon = outcome === 'surgeon' ? draft.surgeon[id] : undefined;
-			spent += feeOf(draft, game, faction, before);
-			const dies = diesOf(draft, game, faction, before);
-			const carried = fighter.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
-			if (dies && staysDead(game, type)) return [{ ...fighter, away: 'dead' }];
-			if (dies) {
-				const kept = surgeon === 'died' || draft.recovered[id];
-				if (kept) stash.push(...fighter.wargear);
-				spent += recruitCost(type, effects) + (kept ? 0 : carried);
-				return [];
-			}
-			if (outcome === 'robbed') {
-				spent += carried;
-				fighter = { ...fighter, wargear: [] };
-			}
-			if (outcome === 'captured' || outcome === 'miss-next-battle') fighter = { ...fighter, away: outcome };
+		if (type) {
+			const hurt = injure(fighter, type, battleAt(fighter));
+			if (!hurt) return [];
+			if (hurt.away === 'dead') return [hurt];
+			fighter = hurt;
 		}
 		for (const index of used) {
 			const roll = rules.afterUse?.find((r) => r.wargear === before.wargear[index]);
@@ -468,7 +541,22 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		if (id === heir) fighter = { ...fighter, leader: true };
 		const row = rows.get(fighter.instanceId);
 		const levels = row ? levelsEarned(row, marks) : 0;
-		return [levels > 0 ? rules.gainLevels(fighter, levels) : fighter];
+		if (levels > 0) fighter = rules.gainLevels(fighter, levels);
+		/* Exploring comes after renown: what an encounter does to the fighter it picked, then the injury roll it asked. */
+		for (const find of earned.found?.fighters.filter((f) => f.instanceId === id) ?? []) {
+			if (find.remove && type) {
+				spent += recruitCost(type, effects) + fighter.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
+				return [];
+			}
+			fighter = withFind(fighter, find, rules);
+		}
+		const roll = rolls.get(id);
+		if (roll && type) {
+			const hurt = injure(fighter, type, roll);
+			if (!hurt) return [];
+			fighter = hurt;
+		}
+		return [fighter];
 	});
 	const { finds: _finds, ...rest } = warband;
 	const applied: Warband = {

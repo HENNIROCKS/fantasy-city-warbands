@@ -1,7 +1,10 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import {
+		battleAt,
 		diesOf,
+		exploreRolls,
+		injuryOf,
 		earnedOf,
 		explorationOf,
 		extraMarksOf,
@@ -25,10 +28,24 @@
 		type SurgeonAnswer
 	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
-	import { amountAt, partyBlocked, pathOf, pickAt, pickEncounter, pickOption, tableOf, toggleParty, uniquesPicked, type EncounterAnswer } from '$lib/core/explore';
+	import {
+		amountAt,
+		needsFighter,
+		partyBlocked,
+		pathOf,
+		pickAt,
+		pickEncounter,
+		pickFighter,
+		pickOption,
+		tableOf,
+		toggleParty,
+		uniquesPicked,
+		type EncounterAnswer,
+		type FighterFind
+	} from '$lib/core/explore';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
-	import type { Aftermath, BattleRecord, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
+	import type { Aftermath, BattleRecord, Encounter, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
 
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
@@ -36,9 +53,10 @@
 	 * of action; one page for each of them that rolls for injuries; who takes
 	 * the lead, where the leader dies; the
 	 * single-use pieces used up, where a fighter carries any; the
-	 * roll each fighter makes for renown; the encounter of the search party,
-	 * where the game sends one out; then the shards and the income, the finds
-	 * counted in. The dice are rolled at the table and the result tapped
+	 * roll each fighter makes for renown; the search party and its encounters,
+	 * where the game sends one out, with a page for each fighter an encounter
+	 * sends to the injury table and, where the leader is lost there, one for
+	 * its successor; then the shards and the income, the finds counted in. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
 	 * first drops the answers and goes back to the battle. Each page is the back
 	 * of a card, as a fighter's back is written on, with its answers at its foot.
@@ -81,10 +99,23 @@
 		injuries
 			? outFighters.flatMap(({ instance, type }) => {
 					const table = injuries.table(instance, type, faction);
-					return table ? [{ instance, type, table }] : [];
+					return table ? [{ instance, type, table, at: battleAt(instance), source: '', page: `roll:${instance.instanceId}` }] : [];
 				})
 			: []
 	);
+	/* Who an encounter of the search party sends to the injury table, after Explore, as the aftermath explores after the injuries. */
+	const exploreRolling = $derived.by(() => {
+		if (!injuries) return [];
+		const rolls = exploreRolls(warband, game, faction, draft);
+		const found = earned.found?.fighters ?? [];
+		return warband.fighters.flatMap((instance) => {
+			const roll = rolls.get(instance.instanceId);
+			const type = faction.fighters.find((f) => f.id === instance.fighterId);
+			const table = roll && type ? injuries.table(instance, type, faction) : null;
+			const source = found.find((f) => f.instanceId === instance.instanceId && f.roll)?.source ?? '';
+			return roll && type && table ? [{ instance, type, table, at: roll, source, page: `explore-roll:${instance.instanceId}` }] : [];
+		});
+	});
 	/* Out of action and never rolling, with the rule that says so. */
 	const exempt = $derived(
 		injuries
@@ -95,8 +126,9 @@
 			: []
 	);
 
-	/* The leader, where the injuries kill it, and who may take its place. */
+	/* The leader, where the injuries or the search party's encounters take it, and who may take its place – asked after the step that took it. */
 	const fallen = $derived(fallenLeader(warband, game, faction, draft));
+	const fallenInBattle = $derived(!!fallen && diesOf(draft, game, faction, fallen));
 	const heirs = $derived(heirsOf(warband, game, faction, draft));
 
 	/* Who carries a single-use piece, asked after the injuries, so a fighter that dies is known not to roll for one. */
@@ -105,17 +137,18 @@
 	/* Pages come and go as fighters are taken out of action or brought back; a page is held by its key, not its place. */
 	const pages = $derived([
 		'battle',
-		...(injuries ? ['out', ...rolling.map((r) => `roll:${r.instance.instanceId}`)] : []),
-		...(fallen ? ['leader'] : []),
+		...(injuries ? ['out', ...rolling.map((r) => r.page)] : []),
+		...(fallenInBattle ? ['leader'] : []),
 		...(carrying.length ? ['items'] : []),
 		'renown',
-		...(rules.explore ? ['explore'] : []),
+		...(rules.explore ? ['explore', ...exploreRolling.map((r) => r.page)] : []),
+		...(fallen && !fallenInBattle ? ['leader'] : []),
 		'income'
 	]);
 	let page = $state('battle');
 	const at = $derived(Math.max(0, pages.indexOf(page)));
 	const current = $derived(pages[at]);
-	const roller = $derived(rolling.find((r) => `roll:${r.instance.instanceId}` === current) ?? null);
+	const roller = $derived([...rolling, ...exploreRolling].find((r) => r.page === current) ?? null);
 
 	const step = (by: number) => (page = pages[Math.min(pages.length - 1, Math.max(0, at + by))]);
 
@@ -124,11 +157,11 @@
 	}
 
 	/* A tap picks the result; a tap on the picked one takes it back, and with it what was answered after it. */
-	function roll(instanceId: string, id: string) {
-		if (draft.injuries[instanceId] === id) delete draft.injuries[instanceId];
-		else draft.injuries[instanceId] = id;
-		delete draft.recovered[instanceId];
-		delete draft.surgeon[instanceId];
+	function roll(key: string, id: string) {
+		if (draft.injuries[key] === id) delete draft.injuries[key];
+		else draft.injuries[key] = id;
+		delete draft.recovered[key];
+		delete draft.surgeon[key];
 	}
 
 	function setSurgeon(instanceId: string, answer: SurgeonAnswer) {
@@ -183,6 +216,30 @@
 		if (answer.picks[at] === id) return null;
 		if (held.has(id)) return 'Already yours – roll again';
 		return rules.explore && exploration && uniquesPicked(rules.explore, exploration.encounters).includes(id) ? 'Found in this exploration – roll again' : null;
+	}
+	/* The [injury] results a fighter keeps, which an encounter may take away. */
+	const injuredWith = (instanceId: string) =>
+		(warband.fighters.find((f) => f.instanceId === instanceId)?.injuries ?? []).filter((id) => injuries?.result(id)?.type === 'injury');
+	/* Who an encounter may fall on: the search party or the warband, with the keyword and the [injury] it asks for. */
+	function whoOf(who: NonNullable<Encounter['who']>): string[] {
+		const pool = who.from === 'party' ? (exploration?.party ?? []) : present.map((f) => f.instanceId);
+		return pool.filter((id) => {
+			const instance = warband.fighters.find((f) => f.instanceId === id);
+			const keywords = draft.rows.find((r) => r.instanceId === id)?.keywordIds ?? faction.fighters.find((t) => t.id === instance?.fighterId)?.keywords ?? [];
+			return (!who.keyword || keywords.includes(who.keyword)) && (!who.injured || injuredWith(id).length > 0);
+		});
+	}
+	/* What an encounter does to a fighter, as the income page lists it. */
+	function fighterLine(find: FighterFind): string {
+		const parts = [
+			...find.stats.map((s) => `${game.stats.find((d) => d.key === s.key)?.label ?? s.key} ${s.bonus > 0 ? '+' : '−'}${Math.abs(s.bonus)}`),
+			...find.injuries.map((id) => injuries?.result(id)?.name ?? id),
+			...find.heal.map((id) => `${injuries?.result(id)?.name ?? id} taken away`),
+			...(find.levels ? [`+${find.levels} ${find.levels === 1 ? 'level' : 'levels'}`] : []),
+			...(find.roll ? ['an injury roll'] : []),
+			...(find.remove ? ['leaves the warband'] : [])
+		];
+		return parts.join(', ');
 	}
 	/* What an answer costs, such as the charlatan's concoction: paid before the income, from the gold left, as a surgeon is. */
 	const costOf = (gains: FindGain[]) => gains.reduce((sum, g) => sum + ('gold' in g && typeof g.gold === 'number' && g.gold < 0 ? -g.gold : 0), 0);
@@ -295,6 +352,33 @@
 							</div>
 						{/each}
 					</div>
+				{:else if 'heal' in gain && answer.fighter}
+					{@const healed = injuredWith(answer.fighter)}
+					<p class="caption" id="heal-{answer.roll}-{at}">The injury taken away</p>
+					<div class="toggles stacked" role="group" aria-labelledby="heal-{answer.roll}-{at}">
+						{#each healed as id (id)}
+							<button class="toggle" aria-pressed={answer.picks[`${at}:heal`] === id} onclick={() => pickAt(answer, `${at}:heal`, id)}>
+								{injuries?.result(id)?.name ?? id}
+							</button>
+						{/each}
+					</div>
+				{:else if 'each' in gain}
+					{@const counted = gain.each.results.reduce((sum, _, n) => sum + (answer.amounts[`${at}#${n}`] ?? 0), 0)}
+					{#each gain.each.results as result, n (n)}
+						{@const key = `${at}#${n}`}
+						{@const mine = answer.amounts[key] ?? 0}
+						<p class="caption" id="each-{answer.roll}-{key}">{result.label}</p>
+						<div class="results" role="group" aria-labelledby="each-{answer.roll}-{key}">
+							{#each Array.from({ length: gain.each.dice + 1 }, (_, v) => v) as value (value)}
+								<button
+									class="segment"
+									aria-pressed={answer.amounts[key] === value}
+									disabled={counted - mine + value > gain.each.dice}
+									onclick={() => amountAt(answer, key, value)}>{value}</button
+								>
+							{/each}
+						</div>
+					{/each}
 				{:else if rolled}
 					<p class="caption" id="amount-{answer.roll}-{at}">{rolled.roll}</p>
 					<div class="results" role="group" aria-labelledby="amount-{answer.roll}-{at}">
@@ -377,19 +461,21 @@
 			</div>
 		{:else if roller}
 			{@const id = roller.instance.instanceId}
-			{@const picked = draft.injuries[id]}
-			{@const resolution = picked && injuries ? injuries.resolve(roller.instance, roller.type, faction, picked) : null}
-			{@const taken = stealable(roller.instance, faction, rules)}
+			{@const key = roller.at.key}
+			{@const picked = draft.injuries[key]}
+			{@const resolution = injuryOf(draft, game, faction, roller.instance, roller.at)}
+			{@const read = picked ? roller.at.treat[picked] : undefined}
+			{@const taken = roller.at.battle ? stealable(roller.instance, faction, rules) : []}
 			<div class="scroll">
 				<h2 class="name" id="aftermath-title">{nameOf(id)}</h2>
-				<p class="page-count">{roller.table.table} · {roller.table.dice} · {at + 1} of {pages.length}</p>
+				<p class="page-count">{roller.source ? `${roller.source} · ` : ''}{roller.table.table} · {roller.table.dice} · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<section>
 						<div class="results-table" role="group" aria-label="{roller.table.table} for {nameOf(id)}">
 							{#each roller.table.results as result (result.id)}
 								{@const open = picked === result.id}
 								<div class="unfold" class:open>
-									<button class="unfold-head" aria-pressed={open} onclick={() => roll(id, result.id)}>
+									<button class="unfold-head" aria-pressed={open} onclick={() => roll(key, result.id)}>
 										<span class="roll">{result.roll}</span>
 										<span class="line">{result.name}</span>
 									</button>
@@ -397,11 +483,14 @@
 									{#if open && resolution}
 										{@const outcome = resolution.result.outcome}
 										{@const cost = resolution.result.cost ?? 0}
-										{@const gold = goldLeft(warband, game, faction, draft, id)}
-										{@const surgeon = draft.surgeon[id]}
+										{@const gold = goldLeft(warband, game, faction, draft, key)}
+										{@const surgeon = draft.surgeon[key]}
 										{@const dies = outcome === 'dead' || surgeon === 'none'}
 										{@const bought = roller.instance.wargear.filter((w) => !(draft.stolen[id] && taken.some((t) => t.id === w))).map(wargearName)}
 										<div class="unfold-detail">
+											{#if read}
+												<p class="unfold-text">{roller.source} reads it as {injuries?.result(read)?.name ?? read}.</p>
+											{/if}
 											{#if resolution.note}
 												<p class="unfold-text">{resolution.note}</p>
 												<p class="unfold-text"><strong>{resolution.result.name}:</strong> <RichText text={resolution.result.text} /></p>
@@ -412,13 +501,13 @@
 											{#if outcome === 'surgeon'}
 												<p class="caption" id="surgeon-{id}">Surgeon</p>
 												<div class="toggles stacked" role="group" aria-labelledby="surgeon-{id}">
-													<button class="toggle" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(id, 'none')}>No surgeon – dies</button>
+													<button class="toggle" aria-pressed={surgeon === 'none'} onclick={() => setSurgeon(key, 'none')}>No surgeon – dies</button>
 													{#each [{ answer: 'died', label: 'rolled 1–2 – dies, its equipment kept' }, { answer: 'survived', label: 'rolled 3+ – survives' }] as option (option.answer)}
 														<button
 															class="toggle"
 															aria-pressed={surgeon === option.answer}
 															disabled={gold < cost}
-															onclick={() => setSurgeon(id, option.answer as SurgeonAnswer)}
+															onclick={() => setSurgeon(key, option.answer as SurgeonAnswer)}
 														>
 															Paid {cost} {game.currency}, {option.label}
 														</button>
@@ -432,7 +521,7 @@
 												<p class="caption">Equipment</p>
 												{#if bought.length}
 													<div class="toggles stacked">
-														<button class="toggle" aria-pressed={draft.recovered[id] ?? false} onclick={() => (draft.recovered[id] = !draft.recovered[id])}>
+														<button class="toggle" aria-pressed={draft.recovered[key] ?? false} onclick={() => (draft.recovered[key] = !draft.recovered[key])}>
 															Recovered on a 3+ – {bought.join(', ')} to the stash
 														</button>
 													</div>
@@ -712,6 +801,23 @@
 												{@const option = answer.option === null ? undefined : e.ask?.options[answer.option]}
 												<div class="unfold-detail">
 													<p class="unfold-text"><RichText text={e.text} /></p>
+													{#if e.who}
+														{@const pool = whoOf(e.who)}
+														<p class="caption" id="who-{e.roll}">Fighter</p>
+														{#if e.who.note}<p class="unfold-text">{e.who.note}</p>{/if}
+														{#if pool.length}
+															<div class="toggles" role="group" aria-labelledby="who-{e.roll}">
+																{#each pool as id (id)}
+																	<button class="toggle" aria-pressed={answer.fighter === id} onclick={() => pickFighter(answer, id)}>{nameOf(id)}</button>
+																{/each}
+															</div>
+														{:else}
+															<p class="unfold-text">Nobody here fits.</p>
+														{/if}
+														{#if needsFighter(rules.explore, answer) && !pool.includes(answer.fighter ?? '')}
+															<p class="unfold-text">Pick the fighter it falls on.</p>
+														{/if}
+													{/if}
 													{@render finds(answer, e.gains, 'e')}
 													{#if e.ask}
 														<p class="caption" id="ask-{e.roll}">{e.ask.label}</p>
@@ -773,6 +879,9 @@
 							{#each earned.found?.lines ?? [] as line, i (i)}
 								<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
 							{/each}
+							{#each earned.found?.fighters ?? [] as find, i (i)}
+								<li><span class="line"><span class="gain">{nameOf(find.instanceId)}</span> – {find.source}: {fighterLine(find)}</span></li>
+							{/each}
 							{#each earned.lines as line (line.gain)}
 								<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
 							{/each}
@@ -805,6 +914,11 @@
 	/* The result as one pill of three across the card, as on the back of the warband card; a roll's outcome likewise. */
 	.results .segment {
 		flex: 1;
+	}
+
+	/* A count the dice cannot reach any more fades as a stepper's sign does. */
+	.results .segment:disabled {
+		color: color-mix(in srgb, var(--card-green) 35%, transparent);
 	}
 
 	/* What a row earns, in the green the card marks a gain with; a row that

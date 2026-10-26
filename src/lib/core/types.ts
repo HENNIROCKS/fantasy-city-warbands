@@ -386,6 +386,12 @@ export type FindAmount = number | { roll: string; values: number[] };
  * What an encounter or a row of a loot table brings: gold, shards delivered
  * with the battle's, a campaign counter such as favour, pieces into the stash,
  * a roll on a loot table, or one of a game's unique pieces picked by a roll.
+ * The rest falls on the fighter the encounter picks (`Encounter.who`): a roll
+ * on the injury table – a result read as another where `treat` says so, such
+ * as Captured as Dead –, levels, a result of the injury table it keeps, one of
+ * its [injury] results taken away, its leaving the warband, a characteristic
+ * changed for good; `each` counts the dice of a roll that show each result,
+ * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster.
  */
 export type FindGain =
 	| { gold: FindAmount }
@@ -393,7 +399,14 @@ export type FindGain =
 	| { tally: string; amount: number }
 	| { wargear: string; copies?: FindAmount }
 	| { table: string }
-	| { unique: { roll: string; wargear: string[] } };
+	| { unique: { roll: string; wargear: string[] } }
+	| { injuryRoll: { treat?: Record<string, string> } }
+	| { levels: number }
+	| { injury: string }
+	| { heal: true }
+	| { remove: true }
+	| { stat: { key: string; bonus: number } }
+	| { each: { dice: number; results: { on: string; label: string; gains: FindGain[] }[] } };
 
 /** One answer to an encounter that asks: a choice made, or a roll's result. */
 export interface FindOption {
@@ -412,6 +425,12 @@ export interface Encounter {
 	group: string;
 	/** Whether it must be resolved even when another was rolled. */
 	mishap?: boolean;
+	/**
+	 * The fighter what it does falls on, picked from the search party or the
+	 * warband, carrying `keyword` and, where `injured`, an [injury] result;
+	 * `note` says who picks, such as the opponent.
+	 */
+	who?: { from: 'party' | 'warband'; keyword?: string; injured?: boolean; note?: string };
 	/** What it brings whatever is answered. */
 	gains: FindGain[];
 	/** Where it asks, what is asked – `Roll a D6` – and its answers, one tapped. */
@@ -875,6 +894,8 @@ export interface Advance {
 	rule?: string;
 	/** What the rule was taken for, such as a weapon's id. */
 	option?: string;
+	/** For a level of 0, what changed the characteristic, such as an encounter; missing where a warband file holds it without saying why. */
+	source?: string;
 }
 
 /** One battle the warband fought, as the player wrote it down afterwards. */

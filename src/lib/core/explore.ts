@@ -15,9 +15,11 @@ export interface EncounterAnswer {
 	roll: string;
 	/** The answer tapped where it asks, by its place; null while none is. */
 	option: number | null;
-	/** By path: the row of a loot table by its roll, or the unique piece by its wargear id. */
+	/** The fighter it falls on, by instance id, where it picks one; null while none is. */
+	fighter: string | null;
+	/** By path: the row of a loot table by its roll, the unique piece by its wargear id, or the [injury] result taken away by its id. */
 	picks: Record<string, string>;
-	/** By path: what a rolled count came to. */
+	/** By path: what a rolled count came to; for a roll that counts its dice, by path and `#` the result's place. */
 	amounts: Record<string, number>;
 }
 
@@ -76,7 +78,37 @@ export interface Finds {
 	lines: { gain: string; why: string }[];
 	/** What is still to be rolled, a line each: `Lesser Loot Table – roll 2D6`. */
 	open: string[];
+	/** What falls on a fighter the encounters picked, one entry for each encounter. */
+	fighters: FighterFind[];
 }
+
+/** What an encounter does to the fighter it picked. */
+export interface FighterFind {
+	instanceId: string;
+	/** The encounter's name. */
+	source: string;
+	levels: number;
+	/** Results of the injury table it keeps, by id. */
+	injuries: string[];
+	/** [injury] results taken away, by id. */
+	heal: string[];
+	remove: boolean;
+	stats: { key: string; bonus: number }[];
+	/** A roll on the injury table it makes, with the results read as others; null where it makes none. */
+	roll: { treat: Record<string, string> } | null;
+}
+
+/** A fixed gain as many times over as the dice that show it, such as a shard for each 4+. */
+function timesOf(gain: FindGain, count: number): FindGain {
+	if ('shards' in gain && typeof gain.shards === 'number') return { shards: gain.shards * count };
+	if ('gold' in gain && typeof gain.gold === 'number') return { gold: gain.gold * count };
+	if ('stat' in gain) return { stat: { ...gain.stat, bonus: gain.stat.bonus * count } };
+	return gain;
+}
+
+/** Whether a gain falls on the fighter the encounter picks. */
+export const onFighter = (gain: FindGain) =>
+	'injuryRoll' in gain || 'levels' in gain || 'injury' in gain || 'heal' in gain || 'remove' in gain || 'stat' in gain || 'each' in gain;
 
 /** Where a gain sits under a given one. */
 export const pathOf = (parent: string, index: number) => `${parent}.${index}`;
@@ -105,11 +137,22 @@ function dropUnder(answer: EncounterAnswer, path: string) {
  * place; where more may, it is added while there is room. Null clears them all.
  */
 export function pickEncounter(answer: ExploreAnswer, standing: EncounterAnswer[], most: number, roll: string | null) {
-	const fresh = (r: string): EncounterAnswer => ({ roll: r, option: null, picks: {}, amounts: {} });
+	const fresh = (r: string): EncounterAnswer => ({ roll: r, option: null, fighter: null, picks: {}, amounts: {} });
 	if (roll === null) answer.encounters = [];
 	else if (standing.some((e) => e.roll === roll)) answer.encounters = standing.filter((e) => e.roll !== roll);
 	else if (most <= 1) answer.encounters = [fresh(roll)];
 	else if (standing.length < most) answer.encounters = [...standing, fresh(roll)];
+}
+
+/** Whether what is answered under the encounter asks for a fighter to fall on. */
+export function needsFighter(explore: Explore, answer: EncounterAnswer): boolean {
+	return gainsOf(explore, answer).some(({ gains }) => gains.some(onFighter));
+}
+
+/** Taps the fighter the encounter falls on; tapped again, it is taken back, and with it an [injury] picked to take away. */
+export function pickFighter(answer: EncounterAnswer, instanceId: string) {
+	answer.fighter = answer.fighter === instanceId ? null : instanceId;
+	for (const key of Object.keys(answer.picks)) if (key.endsWith(':heal')) delete answer.picks[key];
 }
 
 /** Taps an answer to what the encounter asks; tapped again, it is taken back. */
@@ -151,11 +194,19 @@ export function uniquesPicked(explore: Explore, encounters: EncounterAnswer[]): 
  * What the encounters bring: each fixed gain, each count as tapped, each loot
  * table by the row tapped and what that row brings in turn. A count or a row
  * not yet tapped brings nothing and is named among what is still to roll.
- * `name` gives a wargear id its name, `currency` the gold its unit.
+ * `name` gives a wargear id its name, `currency` the gold its unit. A fighter
+ * picked from the search party that has left it is picked no more.
  */
-export function findsOf(explore: Explore, encounters: EncounterAnswer[], name: (id: string) => string, currency: string): Finds {
-	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [] };
+export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: string[], name: (id: string) => string, currency: string): Finds {
+	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [], fighters: [] };
 	for (const answer of encounters) {
+		const encounter = encounterOf(explore, answer);
+		const source = encounter?.name ?? '';
+		const picked = answer.fighter && !(encounter?.who?.from === 'party' && !party.includes(answer.fighter)) ? answer.fighter : null;
+		const on: FighterFind | null = picked
+			? { instanceId: picked, source, levels: 0, injuries: [], heal: [], remove: false, stats: [], roll: null }
+			: null;
+		if (needsFighter(explore, answer) && !on) finds.open.push(`${source} – pick the fighter`);
 		const count = (amount: FindAmount, at: string, what: string): number | null => {
 			if (typeof amount === 'number') return amount;
 			const value = answer.amounts[at];
@@ -198,11 +249,29 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], name: (
 						finds.stash.push(id);
 						finds.lines.push({ gain: name(id), why: `– ${source}, to the stash` });
 					} else finds.open.push(`${source} – roll ${gain.unique.roll}`);
+				} else if (on) {
+					if ('injuryRoll' in gain) on.roll = { treat: gain.injuryRoll.treat ?? {} };
+					else if ('levels' in gain) on.levels += gain.levels;
+					else if ('injury' in gain) on.injuries.push(gain.injury);
+					else if ('remove' in gain) on.remove = true;
+					else if ('stat' in gain) on.stats.push(gain.stat);
+					else if ('heal' in gain) {
+						const id = answer.picks[`${at}:heal`];
+						if (id) on.heal.push(id);
+						else finds.open.push(`${source} – pick the injury taken away`);
+					} else if ('each' in gain) {
+						const counts = gain.each.results.map((_, n) => answer.amounts[`${at}#${n}`]);
+						if (counts.every((c) => c === undefined)) finds.open.push(`${source} – count the dice`);
+						gain.each.results.forEach((r, n) => {
+							const c = counts[n] ?? 0;
+							if (c) walk(r.gains.map((g) => timesOf(g, c)), `${at}#${n}`, source);
+						});
+					}
 				}
 			});
-		const encounter = encounterOf(explore, answer);
-		for (const { path, gains } of gainsOf(explore, answer)) walk(gains, path, encounter?.name ?? '');
+		for (const { path, gains } of gainsOf(explore, answer)) walk(gains, path, source);
 		if (encounter?.ask && answer.option === null) finds.open.push(`${encounter.name} – ${encounter.ask.label.toLowerCase()}`);
+		if (on && (on.roll || on.levels || on.injuries.length || on.heal.length || on.remove || on.stats.length)) finds.fighters.push(on);
 	}
 	return finds;
 }
