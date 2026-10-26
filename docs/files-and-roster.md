@@ -17,7 +17,7 @@ you have. It asks before an older file replaces a newer one.
 print or to share. Under the warband's figures it lists the stash.
 
 **Show your opponent.** Under the warband card, tap **Battle**, then **Show to
-opponent…**. Your opponent scans the code with their phone's camera and sees
+opponent**. Your opponent scans the code with their phone's camera and sees
 your cards, read only. The code holds the warband as it is now, without
 photos, notes, background or past battles, and nothing is saved on their
 phone. It may open in their browser rather than their app; then they switch

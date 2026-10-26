@@ -243,7 +243,7 @@
 				<p class="hint">The stash is empty.</p>
 			{/if}
 			{#if offered.length && !blocked}
-				<button class="remove self-start" aria-expanded={taking} onclick={() => (taking = !taking)}>Add a {game.uniqueName}…</button>
+				<button class="remove self-start" aria-expanded={taking} onclick={() => (taking = !taking)}>Add a {game.uniqueName}</button>
 				{#if taking}
 					<ul class="list">
 						{#each offered as piece (piece.id)}

@@ -4,7 +4,7 @@ A hired sword fights for one battle and then leaves. You hire it while you set
 up the battle.
 
 1. Open the cards and tap **Battle** under the warband card.
-2. Tap **Hired swords…** to see those your faction may hire, each with its
+2. Tap **Hired swords** to see those your faction may hire, each with its
    fee.
 3. Tap one to hire it. Tap it again to send it away.
 

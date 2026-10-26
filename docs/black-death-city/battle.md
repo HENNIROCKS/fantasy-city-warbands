@@ -17,7 +17,7 @@ out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Bac
 to round …** undoes it, until you tap something new.
 
 **Stopping.** The battle stays on your phone, even if you close the app.
-**End battle…** drops it after asking, and nothing in the warband changes.
+**End battle** drops it after asking, and nothing in the warband changes.
 
 While a battle runs, no equipment moves on the backs of the cards.
 
