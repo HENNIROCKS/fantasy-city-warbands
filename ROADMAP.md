@@ -25,7 +25,7 @@
 - [x] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [x] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
 - [x] 🛠️ Black Death City: starting experience asked on recruitment, and the warband rating
-- [ ] 📚 Black Death City: the fighters' special rules as text
+- [x] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 📄 The roster per game, as each game's own sheet has it

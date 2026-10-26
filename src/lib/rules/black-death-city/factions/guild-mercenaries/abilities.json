@@ -1,0 +1,13 @@
+[
+	{ "id": "veteran-of-the-city", "name": "Veteran of the City", "text": "When this fighter is recruited, pick 2 skills for them." },
+	{ "id": "trained-duellist", "name": "Trained Duellist", "text": "When this fighter is recruited, they already have the Duellist skill. In addition, pick 1 skill for them." },
+	{ "id": "seasoned-warrior", "name": "Seasoned Warrior", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "recite-holy-litanies", "name": "Recite Holy Litanies", "type": "action", "text": "Once per battle, this fighter can make this action. If they do so, pick a visible enemy fighter within 12\" of this fighter to be the target, that target must be a *Wizard*, *Priest*, *Demon* or *Undead*. Roll a dice for this fighter and add its Willpower value to the result. The commanding player of the target does the same for their fighter. If the result for this fighter is equal or higher than the result for the target, the target suffers d3 damage." },
+	{ "id": "master-of-spellcraft", "name": "Master of Spellcraft", "text": "This fighter knows the **Lore of Sanctioned Magic**. When they are recruited, pick 2 spells from it to be their signature spells. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "guild-magic", "name": "Guild Magic", "text": "This fighter knows the **Lore of Sanctioned Magic**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "holy-magic", "name": "Holy Magic", "text": "This fighter knows the **Lore of the Saints**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "patch-you-up", "name": "Patch You Up", "type": "action", "text": "As an action, make a Willpower test for this fighter. If failed, the action ends. If passed, pick a friendly fighter within 1\" of them. That fighter heals 1 life point." },
+	{ "id": "sawbones", "name": "Sawbones", "text": "Once in each aftermath sequence, if this fighter was not taken down during battle, they can oversee the recovery of another fighter. Pick a friendly fighter that was taken down. When rolling on the lasting injury table for that fighter, you can roll twice and pick either result." },
+	{ "id": "sniff-em-out", "name": "Sniff 'em Out", "text": "Enemy fighters that are hidden are not hidden while they are within 9\" of this fighter." },
+	{ "id": "trackers", "name": "Trackers", "text": "Each aftermath sequence, when you search the city. If your search party includes any Hunting Dogs, you can re-roll the exploration roll." }
+]

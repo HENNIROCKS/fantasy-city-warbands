@@ -8,6 +8,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 7 },
+		"abilities": ["lord-of-the-cloister"],
 		"wargear_lists": ["main", "champion"],
 		"gear": ["full-plate"]
 	},
@@ -20,6 +21,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "cloister", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 6 },
+		"abilities": ["master-of-dark-spellcraft"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": []
 	},
@@ -32,6 +34,7 @@
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
+		"abilities": ["dark-spellcraft"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": []
 	},
@@ -44,6 +47,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 6 },
+		"abilities": ["lord-of-the-cloister-champion"],
 		"wargear_lists": ["main", "champion"],
 		"gear": ["full-plate"]
 	},
@@ -56,6 +60,7 @@
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "beastman", "wizard"],
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 5 },
+		"abilities": ["darkcloven-magic", "ram-horns"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": []
 	},
@@ -68,6 +73,7 @@
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "cloister", "demon", "wizard"],
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 6 },
+		"abilities": ["demonic-spellcraft", "demonic-wards", "fear"],
 		"wargear_lists": ["practitioner-items"],
 		"gear": ["demonic-rot-blade"]
 	},
@@ -80,6 +86,7 @@
 		"limit": { "min": 0, "max": 3 },
 		"keywords": ["henchman", "cloister", "human", "knight"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 4, "initiative": 3, "willpower": 3, "life": 5 },
+		"abilities": [],
 		"wargear_lists": ["main"],
 		"gear": ["full-plate"]
 	},
@@ -92,6 +99,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "cloister", "human"],
 		"profile": { "move": 5, "blade": 5, "bow": 5, "armour": 6, "initiative": 2, "willpower": 2, "life": 3 },
+		"abilities": [],
 		"wargear_lists": ["main", "dreg"],
 		"gear": []
 	},
@@ -104,6 +112,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "cloister", "beastman"],
 		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"abilities": ["ram-horns"],
 		"wargear_lists": ["main"],
 		"gear": []
 	},
@@ -116,6 +125,7 @@
 		"limit": { "min": 0, "max": 3 },
 		"keywords": ["henchman", "cloister", "demon"],
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 5 },
+		"abilities": ["demonic-wards", "fear"],
 		"wargear_lists": [],
 		"gear": ["demonic-rot-blade"]
 	},
@@ -128,6 +138,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "cloister", "demon"],
 		"profile": { "move": 5, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 8 },
+		"abilities": ["demonic-wards", "fear"],
 		"wargear_lists": [],
 		"gear": ["demonic-rot-maw"]
 	},
@@ -140,6 +151,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "cloister", "demon"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 10 },
+		"abilities": ["demonic-wards", "fear"],
 		"wargear_lists": [],
 		"gear": ["great-demonic-rot-blade"]
 	},
@@ -151,6 +163,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["beast", "cloister", "fly"],
 		"profile": { "move": 10, "blade": 5, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 2 },
+		"abilities": [],
 		"wargear_lists": [],
 		"gear": ["proboscis"]
 	},
@@ -162,6 +175,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["beast", "cloister", "demon"],
 		"profile": { "move": 4, "blade": 4, "bow": null, "armour": 5, "initiative": 3, "willpower": 2, "life": 3 },
+		"abilities": [],
 		"wargear_lists": [],
 		"gear": ["demonic-rot-strike"]
 	}
