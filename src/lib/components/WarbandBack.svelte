@@ -72,11 +72,29 @@
 
 	const wargearName = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 
+	/* A unique piece taken from the opponent, such as a magic item: one the warband holds already is not offered again. */
+	let taking = $state(false);
+	const offered = $derived.by(() => {
+		if (!game.uniqueName) return [];
+		const gone = new Set(draft.stashOut.map((out) => out.index));
+		const held = [
+			...warband.fighters.filter((f) => f.away !== 'dead').flatMap((f) => f.wargear),
+			...stash.filter((_, i) => !gone.has(i)),
+			...draft.stashIn
+		];
+		return faction.wargear.filter((w) => w.unique && !held.includes(w.id));
+	});
+
+	function take(id: string) {
+		draft.stashIn = [...draft.stashIn, id];
+		taking = false;
+	}
+
 	/* The warband's counters, and under them what the warband card works out from them, on the counters as the draft leaves them. */
 	const counters = $derived(game.campaign?.warband ?? []);
 	const worked = $derived.by(() => {
 		const own = new Set(counters.map((c) => c.key));
-		return (game.campaign?.values?.({ ...warband, tally: draft.tally }) ?? []).filter((v) => !own.has(v.key));
+		return (game.campaign?.values?.({ ...warband, tally: draft.tally, stash: [...stash, ...draft.stashIn] }) ?? []).filter((v) => !own.has(v.key));
 	});
 
 	function step(key: string, by: number) {
@@ -190,7 +208,7 @@
 			{/if}
 
 			<p class="caption">Equipment</p>
-			{#if stash.length}
+			{#if stash.length || draft.stashIn.length}
 				{#if blocked}<p class="hint">{blocked}</p>{/if}
 				<ul class="list">
 					{#each stash as id, i (i)}
@@ -211,9 +229,31 @@
 							{/if}
 						</li>
 					{/each}
+					{#each draft.stashIn as id, i (i)}
+						<li>
+							<span class="line">
+								<span class="piece">{wargearName(id)}</span>
+								<span class="why">Taken</span>
+							</span>
+							<button class="remove" onclick={() => (draft.stashIn = draft.stashIn.filter((_, j) => j !== i))}>Undo</button>
+						</li>
+					{/each}
 				</ul>
 			{:else}
 				<p class="hint">The stash is empty.</p>
+			{/if}
+			{#if offered.length && !blocked}
+				<button class="remove self-start" aria-expanded={taking} onclick={() => (taking = !taking)}>Add a {game.uniqueName}…</button>
+				{#if taking}
+					<ul class="list">
+						{#each offered as piece (piece.id)}
+							<li>
+								<span class="line"><span class="piece">{piece.name}</span></span>
+								<button class="remove" onclick={() => take(piece.id)}>Add</button>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			{/if}
 		</section>
 

@@ -76,8 +76,11 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   and from the stash, correct its campaign, spend renown or dismiss it – see
   [Between battles in Black Death City](docs/black-death-city/between-battles.md)
   and [in Wyrdcry](docs/wyrdcry/between-battles.md)
-- Turn the warband card over to name it, pick its colour, set favour, add gold
-  and sell from the stash – see the same guides
+- Turn the warband card over to name it, pick its colour, set favour, add gold,
+  sell from the stash and, in Wyrdcry, add a magic item taken from the
+  opponent – see the same guides
+- Keep Wyrdcry's magic items: one to a fighter, never sold, 5 reputation each,
+  and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, and
   in Wyrdcry morale, Zeal and the single-use items ticked off – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
@@ -88,8 +91,8 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   on the warband card, its fee
   paid in the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)
-- End a Wyrdcry battle in a few pages: result, income, injuries, a new
-  leader, items used up and renown, written in with Apply – see
+- End a Wyrdcry battle in a few pages: result, income, injuries, a magic item
+  stolen, a new leader, items used up and renown, written in with Apply – see
   [The aftermath](docs/wyrdcry/aftermath.md)
 - Spend each level of renown on a characteristic, a heroic talent or a
   legendary ability, after the battle or from the Battle menu

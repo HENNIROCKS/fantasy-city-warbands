@@ -13,6 +13,7 @@
 		rollsOf,
 		scoreNeeded,
 		singleUseOf,
+		stealable,
 		staysDead,
 		survivorsOf,
 		toggleOut,
@@ -311,6 +312,7 @@
 			{@const id = roller.instance.instanceId}
 			{@const picked = draft.injuries[id]}
 			{@const resolution = picked && injuries ? injuries.resolve(roller.instance, roller.type, faction, picked) : null}
+			{@const taken = stealable(roller.instance, faction, rules)}
 			<div class="scroll">
 				<h2 class="name" id="aftermath-title">{nameOf(id)}</h2>
 				<p class="page-count">{roller.table.table} · {roller.table.dice} · {at + 1} of {pages.length}</p>
@@ -331,7 +333,7 @@
 										{@const gold = goldLeft(warband, game, faction, draft, id)}
 										{@const surgeon = draft.surgeon[id]}
 										{@const dies = outcome === 'dead' || surgeon === 'none'}
-										{@const bought = roller.instance.wargear.map(wargearName)}
+										{@const bought = roller.instance.wargear.filter((w) => !(draft.stolen[id] && taken.some((t) => t.id === w))).map(wargearName)}
 										<div class="unfold-detail">
 											{#if resolution.note}
 												<p class="unfold-text">{resolution.note}</p>
@@ -388,6 +390,16 @@
 							{/each}
 						</div>
 					</section>
+					{#if taken.length && rules.theft}
+						<!-- Rolled for whatever the injury, before it: what is stolen is not recovered with the rest. -->
+						<section>
+							<div class="toggles stacked">
+								<button class="toggle" aria-pressed={draft.stolen[id] ?? false} onclick={() => (draft.stolen[id] = !draft.stolen[id])}>
+									Stolen on a {rules.theft.target}+ – {taken.map((w) => w.name).join(', ')}
+								</button>
+							</div>
+						</section>
+					{/if}
 				</div>
 			</div>
 

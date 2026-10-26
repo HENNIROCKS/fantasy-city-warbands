@@ -133,6 +133,17 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			issues.push({ code: 'wargear-carry', kind: 'excess', ...refused, instanceId: instance.instanceId });
 		}
 
+		const unique = instance.wargear.filter((id) => faction.wargear.find((w) => w.id === id)?.unique);
+		if (unique.length > 1) {
+			issues.push({
+				code: 'wargear-unique',
+				kind: 'excess',
+				message: `${fighter.name} can bear only one of ${unique.map((id) => faction.wargear.find((w) => w.id === id)?.name ?? id).join(', ')}.`,
+				short: 'Bears one already',
+				instanceId: instance.instanceId
+			});
+		}
+
 		const choice = fighter.choice;
 		if (choice) {
 			const picked = instance.picks ?? [];

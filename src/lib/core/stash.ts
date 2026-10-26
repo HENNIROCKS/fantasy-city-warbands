@@ -1,7 +1,8 @@
 /**
  * What the back of the warband card writes: gold added, pieces of the stash
  * sold or thrown away, battles added or struck and the colour, as the Wyrdcry
- * Warband Deck keeps them there, and the name, fluff, notes and campaign
+ * Warband Deck keeps them there, a unique piece taken from the opponent, as a
+ * magic item stolen in battle, and the name, fluff, notes and campaign
  * counters, as the back of a fighter's card has them, and – to take back a
  * tap made by mistake – the searches since the battle and a warband marked
  * disbanded. The draft is held apart
@@ -45,6 +46,8 @@ export interface WarbandBackDraft {
 	/** Sums of gold added, in order; Done writes their total. */
 	goldAdded: number[];
 	stashOut: StashOut[];
+	/** Unique pieces taken from the opponent, such as a magic item, put in the stash on Done. */
+	stashIn: string[];
 	/** The battles as the back shows them, those added on it included. */
 	history: BattleRecord[];
 	/** Battles struck, dropped on Done and brought back until then. */
@@ -65,10 +68,15 @@ export function priceOf(id: string, faction: Faction): number {
 	return faction.wargear.find((w) => w.id === id)?.cost ?? 0;
 }
 
-/** What a piece would sell for, or 0 where the game sells nothing back or the piece has no price. */
+/**
+ * What a piece would sell for: its own `sale`, else the game's price for it –
+ * 0 where the game sells nothing back, the piece has no price or is unique.
+ */
 export function saleOf(id: string, faction: Faction, game: GameSystem): number {
-	const cost = priceOf(id, faction);
-	return cost > 0 && game.salePrice ? game.salePrice(cost) : 0;
+	const piece = faction.wargear.find((w) => w.id === id);
+	if (!piece || piece.unique) return 0;
+	if (piece.sale) return piece.sale;
+	return piece.cost > 0 && game.salePrice ? game.salePrice(piece.cost) : 0;
 }
 
 /** What the draft brings into the gold left: what is added, and what is sold. */
@@ -98,9 +106,10 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 	const stash = warband.stash ?? [];
 	const gone = new Set(draft.stashOut.map((out) => out.index));
 	const removed = draft.stashOut.reduce((sum, { index }) => sum + priceOf(stash[index] ?? '', faction), 0);
+	const taken = draft.stashIn.reduce((sum, id) => sum + priceOf(id, faction), 0);
 	const pending = toRecord(draft.pending);
 	const history = [...draft.history.filter((r) => !draft.removed.includes(r.id)), ...(pending ? [pending] : [])];
-	const changed = draft.goldAdded.length > 0 || gone.size > 0;
+	const changed = draft.goldAdded.length > 0 || gone.size > 0 || draft.stashIn.length > 0;
 	const { fluff: _fluff, notes: _notes, disbanded, ...rest } = warband;
 	const finds = draft.clearSearches ? findsOf(warband) : null;
 	const fluff = draft.fluff.trim();
@@ -113,8 +122,8 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 		...(notes ? { notes } : {}),
 		...(draft.colour || warband.colour !== undefined ? { colour: draft.colour } : {}),
 		...(Object.keys(counted).length || warband.tally ? { tally: counted } : {}),
-		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed } : {}),
-		...(gone.size ? { stash: stash.filter((_, i) => !gone.has(i)) } : {}),
+		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed + taken } : {}),
+		...(gone.size || draft.stashIn.length ? { stash: [...stash.filter((_, i) => !gone.has(i)), ...draft.stashIn] } : {}),
 		...(history.length || warband.history ? { history } : {}),
 		...(finds ? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } } : {}),
 		...(disbanded && !draft.undisband ? { disbanded } : {})

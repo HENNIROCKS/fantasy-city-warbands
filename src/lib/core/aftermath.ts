@@ -53,6 +53,8 @@ export interface AftermathDraft {
 	used: Record<string, number[]>;
 	/** What the roll a used piece asks for came to, by `usedKey`: true for the result that brings the injury. Missing is not yet rolled and changes nothing. */
 	afterUse: Record<string, boolean>;
+	/** For a fighter taken out of action that bears a unique piece, whether the opponent's roll stole it, by instance id. Missing reads as kept. */
+	stolen: Record<string, boolean>;
 	/** Who never rolls, named under the rows. */
 	excluded: string[];
 	/** Who was hired for the battle and leaves with it, and the fee that comes off the gold left. */
@@ -125,6 +127,7 @@ export function startAftermath(
 		surgeon: {},
 		used: {},
 		afterUse: {},
+		stolen: {},
 		marked: [],
 		successor: null,
 		result: null,
@@ -148,6 +151,7 @@ export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: s
 		delete draft.injuries[instanceId];
 		delete draft.recovered[instanceId];
 		delete draft.surgeon[instanceId];
+		delete draft.stolen[instanceId];
 	}
 	const row = draft.rows.find((r) => r.instanceId === instanceId);
 	for (const modifier of rules.modifiers) if (row && modifier.start === 'not-out') row.answers[modifier.key] = !out;
@@ -200,6 +204,12 @@ export function usedInBattle(warband: Warband, faction: Faction, battle: BattleS
 			return places.length ? [[instance.instanceId, places]] : [];
 		})
 	);
+}
+
+/** The unique pieces a fighter bears, such as a magic item, where the game has them stolen from a fighter taken out of action. */
+export function stealable(instance: FighterInstance, faction: Faction, rules: Aftermath): Wargear[] {
+	if (!rules.theft) return [];
+	return instance.wargear.flatMap((id) => faction.wargear.find((w) => w.id === id && w.unique) ?? []);
 }
 
 /** Marks a piece as used up or takes it back, and with it what its roll came to. */
@@ -330,7 +340,8 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * takes what the fighter bought, and a capture or a missed battle marks it.
  * A single-use piece used up is struck before any of it, so a dead fighter
  * leaves none to the stash; a roll it asked for that brought an injury adds
- * that injury to a fighter that lives, unless it has it already. The battle
+ * that injury to a fighter that lives, unless it has it already. A unique
+ * piece the opponent stole is struck before the injury as well. The battle
  * ends the searches made since the one before, whether or not it goes into
  * the history.
  */
@@ -356,6 +367,11 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		if (used.length) {
 			spent += used.reduce((sum, index) => sum + priceOf(fighter.wargear[index], faction), 0);
 			fighter = { ...fighter, wargear: fighter.wargear.filter((_, index) => !used.includes(index)) };
+		}
+		if (draft.out.includes(id) && draft.stolen[id]) {
+			const taken = stealable(fighter, faction, rules).map((w) => w.id);
+			spent += taken.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
+			fighter = { ...fighter, wargear: fighter.wargear.filter((piece) => !taken.includes(piece)) };
 		}
 		const type = faction.fighters.find((f) => f.id === before.fighterId);
 		const resolution = injuryOf(draft, game, faction, fighter);

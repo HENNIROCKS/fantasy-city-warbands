@@ -49,6 +49,8 @@ export interface GameSystem {
 	currencyName?: string;
 	/** What a new warband has to spend. */
 	budget: number;
+	/** What one of its `unique` pieces is called, where it has them: `magic item`. Taken by the warband and added to its stash. */
+	uniqueName?: string;
 	/** In the order the profile prints them. */
 	stats: StatDef[];
 	/** The key of the stat that damage counts down: `health`, `life`. */
@@ -352,6 +354,8 @@ export interface Aftermath {
 	 * the injury result id the fighter gains on `hit`.
 	 */
 	afterUse?: { wargear: string; label: string; hit: string; miss: string; injury: string }[];
+	/** The score that has the opponent steal a `unique` piece from a bearer taken out of action, such as Wyrdcry's magic items on a 4+. */
+	theft?: { target: number };
 	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
@@ -629,6 +633,15 @@ export interface Wargear {
 	singleUse?: true;
 	/** What a single-use piece does from the moment it is used until the battle ends. */
 	used?: WargearUse;
+	/**
+	 * Whether only one exists in the whole campaign, such as Wyrdcry's magic
+	 * items: it is never sold, and a fighter carries one such piece at most.
+	 */
+	unique?: true;
+	/** Whether it is never bought, only found and taken from the stash, such as loot. */
+	foundOnly?: true;
+	/** What it sells for in place of the game's `salePrice`, such as a ring sold for 20 gc. */
+	sale?: number;
 }
 
 /** What using a single-use piece does to its bearer for the rest of the battle, such as Crimson Shade's Move and Fight. */
@@ -878,6 +891,7 @@ export interface Issue {
 		| 'wargear-carry'
 		| 'wargear-rare'
 		| 'wargear-unfound'
+		| 'wargear-unique'
 		| 'legendary'
 		| 'leaders';
 	/** `missing`: not finished yet. `excess`: gone too far, which building never allows. */

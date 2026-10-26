@@ -9,7 +9,8 @@ playing** takes you back to the battle.
    fees here. Leave *Add to the battle history* on to write the battle down.
 2. **Out of action.** Check who was taken out. For each of them, roll on the
    injury table and tap the result. Some results ask one more question, such
-   as the surgeon.
+   as the surgeon. A fighter with a magic item also rolls for it: switch on
+   **Stolen on a 4+** if your opponent took it.
 3. **A new leader.** If your leader died, pick the hero who takes the lead.
 4. **Items used.** The single-use items you ticked on the cards are already
    switched on. Switch on any you forgot to tick.

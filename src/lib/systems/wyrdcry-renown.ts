@@ -170,11 +170,18 @@ const talentOf = (id: string) => talents.find((t) => t.id === id);
 /** The kind of weapon a talent is taken for, such as Weapon Master's melee, or null where it is taken for none. */
 const weaponKind = (talent: Talent): string | null => ('weapon' in talent && talent.weapon) || null;
 
-/** The weapons of a kind a talent can be taken for: what the fighter carries first, then what its faction sells. */
+/**
+ * The weapons of a kind a talent can be taken for: what the fighter carries
+ * first, then what its faction sells – offered to or carried by one of its
+ * fighters, so not a piece only found, such as a magic item or a sword from
+ * the loot of a faction that sells none.
+ */
 function weaponsFor(kind: string, instance: FighterInstance, fighter: Fighter, faction: Faction) {
 	const carried = [...fighter.gear, ...chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []), ...instance.wargear];
 	const seen = new Set<string>();
-	return [...carried, ...faction.wargear.map((w) => w.id)].flatMap((id) => {
+	const offered = new Set(faction.fighters.flatMap((f) => [...f.wargear, ...f.gear, ...(f.choice?.options ?? []).flatMap((o) => o.gear ?? [])]));
+	const sold = faction.wargear.filter((w) => !w.foundOnly && offered.has(w.id)).map((w) => w.id);
+	return [...carried, ...sold].flatMap((id) => {
 		const piece = faction.wargear.find((w) => w.id === id);
 		if (!piece || piece.kind !== kind || seen.has(id)) return [];
 		seen.add(id);

@@ -1,0 +1,49 @@
+[
+  {
+    "id": "skitterflute",
+    "roll": 1,
+    "name": "The Skitterflute",
+    "fluff": "This bone pipe reeks of the sewers, yet its notes carry a soundless tune that the vermin cannot resist.",
+    "text": "Once per battle, the bearer may use the Gnawdoom magical ability without spending the ability dice to do so. Treat the ability value as 6."
+  },
+  {
+    "id": "sceptre-of-count-steinhardt",
+    "roll": 2,
+    "name": "The Sceptre of Count Steinhardt",
+    "fluff": "This gilded and grotesque sceptre enforced count Steinhardt's rule long before anyone dared to ask what he worshipped in the cellars beneath his palace.",
+    "text": "Counts as a Master-Wrought Club. If a melee attack action made by the bearer scores any critical hits, roll a dice. On a 4+, allocate 4 additional damage points to the target.",
+    "counts_as": "weapon:club",
+    "master_wrought": true
+  },
+  {
+    "id": "phylactery-of-cassandora",
+    "roll": 3,
+    "name": "The Phylactery of Cassandora",
+    "fluff": "Wearers struck down vanish in a flash of white light, only to reappear unharmed moments later.",
+    "text": "Cannot be equipped by `VAMPIRES` or `DAEMONS`. Once per battle, when the bearer is the target of an attack action, when the totalled damage is enough to take the bearer out of action, roll a dice. On a 3+, the bearer is not taken out of action, and any damage points that remain to be allocated to the bearer are discarded.",
+    "not_for": ["vampire", "daemon"]
+  },
+  {
+    "id": "von-adelbrechts-compass",
+    "roll": 4,
+    "name": "Von Adelbrecht's Compass",
+    "fluff": "A cracked shard of wyrdstone suspended in a rusted frame. It seems to guide the bearer toward concentrations of lingering spirits.",
+    "text": "When the bearer is selected to explore a district, you may roll one additional exploration dice.",
+    "explore": { "dice": 1 }
+  },
+  {
+    "id": "rope-of-pieter",
+    "roll": 5,
+    "name": "The Rope of Pieter",
+    "fluff": "Twisted from shreds of old state banners, this rope stirs as though it has a will of its own, lengthening and coiling tight again at a whispered word.",
+    "text": "Counts as a Rope and Hook. The bearer counts as flying in the first move action they make each battle round.",
+    "counts_as": "item:rope-and-hook"
+  },
+  {
+    "id": "grimoire-of-the-howling-choir",
+    "roll": 6,
+    "name": "Grimoire of the Howling Choir",
+    "fluff": "This grimoire is bound in scorched skin, and holds no spells but the sound of that fateful night when the comet struck. Open it, and the city screams again.",
+    "text": "The bearer can open or close the grimoire as a free action. While opened, no fighter within 6\" of the bearer (including the bearer) can use reactions or abilities."
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "tables": [
+    {
+      "id": "lesser",
+      "name": "Lesser Loot Table",
+      "dice": "2D6",
+      "rows": [
+        { "roll": "2", "text": "Some lint and 1 gold coin.", "gain": [{ "gold": 1 }] },
+        { "roll": "3", "text": "A set of dice, carved from human bones. Counts as a lucky charm.", "gain": [{ "wargear": "item:lucky-charm" }] },
+        { "roll": "4", "text": "Bejewelled Dagger. Can be sold for 15gc.", "gain": [{ "wargear": "loot:bejewelled-dagger" }] },
+        { "roll": "5", "text": "Ornate Key. Can be discarded after making an exploration roll to modify the value of an exploration die.", "gain": [{ "wargear": "loot:ornate-key" }] },
+        { "roll": "6", "text": "Rusty Ostlander Sword, notched from use.", "gain": [{ "wargear": "weapon:sword" }] },
+        { "roll": "7", "text": "Sack of teeth. The fillings can be sold for d3x10 gold coins.", "gain": [{ "gold": "d3x10" }] },
+        { "roll": "8", "text": "Waxed parchment map, half burned away. Find another to make a Mordheim Map.", "gain": [{ "wargear": "loot:half-burned-map" }] },
+        { "roll": "9", "text": "A battered Cuirass. With a little elbow grease, it'll count as light armour.", "gain": [{ "wargear": "item:light-armour" }] },
+        { "roll": "10", "text": "A Wyrdstone Shard, ice cold to the touch.", "gain": [{ "shards": 1 }] },
+        { "roll": "11", "text": "Noble Signet Ring. Can be handed over to your faction for 1 Favour or sold for 20gc.", "gain": [{ "wargear": "loot:signet-ring" }] },
+        { "roll": "12", "text": "Rare find. Roll once on the Greater Loot Table.", "gain": [{ "table": "greater" }] }
+      ]
+    },
+    {
+      "id": "greater",
+      "name": "Greater Loot Table",
+      "dice": "D6",
+      "rows": [
+        { "roll": "1", "text": "An iron lockbox containing D3 Wyrdstone Shards.", "gain": [{ "shards": "d3" }] },
+        { "roll": "2", "text": "Old Dueling Pistol.", "gain": [{ "wargear": "weapon:pistol" }] },
+        { "roll": "3", "text": "A dusty old Grimoire.", "gain": [{ "wargear": "item:grimoire" }] },
+        { "roll": "4", "text": "D3+1 vials of Crimson Shade.", "gain": [{ "wargear": "item:crimson-shade", "copies": "d3+1" }] },
+        { "roll": "5", "text": "Holy Relic.", "gain": [{ "wargear": "item:holy-relic" }] },
+        { "roll": "6", "text": "Magical Item. Roll a d6 to determine which one.", "gain": [{ "magic": true }] }
+      ]
+    }
+  ],
+  "pieces": [
+    {
+      "id": "bejewelled-dagger",
+      "name": "Bejewelled Dagger",
+      "text": "Can be sold for 15gc.",
+      "sale": 15
+    },
+    {
+      "id": "ornate-key",
+      "name": "Ornate Key",
+      "text": "Can be discarded after making an exploration roll to modify the value of an exploration die.",
+      "explore": { "set": 1, "discard": true }
+    },
+    {
+      "id": "half-burned-map",
+      "name": "Half-burned Map",
+      "text": "Waxed parchment map, half burned away. Find another to make a Mordheim Map.",
+      "makes": { "of": 2, "into": "item:mordheim-map" }
+    },
+    {
+      "id": "signet-ring",
+      "name": "Noble Signet Ring",
+      "text": "Can be handed over to your faction for 1 Favour or sold for 20gc.",
+      "sale": 20,
+      "favour": 1
+    }
+  ]
+}

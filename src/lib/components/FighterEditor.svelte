@@ -89,6 +89,8 @@
 		return faction.wargear.find((w) => w.id === id)?.cost ?? 0;
 	}
 
+	const foundOnly = (id: string) => !!faction.wargear.find((w) => w.id === id)?.foundOnly;
+
 	/* The wargear on offer opens below the list as a checklist, each piece ticked where the fighter carries it. */
 	let adding = $state(false);
 
@@ -112,7 +114,8 @@
 	   order the faction lists them. */
 	const groups = $derived.by(() => {
 		if (!fighter) return [];
-		const sold = faction.wargear.filter((w) => fighter.wargear.includes(w.id));
+		/* What is only found, such as a magic item, is never bought: it stands only where the fighter bears it, ticked and locked. */
+		const sold = faction.wargear.filter((w) => fighter.wargear.includes(w.id) && (!w.foundOnly || countOf(w.id) > 0));
 		const own = [...new Set(sold.flatMap((w) => (w.group ? [w.group] : [])))];
 		return [
 			...KINDS.map(({ kind, label }) => ({ label, sold: sold.filter((w) => w.kind === kind && !w.group) })),
@@ -389,10 +392,12 @@
 						</li>
 					{/each}
 					{#each instance.wargear as id, index (index)}
+						<!-- What is only found was never paid for, and goes back to the stash on the back of the card, not away. -->
+						{@const onlyFound = foundOnly(id)}
 						<li class="wargear-row">
 							<span class="wargear-cell">{nameOf(id)}</span>
-							<span class="wargear-cell wargear-cost">{costOf(id)}&nbsp;{game.currency}</span>
-							{#if countOf(id) > paidOf(id)}
+							<span class="wargear-cell wargear-cost">{#if onlyFound}found{:else}{costOf(id)}&nbsp;{game.currency}{/if}</span>
+							{#if !onlyFound && countOf(id) > paidOf(id)}
 								<button
 									type="button"
 									class="wargear-remove"
@@ -439,7 +444,8 @@
 											{@const block = refused?.code === 'wargear-unfound' && left === 0 && rarity?.searchers.length ? null : refused}
 											{@const spent = !count && !!w.found && !!rarity && !left && !rarity.searchers.length}
 											{@const kept = paidOf(w.id)}
-											{@const locked = !!block || kept > 0 || spent}
+											{@const onlyFound = !!w.foundOnly}
+											{@const locked = !!block || kept > 0 || spent || onlyFound}
 											<li class="check-row">
 												<label class="check-box">
 													<input
@@ -462,14 +468,15 @@
 													onclick={() => (reading = reading === w.id ? null : w.id)}
 												>
 													<span class="check-name">{w.name}</span>
-													<span class="check-cost">{Math.max(count, 1) * w.cost}&nbsp;{game.currency}</span>
+													<span class="check-cost">{#if onlyFound}found{:else}{Math.max(count, 1) * w.cost}&nbsp;{game.currency}{/if}</span>
 												</button>
 												{#if block}<span class="check-why">{block.short}</span>
+												{:else if onlyFound}<span class="check-why">Found – to the stash on its card</span>
 												{:else if kept}<span class="check-why">Paid for – to the stash on its card</span>
 												{:else if spent}<span class="check-why">Rare – every {game.rarity?.keyword.toUpperCase()} has searched</span>
 												{:else if left}<span class="check-why">Found – {left} left</span>
 												{:else if w.found && !count}<span class="check-why">Rare – {w.found} first</span>{/if}
-												{#if count > 1 || (count === 1 && !blocked(w.id))}
+												{#if !onlyFound && (count > 1 || (count === 1 && !blocked(w.id)))}
 													<div class="check-second">
 														<button type="button" aria-pressed={count > 1} disabled={count > 1 && kept >= count} onclick={() => pair(w.id)}>
 															<span>{count > 1 ? '✓' : '+'} Two<span class="sr-only"> {w.name}</span>{pairFor(w)}</span>
