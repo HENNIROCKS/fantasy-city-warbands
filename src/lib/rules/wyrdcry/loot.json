@@ -37,6 +37,7 @@
       "id": "bejewelled-dagger",
       "name": "Bejewelled Dagger",
       "text": "Can be sold for 15gc.",
+      "counts_as": "weapon:dagger",
       "sale": 15
     },
     {
