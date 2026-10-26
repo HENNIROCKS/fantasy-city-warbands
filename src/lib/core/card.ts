@@ -6,7 +6,7 @@
  */
 
 import type { BattleLayer, UsedPiece } from './battle';
-import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Rule, StatFormat, Wargear, Warband } from './types';
+import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, NextBattle, Rule, StatFormat, Wargear, Warband } from './types';
 import { LEADER, activeEffects, pickedStats, reaches, type ActiveEffect } from './effects';
 import { keywordsOf } from './leader';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
@@ -234,13 +234,14 @@ export function heldUses(used: UsedPiece[], carried: string[], faction: Faction)
 	});
 }
 
-/** `used` are the single-use pieces the fighter used in the battle running. */
+/** `used` are the single-use pieces the fighter used in the battle running, `next` what the warband's last exploring left for its next battle. */
 export function fighterCard(
 	instance: FighterInstance,
 	faction: Faction,
 	game: GameSystem,
 	picks: Record<string, string[]> = {},
-	used: UsedPiece[] = []
+	used: UsedPiece[] = [],
+	next: NextBattle[] = []
 ): FighterCardData {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
@@ -420,6 +421,8 @@ export function fighterCard(
 
 	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
 	const statLayers = fighter ? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
+	/* What the last exploring left for this battle, such as the Mad Prophet's Bravery, on every fighter. */
+	for (const n of next) if (n.stat && n.stat.bonus) statLayers.get(n.stat.key)?.push({ kind: 'battle', source: n.source, amount: n.stat.bonus });
 	const statConditions = conditionsOf(carried.map((c) => c.wargear));
 
 	return {

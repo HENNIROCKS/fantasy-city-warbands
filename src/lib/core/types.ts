@@ -391,7 +391,10 @@ export type FindAmount = number | { roll: string; values: number[] };
  * as Captured as Dead –, levels, a result of the injury table it keeps, one of
  * its [injury] results taken away, its leaving the warband, a characteristic
  * changed for good; `each` counts the dice of a roll that show each result,
- * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster.
+ * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster. `recruit` adds a
+ * fighter of a type picked – carrying `keyword`, costing less than `below`,
+ * for nothing where `free`, its characteristics set as `set` says –, `next`
+ * what the warband's next battle brings.
  */
 export type FindGain =
 	| { gold: FindAmount }
@@ -406,7 +409,24 @@ export type FindGain =
 	| { heal: true }
 	| { remove: true }
 	| { stat: { key: string; bonus: number } }
-	| { each: { dice: number; results: { on: string; label: string; gains: FindGain[] }[] } };
+	| { each: { dice: number; results: { on: string; label: string; gains: FindGain[] }[] } }
+	| { recruit: { keyword: string; below: number; free?: boolean; set?: Record<string, number> } }
+	| { next: Omit<NextBattle, 'source'> };
+
+/**
+ * What an encounter leaves for the warband's next battle, such as Wyrdcry's
+ * Mad Prophet: a line for the warband card, and what the app counts of it – a
+ * characteristic of every fighter, one hired sword for nothing – or, where
+ * `explore`, a help for the next exploration roll instead.
+ */
+export interface NextBattle {
+	/** The encounter's name. */
+	source: string;
+	text: string;
+	stat?: { key: string; bonus: number };
+	freeHire?: true;
+	explore?: true;
+}
 
 /** One answer to an encounter that asks: a choice made, or a roll's result. */
 export interface FindOption {
@@ -949,6 +969,8 @@ export interface Warband {
 	history?: BattleRecord[];
 	/** What was looked for at the table since the last battle, where the game has a `rarity` roll. */
 	finds?: Finds;
+	/** What the last aftermath's exploring left for the next battle; the next aftermath clears it. */
+	next?: NextBattle[];
 	/** Whether it lost its leader with no fighter left to take the lead, so the game has it disbanded. */
 	disbanded?: true;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */

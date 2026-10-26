@@ -25,9 +25,10 @@ playing** takes you back to the battle.
    Some finds ask for one more roll, such as the gold in a Sack of Teeth. A
    magic item you already have cannot be tapped: roll again. An encounter that
    sends a fighter to the injury table adds a page for that roll after this
-   one, and a leader lost there one for the new leader. Some encounters do
-   things the app does not keep yet, such as a new recruit. The page says so –
-   note those by hand.
+   one, and a leader lost there one for the new leader. For a Lone Survivor,
+   tap the henchman who joins: free, with a Move of 3. What an encounter leaves
+   for the next battle, such as the Mad Prophet's Bravery or a free hired
+   sword, stands on the warband card until the next aftermath.
 7. **Income.** Count the shards you delivered. The page shows what the search
    party found and the favour and gold the battle brings. Hired swords show
    their fees here. A roll you have not tapped yet is listed.

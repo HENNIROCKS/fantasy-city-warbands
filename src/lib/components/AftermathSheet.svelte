@@ -37,6 +37,7 @@
 		pickEncounter,
 		pickFighter,
 		pickOption,
+		recruitPath,
 		tableOf,
 		toggleParty,
 		uniquesPicked,
@@ -45,6 +46,8 @@
 	} from '$lib/core/explore';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
+	import { newExcess, validate } from '$lib/core/validate';
+	import { withFighter } from '$lib/core/warband';
 	import type { Aftermath, BattleRecord, Encounter, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
 
 	/*
@@ -229,6 +232,14 @@
 			return (!who.keyword || keywords.includes(who.keyword)) && (!who.injured || injuredWith(id).length > 0);
 		});
 	}
+	/* The fighter types a recruit may be, each with why it cannot join: one that would take the warband past a limit is locked, as recruiting in the builder is. */
+	function recruitsOf(recruit: { keyword: string; below: number }) {
+		const effects = activeEffects(warband, faction);
+		const before = validate(warband, game, faction);
+		return faction.fighters
+			.filter((type) => type.keywords.includes(recruit.keyword) && recruitCost(type, effects) < recruit.below)
+			.map((type) => ({ type, cost: recruitCost(type, effects), blocked: newExcess(before, withFighter(warband, type.id, faction, game), game, faction)?.short ?? null }));
+	}
 	/* What an encounter does to a fighter, as the income page lists it. */
 	function fighterLine(find: FighterFind): string {
 		const parts = [
@@ -350,6 +361,21 @@
 									<span class="line">{wargearName(id)}{blocked ? ` – ${blocked}` : ''}</span>
 								</button>
 							</div>
+						{/each}
+					</div>
+				{:else if 'recruit' in gain}
+					{@const key = recruitPath(at)}
+					<p class="caption" id="recruit-{answer.roll}-{at}">Who joins</p>
+					<div class="toggles stacked" role="group" aria-labelledby="recruit-{answer.roll}-{at}">
+						{#each recruitsOf(gain.recruit) as { type, cost, blocked } (type.id)}
+							<button
+								class="toggle"
+								aria-pressed={answer.picks[key] === type.id}
+								disabled={blocked !== null && answer.picks[key] !== type.id}
+								onclick={() => pickAt(answer, key, type.id)}
+							>
+								{type.name} – {gain.recruit.free ? `${cost} ${game.currency}, free` : `${cost} ${game.currency}`}{blocked ? ` – ${blocked}` : ''}
+							</button>
 						{/each}
 					</div>
 				{:else if 'heal' in gain && answer.fighter}
@@ -878,6 +904,15 @@
 						<ul class="list">
 							{#each earned.found?.lines ?? [] as line, i (i)}
 								<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
+							{/each}
+							{#each earned.found?.recruits ?? [] as recruit, i (i)}
+								<li>
+									<span class="line"
+										><span class="gain">{faction.fighters.find((t) => t.id === recruit.fighterId)?.name ?? recruit.fighterId}</span> – {recruit.source}, joins the warband{recruit.free
+											? ' for nothing'
+											: ''}</span
+									>
+								</li>
 							{/each}
 							{#each earned.found?.fighters ?? [] as find, i (i)}
 								<li><span class="line"><span class="gain">{nameOf(find.instanceId)}</span> – {find.source}: {fighterLine(find)}</span></li>

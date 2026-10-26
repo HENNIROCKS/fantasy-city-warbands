@@ -7,7 +7,7 @@
  * another answer, drops what was answered under it.
  */
 
-import type { Encounter, Explore, FindAmount, FindGain, FindTable } from './types';
+import type { Encounter, Explore, FindAmount, FindGain, FindTable, NextBattle } from './types';
 
 /** One encounter and what was answered under it. */
 export interface EncounterAnswer {
@@ -80,7 +80,14 @@ export interface Finds {
 	open: string[];
 	/** What falls on a fighter the encounters picked, one entry for each encounter. */
 	fighters: FighterFind[];
+	/** Fighters joining the warband, by the type picked. */
+	recruits: { fighterId: string; free: boolean; set: Record<string, number>; source: string }[];
+	/** What the next battle brings. */
+	next: NextBattle[];
 }
+
+/** Where the fighter type a `recruit` gain adds is picked, under the gain's path. */
+export const recruitPath = (at: string) => `${at}:recruit`;
 
 /** What an encounter does to the fighter it picked. */
 export interface FighterFind {
@@ -198,7 +205,7 @@ export function uniquesPicked(explore: Explore, encounters: EncounterAnswer[]): 
  * picked from the search party that has left it is picked no more.
  */
 export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: string[], name: (id: string) => string, currency: string): Finds {
-	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [], fighters: [] };
+	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [], fighters: [], recruits: [], next: [] };
 	for (const answer of encounters) {
 		const encounter = encounterOf(explore, answer);
 		const source = encounter?.name ?? '';
@@ -249,6 +256,13 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 						finds.stash.push(id);
 						finds.lines.push({ gain: name(id), why: `– ${source}, to the stash` });
 					} else finds.open.push(`${source} – roll ${gain.unique.roll}`);
+				} else if ('recruit' in gain) {
+					const fighterId = answer.picks[recruitPath(at)];
+					if (fighterId) finds.recruits.push({ fighterId, free: !!gain.recruit.free, set: gain.recruit.set ?? {}, source });
+					else finds.open.push(`${source} – pick the fighter who joins`);
+				} else if ('next' in gain) {
+					finds.next.push({ ...gain.next, source });
+					finds.lines.push({ gain: gain.next.explore ? 'Next exploration' : 'Next battle', why: `– ${source}: ${gain.next.text}` });
 				} else if (on) {
 					if ('injuryRoll' in gain) on.roll = { treat: gain.injuryRoll.treat ?? {} };
 					else if ('levels' in gain) on.levels += gain.levels;

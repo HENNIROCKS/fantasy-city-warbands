@@ -11,7 +11,7 @@
  * two states is newer.
  */
 
-import type { Advance, AwayReason, BattleRecord, FighterInstance, Finds, Warband } from './types';
+import type { Advance, AwayReason, BattleRecord, FighterInstance, Finds, NextBattle, Warband } from './types';
 import { today } from './history';
 import { sameWarband } from './warband';
 
@@ -64,6 +64,22 @@ const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 const isStrings = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');
 const isNumber = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const isTally = (v: unknown): v is Record<string, number> => isObject(v) && Object.values(v).every(isNumber);
+
+/** What the last exploring left for the next battle, as the app writes it. */
+function readNext(raw: unknown): NextBattle | null {
+	if (!isObject(raw)) return null;
+	const { source, text, stat, freeHire, explore } = raw;
+	if (typeof source !== 'string' || typeof text !== 'string') return null;
+	if (stat !== undefined && !(isObject(stat) && typeof stat.key === 'string' && isNumber(stat.bonus))) return null;
+	if ((freeHire !== undefined && freeHire !== true) || (explore !== undefined && explore !== true)) return null;
+	return {
+		source,
+		text,
+		...(stat !== undefined ? { stat: { key: (stat as { key: string }).key, bonus: (stat as { bonus: number }).bonus } } : {}),
+		...(freeHire ? { freeHire: true as const } : {}),
+		...(explore ? { explore: true as const } : {})
+	};
+}
 
 function readAdvance(raw: unknown): Advance | null {
 	if (!isObject(raw)) return null;
@@ -157,7 +173,7 @@ function readFighter(raw: unknown): FighterInstance | null {
  */
 function readWarband(raw: unknown): Warband | null {
 	if (!isObject(raw)) return null;
-	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, finds, disbanded, tally } = raw;
+	const { id, game, factionId, name, picks, fighters, colour, fluff, notes, updatedAt, gold, stash, history, finds, disbanded, tally, next } = raw;
 	if (typeof id !== 'string' || typeof game !== 'string' || typeof factionId !== 'string' || typeof name !== 'string') return null;
 	if (!isObject(picks) || !Object.values(picks).every(isStrings) || !Array.isArray(fighters)) return null;
 	const read = fighters.map(readFighter);
@@ -172,6 +188,8 @@ function readWarband(raw: unknown): Warband | null {
 	const searches = finds === undefined ? undefined : readFinds(finds);
 	if (searches === null) return null;
 	if (disbanded !== undefined && disbanded !== true) return null;
+	const later = next === undefined ? undefined : readAll(next, readNext);
+	if (later === null) return null;
 	return {
 		id,
 		game,
@@ -186,6 +204,7 @@ function readWarband(raw: unknown): Warband | null {
 		...(stash !== undefined ? { stash } : {}),
 		...(records !== undefined ? { history: records } : {}),
 		...(searches !== undefined ? { finds: searches } : {}),
+		...(later !== undefined ? { next: later } : {}),
 		...(disbanded ? { disbanded } : {}),
 		...(tally !== undefined ? { tally } : {}),
 		...(updatedAt !== undefined ? { updatedAt: updatedAt as string } : {})

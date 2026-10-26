@@ -18,7 +18,7 @@ import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { standingRaised, type UnderdogState } from './underdog';
-import { newId } from './warband';
+import { newId, profileOf, withFighter } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
@@ -463,7 +463,9 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * piece the opponent stole is struck before the injury as well. What the
  * search party found comes in with the income (`earnedOf`); what an encounter
  * does to the fighter it picked, its injury roll included, comes after the
- * fighter's renown, as exploring follows the renown roll. The battle
+ * fighter's renown, as exploring follows the renown roll; a fighter it brings
+ * joins last, and what it leaves for the next battle replaces what the battle
+ * before left. The battle
  * ends the searches made since the one before, whether or not it goes into
  * the history.
  */
@@ -558,14 +560,32 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		}
 		return [fighter];
 	});
-	const { finds: _finds, ...rest } = warband;
-	const applied: Warband = {
+	const { finds: _finds, next: _next, ...rest } = warband;
+	let applied: Warband = {
 		...rest,
 		gold: earned.gold - spent,
 		tally: earned.tally,
 		...(stash.length || warband.stash ? { stash } : {}),
 		...(record ? { history: [...(warband.history ?? []), record] } : {}),
+		...(earned.found?.next.length ? { next: earned.found.next } : {}),
 		fighters
 	};
+	/* A fighter an encounter brings joins last, its characteristics set as level-0 advances naming the encounter; one that comes for nothing raises the purse by its cost. */
+	for (const recruit of earned.found?.recruits ?? []) {
+		const type = faction.fighters.find((f) => f.id === recruit.fighterId);
+		if (!type) continue;
+		const known = new Set(applied.fighters.map((f) => f.instanceId));
+		applied = withFighter(applied, recruit.fighterId, faction, game);
+		const profile = profileOf({ instanceId: '', fighterId: type.id, name: '', wargear: [] }, type, effects);
+		const advances = Object.entries(recruit.set).flatMap(([key, value]) => {
+			const start = profile[key];
+			return typeof start === 'number' && value !== start ? [{ level: 0, stat: key, bonus: value - start, source: recruit.source }] : [];
+		});
+		applied = {
+			...applied,
+			...(recruit.free ? { gold: (applied.gold ?? 0) + recruitCost(type, effects) } : {}),
+			fighters: applied.fighters.map((f) => (known.has(f.instanceId) || !advances.length ? f : { ...f, advances: [...(f.advances ?? []), ...advances] }))
+		};
+	}
 	return disbandedAfter(applied, faction, game, leaderOf(warband, faction));
 }
