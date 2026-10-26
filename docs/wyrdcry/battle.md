@@ -5,6 +5,10 @@ The cards count the battle for you. You still roll the dice and move the models.
 **Start.** Tap **Battle → Start battle** under the warband card. Your first
 tap on a fighter starts it too.
 
+**From the last exploring.** What your search party left for this battle,
+such as the Mad Prophet's Bravery, stands on the warband card. The fighters'
+cards count it in.
+
 **Damage.** Under a fighter's card, **−** takes one point of health and
 **+** gives it back. From half its health on, rounding up, the card says
 *Wounded*. At none the fighter is out of action, and you hear a scream. You

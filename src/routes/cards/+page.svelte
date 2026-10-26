@@ -140,7 +140,7 @@
 	const hiredFees = $derived(warband && hiring && battle ? hiring.fees(warband, battle.hired) : []);
 	/* The warband as the underdog of the battle being set up or fought, and whether its debt still hires one for nothing. */
 	const underdog = $derived(warband && system ? underdogOf(system.game.underdog, warband, battle) : null);
-	const owedFree = $derived(freeHireOpen(underdog, battle));
+	const owedFree = $derived(!!warband && freeHireOpen(underdog, battle, warband));
 
 	/** What a hired fighter picked when it was hired, such as the Goblin Shaman's role, by name. */
 	const pickedName = (fighterId: string, picks: string[] = []) =>
@@ -182,13 +182,21 @@
 		}));
 		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;
 		/* The underdog's bonuses stand on the warband's card while the battle lasts, as reminders for the table. */
-		const reminders = underdog
-			? [
-					{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.` },
-					...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
-				]
-			: [];
-		return [{ ...own, roster, reminders }, ...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks, stateOf(battle, f.instanceId).used)), ...hired];
+		const reminders = [
+			...(underdog
+				? [
+						{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.` },
+						...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
+					]
+				: []),
+			/* What the last exploring left for this battle stands there too; a help for the next exploration is asked in the aftermath instead. */
+			...(w.next ?? []).filter((n) => !n.explore).map((n) => ({ label: `(Next battle) ${n.source}`, text: n.text }))
+		];
+		return [
+			{ ...own, roster, reminders },
+			...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks, stateOf(battle, f.instanceId).used, w.next)),
+			...hired
+		];
 	});
 	/** Where the builder names the warband, or the fighter in its editor. */
 	function nameField(card: DeckCard): string {
@@ -976,7 +984,9 @@
 				<p class="notice mb-3">{hiring.discount(warband)}</p>
 			{/if}
 			{#if owedFree}
-				<p class="notice mb-3">{underdog?.picked.find((b) => b.effect === 'free-hire')?.name} (Underdog): the next one hired costs nothing.</p>
+				{@const debt = underdog?.picked.find((b) => b.effect === 'free-hire')}
+				{@const rescue = warband?.next?.find((n) => n.freeHire)}
+				<p class="notice mb-3">{[debt ? `${debt.name} (Underdog)` : '', rescue ? rescue.source : ''].filter(Boolean).join(', ')}: the next one hired costs nothing.</p>
 			{/if}
 			<div class="max-h-[60dvh] space-y-2 overflow-y-auto">
 				{#if halving}

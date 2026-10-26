@@ -3,12 +3,12 @@
  * pp. 9 and 18–26): the encounters, the two loot tables and the magic items,
  * from `encounters.json` and `loot.json` in the shared form. What the app
  * keeps – gold, shards, favour, a piece into the stash, a roll on a loot
- * table, a magic item, and what falls on the fighter an encounter picks –
- * becomes a gain; anything else an encounter does, such as a recruit, is
- * marked to be noted by hand.
+ * table, a magic item, what falls on the fighter an encounter picks, a
+ * recruit, what the next battle or exploration brings – becomes a gain;
+ * anything else is marked to be noted by hand.
  */
 
-import type { Encounter, Explore, FindAmount, FindGain, FindOption, FindTable, Warband } from '$lib/core/types';
+import type { Encounter, Explore, FindAmount, FindGain, FindOption, FindTable, NextBattle, Warband } from '$lib/core/types';
 
 import encounters from '$lib/rules/wyrdcry/encounters.json';
 import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
@@ -48,6 +48,15 @@ const WHO: Record<string, Encounter['who']> = {
 /* Under the headings of the Campaign Book's list, p. 9, by the number of dice alike. */
 const GROUPS: Record<number, string> = { 2: 'Doubles', 3: 'Triples', 4: 'Quads' };
 
+/* What an encounter leaves for later, as the data names it: the Mad Prophet, the Shrine and To the Rescue for the next battle, the Tower for the next exploration (pp. 18–22). Bravery is a roll to meet, so improving it takes 1 off. */
+const NEXT: Record<string, Omit<NextBattle, 'source'>> = {
+	'bravery-improved': { text: 'Improve the Bravery of every fighter by 1.', stat: { key: 'bravery', bonus: -1 } },
+	'bravery-worsened': { text: 'Worsen the Bravery of every fighter by 1.', stat: { key: 'bravery', bonus: 1 } },
+	'wyrd-die': { text: 'Begin the battle with one additional Wyrd Dice.' },
+	'free-hire': { text: 'Recruit a HIRED SWORD without paying their recruitment fee.', freeHire: true },
+	'set-die': { text: 'After the exploration roll, you may change 1 dice result to a value of your choice.', explore: true }
+};
+
 /* The magic items in the order the d6 picks them, p. 25. */
 const MAGIC = { roll: 'D6', wargear: [...magicItems].sort((a, b) => a.roll - b.roll).map((m) => `magic:${m.id}`) };
 
@@ -80,6 +89,11 @@ function gainsOf(actions: RawAction[]): { gains: FindGain[]; byHand: boolean } {
 		else if ('renown' in action && typeof action.renown === 'number') gains.push({ levels: action.renown });
 		else if ('heal' in action) gains.push({ heal: true });
 		else if ('remove' in action) gains.push({ remove: true });
+		else if ('recruit' in action) {
+			const r = action.recruit as { keyword: string; below: number; free?: boolean; set?: Record<string, number> };
+			gains.push({ recruit: { keyword: r.keyword, below: r.below, ...(r.free ? { free: true } : {}), ...(r.set ? { set: r.set } : {}) } });
+		} else if (('next_battle' in action || 'next_explore' in action) && NEXT[String(action.next_battle ?? action.next_explore)])
+			gains.push({ next: NEXT[String(action.next_battle ?? action.next_explore)] });
 		else if ('stat' in action) {
 			for (const [key, bonus] of Object.entries(action.stat as Record<string, number>)) gains.push({ stat: { key, bonus } });
 		} else byHand = true;
@@ -202,10 +216,13 @@ export const explore: Explore = {
 		}
 		return { count, why: by.length ? by.join(', ') : null };
 	},
-	aids: (warband, party) =>
-		pieces.flatMap(({ id, name, aid }) => {
+	aids: (warband, party) => [
+		/* The Tower's help, left by the exploration before. */
+		...(warband.next ?? []).filter((n) => n.explore).map((n) => ({ text: `${n.source}: ${n.text}` })),
+		...pieces.flatMap(({ id, name, aid }) => {
 			if (aid.discard) return (warband.stash ?? []).includes(id) ? [{ text: `${name} from the stash: ${aidText(aid)}.`, spend: id }] : [];
 			const bearers = party.filter((p) => warband.fighters.find((f) => f.instanceId === p)?.wargear.includes(id));
 			return bearers.length ? [{ text: `${name} (${bearers.map((b) => nameOf(warband, b)).join(', ')}): ${aidText(aid)}.` }] : [];
 		})
+	]
 };

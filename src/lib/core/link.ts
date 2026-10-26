@@ -18,7 +18,7 @@ type Shown = Omit<Warband, 'id' | 'fighters'> & { fighters: Omit<Warband['fighte
 
 /** The warband as the opponent sees it: what its cards need, nothing to remember it by. */
 function shown(warband: Warband): Shown {
-	const { id: _id, fluff: _fluff, notes: _notes, history: _history, finds: _finds, updatedAt: _updatedAt, ...rest } = warband;
+	const { id: _id, fluff: _fluff, notes: _notes, history: _history, finds: _finds, next: _next, updatedAt: _updatedAt, ...rest } = warband;
 	return { ...rest, fighters: warband.fighters.map(({ instanceId: _instanceId, fluff: _fluff, notes: _notes, ...fighter }) => fighter) };
 }
 

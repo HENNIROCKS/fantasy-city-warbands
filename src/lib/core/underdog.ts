@@ -38,6 +38,9 @@ export function underdogOf(rules: Underdog | undefined, warband: Warband, battle
 /** The bonus that hires without a fee, where the game has one. */
 const freeHire = (rules: Underdog) => rules.bonuses.find((b) => b.effect === 'free-hire')?.id;
 
+/** The hires the last exploring left for nothing, such as Wyrdcry's To the Rescue, besides any debt called in. */
+const rescued = (warband: Warband) => (warband.next ?? []).filter((n) => n.freeHire).length;
+
 /**
  * The battle with the opponent's figure, starting it if none is running, as
  * hiring does. Where it now allows fewer bonuses, the last picked go first –
@@ -50,15 +53,16 @@ export function setOpponent(battle: BattleState | null, rules: Underdog, warband
 	if (!battle && !allowed) return null;
 	let current = battle ?? start();
 	const debt = freeHire(rules);
-	const owed = current.hired.some((h) => h.free);
+	const owed = current.hired.filter((h) => h.free).length > rescued(warband);
 	const bonuses = [...(current.underdog?.bonuses ?? [])];
 	while (bonuses.length > allowed) {
 		const last = bonuses.findLastIndex((id) => !(owed && id === debt));
 		bonuses.splice(last >= 0 ? last : bonuses.length - 1, 1);
 	}
-	for (const h of current.hired) {
-		if (h.free && !(debt && bonuses.includes(debt))) current = release(current, h.instanceId);
-	}
+	/* The hires for nothing beyond what is still owed go, the last hired first. */
+	const room = (debt && bonuses.includes(debt) ? 1 : 0) + rescued(warband);
+	const free = current.hired.filter((h) => h.free);
+	for (const h of free.slice(room)) current = release(current, h.instanceId);
 	if (opponent === null) {
 		const { underdog: _asked, ...unasked } = current;
 		return unasked;
@@ -71,7 +75,7 @@ export function bonusBlocked(rules: Underdog, warband: Warband, battle: BattleSt
 	const state = underdogOf(rules, warband, battle);
 	if (!state || !battle) return 'Not the underdog';
 	const picked = state.picked.some((b) => b.id === bonus.id);
-	if (picked) return bonus.effect === 'free-hire' && battle.hired.some((h) => h.free) ? 'Send the free hired sword away first' : null;
+	if (picked) return bonus.effect === 'free-hire' && battle.hired.filter((h) => h.free).length > rescued(warband) ? 'Send the free hired sword away first' : null;
 	if (state.picked.length >= state.allowed) return `${state.allowed} ${state.allowed === 1 ? 'bonus' : 'bonuses'} only`;
 	return rules.refuse?.(warband, bonus) ?? null;
 }
@@ -84,9 +88,10 @@ export function toggleBonus(rules: Underdog, warband: Warband, battle: BattleSta
 	return { ...battle, underdog: { ...battle.underdog, bonuses: next } };
 }
 
-/** Whether the next one hired comes without a fee: the debt is called in and nobody has been hired on it yet. */
-export function freeHireOpen(state: UnderdogState | null, battle: BattleState | null): boolean {
-	return !!state?.picked.some((b) => b.effect === 'free-hire') && !battle?.hired.some((h) => h.free);
+/** Whether the next one hired comes without a fee: the debt is called in, or the last exploring left one, and not every one owed is hired yet. */
+export function freeHireOpen(state: UnderdogState | null, battle: BattleState | null, warband: Warband): boolean {
+	const owed = (state?.picked.some((b) => b.effect === 'free-hire') ? 1 : 0) + rescued(warband);
+	return owed > (battle?.hired.filter((h) => h.free).length ?? 0);
 }
 
 /** How many standings higher the income is collected at. */

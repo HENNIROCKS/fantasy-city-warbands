@@ -33,8 +33,9 @@ the dearest one for you. If a hero has the talent *Well-Connected*, roll the
 dice at the table. On a 4+, switch on **rolled 4+** before you tap the hired
 sword.
 
-**Free.** If you picked *Calling in a debt* as the [underdog](underdog.md), the
-next one you hire costs nothing. Send it away and the next one is free instead.
+**Free.** If you picked *Calling in a debt* as the [underdog](underdog.md), or
+your search party found *To the Rescue*, the next one you hire costs nothing.
+Send it away and the next one is free instead.
 
 **In the battle.** Its card comes after your fighters, and the warband card
 lists it under *Hired swords*; tap its name to go there. It carries the fluff
