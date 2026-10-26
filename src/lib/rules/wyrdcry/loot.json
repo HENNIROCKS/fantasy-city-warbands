@@ -5,17 +5,17 @@
       "name": "Lesser Loot Table",
       "dice": "2D6",
       "rows": [
-        { "roll": "2", "text": "Some lint and 1 gold coin.", "gain": [{ "gold": 1 }] },
-        { "roll": "3", "text": "A set of dice, carved from human bones. Counts as a lucky charm.", "gain": [{ "wargear": "item:lucky-charm" }] },
-        { "roll": "4", "text": "Bejewelled Dagger. Can be sold for 15gc.", "gain": [{ "wargear": "loot:bejewelled-dagger" }] },
-        { "roll": "5", "text": "Ornate Key. Can be discarded after making an exploration roll to modify the value of an exploration die.", "gain": [{ "wargear": "loot:ornate-key" }] },
-        { "roll": "6", "text": "Rusty Ostlander Sword, notched from use.", "gain": [{ "wargear": "weapon:sword" }] },
-        { "roll": "7", "text": "Sack of teeth. The fillings can be sold for d3x10 gold coins.", "gain": [{ "gold": "d3x10" }] },
-        { "roll": "8", "text": "Waxed parchment map, half burned away. Find another to make a Mordheim Map.", "gain": [{ "wargear": "loot:half-burned-map" }] },
-        { "roll": "9", "text": "A battered Cuirass. With a little elbow grease, it'll count as light armour.", "gain": [{ "wargear": "item:light-armour" }] },
-        { "roll": "10", "text": "A Wyrdstone Shard, ice cold to the touch.", "gain": [{ "shards": 1 }] },
-        { "roll": "11", "text": "Noble Signet Ring. Can be handed over to your faction for 1 Favour or sold for 20gc.", "gain": [{ "wargear": "loot:signet-ring" }] },
-        { "roll": "12", "text": "Rare find. Roll once on the Greater Loot Table.", "gain": [{ "table": "greater" }] }
+        { "roll": "2", "name": "Lint and 1 gold coin", "text": "Some lint and 1 gold coin.", "gain": [{ "gold": 1 }] },
+        { "roll": "3", "name": "Bone dice", "text": "A set of dice, carved from human bones. Counts as a lucky charm.", "gain": [{ "wargear": "item:lucky-charm" }] },
+        { "roll": "4", "name": "Bejewelled Dagger", "text": "Bejewelled Dagger. Can be sold for 15gc.", "gain": [{ "wargear": "loot:bejewelled-dagger" }] },
+        { "roll": "5", "name": "Ornate Key", "text": "Ornate Key. Can be discarded after making an exploration roll to modify the value of an exploration die.", "gain": [{ "wargear": "loot:ornate-key" }] },
+        { "roll": "6", "name": "Rusty Ostlander Sword", "text": "Rusty Ostlander Sword, notched from use.", "gain": [{ "wargear": "weapon:sword" }] },
+        { "roll": "7", "name": "Sack of Teeth", "text": "Sack of teeth. The fillings can be sold for d3x10 gold coins.", "gain": [{ "gold": "d3x10" }] },
+        { "roll": "8", "name": "Half-burned Map", "text": "Waxed parchment map, half burned away. Find another to make a Mordheim Map.", "gain": [{ "wargear": "loot:half-burned-map" }] },
+        { "roll": "9", "name": "Battered Cuirass", "text": "A battered Cuirass. With a little elbow grease, it'll count as light armour.", "gain": [{ "wargear": "item:light-armour" }] },
+        { "roll": "10", "name": "Wyrdstone Shard", "text": "A Wyrdstone Shard, ice cold to the touch.", "gain": [{ "shards": 1 }] },
+        { "roll": "11", "name": "Noble Signet Ring", "text": "Noble Signet Ring. Can be handed over to your faction for 1 Favour or sold for 20gc.", "gain": [{ "wargear": "loot:signet-ring" }] },
+        { "roll": "12", "name": "Rare find", "text": "Rare find. Roll once on the Greater Loot Table.", "gain": [{ "table": "greater" }] }
       ]
     },
     {
@@ -23,12 +23,12 @@
       "name": "Greater Loot Table",
       "dice": "D6",
       "rows": [
-        { "roll": "1", "text": "An iron lockbox containing D3 Wyrdstone Shards.", "gain": [{ "shards": "d3" }] },
-        { "roll": "2", "text": "Old Dueling Pistol.", "gain": [{ "wargear": "weapon:pistol" }] },
-        { "roll": "3", "text": "A dusty old Grimoire.", "gain": [{ "wargear": "item:grimoire" }] },
-        { "roll": "4", "text": "D3+1 vials of Crimson Shade.", "gain": [{ "wargear": "item:crimson-shade", "copies": "d3+1" }] },
-        { "roll": "5", "text": "Holy Relic.", "gain": [{ "wargear": "item:holy-relic" }] },
-        { "roll": "6", "text": "Magical Item. Roll a d6 to determine which one.", "gain": [{ "magic": true }] }
+        { "roll": "1", "name": "Iron Lockbox", "text": "An iron lockbox containing D3 Wyrdstone Shards.", "gain": [{ "shards": "d3" }] },
+        { "roll": "2", "name": "Old Dueling Pistol", "text": "Old Dueling Pistol.", "gain": [{ "wargear": "weapon:pistol" }] },
+        { "roll": "3", "name": "Dusty Grimoire", "text": "A dusty old Grimoire.", "gain": [{ "wargear": "item:grimoire" }] },
+        { "roll": "4", "name": "Crimson Shade", "text": "D3+1 vials of Crimson Shade.", "gain": [{ "wargear": "item:crimson-shade", "copies": "d3+1" }] },
+        { "roll": "5", "name": "Holy Relic", "text": "Holy Relic.", "gain": [{ "wargear": "item:holy-relic" }] },
+        { "roll": "6", "name": "Magical Item", "text": "Magical Item. Roll a d6 to determine which one.", "gain": [{ "magic": true }] }
       ]
     }
   ],

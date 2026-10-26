@@ -106,12 +106,12 @@
 - [x] 🎨 Steppers joined into one control – health, zeal and its stage inside under the cards, favour across the width in the builder – and a roomier finish step
 - [x] 🔗 Showing an opponent the warband's cards over a read-only link, as a QR code
 - [x] 🃏 The stash on the front of the warband card, reached from its figures, and on the roster PDF
+- [x] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [ ] 📚 Black Death City: the fighters' special rules as text
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
 - [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 🛠️ Black Death City: starting experience and the warband rating
 - [ ] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
-- [ ] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

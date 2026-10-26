@@ -2,6 +2,7 @@
 	import RichText from '$lib/components/RichText.svelte';
 	import {
 		diesOf,
+		earnedOf,
 		extraMarksOf,
 		fallenLeader,
 		goldLeft,
@@ -15,7 +16,6 @@
 		singleUseOf,
 		stealable,
 		staysDead,
-		survivorsOf,
 		toggleOut,
 		toggleUsed,
 		usedKey,
@@ -24,18 +24,20 @@
 		type SurgeonAnswer
 	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
+	import { amountAt, pathOf, pickAt, pickEncounter, pickOption, tableOf, uniquesPicked } from '$lib/core/explore';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
-	import { standingRaised } from '$lib/core/underdog';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
-	import type { Aftermath, BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
+	import type { Aftermath, BattleRecord, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
 
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
-	 * result, the shards and the line in the battle history; who was taken out
+	 * result and the line in the battle history; who was taken out
 	 * of action; one page for each of them that rolls for injuries; who takes
 	 * the lead, where the leader dies; the
-	 * single-use pieces used up, where a fighter carries any; then the
-	 * roll each fighter makes for renown. The dice are rolled at the table and the result tapped
+	 * single-use pieces used up, where a fighter carries any; the
+	 * roll each fighter makes for renown; the encounter of the search party,
+	 * where the game sends one out; then the shards and the income, the finds
+	 * counted in. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
 	 * first drops the answers and goes back to the battle. Each page is the back
 	 * of a card, as a fighter's back is written on, with its answers at its foot.
@@ -59,7 +61,7 @@
 		onclose: () => void;
 	} = $props();
 
-	const earned = $derived(rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft), standingRaised(draft.underdog)));
+	const earned = $derived(earnedOf(warband, game, faction, draft));
 	/* The marks beyond the first, and the marks that stand – both follow who came through the battle. */
 	const extra = $derived(extraMarksOf(warband, rules, draft));
 	const marks = $derived(marksOf(draft, extra));
@@ -105,7 +107,9 @@
 		...(injuries ? ['out', ...rolling.map((r) => `roll:${r.instance.instanceId}`)] : []),
 		...(fallen ? ['leader'] : []),
 		...(carrying.length ? ['items'] : []),
-		'renown'
+		'renown',
+		...(rules.explore ? ['explore'] : []),
+		'income'
 	]);
 	let page = $state('battle');
 	const at = $derived(Math.max(0, pages.indexOf(page)));
@@ -138,6 +142,27 @@
 	}
 
 	const wargearName = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
+
+	/* The encounters under the rules' headings, in their order. */
+	const groups = $derived(
+		rules.explore
+			? [...new Set(rules.explore.encounters.map((e) => e.group))].map((name) => ({ name, encounters: rules.explore!.encounters.filter((e) => e.group === name) }))
+			: []
+	);
+	/* A unique piece is found once in the campaign: one the warband holds, or one found elsewhere in this exploration, is rolled again. */
+	const held = $derived(new Set([...(warband.stash ?? []), ...warband.fighters.flatMap((f) => f.wargear)]));
+	function uniqueBlocked(id: string, at: string): string | null {
+		if (draft.explore.picks[at] === id) return null;
+		if (held.has(id)) return 'Already yours – roll again';
+		return rules.explore && uniquesPicked(rules.explore, draft.explore).includes(id) ? 'Found in this exploration – roll again' : null;
+	}
+	/* What an answer costs, such as the charlatan's concoction: paid before the income, from the gold left, as a surgeon is. */
+	const costOf = (gains: FindGain[]) => gains.reduce((sum, g) => sum + ('gold' in g && typeof g.gold === 'number' && g.gold < 0 ? -g.gold : 0), 0);
+	/* The count a gain asks to be rolled for, such as d3 × 10 gold; undefined where it is fixed. */
+	const rolledOf = (gain: FindGain) => {
+		const amount = 'gold' in gain ? gain.gold : 'shards' in gain ? gain.shards : 'wargear' in gain ? gain.copies : undefined;
+		return typeof amount === 'object' ? amount : undefined;
+	};
 
 	/* Who an injury keeps out of this battle, such as a capture: not in the list of who was taken out of action. */
 	const present = $derived(warband.fighters.filter((f) => !f.away));
@@ -202,6 +227,59 @@
 
 <div class="sheet-backdrop">
 	<div class="card back sheet" role="dialog" aria-modal="true" aria-labelledby="aftermath-title">
+		{#snippet finds(gains: FindGain[], path: string)}
+			<!-- What a find asks to be rolled for, under it: a row of a loot table, a unique piece, a count. What a
+			     row tapped asks in turn follows the table rather than sitting inside the row, so the rolls stay one deep. -->
+			{#each gains as gain, i (i)}
+				{@const at = pathOf(path, i)}
+				{@const rolled = rolledOf(gain)}
+				{@const table = 'table' in gain && rules.explore ? tableOf(rules.explore, gain.table) : undefined}
+				{#if table}
+					<p class="caption" id="table-{at}">{table.name} · {table.dice}</p>
+					<div class="results-table" role="group" aria-labelledby="table-{at}">
+						{#each table.rows as row (row.roll)}
+							{@const open = draft.explore.picks[at] === row.roll}
+							<div class="unfold" class:open>
+								<button class="unfold-head" aria-pressed={open} onclick={() => pickAt(draft.explore, at, row.roll)}>
+									<span class="roll">{row.roll}</span>
+									<span class="line">{row.name}</span>
+								</button>
+								{#if open}
+									<div class="unfold-detail">
+										<p class="unfold-text"><RichText text={row.text} /></p>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
+					{@const row = table.rows.find((r) => r.roll === draft.explore.picks[at])}
+					{#if row}
+						{@render finds(row.gains, at)}
+					{/if}
+				{:else if 'unique' in gain}
+					<p class="caption" id="unique-{at}">{gain.unique.roll}</p>
+					<div class="results-table" role="group" aria-labelledby="unique-{at}">
+						{#each gain.unique.wargear as id, n (id)}
+							{@const blocked = uniqueBlocked(id, at)}
+							<div class="unfold" class:open={draft.explore.picks[at] === id}>
+								<button class="unfold-head" aria-pressed={draft.explore.picks[at] === id} disabled={blocked !== null} onclick={() => pickAt(draft.explore, at, id)}>
+									<span class="roll">{n + 1}</span>
+									<span class="line">{wargearName(id)}{blocked ? ` – ${blocked}` : ''}</span>
+								</button>
+							</div>
+						{/each}
+					</div>
+				{:else if rolled}
+					<p class="caption" id="amount-{at}">{rolled.roll}</p>
+					<div class="results" role="group" aria-labelledby="amount-{at}">
+						{#each rolled.values as value (value)}
+							<button class="segment" aria-pressed={draft.explore.amounts[at] === value} onclick={() => amountAt(draft.explore, at, value)}>{value}</button>
+						{/each}
+					</div>
+				{/if}
+			{/each}
+		{/snippet}
+
 		{#if current === 'battle'}
 			<div class="scroll">
 				<h2 class="name" id="aftermath-title">End the battle</h2>
@@ -219,43 +297,6 @@
 								Underdog, {draft.underdog.behind} behind: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}{#if draft.underdog.picked.length}{' '}·
 									{draft.underdog.picked.map((b) => b.name).join(', ')}{/if}.
 							</p>
-						{/if}
-					</section>
-
-					<section>
-						<h3 class="heading"><span>Income</span><span class="rule"></span></h3>
-						<div class="counter">
-							<span class="label" id="aftermath-shards">Shards delivered</span>
-							<div class="stepper" role="group" aria-labelledby="aftermath-shards">
-								<button class="segment" aria-label="One shard less" disabled={draft.shards <= 0} onclick={() => (draft.shards -= 1)}>−</button>
-								<output class="figure">{draft.shards}</output>
-								<button class="segment" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
-							</div>
-						</div>
-						{#each rules.shardNotes?.(warband) ?? [] as note (note)}
-							<p class="hint">{note}</p>
-						{/each}
-						{#if !draft.result}
-							<p class="hint">What the battle brings in, once the result is picked.</p>
-						{/if}
-						<!-- One list, so the fees follow the income under the same rules. -->
-						{#if draft.result || draft.hired.length}
-							<ul class="list">
-								{#if draft.result}
-									{#each earned.lines as line (line.gain)}
-										<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
-									{/each}
-								{/if}
-								{#if draft.hired.length}
-									<li>
-										<span class="line"
-											><span class="gain">−{hireFees(draft)} {game.currency}</span> – hired for this battle: {draft.hired
-												.map((h) => `${h.name} (${h.fee})`)
-												.join(', ')}</span
-										>
-									</li>
-								{/if}
-							</ul>
 						{/if}
 					</section>
 
@@ -488,7 +529,7 @@
 				<button class="plain" onclick={() => step(-1)}>Back</button>
 				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
 			</div>
-		{:else}
+		{:else if current === 'renown'}
 			<div class="scroll">
 				<h2 class="name" id="aftermath-title">Renown</h2>
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
@@ -571,6 +612,112 @@
 
 			<div class="foot">
 				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
+			</div>
+		{:else if current === 'explore' && rules.explore}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">{rules.explore.label}</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">What the exploration roll ran into. Roll at the table and tap it.</p>
+						<div class="toggles stacked">
+							<button class="toggle" aria-pressed={draft.explore.encounter === null} onclick={() => pickEncounter(draft.explore, null)}>No encounter</button>
+						</div>
+					</section>
+					{#each groups as group (group.name)}
+						<section>
+							<h3 class="heading"><span id="encounters-{group.name}">{group.name}</span><span class="rule"></span></h3>
+							<div class="results-table" role="group" aria-labelledby="encounters-{group.name}">
+								{#each group.encounters as e (e.roll)}
+									{@const open = draft.explore.encounter === e.roll}
+									<div class="unfold" class:open>
+										<button class="unfold-head" aria-pressed={open} onclick={() => pickEncounter(draft.explore, e.roll)}>
+											<span class="roll">{e.roll}</span>
+											<span class="line">{e.name}{e.mishap ? ' – mishap' : ''}</span>
+										</button>
+										{#if open}
+											{@const option = draft.explore.option === null ? undefined : e.ask?.options[draft.explore.option]}
+											<div class="unfold-detail">
+												<p class="unfold-text"><RichText text={e.text} /></p>
+												{@render finds(e.gains, 'e')}
+												{#if e.ask}
+													<p class="caption" id="ask-{e.roll}">{e.ask.label}</p>
+													<div class="toggles stacked" role="group" aria-labelledby="ask-{e.roll}">
+														{#each e.ask.options as o, i (i)}
+															{@const cost = costOf(o.gains)}
+															{@const gold = goldLeft(warband, game, faction, draft, '')}
+															{@const short = cost > gold && draft.explore.option !== i}
+															<button class="toggle" aria-pressed={draft.explore.option === i} disabled={short} onclick={() => pickOption(draft.explore, i)}>
+																{o.label}{cost ? ` – ${cost} ${game.currency}` : ''}{short ? `, only ${Math.max(0, gold)} ${game.currency} left` : ''}
+															</button>
+														{/each}
+													</div>
+													{#if option}
+														{@render finds(option.gains, `o${draft.explore.option}`)}
+													{/if}
+												{/if}
+												{#if e.byHand || option?.byHand}
+													<p class="unfold-text">Part of this the app does not keep yet: note it by hand.</p>
+												{/if}
+											</div>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						</section>
+					{/each}
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
+			</div>
+		{:else}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">Income</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<div class="counter">
+							<span class="label" id="aftermath-shards">Shards delivered</span>
+							<div class="stepper" role="group" aria-labelledby="aftermath-shards">
+								<button class="segment" aria-label="One shard less" disabled={draft.shards <= 0} onclick={() => (draft.shards -= 1)}>−</button>
+								<output class="figure">{draft.shards}</output>
+								<button class="segment" aria-label="One shard more" onclick={() => (draft.shards += 1)}>+</button>
+							</div>
+						</div>
+						{#each rules.shardNotes?.(warband) ?? [] as note (note)}
+							<p class="hint">{note}</p>
+						{/each}
+						<!-- One list, so the finds and the fees follow the income under the same rules. -->
+						<ul class="list">
+							{#each earned.found?.lines ?? [] as line, i (i)}
+								<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
+							{/each}
+							{#each earned.lines as line (line.gain)}
+								<li><span class="line"><span class="gain">{line.gain}</span> {line.why}</span></li>
+							{/each}
+							{#if draft.hired.length}
+								<li>
+									<span class="line"
+										><span class="gain">−{hireFees(draft)} {game.currency}</span> – hired for this battle: {draft.hired
+											.map((h) => `${h.name} (${h.fee})`)
+											.join(', ')}</span
+									>
+								</li>
+							{/if}
+						</ul>
+						{#each earned.found?.open ?? [] as line, i (i)}
+							<p class="hint">Still to roll: {line}.</p>
+						{/each}
+					</section>
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
 				<button class="add" disabled={busy} onclick={apply} use:focusOnMount>Apply</button>
 			</div>
 		{/if}
@@ -601,6 +748,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: calc(10 * var(--u));
+	}
+
+	/* A loot table inside an encounter: only the row picked is set in bold, not every row under the encounter's. */
+	.unfold-detail .unfold:not(.open) .unfold-head .line {
+		font-weight: 400;
 	}
 
 	/* Wide enough for 41–56, so the names start in one column. */

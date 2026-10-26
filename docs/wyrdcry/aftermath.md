@@ -4,9 +4,8 @@
 and tap what they show. Nothing is saved until you tap **Apply** – **Keep
 playing** takes you back to the battle.
 
-1. **The battle.** Pick win, draw or loss, and count the shards you delivered.
-   The page shows the favour and gold this brings. Hired swords show their
-   fees here. Leave *Add to the battle history* on to write the battle down.
+1. **The battle.** Pick win, draw or loss. Leave *Add to the battle history*
+   on to write the battle down.
 2. **Out of action.** Check who was taken out. For each of them, roll on the
    injury table and tap the result. Some results ask one more question, such
    as the surgeon. A fighter with a magic item also rolls for it: switch on
@@ -16,9 +15,18 @@ playing** takes you back to the battle.
    switched on. Switch on any you forgot to tick.
 5. **Renown.** Each fighter rolls. Switch on what adds to the roll, and the
    page says which score it needs. Switch on each roll that reached it.
+6. **Explore District.** Roll the exploration dice. If they show an encounter,
+   tap it, and tap the answer where it asks one. For each roll on a loot table,
+   tap the result. Some finds ask for one more roll, such as the gold in a
+   Sack of Teeth. A magic item you already have cannot be tapped: roll again.
+   Some encounters do things the app does not keep yet, such as an injury roll
+   or a new recruit. The page says so – note those by hand.
+7. **Income.** Count the shards you delivered. The page shows what the search
+   party found and the favour and gold the battle brings. Hired swords show
+   their fees here. A roll you have not tapped yet is listed.
 
 **Apply** writes it all into the warband: gold, favour, injuries, the dead,
-the battle history. If a fighter has a level to spend, the app asks right away.
+the finds in the stash, the battle history. If a fighter has a level to spend, the app asks right away.
 You can also spend it later from the **Battle** menu.
 
 A page only appears when it has something to ask.

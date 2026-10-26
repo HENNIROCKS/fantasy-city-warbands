@@ -1,7 +1,8 @@
 /**
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
  * then the injuries of who was taken out of action, then the roll each fighter
- * makes for a level, then the line in the battle history – answered in the aftermath's
+ * makes for a level, then what a search party finds (`explore.ts`) and the
+ * income, then the line in the battle history – answered in the aftermath's
  * sheet and written into the warband in one go. What each answer is worth is
  * the game's (`GameSystem.aftermath`, `GameSystem.injuries`); what an injury
  * does once – a death, a surgeon, a missed battle, a robbery, a capture – is
@@ -11,6 +12,7 @@
 import { stateOf, type BattleState } from './battle';
 import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
+import { findsOf, noEncounter, type ExploreAnswer, type Finds } from './explore';
 import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
@@ -68,6 +70,8 @@ export interface AftermathDraft {
 	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
+	/** The encounter the search party ran into and what it found, where the game sends one out. */
+	explore: ExploreAnswer;
 	/** Whether the battle goes into the history. */
 	record: boolean;
 	opponentWarband: string;
@@ -132,6 +136,7 @@ export function startAftermath(
 		successor: null,
 		result: null,
 		shards: 0,
+		explore: noEncounter(),
 		record: recorded === null,
 		opponentWarband: '',
 		opponentPlayer: '',
@@ -316,6 +321,29 @@ export function levelsEarned(row: AftermathRow, marks: string[]): number {
 	return Math.min(row.levels, rollsOf(row, marks));
 }
 
+/** What the search party found, as answered; null where the game sends none out. */
+export function foundOf(game: GameSystem, faction: Faction, draft: AftermathDraft): Finds | null {
+	const explore = game.aftermath?.explore;
+	return explore ? findsOf(explore, draft.explore, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency) : null;
+}
+
+/**
+ * What the battle brings in, the finds of the search party first: a counter
+ * such as favour raised before the income is collected on it, the shards
+ * delivered with the battle's, and the gold. A piece into the stash raises the
+ * purse by its price, so the gold left stays where it was.
+ */
+export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft) {
+	const rules = game.aftermath!;
+	const found = foundOf(game, faction, draft);
+	const tally = { ...warband.tally };
+	for (const [key, amount] of Object.entries(found?.tally ?? {})) tally[key] = (tally[key] ?? 0) + amount;
+	const raised = found ? { ...warband, tally } : warband;
+	const earned = rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog));
+	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
+	return { ...earned, gold: earned.gold + kept, found };
+}
+
 /** The battle's line in the history, or null where none is to be added. */
 export function battleRecord(draft: AftermathDraft, at = new Date()): BattleRecord | null {
 	if (!draft.record || !draft.result) return null;
@@ -341,14 +369,15 @@ export function battleRecord(draft: AftermathDraft, at = new Date()): BattleReco
  * A single-use piece used up is struck before any of it, so a dead fighter
  * leaves none to the stash; a roll it asked for that brought an injury adds
  * that injury to a fighter that lives, unless it has it already. A unique
- * piece the opponent stole is struck before the injury as well. The battle
+ * piece the opponent stole is struck before the injury as well. What the
+ * search party found comes in with the income (`earnedOf`). The battle
  * ends the searches made since the one before, whether or not it goes into
  * the history.
  */
 export function applyAftermath(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft, at = new Date()): Warband {
 	const rules = game.aftermath;
 	if (!rules) return warband;
-	const earned = rules.income(warband, game, draft.result, draft.shards, survivorsOf(draft), standingRaised(draft.underdog));
+	const earned = earnedOf(warband, game, faction, draft);
 	const marks = marksOf(draft, extraMarksOf(warband, rules, draft));
 	const record = battleRecord(draft, at);
 	const heir = heirsOf(warband, game, faction, draft).find((f) => f.instanceId === draft.successor)?.instanceId ?? null;
@@ -358,7 +387,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	   gold left. */
 	let spent = hireFees(draft);
 	const effects = activeEffects(warband, faction);
-	const stash = [...(warband.stash ?? [])];
+	const stash = [...(warband.stash ?? []), ...(earned.found?.stash ?? [])];
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
 		let fighter: FighterInstance = away === 'miss-next-battle' ? back : before;
