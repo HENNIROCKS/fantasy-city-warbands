@@ -4,7 +4,7 @@ Underdogs is an optional rule of the Campaign Book. Agree on it before the
 campaign starts. A warband that has fallen behind gets help to catch up.
 
 1. Open the cards and tap **Battle** under the warband card.
-2. Tap **Underdog…** and type in your opponent's reputation. The sheet shows
+2. Tap **Underdog** and type in your opponent's reputation. The sheet shows
    your own.
 3. If you are 5 or more behind, you are the underdog. You pick one bonus for
    each 5. Tap a bonus to pick it, and tap it again to put it back.

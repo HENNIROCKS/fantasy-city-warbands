@@ -14,10 +14,12 @@ nur lesend über `gh api repos/HENNIROCKS/wyrdcry-warband-deck/contents/<pfad>`.
 Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 `ROADMAP.md`: eine Zeile je Punkt, keine Unterpunkte, keine Begründungen, keine
 Daten. Sie ist die einzige Stelle, an der offene Punkte zum Bauen gepflegt
-werden. Abgehakte Punkte stehen oben, nie zwischen offenen: ein erledigter
-Punkt rückt ans Ende des abgehakten Blocks – so liest sich der abgehakte Block
-als Changelog, in der Reihenfolge, in der die Punkte fertig wurden. Unter
-„Ideas“ steht, was weder versprochen noch geplant ist.
+werden. Abgehakte Punkte stehen oben, nie zwischen offenen. Der abgehakte
+Block beginnt mit einer Übersicht, eine Zeile je Bereich; darunter bekommt ein
+erledigter Punkt eine eigene Zeile am Ende des Blocks, damit „What’s new“ das
+Neueste zeigt. Sind es mehr als etwa zehn solcher Zeilen, gehen sie in die
+Übersichtszeilen ein. Unter „Ideas“ steht, was weder versprochen noch geplant
+ist.
 
 Wo die App bewusst anders steht als das, was ein Spiel druckt oder als Daten
 mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
@@ -165,10 +167,8 @@ der Schalter der Settings im App-Stil, global in `@layer components` – nicht f
 Karten.
 
 Auswahl als Button-Matrix oder Buttons über die volle Breite, nicht als Select.
-Ein beschrifteter Eintrag oder Button, der erst ein Sheet der App öffnet oder
-nachfragt, endet auf „…“, auch hinter einer Zahl in Klammern; einer, der sofort
-handelt oder nur die Dateiauswahl des Systems öffnet („Import warband“), nicht.
-Reine Icon-Buttons wie Edit und Delete tragen kein „…“.
+Beschriftungen enden nie auf „…“, auch wenn der Button erst ein Sheet öffnet
+oder nachfragt („End battle“, „Dismiss Konrad“).
 Geprüft wird am Telefon-Format, 375 px: Die Kopfzeile ist dort auf wenige Pixel
 genau ausgelegt, eine Änderung an ihr wird gemessen.
 

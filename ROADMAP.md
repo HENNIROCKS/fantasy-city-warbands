@@ -2,110 +2,26 @@
 
 <!-- One line per item, a short clause of detail is fine. No sub-items, no
      rationale, no dates. Ticked items stand above the open ones, never among
-     them: a finished item moves up to the end of the ticked block, so the
-     ticked block reads as a changelog, in the order things were finished.
+     them. The ticked block opens with an overview, one line per area; below
+     it a finished item gets a line of its own at the end of the block, so the
+     newest stand last. Once there are more than about ten of them, they are
+     folded into the overview lines.
      The emoji marks the kind of work: 🛠️ building and changing a warband,
      📚 a game's rules and data, 🃏 the cards, 📄 print and export, ⚔️ during
      a battle, 📈 the campaign, 🎨 design and interface, ⚙️ under the hood. -->
 
-- [x] 🛠️ Build a warband in five steps: game, faction, choice, fighters, finish
-- [x] 📚 Wyrdcry: the six official factions, copied from the Warband Deck
-- [x] 📚 Black Death City: the four factions of the Playtest v1.01 – fighters, wargear lists, Origins
-- [x] 🛠️ Check budget, limits and Origins, and disable whatever would break them, with the reason
-- [x] 🛠️ Come back to any step later, the faction included
-- [x] 🎨 Light and dark mode in the Card Creator's design
-- [x] ⚙️ Deploy to GitHub Pages on every push to main
-- [x] 🎨 An about page with the games, their sources and a few questions
-- [x] 🎨 An icon for the browser and the home screen, the skulls on parchment
-- [x] 🃏 Fighters as cards
-- [x] ⚙️ Offer a new version as soon as it is deployed
-- [x] 🃏 A colour per warband for its cards
-- [x] 🛠️ Delete a warband after a question that says what is lost
-- [x] 🃏 A warband card at the front of the deck, with fluff and notes
-- [x] 📚 Wyrdcry: the choice a fighter brings on recruitment, such as Martial Discipline
-- [x] 📚 Wyrdcry: what a fighter may carry – slots, body armour, who cannot wear armour
-- [x] 📚 Black Death City: what a fighter may carry – carrying limit, held items, full-plate, Rare
-- [x] 🛠️ Wargear as a checklist instead of a select, with the reason a piece is refused and ×2 where two may be carried
-- [x] 📚 Where the app reads the rules its own way, kept in DEVIATIONS.md
-- [x] ⚔️ Count damage on a fighter's card, out of action with the Wilhelm scream, and end the battle
-- [x] 📄 Export a warband as JSON and its roster as a PDF – a first version
-- [x] 📄 Import a warband from this app's JSON, saying whether the file is newer or older
-- [x] ⚙️ Move storage to IndexedDB, carrying over what is in localStorage
-- [x] 🛠️ Fluff and notes per fighter, written on the back of the card
-- [x] 🃏 A photo of the painted model as the card image, kept out of the JSON export
-- [x] 🃏 Unnamed warband and Unnamed fighter in the head of the card, leading to the name field
-- [x] 🎨 How to add the app to the home screen, on the about page
-- [x] 🛠️ A favourite warband, starred, always at the top of the list
-- [x] ⚙️ Room for a campaign in the warband and its export: gold, stash, experience, advances, battles
-- [x] ⚔️ Track a battle: activated and waiting, wavering, panicked, in cover, rounds with undo, zeal
-- [x] ⚔️ Start a battle from the warband card, beside the first tap
-- [x] 📈 Campaign: the aftermath of a Wyrdcry battle – experience, favour, income and a battle history
-- [x] ⚔️ Cancel a battle without the aftermath
-- [x] 📄 Import a warband from the Warband Deck's and the Warband Builder's JSON
-- [x] 🃏 Derived values on the card, such as armour from equipment, explained when tapped
-- [x] 📈 Campaign: spend renown on a characteristic or a henchman's promotion
-- [x] 📈 Campaign: heroic traits, what a HERO picks instead of a characteristic
-- [x] 🎨 How much of each game the app carries, as a ring on the game's tile
-- [x] 🎨 When the app was last updated, in a bar on the start page with a link to what is new
-- [x] 🛠️ Correct a fighter's experience and renown by hand, on the back of its card
-- [x] 📄 The roster as the Warband Deck's: experience, renown, battles won, drawn and lost, and notes
-- [x] 📈 Campaign: correct the warband's favour by hand, in the finish step
-- [x] 📈 Campaign: gold added, the stash sold or thrown away, and battles added or struck, on the back of the warband card
-- [x] 📈 Campaign: pieces moved between a fighter and the stash, on the back of its card
-- [x] 📈 Wyrdcry: the Trading Post in the builder, a rare piece bought once a Rarity roll found it
-- [x] 🃏 Wyrdcry: the Unarmed line on the card of a fighter without a melee weapon
-- [x] ⚙️ Work offline once opened, the roster included
-- [x] 📈 Campaign: spend renown on the back of a fighter's card, the levels spent listed with Undo
-- [x] 📈 Campaign: Wyrdcry's injuries – rolled in the aftermath, kept on the card, death, surgeon, capture and the rest carried out
-- [x] 🛠️ The back of the warband card as a fighter's: name, fluff, favour, notes and the colour of the deck, picked live
-- [x] 🛠️ The fighter's name on the back of its card
-- [x] 🃏 The aftermath and spending renown set as the back of a card
-- [x] 📚 Wyrdcry: the core rules 1.0 – cover at −1 Shoot, Take cover, Rampage for heroes, the weapon rules, wavering past half and the morale test at the round's end
-- [x] 🃏 Wyrdcry: no modifier takes a characteristic below 1
-- [x] 🛠️ The check names what a fighter still has to choose on recruitment – the spells, characteristics or table it picks from
-- [x] 🛠️ The list of warbands shows each one's campaign figures – Wyrdcry's favour with its standing, and the reputation
-- [x] 📚 Wyrdcry: the Campaign Book 0.9 – favour tiers and income, the renown roll in place of experience, a characteristic on every level and a talent on every odd one, promotion at the third, legendary abilities, the new heroic talents, lasting injuries and Trading Post, and the 0.9 weapon and Ghoul updates
-- [x] 📈 Wyrdcry: talents that change the aftermath counted there – Bootlicker's favour, Drillmaster's second mark for greatness
-- [x] 📈 Wyrdcry: single-use items used up in a battle, and Crimson Shade's roll for Sticky Fingers in the aftermath
-- [x] 📈 Wyrdcry: a dead or dismissed leader hands the LEADER keyword to a HERO
-- [x] 🃏 Faction rules that leave out or only apply to a keyword, shown as a hint on the card
-- [x] 🛠️ Dismiss a fighter on the back of its card, as the Warband Deck does, its equipment to the stash or with it
-- [x] 🛠️ Recruit between battles
-- [x] 🛠️ Wyrdcry: the rarity roll as the Campaign Book has it – +1 for each HERO helping, one search per HERO, D3 single-use items
-- [x] 🛠️ Wyrdcry: a warband whose leader is gone with no HERO left is disbanded, in the builder as in the aftermath
-- [x] 🛠️ Wyrdcry: hire a Hired Sword for a single battle – the ten official ones, their fees paid in the aftermath
-- [x] 📚 Wyrdcry: the two homebrew factions from the Warband Deck, Clan Pestilens and the Greenskin Marauders, and six homebrew hired swords – Pecking Order, the half-counted morale, the Goblin Shaman's role and the Troll's kin
-- [x] ⚔️ Hired swords listed on the warband card while they are hired
-- [x] 🛠️ Homebrew warbands and hired swords listed under their own heading, after the official ones
-- [x] 🛠️ What a piece of wargear does, unfolded in the builder's checklist before it is bought
-- [x] 📚 Black Death City: the Playtest v1.03 – wargear, fighters, Origins and weapon rules
-- [x] ⚙️ Black Death City: saved and imported warbands keep the wargear v1.03 renamed, Arablast and Cursed Sword
-- [x] 🛠️ Duplicate a fighter with its wargear and choice, and remove one by an icon beside it
-- [x] 📚 Wyrdcry: State Pride's effects on the profiles, Desperate's ban and discount included, the choice kept once the warband has fought
-- [x] 📈 Wyrdcry: Underdogs as an optional rule – the bonuses and +1 on renown rolls
-- [x] 📚 Wyrdcry 1.0: the Rulebook, the Campaign Book and the factions – prices, weapons, Brutal and Poisoned, the wizards' universal abilities, the hired swords as printed, a talent only for the leader's first level
-- [x] 🛠️ A link to where the rules are written, beside each faction and each group of hired swords
-- [x] 📚 Greenskin Marauders 0.4: the Morning Star for ORC fighters
-- [x] ⚔️ Wyrdcry: Poisoned as a state on the card, with the roll on activation under Health
-- [x] 📚 Wyrdcry: Channel Magic and the Magical Calamity table on a WIZARD's card, under Universal Actions
-- [x] ⚔️ Wyrdcry: Wounded at half Health, named first on the card's band
-- [x] ⚔️ Wyrdcry: the roll for a fifth round asked at the end of round 4, and no sixth
-- [x] 🃏 Wyrdcry: homebrew fighters and hired swords with the fluff their rules give them, ready to rewrite on the back
-- [x] 🛠️ Wyrdcry: the Dark Warrior refused to the Mercenaries beside an Elf Ranger, Troll Slayer, Warrior Priest or Holy Relic, and they beside her
-- [x] 🃏 Wyrdcry: the Dark Warrior with a picture on her card, its ink in the warband's colour
-- [x] 📚 Wyrdcry Rulebook 1.0.1: the Spear Unwieldy and never taken twice, Point Blank on the pistols
-- [x] 📚 Wyrdcry: the author's answers and data of 23 October – Point Blank on the Blunderbuss, ranges without a minimum, cheaper Spear, Blunderbuss and Crossbow Pistol, the Thief reworked, the Great Claw brutal
-- [x] 🃏 Fluff from the rules on every fighter that has one, Black Death City's from the scroll's quote
-- [x] 🃏 Wyrdcry: a picture on the card of each homebrew hired sword, a role's own, and the Rat Ogre's
-- [x] 🃏 Wyrdcry: a hired sword's card named after its role, River Troll or Brewgit, its fee beneath it on the warband card
-- [x] 📚 Wyrdcry: the Squig Herder's squig as a second weapon, New Hired Swords 0.5
-- [x] 🎨 A new app icon that reaches installed apps
-- [x] 🃏 Armour and items in a box under the weapons, what each does behind its name
-- [x] ⚔️ Wyrdcry: a single-use item ticked off on the card during the battle, its effect on the card and the aftermath asking from there
-- [x] 🎨 The app icon beside the app's name on the About page
-- [x] 🎨 Steppers joined into one control – health, zeal and its stage inside under the cards, favour across the width in the builder – and a roomier finish step
-- [x] 🔗 Showing an opponent the warband's cards over a read-only link, as a QR code
-- [x] 🃏 The stash on the front of the warband card, reached from its figures, and on the roster PDF
+- [x] 🛠️ Build a warband in five steps – game, faction, the warband's choice, fighters, finish – with budget, limits and what a fighter may carry checked, and whatever would break them disabled with the reason
+- [x] 🛠️ Keep a warband up to date: come back to any step, duplicate or remove a fighter, star a favourite, delete after a question, recruit and dismiss between battles
+- [x] 📚 Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book and the six official factions, with the author's answers; where the app reads the rules its own way, in DEVIATIONS.md
+- [x] 📚 Wyrdcry homebrew: Clan Pestilens, the Greenskin Marauders and six hired swords
+- [x] 📚 Black Death City Playtest v1.03: the four factions with their wargear, Origins and carrying limits, older saved warbands carried over
+- [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos, fluff and notes on the back, derived values explained when tapped, pictures for hired swords
+- [x] ⚔️ Track a battle on the cards: damage, states, rounds with undo, Wyrdcry's morale, poison, wounds, the fifth round and single-use items
+- [x] 📈 Wyrdcry's campaign: the aftermath with renown, favour, income and the battle history, injuries, renown spent on characteristics and heroic talents, a new leader, Underdogs
+- [x] 📈 Wyrdcry between battles: the stash, the Trading Post with its rarity roll, hired swords for one battle, corrections by hand
+- [x] 📄 Files: export and import as JSON, from the Warband Deck and the Warband Builder too, the roster as a PDF, a read-only link as a QR code for the opponent
+- [x] 🎨 The interface: light and dark mode in the Card Creator's design, the app icon, an about page, guides under the gear, the update bar, a ring per game for how much of it the app carries
+- [x] ⚙️ Under the hood: deploy to GitHub Pages, storage in IndexedDB, offline once opened, a new version offered as soon as it is deployed
 - [x] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
 - [x] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
 - [x] 🛠️ Black Death City: starting experience asked on recruitment, and the warband rating

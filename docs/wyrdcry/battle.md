@@ -30,8 +30,8 @@ out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Bac
 to round …** undoes it, until you tap something new.
 
 **The end of round 4.** Roll a dice, as the rules say. In round 4, **Battle**
-offers **3+: Round 5** and **1–2: End battle…** – tap the one you rolled.
-Round 5 is the last: after it, only **End battle…** is left.
+offers **3+: Round 5** and **1–2: End battle** – tap the one you rolled.
+Round 5 is the last: after it, only **End battle** is left.
 
 **Morale.** The app tells you when your warband wavers. In the next
 round each card asks for its Bravery test, and a failed test is marked
@@ -46,7 +46,7 @@ the Magical Calamity table to roll on. Damage the table deals goes on with
 card. The cards add what it gives.
 
 **Stopping.** The battle stays on your phone, even if you close the app.
-**End battle…** opens the aftermath. **Cancel battle…** drops the battle, and
+**End battle** opens the aftermath. **Cancel battle** drops the battle, and
 nothing in the warband changes.
 
 While a battle runs, no equipment moves on the backs of the cards.

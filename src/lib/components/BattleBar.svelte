@@ -246,7 +246,7 @@
 						{#if ends === 'roll' && rounds}
 							<p>End of round {battle.round} – {rounds.roll}:</p>
 							<button onclick={() => onnext?.()}>{rounds.goOn}: Round {battle.round + 1}</button>
-							<button onclick={() => onend?.()}>{rounds.end}: End battle…</button>
+							<button onclick={() => onend?.()}>{rounds.end}: End battle</button>
 						{:else if ends === 'next'}
 							<button onclick={() => onnext?.()}>Next round</button>
 						{/if}
@@ -257,23 +257,23 @@
 						<button onclick={() => onstart?.()}>Start battle</button>
 					{/if}
 					{#if onunderdog && !closed}
-						<button onclick={() => onunderdog?.()}>Underdog…</button>
+						<button onclick={() => onunderdog?.()}>Underdog</button>
 					{/if}
 					{#if onhire && !closed}
-						<button onclick={() => onhire?.()}>{hireLabel}…</button>
+						<button onclick={() => onhire?.()}>{hireLabel}</button>
 					{/if}
 					{#if onshow && !battle && !closed}
-						<button onclick={() => onshow?.()}>Show to opponent…</button>
+						<button onclick={() => onshow?.()}>Show to opponent</button>
 					{/if}
 					{#if levelsOpen > 0}
 						{#if battle || !closed}<hr />{/if}
-						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})…</button>
+						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
 					{/if}
 					{#if battle}
 						<hr />
-						{#if ends !== 'roll'}<button onclick={() => onend?.()}>End battle…</button>{/if}
+						{#if ends !== 'roll'}<button onclick={() => onend?.()}>End battle</button>{/if}
 						{#if oncancelbattle}
-							<button onclick={() => oncancelbattle?.()}>Cancel battle…</button>
+							<button onclick={() => oncancelbattle?.()}>Cancel battle</button>
 						{/if}
 					{/if}
 				</MenuButton>{/if}

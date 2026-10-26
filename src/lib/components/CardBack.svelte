@@ -403,7 +403,7 @@
 						</ul>
 					{/if}
 					{#if renown?.next}
-						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})…</button>
+						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})</button>
 					{/if}
 				</section>
 			{/if}
@@ -521,7 +521,7 @@
 							</div>
 						{/if}
 						<button class="dismiss" onclick={() => ondismiss(dismissal.carried.map((_, i) => i).filter((i) => !leaves.includes(i)))}
-							>Dismiss {name}…</button
+							>Dismiss {name}</button
 						>
 					{/if}
 				</section>

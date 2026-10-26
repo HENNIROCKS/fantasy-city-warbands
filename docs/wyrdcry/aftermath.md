@@ -1,6 +1,6 @@
 # The aftermath
 
-**End battle…** opens a few pages over the deck. Roll the dice at the table
+**End battle** opens a few pages over the deck. Roll the dice at the table
 and tap what they show. Nothing is saved until you tap **Apply** – **Keep
 playing** takes you back to the battle.
 
