@@ -434,6 +434,12 @@ export interface Explore {
 	label: string;
 	encounters: Encounter[];
 	tables: FindTable[];
+	/** Who may go: at most `size` fighters, none carrying one of the `excluded` keywords. */
+	party: { size: number; excluded: string[] };
+	/** How many encounters the party, by instance id, may resolve, and what lets it resolve more than one, such as Wyrdcry's Scout. */
+	most: (warband: Warband, party: string[]) => { count: number; why: string | null };
+	/** What helps the party's exploration roll, a line each; `spend`, a piece of the stash given up once used, such as an Ornate Key. */
+	aids: (warband: Warband, party: string[]) => { text: string; spend?: string }[];
 }
 
 /**

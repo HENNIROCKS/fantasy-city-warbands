@@ -3,6 +3,7 @@
 	import {
 		diesOf,
 		earnedOf,
+		explorationOf,
 		extraMarksOf,
 		fallenLeader,
 		goldLeft,
@@ -24,7 +25,7 @@
 		type SurgeonAnswer
 	} from '$lib/core/aftermath';
 	import { AWAY_LABELS } from '$lib/core/card';
-	import { amountAt, pathOf, pickAt, pickEncounter, pickOption, tableOf, uniquesPicked } from '$lib/core/explore';
+	import { amountAt, partyBlocked, pathOf, pickAt, pickEncounter, pickOption, tableOf, toggleParty, uniquesPicked, type EncounterAnswer } from '$lib/core/explore';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
 	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import type { Aftermath, BattleRecord, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
@@ -143,18 +144,45 @@
 
 	const wargearName = (id: string) => faction.wargear.find((w) => w.id === id)?.name ?? id;
 
+	/* Who an injury keeps out of this battle, such as a capture: not in the list of who was taken out of action. */
+	const present = $derived(warband.fighters.filter((f) => !f.away));
+
 	/* The encounters under the rules' headings, in their order. */
 	const groups = $derived(
 		rules.explore
 			? [...new Set(rules.explore.encounters.map((e) => e.group))].map((name) => ({ name, encounters: rules.explore!.encounters.filter((e) => e.group === name) }))
 			: []
 	);
+	/* The search party, how many encounters it may resolve and the ones that stand. */
+	const exploration = $derived(explorationOf(warband, game, draft));
+	/* Everyone present, with whether the battle lets them join the search party: a fighter that never rolls for renown is not among the rows, and is asked by its keywords. */
+	const explorers = $derived(
+		present.map((f) => {
+			const row = draft.rows.find((r) => r.instanceId === f.instanceId);
+			const keywordIds = row?.keywordIds ?? faction.fighters.find((t) => t.id === f.fighterId)?.keywords ?? [];
+			const candidate = { instanceId: f.instanceId, keywordIds, tookPart: row?.tookPart ?? true, out: draft.out.includes(f.instanceId) };
+			return { instanceId: f.instanceId, blocked: rules.explore ? partyBlocked(rules.explore, candidate) : null };
+		})
+	);
+	/* Why a fighter cannot be tapped into the party: barred by the battle, or the party full. */
+	function partyReason(instanceId: string, blocked: string | null): string | null {
+		if (exploration?.party.includes(instanceId)) return null;
+		if (blocked) return blocked;
+		const size = rules.explore?.party.size ?? 0;
+		return (exploration?.party.length ?? 0) >= size ? `${size} at most` : null;
+	}
+	/* Why an encounter cannot be added: as many as the party may resolve are tapped already. */
+	function encounterReason(roll: string): string | null {
+		if (!exploration || exploration.most <= 1 || exploration.encounters.some((e) => e.roll === roll)) return null;
+		return exploration.encounters.length >= exploration.most ? `${exploration.most} at most` : null;
+	}
+
 	/* A unique piece is found once in the campaign: one the warband holds, or one found elsewhere in this exploration, is rolled again. */
 	const held = $derived(new Set([...(warband.stash ?? []), ...warband.fighters.flatMap((f) => f.wargear)]));
-	function uniqueBlocked(id: string, at: string): string | null {
-		if (draft.explore.picks[at] === id) return null;
+	function uniqueBlocked(answer: EncounterAnswer, id: string, at: string): string | null {
+		if (answer.picks[at] === id) return null;
 		if (held.has(id)) return 'Already yours – roll again';
-		return rules.explore && uniquesPicked(rules.explore, draft.explore).includes(id) ? 'Found in this exploration – roll again' : null;
+		return rules.explore && exploration && uniquesPicked(rules.explore, exploration.encounters).includes(id) ? 'Found in this exploration – roll again' : null;
 	}
 	/* What an answer costs, such as the charlatan's concoction: paid before the income, from the gold left, as a surgeon is. */
 	const costOf = (gains: FindGain[]) => gains.reduce((sum, g) => sum + ('gold' in g && typeof g.gold === 'number' && g.gold < 0 ? -g.gold : 0), 0);
@@ -164,8 +192,6 @@
 		return typeof amount === 'object' ? amount : undefined;
 	};
 
-	/* Who an injury keeps out of this battle, such as a capture: not in the list of who was taken out of action. */
-	const present = $derived(warband.fighters.filter((f) => !f.away));
 	const sittingOut = $derived(warband.fighters.flatMap((f) => (f.away ? [`${nameOf(f.instanceId)} (${AWAY_LABELS[f.away]})`] : [])));
 
 	/*
@@ -227,7 +253,7 @@
 
 <div class="sheet-backdrop">
 	<div class="card back sheet" role="dialog" aria-modal="true" aria-labelledby="aftermath-title">
-		{#snippet finds(gains: FindGain[], path: string)}
+		{#snippet finds(answer: EncounterAnswer, gains: FindGain[], path: string)}
 			<!-- What a find asks to be rolled for, under it: a row of a loot table, a unique piece, a count. What a
 			     row tapped asks in turn follows the table rather than sitting inside the row, so the rolls stay one deep. -->
 			{#each gains as gain, i (i)}
@@ -235,12 +261,12 @@
 				{@const rolled = rolledOf(gain)}
 				{@const table = 'table' in gain && rules.explore ? tableOf(rules.explore, gain.table) : undefined}
 				{#if table}
-					<p class="caption" id="table-{at}">{table.name} · {table.dice}</p>
-					<div class="results-table" role="group" aria-labelledby="table-{at}">
+					<p class="caption" id="table-{answer.roll}-{at}">{table.name} · {table.dice}</p>
+					<div class="results-table" role="group" aria-labelledby="table-{answer.roll}-{at}">
 						{#each table.rows as row (row.roll)}
-							{@const open = draft.explore.picks[at] === row.roll}
+							{@const open = answer.picks[at] === row.roll}
 							<div class="unfold" class:open>
-								<button class="unfold-head" aria-pressed={open} onclick={() => pickAt(draft.explore, at, row.roll)}>
+								<button class="unfold-head" aria-pressed={open} onclick={() => pickAt(answer, at, row.roll)}>
 									<span class="roll">{row.roll}</span>
 									<span class="line">{row.name}</span>
 								</button>
@@ -252,17 +278,17 @@
 							</div>
 						{/each}
 					</div>
-					{@const row = table.rows.find((r) => r.roll === draft.explore.picks[at])}
+					{@const row = table.rows.find((r) => r.roll === answer.picks[at])}
 					{#if row}
-						{@render finds(row.gains, at)}
+						{@render finds(answer, row.gains, at)}
 					{/if}
 				{:else if 'unique' in gain}
-					<p class="caption" id="unique-{at}">{gain.unique.roll}</p>
-					<div class="results-table" role="group" aria-labelledby="unique-{at}">
+					<p class="caption" id="unique-{answer.roll}-{at}">{gain.unique.roll}</p>
+					<div class="results-table" role="group" aria-labelledby="unique-{answer.roll}-{at}">
 						{#each gain.unique.wargear as id, n (id)}
-							{@const blocked = uniqueBlocked(id, at)}
-							<div class="unfold" class:open={draft.explore.picks[at] === id}>
-								<button class="unfold-head" aria-pressed={draft.explore.picks[at] === id} disabled={blocked !== null} onclick={() => pickAt(draft.explore, at, id)}>
+							{@const blocked = uniqueBlocked(answer, id, at)}
+							<div class="unfold" class:open={answer.picks[at] === id}>
+								<button class="unfold-head" aria-pressed={answer.picks[at] === id} disabled={blocked !== null} onclick={() => pickAt(answer, at, id)}>
 									<span class="roll">{n + 1}</span>
 									<span class="line">{wargearName(id)}{blocked ? ` – ${blocked}` : ''}</span>
 								</button>
@@ -270,10 +296,10 @@
 						{/each}
 					</div>
 				{:else if rolled}
-					<p class="caption" id="amount-{at}">{rolled.roll}</p>
-					<div class="results" role="group" aria-labelledby="amount-{at}">
+					<p class="caption" id="amount-{answer.roll}-{at}">{rolled.roll}</p>
+					<div class="results" role="group" aria-labelledby="amount-{answer.roll}-{at}">
 						{#each rolled.values as value (value)}
-							<button class="segment" aria-pressed={draft.explore.amounts[at] === value} onclick={() => amountAt(draft.explore, at, value)}>{value}</button>
+							<button class="segment" aria-pressed={answer.amounts[at] === value} onclick={() => amountAt(answer, at, value)}>{value}</button>
 						{/each}
 					</div>
 				{/if}
@@ -620,53 +646,104 @@
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<section>
-						<p class="note">What the exploration roll ran into. Roll at the table and tap it.</p>
-						<div class="toggles stacked">
-							<button class="toggle" aria-pressed={draft.explore.encounter === null} onclick={() => pickEncounter(draft.explore, null)}>No encounter</button>
+						<h3 class="heading"><span id="search-party">Search party</span><span class="rule"></span></h3>
+						<p class="note">Up to {rules.explore.party.size} who came through the battle. Each rolls an exploration die.</p>
+						<div class="toggles" role="group" aria-labelledby="search-party">
+							{#each explorers as fighter (fighter.instanceId)}
+								{@const reason = partyReason(fighter.instanceId, fighter.blocked)}
+								<button
+									class="toggle"
+									aria-pressed={exploration?.party.includes(fighter.instanceId) ?? false}
+									disabled={reason !== null}
+									onclick={() => exploration && rules.explore && toggleParty(draft.explore, exploration.party, fighter.instanceId)}
+								>
+									{nameOf(fighter.instanceId)}{reason ? ` – ${reason}` : ''}
+								</button>
+							{/each}
 						</div>
+						{#if exploration?.why}
+							<p class="hint">{exploration.why}: {exploration.most} encounters may be resolved.</p>
+						{/if}
+						{#each exploration?.party.length ? rules.explore.aids(warband, exploration.party) : [] as aid (aid.text)}
+							<p class="hint">{aid.text}</p>
+							{#if aid.spend}
+								{@const spend = aid.spend}
+								<button
+									class="switch-row"
+									role="switch"
+									aria-checked={draft.explore.spent.includes(spend)}
+									onclick={() =>
+										(draft.explore.spent = draft.explore.spent.includes(spend) ? draft.explore.spent.filter((id) => id !== spend) : [...draft.explore.spent, spend])}
+								>
+									{wargearName(spend)} used<span class="track" aria-hidden="true"></span>
+								</button>
+							{/if}
+						{/each}
 					</section>
-					{#each groups as group (group.name)}
+					{#if exploration?.party.length}
 						<section>
-							<h3 class="heading"><span id="encounters-{group.name}">{group.name}</span><span class="rule"></span></h3>
-							<div class="results-table" role="group" aria-labelledby="encounters-{group.name}">
-								{#each group.encounters as e (e.roll)}
-									{@const open = draft.explore.encounter === e.roll}
-									<div class="unfold" class:open>
-										<button class="unfold-head" aria-pressed={open} onclick={() => pickEncounter(draft.explore, e.roll)}>
-											<span class="roll">{e.roll}</span>
-											<span class="line">{e.name}{e.mishap ? ' – mishap' : ''}</span>
-										</button>
-										{#if open}
-											{@const option = draft.explore.option === null ? undefined : e.ask?.options[draft.explore.option]}
-											<div class="unfold-detail">
-												<p class="unfold-text"><RichText text={e.text} /></p>
-												{@render finds(e.gains, 'e')}
-												{#if e.ask}
-													<p class="caption" id="ask-{e.roll}">{e.ask.label}</p>
-													<div class="toggles stacked" role="group" aria-labelledby="ask-{e.roll}">
-														{#each e.ask.options as o, i (i)}
-															{@const cost = costOf(o.gains)}
-															{@const gold = goldLeft(warband, game, faction, draft, '')}
-															{@const short = cost > gold && draft.explore.option !== i}
-															<button class="toggle" aria-pressed={draft.explore.option === i} disabled={short} onclick={() => pickOption(draft.explore, i)}>
-																{o.label}{cost ? ` – ${cost} ${game.currency}` : ''}{short ? `, only ${Math.max(0, gold)} ${game.currency} left` : ''}
-															</button>
-														{/each}
-													</div>
-													{#if option}
-														{@render finds(option.gains, `o${draft.explore.option}`)}
-													{/if}
-												{/if}
-												{#if e.byHand || option?.byHand}
-													<p class="unfold-text">Part of this the app does not keep yet: note it by hand.</p>
-												{/if}
-											</div>
-										{/if}
-									</div>
-								{/each}
+							<p class="note">What the exploration roll ran into. Roll at the table and tap it.</p>
+							<div class="toggles stacked">
+								<button
+									class="toggle"
+									aria-pressed={exploration.encounters.length === 0}
+									onclick={() => pickEncounter(draft.explore, exploration.encounters, exploration.most, null)}>No encounter</button
+								>
 							</div>
 						</section>
-					{/each}
+						{#each groups as group (group.name)}
+							<section>
+								<h3 class="heading"><span id="encounters-{group.name}">{group.name}</span><span class="rule"></span></h3>
+								<div class="results-table" role="group" aria-labelledby="encounters-{group.name}">
+									{#each group.encounters as e (e.roll)}
+										{@const answer = exploration.encounters.find((a) => a.roll === e.roll)}
+										{@const reason = encounterReason(e.roll)}
+										<div class="unfold" class:open={!!answer}>
+											<button
+												class="unfold-head"
+												aria-pressed={!!answer}
+												disabled={reason !== null}
+												onclick={() => pickEncounter(draft.explore, exploration.encounters, exploration.most, e.roll)}
+											>
+												<span class="roll">{e.roll}</span>
+												<span class="line">{e.name}{e.mishap ? ' – mishap' : ''}{reason ? ` – ${reason}` : ''}</span>
+											</button>
+											{#if answer}
+												{@const option = answer.option === null ? undefined : e.ask?.options[answer.option]}
+												<div class="unfold-detail">
+													<p class="unfold-text"><RichText text={e.text} /></p>
+													{@render finds(answer, e.gains, 'e')}
+													{#if e.ask}
+														<p class="caption" id="ask-{e.roll}">{e.ask.label}</p>
+														<div class="toggles stacked" role="group" aria-labelledby="ask-{e.roll}">
+															{#each e.ask.options as o, i (i)}
+																{@const cost = costOf(o.gains)}
+																{@const gold = goldLeft(warband, game, faction, draft, '')}
+																{@const short = cost > gold && answer.option !== i}
+																<button class="toggle" aria-pressed={answer.option === i} disabled={short} onclick={() => pickOption(answer, i)}>
+																	{o.label}{cost ? ` – ${cost} ${game.currency}` : ''}{short ? `, only ${Math.max(0, gold)} ${game.currency} left` : ''}
+																</button>
+															{/each}
+														</div>
+														{#if option}
+															{@render finds(answer, option.gains, `o${answer.option}`)}
+														{/if}
+													{/if}
+													{#if e.byHand || option?.byHand}
+														<p class="unfold-text">Part of this the app does not keep yet: note it by hand.</p>
+													{/if}
+												</div>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							</section>
+						{/each}
+					{:else}
+						<section>
+							<p class="note">Nobody explores without a search party.</p>
+						</section>
+					{/if}
 				</div>
 			</div>
 

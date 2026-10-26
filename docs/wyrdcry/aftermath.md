@@ -15,8 +15,11 @@ playing** takes you back to the battle.
    switched on. Switch on any you forgot to tick.
 5. **Renown.** Each fighter rolls. Switch on what adds to the roll, and the
    page says which score it needs. Switch on each roll that reached it.
-6. **Explore District.** Roll the exploration dice. If they show an encounter,
-   tap it, and tap the answer where it asks one. For each roll on a loot table,
+6. **Explore District.** Pick up to five fighters for the search party. The
+   page lists what helps the roll, such as a Wyrdstone Pendulum one of them
+   carries; switch on an Ornate Key you used, and it leaves the stash. Roll the
+   exploration dice. If they show an encounter, tap it, and tap the answer
+   where it asks one. With a Scout in the party you can tap two. For each roll on a loot table,
    tap the result. Some finds ask for one more roll, such as the gold in a
    Sack of Teeth. A magic item you already have cannot be tapped: roll again.
    Some encounters do things the app does not keep yet, such as an injury roll

@@ -12,7 +12,7 @@
 import { stateOf, type BattleState } from './battle';
 import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
-import { findsOf, noEncounter, type ExploreAnswer, type Finds } from './explore';
+import { encountersOf, findsOf, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type Finds } from './explore';
 import { today } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
@@ -70,7 +70,7 @@ export interface AftermathDraft {
 	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
-	/** The encounter the search party ran into and what it found, where the game sends one out. */
+	/** Who went to explore, the encounters they ran into and what they found, where the game sends a search party out. */
 	explore: ExploreAnswer;
 	/** Whether the battle goes into the history. */
 	record: boolean;
@@ -136,7 +136,7 @@ export function startAftermath(
 		successor: null,
 		result: null,
 		shards: 0,
-		explore: noEncounter(),
+		explore: noExploration(),
 		record: recorded === null,
 		opponentWarband: '',
 		opponentPlayer: '',
@@ -321,26 +321,56 @@ export function levelsEarned(row: AftermathRow, marks: string[]): number {
 	return Math.min(row.levels, rollsOf(row, marks));
 }
 
-/** What the search party found, as answered; null where the game sends none out. */
-export function foundOf(game: GameSystem, faction: Faction, draft: AftermathDraft): Finds | null {
+/**
+ * The search party as it stands – who goes, how many encounters it may
+ * resolve and why, and the encounters that stand – where the game sends one
+ * out; null where it does not. Who took part and was not taken out of action
+ * goes first, as the renown page leaves them.
+ */
+export function explorationOf(
+	warband: Warband,
+	game: GameSystem,
+	draft: AftermathDraft
+): { party: string[]; most: number; why: string | null; encounters: EncounterAnswer[] } | null {
 	const explore = game.aftermath?.explore;
-	return explore ? findsOf(explore, draft.explore, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency) : null;
+	if (!explore) return null;
+	const candidates = draft.rows.map((r) => ({ instanceId: r.instanceId, keywordIds: r.keywordIds, tookPart: r.tookPart, out: draft.out.includes(r.instanceId) }));
+	const party = partyOf(explore, draft.explore, candidates);
+	const { count, why } = explore.most(warband, party);
+	return { party, most: count, why, encounters: encountersOf(draft.explore, party, count) };
+}
+
+/** What the search party found, as answered; null where the game sends none out. */
+export function foundOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): Finds | null {
+	const explore = game.aftermath?.explore;
+	const exploration = explorationOf(warband, game, draft);
+	if (!explore || !exploration) return null;
+	return findsOf(explore, exploration.encounters, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency);
+}
+
+/** The pieces of the stash given up on the exploration roll, such as an Ornate Key, that the stash still holds. */
+export function spentOf(warband: Warband, game: GameSystem, draft: AftermathDraft): string[] {
+	const exploration = explorationOf(warband, game, draft);
+	const aids = exploration && game.aftermath?.explore ? game.aftermath.explore.aids(warband, exploration.party) : [];
+	return draft.explore.spent.filter((id) => aids.some((a) => a.spend === id));
 }
 
 /**
  * What the battle brings in, the finds of the search party first: a counter
  * such as favour raised before the income is collected on it, the shards
  * delivered with the battle's, and the gold. A piece into the stash raises the
- * purse by its price, so the gold left stays where it was.
+ * purse by its price, and one given up on the exploration roll lowers it, so
+ * the gold left stays where it was.
  */
 export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft) {
 	const rules = game.aftermath!;
-	const found = foundOf(game, faction, draft);
+	const found = foundOf(warband, game, faction, draft);
 	const tally = { ...warband.tally };
 	for (const [key, amount] of Object.entries(found?.tally ?? {})) tally[key] = (tally[key] ?? 0) + amount;
 	const raised = found ? { ...warband, tally } : warband;
 	const earned = rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog));
-	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
+	const spent = spentOf(warband, game, draft);
+	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) - spent.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
 	return { ...earned, gold: earned.gold + kept, found };
 }
 
@@ -387,7 +417,13 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	   gold left. */
 	let spent = hireFees(draft);
 	const effects = activeEffects(warband, faction);
-	const stash = [...(warband.stash ?? []), ...(earned.found?.stash ?? [])];
+	/* A piece given up on the exploration roll leaves the stash, one copy each. */
+	const stash = [...(warband.stash ?? [])];
+	for (const id of spentOf(warband, game, draft)) {
+		const at = stash.indexOf(id);
+		if (at >= 0) stash.splice(at, 1);
+	}
+	stash.push(...(earned.found?.stash ?? []));
 	const fighters = warband.fighters.flatMap((before): FighterInstance[] => {
 		const { away, ...back } = before;
 		let fighter: FighterInstance = away === 'miss-next-battle' ? back : before;
