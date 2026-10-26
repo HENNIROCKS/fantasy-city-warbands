@@ -1,0 +1,16 @@
+[
+	{ "id": "noble-blood", "name": "Noble Blood", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "spellcraft-blood", "name": "Spellcraft", "text": "This fighter knows the **Lore of Blood**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "master-of-necromancy", "name": "Master of Necromancy", "text": "This fighter knows the **Lore of Necromancy**. When they are recruited, pick 2 spells from it to be their signature spells. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "bestial-transformation", "name": "Bestial Transformation", "text": "Once per battle, at the start of this fighter’s activation it can *transform*. If it does so, remove this fighter from the battlefield and set up the Lycanfell Beast at the same location (or as close to it as possible). Any damage the Lycanfell Noble has suffered, the Lycanfell Beast has also suffered.\n\nThe Lycanfell Beast immediately makes its activation." },
+	{ "id": "noble-lineage", "name": "Noble Lineage", "text": "When this fighter is recruited, pick 2 skills for them." },
+	{ "id": "unshakeable", "name": "Unshakeable", "text": "This fighter ignores the *Fear* special rule and all rules that would make them scatter (eg. the *Scare* weapon trait)." },
+	{ "id": "blood-magic", "name": "Blood Magic", "text": "This fighter knows the **Lore of Blood**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "martial-lineage", "name": "Martial Lineage", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "bloodline-mutations", "name": "Bloodline Mutations", "text": "When this fighter is recruited, you can pick 1 of the following bloodline mutations, (each comes with a silver cost):\n\n- *Bat Wings (+15 silver):* This fighter has the *Fly* keyword.\n- *Wulfen Legs (+10 silver):* This fighter's Move value is 7\".\n- *Hulking Form (+30 silver):* This fighter's Life value is 8." },
+	{ "id": "spellcraft-necromancy", "name": "Spellcraft", "text": "This fighter knows the **Lore of Necromancy**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "veteran-in-life", "name": "Veteran in Life", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "vampyric-bite", "name": "Vampyric Bite", "text": "Each time an enemy suffers 1 or more damage from a melee attack made by this fighter, heal this fighter 1 life point." },
+	{ "id": "sniff-em-out", "name": "Sniff 'em Out", "text": "Enemy fighters that are hidden are not hidden while they are within 9\" of this fighter." },
+	{ "id": "trackers", "name": "Trackers", "text": "Each aftermath sequence, when you search the city. If your search party includes any Dire Wolves, you can re-roll the exploration roll." }
+]

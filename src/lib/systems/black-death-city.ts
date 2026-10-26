@@ -86,6 +86,8 @@ interface RawFighter {
 	limit: { min: number; max: number | null };
 	keywords: string[];
 	profile: Record<string, number | string | null>;
+	/** Ids of the faction's `abilities.json`: the special rules its scroll prints. */
+	abilities: string[];
 	/** Names of the faction's wargear lists this fighter buys from. */
 	wargear_lists: string[];
 	gear: string[];
@@ -208,6 +210,14 @@ function upgrade(warband: Warband, faction: Faction): Warband {
 	};
 }
 
+/** A special rule as a scroll prints it; `type` where its name carries one, `[Action]`. */
+interface RawAbility {
+	id: string;
+	name: string;
+	type?: string;
+	text: string;
+}
+
 interface RawOrigin {
 	id: string;
 	name: string;
@@ -246,9 +256,18 @@ function build(
 	fighters: RawFighter[],
 	wargear: RawWargear[],
 	lists: Record<string, string[]>,
-	origins: RawOrigin[]
+	origins: RawOrigin[],
+	abilities: RawAbility[]
 ): Faction {
 	rows.set(meta.id, new Map(wargear.map((w) => [w.id, w])));
+	const ability = new Map(abilities.map((a) => [a.id, a]));
+	/* An id the faction's abilities do not hold is a slip in the data. */
+	const rulesOf = (f: RawFighter): Rule[] =>
+		f.abilities.map((id) => {
+			const a = ability.get(id);
+			if (!a) throw new Error(`Black Death City ${meta.id}/${f.id}: no ability ${id}`);
+			return { name: a.name, text: a.text, ...(a.type ? { type: a.type } : {}) };
+		});
 	for (const f of fighters) starts.set(`${meta.id}/${f.id}`, startOf(f.starting_experience, `${meta.id}/${f.id}`));
 	return {
 		id: meta.id,
@@ -280,7 +299,7 @@ function build(
 			limit: f.limit,
 			keywords: f.keywords,
 			profile: f.profile,
-			rules: [],
+			rules: rulesOf(f),
 			...(f.description ? { fluff: f.description } : {}),
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear
@@ -311,6 +330,7 @@ export const factions: Faction[] = folders.map((folder) =>
 		file<RawFighter[]>(folder, 'fighters'),
 		file<RawWargear[]>(folder, 'wargear'),
 		file<Record<string, string[]>>(folder, 'wargear-lists'),
-		file<RawOrigin[]>(folder, 'origins')
+		file<RawOrigin[]>(folder, 'origins'),
+		file<RawAbility[]>(folder, 'abilities')
 	)
 );

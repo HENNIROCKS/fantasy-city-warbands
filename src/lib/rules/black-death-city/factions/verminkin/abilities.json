@@ -1,0 +1,15 @@
+[
+	{ "id": "master-of-plague-magic", "name": "Master of Plague Magic", "text": "This fighter knows the **Lore of Poxes**. When they are recruited, pick 2 spells from it to be their signature spells. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "skilled-killer", "name": "Skilled Killer", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "one-cut-one-kill", "name": "One-cut, One-kill", "text": "While this fighter has made a Charge Move in the same activation, its melee attack rolls score a critical hit on a natural roll of a 5 or 6." },
+	{ "id": "ambitious-warlord", "name": "Ambitious Warlord", "text": "When this fighter is recruited, pick 2 skills for them." },
+	{ "id": "tinkerers-know-how", "name": "Tinkerer's Know-how", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "mad-engineering", "name": "Mad Engineering", "text": "This fighter begins the battle with **d3 engineering points**. Once per activation, if this fighter is not engaged in melee, they can spend one of their engineering points to make the following bonus action: Engineer." },
+	{ "id": "engineer", "name": "Engineer", "type": "bonus action", "text": "Pick a friendly fighter within 1\" of this fighter, that is not engaged in melee, to be the target and then pick one of the following options:\n\n- *Patch-up:* If the target is a *Contraption*, it heals d3 life.\n- *Soup-up:* Pick 1 of the target’s ranged weapons to be *souped-up* until the end of the round. While a weapon is *souped-up*, increase it’s Rend value by 1. However if it misfires, treat the result as ‘backfire’ (do not roll on the table)." },
+	{ "id": "spellcaster", "name": "Spellcaster", "text": "This fighter knows the **Lore of the Under-Tunnels**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "holy-magic", "name": "Holy Magic", "text": "This fighter knows the **Lore of Poxes**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "seasoned-warrior", "name": "Seasoned Warrior", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "unpredictable-movement", "name": "Unpredictable Movement", "text": "This fighter has a Move value of 2d6\". Each time it makes a move, roll the dice to determine its Move value for that move, (for example, if this fighter makes a Run Move, first roll 2d6\" to determine its Move value, then roll an additional d6 and add it to the Move value as normal)." },
+	{ "id": "splat", "name": "Splat!", "text": "After this fighter finishes a Charge move, pick 1 enemy fighter they are engaged with. That fighter is hit with the following attack 3 times: Rend -1, Damage 1." },
+	{ "id": "large-and-heavy", "name": "Large and Heavy", "text": "This fighter cannot climb or jump. In addition, each time this fighter is set-up, they must be set up on the battlefield floor and they must finish each move on the battlefield floor." }
+]

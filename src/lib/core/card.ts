@@ -86,6 +86,8 @@ export interface CardEntry {
 	text: string;
 	/** The app speaking rather than the rules, after the text: `Already included.` */
 	note?: string;
+	/** A faction rule that leaves this fighter out, its text a hint in the rule's place. */
+	leftOut?: true;
 }
 
 /**
@@ -187,7 +189,8 @@ const REACTION = 'reaction';
 const ACTION = 'action';
 
 const typeRank = (type = '') => TYPE_ORDER.indexOf(type.toLowerCase());
-const titleCase = (word: string) => word[0].toUpperCase() + word.slice(1).toLowerCase();
+/* Each word capitalised, as a rule's type is printed: `Double`, `Bonus Action`. */
+const titleCase = (type: string) => type.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
 
 /** Grouped by type, within a type by name, each labelled with its type: `[Double] Rush`. A note goes to the rule of its name. */
 function ruleEntries(rules: Rule[], notes = new Map<string, string>()): CardEntry[] {
@@ -344,15 +347,15 @@ export function fighterCard(
 	   raises this fighter's characteristics says it is in the profile above. */
 	const named = (keyword: string) => `\`${keyword.replaceAll('-', ' ').toUpperCase()}\``;
 	const factionRules: CardEntry[] = [
-		...faction.rules.map((r) => ({
-			label: r.name,
-			text:
+		...faction.rules.map((r): CardEntry => {
+			const hint =
 				r.except && keywords.includes(r.except)
 					? `Does not apply to a ${named(r.except)}.`
 					: r.only && !keywords.includes(r.only)
 						? `Applies only to a ${named(r.only)}.`
-						: r.text
-		})),
+						: null;
+			return hint ? { label: r.name, text: hint, leftOut: true } : { label: r.name, text: r.text };
+		}),
 		...faction.choices.flatMap((c) =>
 			c.options
 				.filter((o) => picks[c.id]?.includes(o.id))

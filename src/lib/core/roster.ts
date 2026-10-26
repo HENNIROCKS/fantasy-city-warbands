@@ -93,7 +93,8 @@ function toFighter(card: FighterCardData): RosterFighter {
 }
 
 /**
- * Every rule once. A label in brackets names its type, `[Triple] Murder-Stab`;
+ * Every rule once, with the fighters it applies to; two of one name that read
+ * differently stand apart. A label in brackets names its type, `[Triple] Murder-Stab`;
  * one in parentheses the choice it was picked under, `(Origin) The Hunt
  * Descends`. One without either takes the type of the place it comes from.
  */
@@ -105,7 +106,8 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 		const type = match ? match[2] : fallback;
 		const name = match ? match[3] : entry.label;
 		const tag = match ? (match[1] === '[' ? `[${type}]` : `(${type})`) : (FALLBACK_TAG[fallback] ?? '');
-		const key = `${type}|${name}`;
+		/* The text too: two rules of one name may read differently, as Black Death City's Spellcraft by its lore. */
+		const key = `${type}|${name}|${entry.text}`;
 		const rule = rules.get(key) ?? { name, type, tag, text: entry.text, note: entry.note, carriers: [], weapons: [] };
 		/* A faction pick that raises some fighters only, Huntsmen the Marksmen, is in their figures on the sheet. */
 		if (fallback === 'Faction rule' && !rule.note && entry.note) rule.note = entry.note;
@@ -114,8 +116,9 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 		rules.set(key, rule);
 	};
 
+	/* A fighter a faction rule leaves out is no carrier of it, and its hint is no text for the list. */
 	for (const card of cards) {
-		for (const e of entries(card, 'faction')) add(e, 'Faction rule', card.instanceId);
+		for (const e of entries(card, 'faction')) if (!e.leftOut) add(e, 'Faction rule', card.instanceId);
 		for (const e of entries(card, 'fighter')) add(e, 'Ability', card.instanceId);
 		for (const weapon of card.weapons) {
 			/* The row's name carries the count, `Sword ×2`; the rule belongs to the sword. */

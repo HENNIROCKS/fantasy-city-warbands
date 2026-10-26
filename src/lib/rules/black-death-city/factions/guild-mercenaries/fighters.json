@@ -8,6 +8,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
+		"abilities": ["veteran-of-the-city"],
 		"wargear_lists": ["main", "champion"],
 		"gear": []
 	},
@@ -20,6 +21,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "aristocrat"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
+		"abilities": ["trained-duellist"],
 		"wargear_lists": ["main", "champion"],
 		"gear": []
 	},
@@ -32,6 +34,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "witch-hunter"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
+		"abilities": ["seasoned-warrior", "recite-holy-litanies"],
 		"wargear_lists": ["main", "champion", "witch-hunters"],
 		"gear": []
 	},
@@ -44,6 +47,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
+		"abilities": ["master-of-spellcraft"],
 		"wargear_lists": ["wizard"],
 		"gear": []
 	},
@@ -56,6 +60,7 @@
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "mercenary", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
+		"abilities": ["guild-magic"],
 		"wargear_lists": ["wizard"],
 		"gear": []
 	},
@@ -68,6 +73,7 @@
 		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "mercenary", "human", "priest"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
+		"abilities": ["holy-magic"],
 		"wargear_lists": ["cleric"],
 		"gear": []
 	},
@@ -80,6 +86,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 5 },
+		"abilities": ["seasoned-warrior"],
 		"wargear_lists": ["main", "champion"],
 		"gear": []
 	},
@@ -92,6 +99,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"abilities": ["patch-you-up", "sawbones"],
 		"wargear_lists": ["main"],
 		"gear": []
 	},
@@ -104,6 +112,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["champion", "human", "mercenary", "witch-hunter"],
 		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
+		"abilities": ["recite-holy-litanies"],
 		"wargear_lists": ["main", "champion", "witch-hunters"],
 		"gear": []
 	},
@@ -116,6 +125,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"abilities": [],
 		"wargear_lists": ["main", "munitions"],
 		"gear": []
 	},
@@ -128,6 +138,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 5, "bow": 5, "armour": 6, "initiative": 2, "willpower": 2, "life": 3 },
+		"abilities": [],
 		"wargear_lists": ["main"],
 		"gear": []
 	},
@@ -140,6 +151,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "mercenary", "ogre"],
 		"profile": { "move": 4, "blade": 4, "bow": 4, "armour": 6, "initiative": 2, "willpower": 2, "life": 8 },
+		"abilities": [],
 		"wargear_lists": ["ogre"],
 		"gear": []
 	},
@@ -151,6 +163,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["beast", "mercenary", "dog"],
 		"profile": { "move": 7, "blade": 3, "bow": null, "armour": 6, "initiative": 4, "willpower": 1, "life": 3 },
+		"abilities": ["sniff-em-out", "trackers"],
 		"wargear_lists": [],
 		"gear": ["vicious-bite"]
 	}

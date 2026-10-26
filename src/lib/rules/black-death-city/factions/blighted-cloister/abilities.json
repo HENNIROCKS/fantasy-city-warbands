@@ -1,0 +1,11 @@
+[
+	{ "id": "lord-of-the-cloister", "name": "Lord of the Cloister", "text": "When this fighter is recruited, pick 2 skills for them." },
+	{ "id": "master-of-dark-spellcraft", "name": "Master of Dark Spellcraft", "text": "This fighter knows the **Lore of Blessed Maggots**. When they are recruited, pick 2 spells from it to be their signature spells. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "dark-spellcraft", "name": "Dark Spellcraft", "text": "This fighter knows the **Lore of Blessed Maggots**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "lord-of-the-cloister-champion", "name": "Lord of the Cloister", "text": "When this fighter is recruited, pick 1 skill for them." },
+	{ "id": "darkcloven-magic", "name": "Darkcloven Magic", "text": "This fighter knows the **Lore of Blessed Maggots** and the **Demonic Lore of Rot**. However, when they are recruited they have no signature spells. At the start of each battle they prepare 1 random spell from each lore." },
+	{ "id": "ram-horns", "name": "Ram Horns", "text": "After this fighter finishes a Charge Move, pick 1 enemy fighter engaged in melee with them to be the target. The target is hit by 2 attacks as follows: Rend -1, Damage 1." },
+	{ "id": "demonic-spellcraft", "name": "Demonic Spellcraft", "text": "This fighter knows the **Demonic Lore of Rot**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
+	{ "id": "demonic-wards", "name": "Demonic Wards", "text": "This fighter ignores Rend when making armour rolls." },
+	{ "id": "fear", "name": "Fear", "text": "This fighter *causes fear*. Enemy fighters that start their activation engaged in melee with a fighter that causes fear must pass a Willpower test. If they fail, their activation immediately ends.\n\nEnemy fighters that also cause fear can ignore this rule." }
+]
