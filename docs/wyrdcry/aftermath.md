@@ -19,11 +19,15 @@ playing** takes you back to the battle.
    page lists what helps the roll, such as a Wyrdstone Pendulum one of them
    carries; switch on an Ornate Key you used, and it leaves the stash. Roll the
    exploration dice. If they show an encounter, tap it, and tap the answer
-   where it asks one. With a Scout in the party you can tap two. For each roll on a loot table,
-   tap the result. Some finds ask for one more roll, such as the gold in a
-   Sack of Teeth. A magic item you already have cannot be tapped: roll again.
-   Some encounters do things the app does not keep yet, such as an injury roll
-   or a new recruit. The page says so – note those by hand.
+   where it asks one. With a Scout in the party you can tap two. If the
+   encounter falls on one fighter, tap who. For the Wyrdstone Cluster, tap how
+   many dice show each result. For each roll on a loot table, tap the result.
+   Some finds ask for one more roll, such as the gold in a Sack of Teeth. A
+   magic item you already have cannot be tapped: roll again. An encounter that
+   sends a fighter to the injury table adds a page for that roll after this
+   one, and a leader lost there one for the new leader. Some encounters do
+   things the app does not keep yet, such as a new recruit. The page says so –
+   note those by hand.
 7. **Income.** Count the shards you delivered. The page shows what the search
    party found and the favour and gold the battle brings. Hired swords show
    their fees here. A roll you have not tapped yet is listed.

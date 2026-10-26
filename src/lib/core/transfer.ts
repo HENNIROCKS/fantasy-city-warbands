@@ -67,16 +67,17 @@ const isTally = (v: unknown): v is Record<string, number> => isObject(v) && Obje
 
 function readAdvance(raw: unknown): Advance | null {
 	if (!isObject(raw)) return null;
-	const { level, stat, bonus, rule, option } = raw;
+	const { level, stat, bonus, rule, option, source } = raw;
 	if (!isNumber(level)) return null;
 	if (bonus !== undefined && !isNumber(bonus)) return null;
-	for (const text of [stat, rule, option]) if (text !== undefined && typeof text !== 'string') return null;
+	for (const text of [stat, rule, option, source]) if (text !== undefined && typeof text !== 'string') return null;
 	return {
 		level,
 		...(stat !== undefined ? { stat: stat as string } : {}),
 		...(bonus !== undefined ? { bonus } : {}),
 		...(rule !== undefined ? { rule: rule as string } : {}),
-		...(option !== undefined ? { option: option as string } : {})
+		...(option !== undefined ? { option: option as string } : {}),
+		...(source !== undefined ? { source: source as string } : {})
 	};
 }
 

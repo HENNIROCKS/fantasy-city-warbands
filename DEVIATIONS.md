@@ -24,6 +24,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Blast: with the Rulebook 1.0's text, as the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it, where the Rulebook 1.0.1's Common Weapon Rules leave it out; the site explains it, and a faction's own PDF where a weapon has it
 - [x] Bejewelled Dagger: a dagger a fighter can carry, sold for 15gc, where the Campaign Book only says it can be sold
 - [ ] Sack of Teeth: the d3×10 gold coins are paid when it is found, where the Campaign Book has the fillings sold
+- [ ] Wyrdstone Cluster: the Health lost for each 1 stays for the rest of the campaign, where the Campaign Book does not say for how long
 
 ## Black Death City
 

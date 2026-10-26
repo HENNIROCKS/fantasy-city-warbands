@@ -504,8 +504,8 @@ function layersOf(
 		if (!advance.stat) continue;
 		add(advance.stat, {
 			kind: 'permanent',
-			/* A level of 0 is a raise the warband file holds without saying why. */
-			source: advance.level > 0 ? `Renown ${advance.level}` : 'Warband file',
+			/* A level of 0 is a change outside renown: one an encounter made, or one the warband file holds without saying why. */
+			source: advance.level > 0 ? `Renown ${advance.level}` : (advance.source ?? 'Warband file'),
 			amount: advance.bonus ?? 0
 		});
 	}

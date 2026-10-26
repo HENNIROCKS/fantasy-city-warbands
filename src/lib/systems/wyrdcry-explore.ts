@@ -3,8 +3,9 @@
  * pp. 9 and 18–26): the encounters, the two loot tables and the magic items,
  * from `encounters.json` and `loot.json` in the shared form. What the app
  * keeps – gold, shards, favour, a piece into the stash, a roll on a loot
- * table, a magic item – becomes a gain; anything else an encounter does, such
- * as an injury roll or a recruit, is marked to be noted by hand.
+ * table, a magic item, and what falls on the fighter an encounter picks –
+ * becomes a gain; anything else an encounter does, such as a recruit, is
+ * marked to be noted by hand.
  */
 
 import type { Encounter, Explore, FindAmount, FindGain, FindOption, FindTable, Warband } from '$lib/core/types';
@@ -30,10 +31,19 @@ interface RawEncounter {
 	name: string;
 	text: string;
 	mishap?: boolean;
+	who?: string;
 	do?: RawAction[];
-	choose?: { label: string; do: RawAction[]; check?: RawCheck }[];
+	choose?: { label: string; do: RawAction[]; who?: string; check?: RawCheck }[];
 	check?: RawCheck;
 }
+
+/* Who an encounter picks, as the data names it (pp. 18–23). */
+const WHO: Record<string, Encounter['who']> = {
+	party: { from: 'party' },
+	'party-by-opponent': { from: 'party', note: 'Your opponent picks the fighter.' },
+	'party-hero-or-henchman-by-opponent': { from: 'party', note: 'Pick a HERO, or your opponent picks a HENCHMAN.' },
+	'hero-with-injury': { from: 'warband', keyword: 'hero', injured: true }
+};
 
 /* Under the headings of the Campaign Book's list, p. 9, by the number of dice alike. */
 const GROUPS: Record<number, string> = { 2: 'Doubles', 3: 'Triples', 4: 'Quads' };
@@ -65,14 +75,31 @@ function gainsOf(actions: RawAction[]): { gains: FindGain[]; byHand: boolean } {
 		else if ('favour' in action && typeof action.favour === 'number') gains.push({ tally: 'favour', amount: action.favour });
 		else if ('wargear' in action) gains.push({ wargear: String(action.wargear), ...('copies' in action && count('copies') !== null ? { copies: count('copies')! } : {}) });
 		else if ('magic' in action) gains.push({ unique: MAGIC });
-		else byHand = true;
+		else if ('injury_roll' in action) gains.push({ injuryRoll: { treat: ((action.injury_roll as { treat?: Record<string, string> }).treat ?? {}) } });
+		else if ('injury' in action) gains.push({ injury: String(action.injury) });
+		else if ('renown' in action && typeof action.renown === 'number') gains.push({ levels: action.renown });
+		else if ('heal' in action) gains.push({ heal: true });
+		else if ('remove' in action) gains.push({ remove: true });
+		else if ('stat' in action) {
+			for (const [key, bonus] of Object.entries(action.stat as Record<string, number>)) gains.push({ stat: { key, bonus } });
+		} else byHand = true;
 	}
 	return { gains, byHand };
 }
 
-/** A roll's results as answers: `1–3`, `4+`; a test as passed or failed. Null where the roll counts each die, which is noted by hand. */
-function askOf(check: RawCheck): Encounter['ask'] | null {
-	if (check.results.some((r) => r.each)) return null;
+/** A roll that counts its dice, such as the Wyrdstone Cluster's 4d6: how many show each result. */
+function eachOf(check: RawCheck): FindGain {
+	const dice = Number(/^(\d+)/.exec(check.dice ?? '')?.[1] ?? 1);
+	return {
+		each: {
+			dice,
+			results: check.results.map((r) => ({ on: r.each ?? '', label: `Dice showing ${r.each}`, gains: gainsOf(r.do).gains }))
+		}
+	};
+}
+
+/** A roll's results as answers: `1–3`, `4+`; a test as passed or failed. */
+function askOf(check: RawCheck): NonNullable<Encounter['ask']> {
 	const label = check.test
 		? `Take a ${check.test[0].toUpperCase()}${check.test.slice(1)} test`
 		: `Roll a ${check.dice ?? 'D6'}${check.hero ? `, +${check.hero} for a HERO` : ''}`;
@@ -88,30 +115,34 @@ function askOf(check: RawCheck): Encounter['ask'] | null {
 function encounterOf(raw: RawEncounter): Encounter {
 	const { gains, byHand } = gainsOf(raw.do ?? []);
 	let ask: Encounter['ask'] | null = null;
-	let unkept = byHand;
+	let who = raw.who ? WHO[raw.who] : undefined;
 	if (raw.choose) {
+		/* A roll made after a choice, such as the charlatan's, is one answer for each result, the choice's own gains first. */
 		ask = {
 			label: 'Choose one',
-			options: raw.choose.map((c): FindOption => {
+			options: raw.choose.flatMap((c): FindOption[] => {
 				const own = gainsOf(c.do);
-				/* A roll made after the choice, such as the charlatan's, is noted by hand. */
-				const left = own.byHand || Boolean(c.check);
-				return { label: c.label, gains: own.gains, ...(left ? { byHand: true } : {}) };
+				if (c.who) who = WHO[c.who];
+				if (!c.check) return [{ label: c.label, gains: own.gains, ...(own.byHand ? { byHand: true } : {}) }];
+				return askOf(c.check).options.map((o) => ({
+					label: `${c.label}, rolled ${o.label}`,
+					gains: [...own.gains, ...o.gains],
+					...(own.byHand || o.byHand ? { byHand: true } : {})
+				}));
 			})
 		};
-	} else if (raw.check) {
-		ask = askOf(raw.check);
-		if (!ask) unkept = true;
-	}
+	} else if (raw.check?.results.some((r) => r.each)) gains.push(eachOf(raw.check));
+	else if (raw.check) ask = askOf(raw.check);
 	return {
 		roll: raw.roll,
 		name: raw.name,
 		text: raw.text,
 		group: GROUPS[raw.roll.length] ?? '',
 		...(raw.mishap ? { mishap: true } : {}),
+		...(who ? { who } : {}),
 		gains,
 		...(ask ? { ask } : {}),
-		...(unkept ? { byHand: true } : {})
+		...(byHand ? { byHand: true } : {})
 	};
 }
 
