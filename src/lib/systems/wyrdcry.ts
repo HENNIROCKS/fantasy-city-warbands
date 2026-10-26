@@ -651,8 +651,9 @@ const catalogue = new Map<string, Wargear>([
  * What is only ever found (Campaign Book, pp. 24–26): the magic items, one of
  * each in the campaign, and the loot that is not a piece of the Trading Post.
  * Neither is bought, so neither adds to what the warband is worth. A magic
- * item that counts as another piece takes its profile – the Sceptre's club
- * master-wrought, 1 more hit and critical damage – and its own text.
+ * item or a piece of loot that counts as another piece takes its profile –
+ * the Sceptre's club master-wrought, 1 more hit and critical damage – and its
+ * own text.
  */
 for (const m of magicItems) {
 	const base = 'counts_as' in m && m.counts_as ? catalogue.get(m.counts_as) : undefined;
@@ -675,12 +676,15 @@ for (const m of magicItems) {
 	});
 }
 for (const p of loot.pieces) {
+	const base = 'counts_as' in p && p.counts_as ? catalogue.get(p.counts_as) : undefined;
+	if (import.meta.env.DEV && 'counts_as' in p && !base) console.warn(`loot "${p.id}" counts as a piece the data does not have`);
 	catalogue.set(`loot:${p.id}`, {
 		id: `loot:${p.id}`,
 		name: p.name,
-		kind: 'item',
+		kind: base?.kind ?? 'item',
 		cost: 0,
 		text: p.text,
+		...(base?.profile ? { profile: base.profile, rules: [...(base.rules ?? []), { name: p.name, text: p.text }] } : {}),
 		foundOnly: true,
 		...('sale' in p ? { sale: p.sale } : {})
 	});
@@ -688,6 +692,9 @@ for (const p of loot.pieces) {
 /** The magic items a fighter with these keywords may bear: any, except one it is barred from, as the Phylactery is from VAMPIRES. */
 const magicFor = (keywords: string[]) =>
 	magicItems.filter((m) => !('not_for' in m && m.not_for?.some((k) => keywords.includes(k)))).map((m) => `magic:${m.id}`);
+/** The loot a fighter may bear: a piece that counts as one it is offered, as the Bejewelled Dagger counts as a dagger. */
+const lootFor = (offered: string[]) =>
+	loot.pieces.flatMap((p) => ('counts_as' in p && p.counts_as && offered.includes(p.counts_as) ? [`loot:${p.id}`] : []));
 
 /* A piece from the loot tables, such as the pistol, comes into the stash of a
    faction that does not sell it too, to be sold from there. */
@@ -926,7 +933,9 @@ function build(
 			...fluffOf(f.description),
 			/* Offered whether the fighter may take it or not: a player looking for a
 			   Handgun needs to read that it is for HEROes, not to find it missing. */
-			wargear: takesNothing(f) ? [] : [...new Set([...equipment.map((e) => e.id), ...tradingPost, ...magicFor(f.keywords)])],
+			wargear: takesNothing(f)
+				? []
+				: [...new Set([...equipment.map((e) => e.id), ...tradingPost, ...magicFor(f.keywords), ...lootFor(equipment.map((e) => e.id))])],
 			unequipped: takesNothing(f),
 			gear: f.gear,
 			choice: choiceOf(f.choose, rules, ability)

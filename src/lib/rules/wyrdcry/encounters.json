@@ -108,7 +108,7 @@
     "name": "Lone Survivor",
     "fluff": "A lone fighter emerges from the shadows, limping. Whatever warband they belonged to is gone, just one of many others that have succumbed to the cursed city.",
     "text": "You may add a `HENCHMAN` to your warband with a recruitment cost of less than 60 gold coin. The fighter has a Move characteristic of 3.",
-    "do": [{ "recruit": { "keyword": "henchman", "below": 60, "set": { "move": 3 } } }]
+    "do": [{ "recruit": { "keyword": "henchman", "below": 60, "free": true, "set": { "move": 3 } } }]
   },
   {
     "roll": "555",
