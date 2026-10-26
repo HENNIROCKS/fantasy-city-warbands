@@ -30,6 +30,10 @@ what it does – a weapon's profile and rules, an item's text – and tick the b
 to buy it. Where a fighter may carry two of a piece, a button under it adds
 the second.
 
+**Starting experience.** In Black Death City a fighter is recruited with
+experience such as 40+d6. Roll the die at the table and tap the result under
+the fighter; until then it is still to do.
+
 **Another of the same.** Duplicate beside a fighter recruits another of its
 kind with the same equipment and choice, at its full price. Give it a name of
 its own.

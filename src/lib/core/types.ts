@@ -124,6 +124,13 @@ export interface GameSystem {
 		brief?: (warband: Warband) => Figure[];
 		/** The counters a fighter starts with when recruited, such as Wyrdcry's leader's first level of renown. */
 		recruited?: (fighter: Fighter) => Record<string, number>;
+		/**
+		 * A counter a fighter starts at a figure plus a die rolled at the table
+		 * when it is recruited, such as Black Death City's `40+d6` experience. The
+		 * builder asks for the roll; until it is entered the counter is unset and
+		 * `validate` reports it. Null for a fighter that starts with none.
+		 */
+		start?: (fighter: Fighter, faction: Faction) => StartRoll | null;
 	};
 	/**
 	 * What ending a battle asks and writes into the warband. Without it, ending a
@@ -622,6 +629,13 @@ export interface Figure {
 	value: string;
 }
 
+/** A counter's start on recruitment: `base` plus a die of `die` sides, `40+d6`. */
+export interface StartRoll {
+	key: string;
+	base: number;
+	die: number;
+}
+
 /** A number a game's campaign counts up and down, such as favour. */
 export interface Counter {
 	key: string;
@@ -994,6 +1008,7 @@ export interface Issue {
 		| 'ratio'
 		| 'choice'
 		| 'fighter-choice'
+		| 'start-roll'
 		| 'unknown-fighter'
 		| 'wargear-not-allowed'
 		| 'wargear-carry'

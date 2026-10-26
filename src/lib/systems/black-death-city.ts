@@ -4,7 +4,9 @@
  * `factions/` is one faction.
  */
 
-import type { Faction, Fighter, GameSystem, Rule, Source, Wargear, Warband } from '$lib/core/types';
+import { activeEffects } from '$lib/core/effects';
+import type { Faction, Fighter, GameSystem, Rule, Source, StartRoll, Wargear, Warband } from '$lib/core/types';
+import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 
@@ -29,7 +31,8 @@ export const game: GameSystem = {
 	roster: {
 		title: 'Black Death City Warband Roster',
 		stats: ['Mv', 'Bl', 'Bw', 'Ar', 'In', 'Wp', 'Lf'],
-		weapons: ['Rng', 'Att', 'Rend', 'Dmg']
+		weapons: ['Rng', 'Att', 'Rend', 'Dmg'],
+		campaign: ['Exp']
 	},
 	roles: ['leader', 'champion', 'henchman', 'brute', 'beast'],
 	groups: [
@@ -49,7 +52,16 @@ export const game: GameSystem = {
 	],
 	universal: [],
 	carry,
-	upgrade
+	upgrade,
+	/* Experience and the warband rating are all the playtest counts so far; its
+	   campaign chapter is still to come. */
+	campaign: {
+		warband: [],
+		fighter: [{ key: 'experience', label: 'Experience' }],
+		start: (fighter, faction) => starts.get(`${faction.id}/${fighter.id}`) ?? null,
+		/* The rulebook's Warband Rating, short enough for the card's figures box. */
+		values: (warband) => [{ key: 'rating', label: 'Rating', value: String(rating(warband)) }]
+	}
 };
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */
@@ -69,6 +81,8 @@ interface RawFighter {
 	/** The line its Fighter Scroll quotes, marks included. */
 	description?: string;
 	cost: number;
+	/** As the scroll prints it: `40+d6`, `d6`, `0`. */
+	starting_experience: string;
 	limit: { min: number; max: number | null };
 	keywords: string[];
 	profile: Record<string, number | string | null>;
@@ -203,6 +217,30 @@ interface RawOrigin {
 	ungrouped?: string[];
 }
 
+/** Each fighter's starting experience, keyed `faction/fighter`; a fighter that starts with none is null. */
+const starts = new Map<string, StartRoll | null>();
+
+/** `40+d6`, `d6` or `0` as the scroll prints it; anything else is a slip in the data. */
+function startOf(text: string, where: string): StartRoll | null {
+	if (text === '0') return null;
+	const match = /^(?:(\d+)\+)?d(\d+)$/.exec(text);
+	if (!match) throw new Error(`Black Death City ${where}: starting experience "${text}" is not of the form 40+d6`);
+	return { key: 'experience', base: Number(match[1] ?? 0), die: Number(match[2]) };
+}
+
+/**
+ * The warband rating (p. 50): what every fighter on the roster cost with its
+ * wargear, and their experience. The stash and the silver left do not count.
+ */
+function rating(warband: Warband): number {
+	const faction = factions.find((f) => f.id === warband.factionId);
+	if (!faction) return 0;
+	const effects = activeEffects(warband, faction);
+	return warband.fighters
+		.filter((f) => f.away !== 'dead')
+		.reduce((sum, f) => sum + fighterCost(f, faction, effects) + (f.tally?.experience ?? 0), 0);
+}
+
 function build(
 	meta: RawFaction,
 	fighters: RawFighter[],
@@ -211,6 +249,7 @@ function build(
 	origins: RawOrigin[]
 ): Faction {
 	rows.set(meta.id, new Map(wargear.map((w) => [w.id, w])));
+	for (const f of fighters) starts.set(`${meta.id}/${f.id}`, startOf(f.starting_experience, `${meta.id}/${f.id}`));
 	return {
 		id: meta.id,
 		game: game.id,

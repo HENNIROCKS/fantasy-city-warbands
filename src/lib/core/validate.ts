@@ -160,6 +160,18 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 				});
 			}
 		}
+
+		const start = game.campaign?.start?.(fighter, faction);
+		if (start && instance.tally?.[start.key] === undefined) {
+			const counter = game.campaign?.fighter.find((c) => c.key === start.key)?.label.toLowerCase() ?? start.key;
+			issues.push({
+				code: 'start-roll',
+				kind: 'missing',
+				message: `${fighter.name}: enter the d${start.die} rolled for its starting ${counter}.`,
+				short: 'Roll open',
+				instanceId: instance.instanceId
+			});
+		}
 	}
 
 	for (const wargear of faction.wargear) {
