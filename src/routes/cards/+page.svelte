@@ -160,7 +160,9 @@
 				hiringFaction,
 				system.game,
 				{},
-				stateOf(battle, h.instanceId).used
+				stateOf(battle, h.instanceId).used,
+				/* A hired sword fights for the warband, so what the last exploring left for every fighter is its too. */
+				w.next ?? []
 			);
 			return {
 				...card,

@@ -93,8 +93,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   paid in the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)
 - End a Wyrdcry battle in a few pages: result, injuries, a magic item stolen,
-  a new leader, items used up, renown, the search party's encounter with its
-  loot, and income, written in with Apply – see
+  a new leader, items used up, renown, the search party's encounters with
+  their loot and what they do to a fighter, and income, written in with
+  Apply – see
   [The aftermath](docs/wyrdcry/aftermath.md)
 - Spend each level of renown on a characteristic, a heroic talent or a
   legendary ability, after the battle or from the Battle menu

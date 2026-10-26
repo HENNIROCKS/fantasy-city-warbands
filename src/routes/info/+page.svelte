@@ -45,7 +45,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Still to come are the search party and some encounters when exploring the city in Wyrdcry, and in Black Death City the fighters’ special rules, their picks on recruitment and the campaign.'
+				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Still to come in Black Death City are the fighters’ special rules, their picks on recruitment and the campaign.'
 		},
 		{
 			question: 'Which rules does the app follow?',
