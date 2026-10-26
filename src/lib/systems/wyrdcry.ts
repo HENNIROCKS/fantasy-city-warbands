@@ -7,6 +7,7 @@
 import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, WargearUse, Warband } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
+import { explore } from './wyrdcry-explore';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
 import { weaponRules, weapons } from './wyrdcry-homebrew';
 
@@ -100,7 +101,7 @@ export const game: GameSystem = {
 			];
 		}
 	},
-	/* Step 2 of the aftermath, the renown roll (Campaign Book, p. 8). */
+	/* Steps 2–4 of the aftermath: the renown roll, Explore District and the income (Campaign Book, pp. 8–9). */
 	aftermath: {
 		roll: { label: 'Renown roll', target: 6 },
 		modifiers: [
@@ -124,6 +125,7 @@ export const game: GameSystem = {
 		],
 		/* Magic items (Campaign Book, p. 25): a bearer taken out of action loses it on a 4+. */
 		theft: { target: 4 },
+		explore,
 		income
 	},
 	advancement,

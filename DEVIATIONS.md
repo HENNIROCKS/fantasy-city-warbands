@@ -23,6 +23,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Crossbow and Handgun: 18", as the weapon data gives them, where the Rulebook 1.0.1's example on page 13 prints the Crossbow at 1–24"
 - [x] Blast: with the Rulebook 1.0's text, as the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it, where the Rulebook 1.0.1's Common Weapon Rules leave it out; the site explains it, and a faction's own PDF where a weapon has it
 - [x] Bejewelled Dagger: a dagger a fighter can carry, sold for 15gc, where the Campaign Book only says it can be sold
+- [ ] Sack of Teeth: the d3×10 gold coins are paid when it is found, where the Campaign Book has the fillings sold
 
 ## Black Death City
 

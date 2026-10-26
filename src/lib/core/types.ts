@@ -356,6 +356,8 @@ export interface Aftermath {
 	afterUse?: { wargear: string; label: string; hit: string; miss: string; injury: string }[];
 	/** The score that has the opponent steal a `unique` piece from a bearer taken out of action, such as Wyrdcry's magic items on a 4+. */
 	theft?: { target: number };
+	/** What a search party may run into after the battle, such as Wyrdcry's Explore District; none where the game sends none out. */
+	explore?: Explore;
 	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
@@ -375,6 +377,63 @@ export interface Aftermath {
 		gold: number;
 		lines: { gain: string; why: string }[];
 	};
+}
+
+/** A count a find brings: fixed, or a roll made at the table and tapped, such as `D3 × 10` for 10, 20 or 30. */
+export type FindAmount = number | { roll: string; values: number[] };
+
+/**
+ * What an encounter or a row of a loot table brings: gold, shards delivered
+ * with the battle's, a campaign counter such as favour, pieces into the stash,
+ * a roll on a loot table, or one of a game's unique pieces picked by a roll.
+ */
+export type FindGain =
+	| { gold: FindAmount }
+	| { shards: FindAmount }
+	| { tally: string; amount: number }
+	| { wargear: string; copies?: FindAmount }
+	| { table: string }
+	| { unique: { roll: string; wargear: string[] } };
+
+/** One answer to an encounter that asks: a choice made, or a roll's result. */
+export interface FindOption {
+	label: string;
+	gains: FindGain[];
+	/** Whether part of what it does is not kept by the app and is noted by hand. */
+	byHand?: boolean;
+}
+
+/** What a search party may run into, by the exploration roll that finds it: `444`, Lone Survivor. */
+export interface Encounter {
+	roll: string;
+	name: string;
+	text: string;
+	/** The heading it is listed under: `Doubles`. */
+	group: string;
+	/** Whether it must be resolved even when another was rolled. */
+	mishap?: boolean;
+	/** What it brings whatever is answered. */
+	gains: FindGain[];
+	/** Where it asks, what is asked – `Roll a D6` – and its answers, one tapped. */
+	ask?: { label: string; options: FindOption[] };
+	/** Whether part of what it does is not kept by the app and is noted by hand. */
+	byHand?: boolean;
+}
+
+/** A table the finds are rolled on, such as Wyrdcry's Lesser Loot Table. */
+export interface FindTable {
+	id: string;
+	name: string;
+	dice: string;
+	rows: { roll: string; name: string; text: string; gains: FindGain[] }[];
+}
+
+/** A game's step after the battle in which a search party explores and finds. */
+export interface Explore {
+	/** The step as the rules name it: `Explore District`. */
+	label: string;
+	encounters: Encounter[];
+	tables: FindTable[];
 }
 
 /**

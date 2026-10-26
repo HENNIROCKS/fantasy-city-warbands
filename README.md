@@ -15,7 +15,7 @@ Necropolis.
 it as a deck of cards that counts damage in a battle. It exports a warband as
 a file, imports it again and prints its roster as a PDF, all in a first
 version. In Wyrdcry, ending a battle brings renown, favour and income, rolls
-injuries and adds it to the warband's history, and renown is spent on a
+injuries and loot and adds it to the warband's history, and renown is spent on a
 characteristic and a heroic talent. It imports the Warband Deck's and the
 Warband Builder's files. It does not yet know Black Death City's campaign.
 
@@ -92,8 +92,9 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
   on the warband card, its fee
   paid in the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)
-- End a Wyrdcry battle in a few pages: result, income, injuries, a magic item
-  stolen, a new leader, items used up and renown, written in with Apply – see
+- End a Wyrdcry battle in a few pages: result, injuries, a magic item stolen,
+  a new leader, items used up, renown, the search party's encounter with its
+  loot, and income, written in with Apply – see
   [The aftermath](docs/wyrdcry/aftermath.md)
 - Spend each level of renown on a characteristic, a heroic talent or a
   legendary ability, after the battle or from the Battle menu
