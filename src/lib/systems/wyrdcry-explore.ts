@@ -7,9 +7,11 @@
  * as an injury roll or a recruit, is marked to be noted by hand.
  */
 
-import type { Encounter, Explore, FindAmount, FindGain, FindOption, FindTable } from '$lib/core/types';
+import type { Encounter, Explore, FindAmount, FindGain, FindOption, FindTable, Warband } from '$lib/core/types';
 
 import encounters from '$lib/rules/wyrdcry/encounters.json';
+import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
+import items from '$lib/rules/wyrdcry/items.json';
 import loot from '$lib/rules/wyrdcry/loot.json';
 import magicItems from '$lib/rules/wyrdcry/magic-items.json';
 
@@ -120,8 +122,59 @@ const tables: FindTable[] = loot.tables.map((t) => ({
 	rows: t.rows.map((r) => ({ roll: r.roll, name: r.name, text: r.text, gains: gainsOf(r.gain as RawAction[]).gains }))
 }));
 
+/** What a piece or a talent does for the exploration roll, as the data writes it under `explore`. */
+interface RawAid {
+	encounters?: number;
+	dice?: number;
+	adjust?: number;
+	set?: number;
+	discard?: boolean;
+}
+
+const withAid = <T extends { id: string; name: string }>(list: T[], prefix: string) =>
+	list.flatMap((x) => {
+		const aid = (x as { explore?: RawAid }).explore;
+		return aid ? [{ id: `${prefix}${x.id}`, name: x.name, aid }] : [];
+	});
+
+/* Scout (p. 14): a talent of a fighter in the party lets it resolve more encounters. */
+const talents = withAid(heroicTalents, '');
+/* The Wyrdstone Pendulum (p. 28) and Von Adelbrecht's Compass (p. 25), carried by one in the party; the Ornate Key (p. 24), in the stash and given up once used. */
+const pieces = [...withAid(items, 'item:'), ...withAid(magicItems, 'magic:'), ...withAid(loot.pieces, 'loot:')];
+
+const nameOf = (warband: Warband, instanceId: string) => warband.fighters.find((f) => f.instanceId === instanceId)?.name.trim() || 'Unnamed fighter';
+
+/** What an aid lets the player do to the roll, as a sentence's end. */
+function aidText(aid: RawAid): string {
+	if (aid.dice) return `roll ${aid.dice} more exploration ${aid.dice === 1 ? 'die' : 'dice'}`;
+	if (aid.adjust) return `add or subtract ${aid.adjust} on one exploration die`;
+	return 'set one exploration die to any value, then give it up';
+}
+
 export const explore: Explore = {
 	label: 'Explore District',
 	encounters: (encounters as RawEncounter[]).map(encounterOf),
-	tables
+	tables,
+	/* "Select up to 5 fighters that were not taken out of action ... and that don't have the BEAST or THRALL keyword" (p. 9). */
+	party: { size: 5, excluded: ['beast', 'thrall'] },
+	most: (warband, party) => {
+		let count = 1;
+		const by: string[] = [];
+		for (const id of party) {
+			const fighter = warband.fighters.find((f) => f.instanceId === id);
+			for (const t of talents) {
+				if (t.aid.encounters && fighter?.advances?.some((a) => a.rule === t.id)) {
+					count = Math.max(count, t.aid.encounters);
+					by.push(`${t.name} (${nameOf(warband, id)})`);
+				}
+			}
+		}
+		return { count, why: by.length ? by.join(', ') : null };
+	},
+	aids: (warband, party) =>
+		pieces.flatMap(({ id, name, aid }) => {
+			if (aid.discard) return (warband.stash ?? []).includes(id) ? [{ text: `${name} from the stash: ${aidText(aid)}.`, spend: id }] : [];
+			const bearers = party.filter((p) => warband.fighters.find((f) => f.instanceId === p)?.wargear.includes(id));
+			return bearers.length ? [{ text: `${name} (${bearers.map((b) => nameOf(warband, b)).join(', ')}): ${aidText(aid)}.` }] : [];
+		})
 };
