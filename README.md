@@ -3,12 +3,13 @@
 Build a warband for a skirmish game set in a fantasy city, play its battles
 from a deck of cards and carry it through a campaign. Two games so far:
 [Wyrdcry](https://wyrdcry.net) and [Black Death City](https://www.blackdeathcity.com/).
-Mordheim will follow eventually.
+Mordheim and Necropolis will follow eventually.
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
 Unofficial fan project. No connection to Games Workshop, Johan Markström and
-the Wyrdcry project, or Sam Pearson and Black Death City.
+the Wyrdcry project, Sam Pearson and Black Death City, or Peter Vigors and
+Necropolis.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
@@ -117,6 +118,7 @@ Warband Builder's files. It does not yet know Black Death City's campaign.
 | Black Death City | Playtest v1.03 |
 | Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net |
 | Mordheim | eventually |
+| Necropolis | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's
@@ -164,6 +166,7 @@ unless it was taken with the camera from inside the app.
 Node 20 or newer. Go through the `Makefile` rather than calling npm directly –
 it puts Homebrew's Node first in the `PATH`, where an older one would otherwise
 win and fail with a message that reads like a problem with the project.
+How to contribute: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ```sh
 make install
