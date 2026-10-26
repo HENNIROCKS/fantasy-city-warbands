@@ -30,8 +30,7 @@ export const areas: Area[] = [
 	},
 	{ label: 'Injuries', built: (game) => !!game.injuries },
 	{ label: 'Hired swords', built: (game) => !!game.hiring },
-	/* The system has no field to read for this, so it counts as open for every game. */
-	{ label: 'Exploring the city', built: () => false }
+	{ label: 'Exploring the city', built: (game) => !!game.aftermath?.explore }
 ];
 
 /** Which of the areas the game has, in the order of `areas`. */
