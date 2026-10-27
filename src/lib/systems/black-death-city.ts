@@ -9,6 +9,7 @@ import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRo
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
+import veteranSkills from '$lib/rules/black-death-city/skills.json';
 
 export const game: GameSystem = {
 	id: 'black-death-city',
@@ -92,8 +93,37 @@ interface RawFighter {
 	/** Names of the faction's wargear lists this fighter buys from. */
 	wargear_lists: string[];
 	gear: string[];
-	/** What it picks on recruitment; `source` is the id of the ability the choice comes out of. */
-	choice?: Omit<FighterChoice, 'source'> & { source: string };
+	/** What it picks on recruitment, one entry per ability that lets it pick. */
+	choices?: RawChoice[];
+}
+
+/**
+ * A pick on recruitment as `fighters.json` writes it: `source` is the id of
+ * the ability it comes out of, whose text is the prompt unless it has its own.
+ * The options are its own, or the skill tables named in `skills` – `veteran`
+ * for the Veteran Skills – or the spells of the lore named in `lore`.
+ */
+interface RawChoice extends Omit<FighterChoice, 'source' | 'prompt' | 'options'> {
+	source: string;
+	prompt?: string;
+	options?: FighterChoice['options'];
+	skills?: string[];
+	lore?: string;
+}
+
+/** A skill table (p. 51 and each faction's skills page): who may pick from it, as printed, and its skills. */
+interface RawSkillTable {
+	id: string;
+	name: string;
+	who: string;
+	skills: { id: string; name: string; text: string }[];
+}
+
+/** A spell lore: its spells by the d6 roll that prepares them, each with its keyword, `Attack Spell`. */
+interface RawLore {
+	id: string;
+	name: string;
+	spells: { id: string; roll: number; name: string; type: string; text: string }[];
 }
 
 /**
@@ -231,6 +261,11 @@ interface RawOrigin {
 /** Each fighter's starting experience, keyed `faction/fighter`; a fighter that starts with none is null. */
 const starts = new Map<string, StartRoll | null>();
 
+/** A slip in the data, where an expression needs a value. */
+function fail(message: string): never {
+	throw new Error(message);
+}
+
 /** `40+d6`, `d6` or `0` as the scroll prints it; anything else is a slip in the data. */
 function startOf(text: string, where: string): StartRoll | null {
 	if (text === '0') return null;
@@ -258,7 +293,9 @@ function build(
 	wargear: RawWargear[],
 	lists: Record<string, string[]>,
 	origins: RawOrigin[],
-	abilities: RawAbility[]
+	abilities: RawAbility[],
+	skills: RawSkillTable[],
+	lores: RawLore[]
 ): Faction {
 	rows.set(meta.id, new Map(wargear.map((w) => [w.id, w])));
 	const ability = new Map(abilities.map((a) => [a.id, a]));
@@ -269,11 +306,34 @@ function build(
 			if (!a) throw new Error(`Black Death City ${meta.id}/${f.id}: no ability ${id}`);
 			return { name: a.name, text: a.text, ...(a.type ? { type: a.type } : {}) };
 		});
-	const choiceOf = (f: RawFighter): FighterChoice | undefined => {
-		if (!f.choice) return undefined;
-		const a = ability.get(f.choice.source);
-		if (!a) throw new Error(`Black Death City ${meta.id}/${f.id}: no ability ${f.choice.source} for its choice`);
-		return { ...f.choice, source: a.name };
+	const tables = new Map([...veteranSkills, ...skills].map((t) => [t.id, t]));
+	const lore = new Map(lores.map((l) => [l.id, l]));
+	/* Skills fall under No Duplicates (p. 51); signature spells do not. An id
+	   the faction's tables or lores do not hold is a slip in the data, and so
+	   is an option two of a fighter's choices offer, since its picks are one list. */
+	const choicesOf = (f: RawFighter): FighterChoice[] => {
+		const where = `Black Death City ${meta.id}/${f.id}`;
+		const choices = (f.choices ?? []).map(({ source, prompt, options, skills: from, lore: known, ...rest }): FighterChoice => {
+			const a = ability.get(source);
+			if (!a) throw new Error(`${where}: no ability ${source} for its choice`);
+			const base = { ...rest, prompt: prompt ?? a.text, source: a.name };
+			if (from) {
+				const offered = from.map((id) => tables.get(id) ?? fail(`${where}: no skill table ${id}`));
+				const all = offered.flatMap((t) => t.skills.map((s) => ({ ...s, group: t.name })));
+				return { ...base, unique: true, noun: { one: 'skill', many: 'skills' }, options: all };
+			}
+			if (known) {
+				const spells = lore.get(known) ?? fail(`${where}: no spell lore ${known}`);
+				return { ...base, noun: { one: 'signature spell', many: 'signature spells' }, options: spells.spells.map(({ roll: _roll, ...s }) => s) };
+			}
+			return { ...base, options: options ?? [] };
+		});
+		const ids = choices.flatMap((c) => c.options.map((o) => o.id));
+		const twice = ids.find((id, i) => ids.indexOf(id) !== i);
+		if (twice) throw new Error(`${where}: ${twice} is offered by two of its choices`);
+		const lost = choices.flatMap((c) => (c.given ?? []).filter((id) => !c.options.some((o) => o.id === id)));
+		if (lost.length) throw new Error(`${where}: given ${lost.join(', ')} is not among its options`);
+		return choices;
 	};
 	for (const f of fighters) starts.set(`${meta.id}/${f.id}`, startOf(f.starting_experience, `${meta.id}/${f.id}`));
 	return {
@@ -310,7 +370,7 @@ function build(
 			...(f.description ? { fluff: f.description } : {}),
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear,
-			...(f.choice ? { choice: choiceOf(f) } : {})
+			...(f.choices?.length ? { choices: choicesOf(f) } : {})
 		})),
 		/* What only the carrying rules read stays out of the shared form; Rare
 		   is a limit every game may have, so it goes in. */
@@ -339,6 +399,8 @@ export const factions: Faction[] = folders.map((folder) =>
 		file<RawWargear[]>(folder, 'wargear'),
 		file<Record<string, string[]>>(folder, 'wargear-lists'),
 		file<RawOrigin[]>(folder, 'origins'),
-		file<RawAbility[]>(folder, 'abilities')
+		file<RawAbility[]>(folder, 'abilities'),
+		file<RawSkillTable[]>(folder, 'skills'),
+		file<RawLore[]>(folder, 'spells')
 	)
 );

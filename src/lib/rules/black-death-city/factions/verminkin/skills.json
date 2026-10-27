@@ -1,0 +1,15 @@
+[
+	{
+		"id": "masterful-schemes",
+		"name": "Masterful Schemes",
+		"who": "Verminkin Leaders and Champions only",
+		"skills": [
+			{ "id": "purveyor-of-poisons", "name": "Purveyor of Poisons", "text": "This fighter’s melee weapons gain the *Poison* weapon trait. If a weapon already has the *Poison* weapon trait, improve the Rend value of that weapon by 1 instead." },
+			{ "id": "dirty-fighter", "name": "Dirty Fighter", "text": "Subtract 1 from parry rolls made by enemy fighters against attacks made by this fighter. In addition, each time an enemy fighter fails such a parry roll, that enemy fighter suffers 1 damage." },
+			{ "id": "attack-attack", "name": "Attack! Attack!", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Attack! Attack! [Bonus Action]:** Until the end of the round, add 1 to attack rolls for melee attacks made by friendly fighters, while they are within 9\" of this fighter." },
+			{ "id": "too-cunning-to-die", "name": "Too Cunning to Die", "text": "Each time you roll on the lasting injury table for this fighter, you can roll twice and pick either result." },
+			{ "id": "master-of-dark-science", "name": "Master of Dark Science", "text": "Add 3\" to the Range value of ranged weapons friendly fighters are equipped with while they are within 6\" of this fighter. In addition, you can re-roll misfire rolls made for friendly fighters while they are within 6\" of this fighter." },
+			{ "id": "from-unseen-quarter", "name": "From Unseen Quarter", "text": "If this fighter starts the battle in reserve, when it is set up on the battlefield for the first time they can be set up anywhere on the battlefield more than 9\" away from all enemy fighters. Then, up to 2 friendly *Henchmen* that are also in reserve and will be set up in the same round, can be set up anywhere on the battlefield that is within 3\" of this fighter and more than 9\" away from all enemy fighters." }
+		]
+	}
+]

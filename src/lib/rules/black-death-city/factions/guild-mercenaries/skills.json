@@ -1,0 +1,15 @@
+[
+	{
+		"id": "old-dogs",
+		"name": "Old Dogs",
+		"who": "Mercenary Leaders and Champions only",
+		"skills": [
+			{ "id": "rallying-cry", "name": "Rallying Cry", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Rallying Cry [Bonus Action]:** This fighter heals 1 damage. In addition, at the end of the round, if this fighter is still on the battlefield, the commanding player does not need to take a Flee test for their warband." },
+			{ "id": "point-blank-shot", "name": "Point Blank Shot", "text": "While this fighter is engaged in melee, they can attempt to make a Ranged Attack action. To do so, they take an Initiative test. If passed they can make a Ranged Attack action but cannot use a *Heavy* weapon. The Ranged Attack action must target a fighter they are engaged in melee with. If failed, the action immediately ends." },
+			{ "id": "crackshot", "name": "Crackshot", "text": "When making a ranged attack action, this fighter scores a critical hit on a natural roll of a 5 or a 6." },
+			{ "id": "feint", "name": "Feint", "text": "Once per melee attack action, after an enemy has successfully parried one of this fighter’s hits, this fighter can attempt a feint. To do so, roll a dice. If the roll equals or exceeds the parry roll, the hit is not parried and it becomes a critical hit." },
+			{ "id": "explorers-instincts", "name": "Explorer’s Instincts", "text": "If this fighter is picked to lead a search party, you can re-roll one of the dice in the exploration roll (either the ‘tens’ or the ‘units’)." },
+			{ "id": "right-on-time", "name": "Right On Time", "text": "You can re-roll reinforcement rolls made for a battle group that includes this fighter." }
+		]
+	}
+]

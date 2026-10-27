@@ -1,0 +1,17 @@
+[
+	{
+		"id": "veteran",
+		"name": "Veteran Skills",
+		"who": "Any fighter",
+		"skills": [
+			{ "id": "dual-weapon-wielder", "name": "Dual-weapon Wielder", "text": "Each time this fighter attacks with an off-hand weapon, they can make 2 attacks with that weapon instead of 1." },
+			{ "id": "shooting-drills", "name": "Shooting Drills", "text": "Each time this fighter reloads a weapon, they can make a Willpower test. If they pass, they do not need to forgo a Move or Action, (see *Reload* weapon trait)." },
+			{ "id": "great-weapon-master", "name": "Great Weapon Master", "text": "This fighter ignores the ‘Unwieldy’ weapon trait on Melee Weapons." },
+			{ "id": "unshakeable", "name": "Unshakeable", "text": "This fighter ignores the *Fear* special rule and all rules that would make them scatter (eg. the *Scare* weapon trait)." },
+			{ "id": "tough-bastard", "name": "Tough Bastard", "text": "Each time this fighter activates while they are **bloodied**, they can take a Willpower test. If they pass, they heal 1 life point and are no longer bloodied." },
+			{ "id": "fast-learner", "name": "Fast Learner", "text": "In the Aftermath sequence of each battle, this fighter earns d6 bonus experience." },
+			{ "id": "duellist", "name": "Duellist", "text": "This fighter can parry critical hits with any successful attack." },
+			{ "id": "steady-aim", "name": "Steady Aim", "text": "Add 1 to attack rolls for ranged attacks made by this fighter, while this fighter has not moved in the same activation." }
+		]
+	}
+]

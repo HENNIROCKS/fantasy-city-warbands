@@ -397,7 +397,7 @@ export function fighterCard(
 	   rule it comes out of says so. Any other pick – a spell, a mutation, even
 	   one that raises a characteristic as well – is a rule of the fighter's own. */
 	const raises = (o: FighterChoiceOption) => o.bonus && !o.text;
-	const raised = options.some(raises) ? fighter?.choice?.source : undefined;
+	const raised = (fighter?.choices ?? []).flatMap((c) => (c.source && c.options.some((o) => raises(o) && options.includes(o)) ? [c.source] : []));
 	const standing = [
 		...(fighter?.rules ?? []),
 		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
@@ -428,7 +428,7 @@ export function fighterCard(
 	const fighterRules = ruleEntries(
 		ownRules,
 		new Map([
-			...(raised ? [[raised, 'Already included.'] as const] : []),
+			...raised.map((source) => [source, 'Already included.'] as const),
 			...included.map((r) => [r.name, 'Already included.'] as const),
 			...lent.map(({ rule, source }) => [rule.name, `For this battle: ${source}.`] as const),
 			...barred(ownRules)
@@ -541,10 +541,12 @@ function layersOf(
 
 	/* A pick with a text of its own is a rule on the card and named after itself, Hulking Form; a bare
 	   characteristic after the rule it comes out of, Martial Discipline. */
-	const source = fighter.choice?.source;
-	for (const option of chosenOptions(instance, fighter)) {
-		const by = option.text ? option.name : (source ?? option.name);
-		for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: by, amount: bonus });
+	const picks = instance.picks ?? [];
+	for (const choice of fighter.choices ?? []) {
+		for (const option of choice.options.filter((o) => picks.includes(o.id))) {
+			const by = option.text ? option.name : (choice.source ?? option.name);
+			for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: by, amount: bonus });
+		}
 	}
 	for (const { stat, bonus, source } of pickedStats(fighter, effects)) add(stat, { kind: 'permanent', source, amount: bonus });
 	for (const advance of instance.advances ?? []) {

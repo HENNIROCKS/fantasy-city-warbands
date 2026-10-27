@@ -9,7 +9,7 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import { chosenOptions, profileOf } from '$lib/core/warband';
+import { chosenOptions, offeredOptions, profileOf } from '$lib/core/warband';
 import { racialLimits as limits } from './wyrdcry-homebrew';
 import { injuryBonus } from './wyrdcry-injuries';
 import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, Issue, LevelOffer, LevelRule, OpenLevel, Rule, Warband } from '$lib/core/types';
@@ -106,7 +106,7 @@ function ruleHolds(advance: Advance, fighter: Fighter): boolean {
 	if (!advance.rule) return false;
 	const talent = talentOf(advance.rule);
 	if (talent) return !talent.legendary || advance.level >= LEGENDARY_FROM;
-	return !!fighter.choice?.options.some((o) => o.id === advance.rule);
+	return offeredOptions(fighter).some((o) => o.id === advance.rule);
 }
 
 /**
@@ -179,7 +179,7 @@ const weaponKind = (talent: Talent): string | null => ('weapon' in talent && tal
 function weaponsFor(kind: string, instance: FighterInstance, fighter: Fighter, faction: Faction) {
 	const carried = [...fighter.gear, ...chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []), ...instance.wargear];
 	const seen = new Set<string>();
-	const offered = new Set(faction.fighters.flatMap((f) => [...f.wargear, ...f.gear, ...(f.choice?.options ?? []).flatMap((o) => o.gear ?? [])]));
+	const offered = new Set(faction.fighters.flatMap((f) => [...f.wargear, ...f.gear, ...offeredOptions(f).flatMap((o) => o.gear ?? [])]));
 	const sold = faction.wargear.filter((w) => !w.foundOnly && offered.has(w.id)).map((w) => w.id);
 	return [...carried, ...sold].flatMap((id) => {
 		const piece = faction.wargear.find((w) => w.id === id);
@@ -253,7 +253,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 	}));
 
 	/* A wizard may learn one more of the abilities it was offered at recruitment in place of a talent. */
-	const choice = fighter.choice;
+	const choice = fighter.choices?.find((c) => c.later);
 	const learned = advances.filter((a) => a.rule && choice?.options.some((o) => o.id === a.rule)).length;
 	const abilities = choice?.later
 		? choice.options
@@ -301,7 +301,7 @@ function effects(instance: FighterInstance, fighter: Fighter, faction: Faction):
 			}
 			continue;
 		}
-		const ability = fighter.choice?.options.find((o) => o.id === advance.rule);
+		const ability = offeredOptions(fighter).find((o) => o.id === advance.rule);
 		if (ability) result.rules.push({ name: ability.name, text: ability.text, type: ability.type } satisfies Rule);
 	}
 	return result;
@@ -324,7 +324,7 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 		/* A talent the rules no longer have is named from its id: `shield-wall` reads Shield Wall. */
 		const name =
 			talent?.name ??
-			fighter.choice?.options.find((o) => o.id === advance.rule)?.name ??
+			offeredOptions(fighter).find((o) => o.id === advance.rule)?.name ??
 			advance.rule.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 		const weapon = advance.option && (!talent || weaponKind(talent)) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 		const named = weapon ? `${name} (${weapon.name})` : name;

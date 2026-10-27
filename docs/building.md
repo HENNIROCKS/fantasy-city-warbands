@@ -39,8 +39,12 @@ recruited, such as a Misbegotten's bloodline mutation. Its price stands beside
 it and is added to the fighter's cost. You can leave it empty. Once the warband
 has fought, it stays as picked.
 
+**Skills and spells.** In Black Death City some fighters pick skills or
+signature spells when they are recruited, each skill under the table it comes
+from. A skill one fighter has is greyed out for the others.
+
 **Another of the same.** Duplicate beside a fighter recruits another of its
-kind with the same equipment and choice, at its full price. Give it a name of
-its own.
+kind with the same equipment and choice, at its full price. A skill stays open
+for the new one to pick. Give it a name of its own.
 
 [All guides](README.md)

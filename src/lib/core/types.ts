@@ -805,6 +805,8 @@ export interface FighterChoiceOption {
 	gear?: string[];
 	/** What it adds to the fighter's cost, such as a Misbegotten's bloodline mutation. */
 	cost?: number;
+	/** The table it stands in where a choice offers several, a heading in the builder: Black Death City's `Old Dogs`. */
+	group?: string;
 	/** What the fighter is called once it has picked this, in place of its type: a hired sword's role, `River Troll`. */
 	title?: string;
 	/** A picture of its own, in place of the fighter's `image`: a hired sword's role. */
@@ -820,6 +822,13 @@ export interface FighterChoice {
 	pick: number;
 	/** Whether it may be left open, picking fewer than `pick` or none, as a Misbegotten may go without a bloodline mutation. */
 	optional?: true;
+	/**
+	 * Whether an option one fighter has is barred to every other fighter of the
+	 * warband, as Black Death City's No Duplicates for skills; `validate` reports a second.
+	 */
+	unique?: true;
+	/** Options the fighter has from recruitment without picking them, as a Noble's Duellist: held like a pick, not counted against `pick`. */
+	given?: string[];
 	options: FighterChoiceOption[];
 	/** What one option is called, in the singular and plural: `magical ability`. */
 	noun?: { one: string; many: string };
@@ -862,8 +871,12 @@ export interface Fighter {
 	 * the fighter's cost, and not to be removed.
 	 */
 	gear: string[];
-	/** What the fighter picks when it is recruited. */
-	choice?: FighterChoice;
+	/**
+	 * What the fighter picks when it is recruited, one choice each: Black Death
+	 * City's Bloodcursed Noble picks a skill and a spell. The picks are one list,
+	 * so an option's id is unique across the choices.
+	 */
+	choices?: FighterChoice[];
 }
 
 /** Where the rules for a faction or a hired sword can be read, linked where it is picked. */
@@ -1028,6 +1041,7 @@ export interface Issue {
 		| 'ratio'
 		| 'choice'
 		| 'fighter-choice'
+		| 'duplicate-pick'
 		| 'start-roll'
 		| 'unknown-fighter'
 		| 'wargear-not-allowed'

@@ -10,7 +10,10 @@
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-plague-magic"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "master-of-plague-magic", "pick": 2, "lore": "poxes" }
+		]
 	},
 	{
 		"id": "nightfang-assassin",
@@ -23,7 +26,10 @@
 		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 6 },
 		"abilities": ["skilled-killer", "one-cut-one-kill"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "skilled-killer", "pick": 1, "skills": ["masterful-schemes", "veteran"] }
+		]
 	},
 	{
 		"id": "ironfang-warlord",
@@ -36,7 +42,10 @@
 		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 6 },
 		"abilities": ["ambitious-warlord"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "ambitious-warlord", "pick": 2, "skills": ["masterful-schemes", "veteran"] }
+		]
 	},
 	{
 		"id": "sparkseer",
@@ -49,7 +58,10 @@
 		"profile": { "move": 6, "blade": 4, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
 		"abilities": ["tinkerers-know-how", "mad-engineering", "engineer"],
 		"wargear_lists": ["main", "champion", "sparkseer"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "tinkerers-know-how", "pick": 1, "skills": ["masterful-schemes", "veteran"] }
+		]
 	},
 	{
 		"id": "verminkin-warlock",
@@ -62,7 +74,10 @@
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
 		"abilities": ["spellcaster"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "spellcaster", "pick": 1, "lore": "the-under-tunnels" }
+		]
 	},
 	{
 		"id": "pox-priests-apprentice",
@@ -75,7 +90,10 @@
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
 		"abilities": ["holy-magic"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "holy-magic", "pick": 1, "lore": "poxes" }
+		]
 	},
 	{
 		"id": "verminkin-champion",
@@ -88,7 +106,10 @@
 		"profile": { "move": 6, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
 		"abilities": ["seasoned-warrior"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "seasoned-warrior", "pick": 1, "skills": ["masterful-schemes", "veteran"] }
+		]
 	},
 	{
 		"id": "assassins-apprentice",

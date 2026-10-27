@@ -10,7 +10,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 7 },
 		"abilities": ["lord-of-the-cloister"],
 		"wargear_lists": ["main", "champion"],
-		"gear": ["full-plate"]
+		"gear": ["full-plate"],
+		"choices": [
+			{ "source": "lord-of-the-cloister", "pick": 2, "skills": ["ordained-of-the-cloister", "veteran"] }
+		]
 	},
 	{
 		"id": "high-sorcerer",
@@ -23,7 +26,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 6 },
 		"abilities": ["master-of-dark-spellcraft"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "master-of-dark-spellcraft", "pick": 2, "lore": "blessed-maggots" }
+		]
 	},
 	{
 		"id": "cloister-sorcerer",
@@ -36,7 +42,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
 		"abilities": ["dark-spellcraft"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "dark-spellcraft", "pick": 1, "lore": "blessed-maggots" }
+		]
 	},
 	{
 		"id": "cloister-champion",
@@ -49,7 +58,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 4, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["lord-of-the-cloister-champion"],
 		"wargear_lists": ["main", "champion"],
-		"gear": ["full-plate"]
+		"gear": ["full-plate"],
+		"choices": [
+			{ "source": "lord-of-the-cloister-champion", "pick": 1, "skills": ["ordained-of-the-cloister", "veteran"] }
+		]
 	},
 	{
 		"id": "darkcloven-shaman",
@@ -75,7 +87,10 @@
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["demonic-spellcraft", "demonic-wards", "fear"],
 		"wargear_lists": ["practitioner-items"],
-		"gear": ["demonic-rot-blade"]
+		"gear": ["demonic-rot-blade"],
+		"choices": [
+			{ "source": "demonic-spellcraft", "pick": 1, "lore": "rot" }
+		]
 	},
 	{
 		"id": "cloister-knight",

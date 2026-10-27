@@ -1,7 +1,7 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
 	import type { ActiveEffect } from '$lib/core/effects';
-	import type { Faction, FighterInstance, GameSystem, Issue, Wargear, WargearKind } from '$lib/core/types';
+	import type { Faction, FighterChoice, FighterInstance, GameSystem, Issue, Wargear, WargearKind } from '$lib/core/types';
 	import { fighterCost, fighterName, formatStat, neverCarried, profileOf } from '$lib/core/warband';
 	import { tick } from 'svelte';
 
@@ -216,24 +216,26 @@
 	/** `21-23` as the rules print a range of results. */
 	const roll = (id: string) => id.replace('-', '–');
 
-	/* Once full, the oldest pick makes room, so a pick of one is swapped in a single tap. */
-	function nextPicks(id: string, pick: number): string[] {
+	/** The picks made under one of the fighter's choices. */
+	const pickedUnder = (choice: FighterChoice) => (instance.picks ?? []).filter((p) => choice.options.some((o) => o.id === p));
+
+	/* Once a choice is full, its oldest pick makes room, so a pick of one is swapped in a single tap. */
+	function nextPicks(id: string, choice: FighterChoice): string[] {
 		const picks = instance.picks ?? [];
 		if (picks.includes(id)) return picks.filter((p) => p !== id);
-		if (picks.length < pick) return [...picks, id];
-		return [...picks.slice(1), id];
+		const mine = pickedUnder(choice);
+		if (mine.length < choice.pick) return [...picks, id];
+		return [...picks.filter((p) => p !== mine[0]), id];
 	}
 
-	async function choose(id: string) {
-		const choice = fighter?.choice;
-		if (!choice) return;
+	async function choose(id: string, choice: FighterChoice) {
 		const picks = instance.picks ?? [];
 		if (choice.roll && asking !== id && !picks.includes(id)) {
 			asking = id;
 			return;
 		}
 		asking = null;
-		instance.picks = nextPicks(id, choice.pick);
+		instance.picks = nextPicks(id, choice);
 		await tick();
 		document.getElementById(optionId(id))?.focus();
 	}
@@ -350,13 +352,13 @@
 			</details>
 		{/if}
 
-		{#if fighter.choice}
-			{@const choice = fighter.choice}
+		{#each fighter.choices ?? [] as choice, c (c)}
 			{@const picks = instance.picks ?? []}
+			{@const mine = pickedUnder(choice)}
 			<!-- A pick with a price is paid for once the warband has fought, as its wargear is. -->
 			{@const settled = !!paid && choice.options.some((o) => o.cost)}
 			<section>
-				<p class="sublabel">{choice.source ?? choice.roll ?? 'Choose'} · {picks.length} / {choice.pick}</p>
+				<p class="sublabel">{choice.source ?? choice.roll ?? 'Choose'} · {mine.length} / {choice.pick}</p>
 				<div class="mb-2 text-zinc-400"><RichText text={choice.prompt} /></div>
 				{#if settled && !closed}
 					<p class="mb-2 text-zinc-400">Paid for: it stays as picked.</p>
@@ -364,7 +366,11 @@
 				<!-- A characteristic needs no explaining, so two fit a row; a spell or a
 				     row of a table is a paragraph, read before it is picked. -->
 				<div class="grid gap-2 {choice.options.every((o) => !o.text) ? 'grid-cols-2' : ''}">
-					{#each choice.options as option (option.id)}
+					{#each choice.options as option, i (option.id)}
+						<!-- Where the options come from several tables, each table under its name. -->
+						{#if option.group && option.group !== choice.options[i - 1]?.group}
+							<p class="sublabel {i ? 'mt-2' : ''}">{option.group}</p>
+						{/if}
 						{#if asking === option.id}
 							<!-- On the option's own surface, so the buttons stand out from it as they do in a sheet. -->
 							<div
@@ -376,18 +382,20 @@
 								<p id="ask-{instance.instanceId}" class="font-semibold">Rolled {roll(option.id)} on the {choice.roll}?</p>
 								<div class="sheet-actions">
 									<button type="button" class="btn" onclick={() => notRolled(option.id)}>Not rolled</button>
-									<button type="button" class="btn" onclick={() => choose(option.id)} use:focusOnMount>Take it</button>
+									<button type="button" class="btn" onclick={() => choose(option.id, choice)} use:focusOnMount>Take it</button>
 								</div>
 							</div>
 						{:else}
-							{@const block = picks.includes(option.id) ? null : pickBlocked(nextPicks(option.id, choice.pick))}
+							<!-- What the fighter has from recruitment stands pressed, and is not one of its picks. -->
+							{@const given = !!choice.given?.includes(option.id)}
+							{@const block = given || picks.includes(option.id) ? null : pickBlocked(nextPicks(option.id, choice))}
 							<button
 								type="button"
 								id={optionId(option.id)}
 								class="choice"
-								aria-pressed={picks.includes(option.id)}
-								disabled={closed || settled || !!block}
-								onclick={() => choose(option.id)}
+								aria-pressed={given || picks.includes(option.id)}
+								disabled={closed || settled || given || !!block}
+								onclick={() => choose(option.id, choice)}
 							>
 								<span class="block font-semibold"
 									>{choice.roll ? `${roll(option.id)} ${option.name}` : option.name}{#if option.type}<span
@@ -395,6 +403,9 @@
 										>{/if}{#if option.cost}<span class="font-normal text-zinc-400">{' · '}+{option.cost}&nbsp;{game.currency}</span>{/if}</span
 								>
 								{#if option.text}<span class="block text-zinc-400"><RichText text={option.text} /></span>{/if}
+								{#if given}
+									<span class="mt-1 block text-zinc-400">Given on recruitment</span>
+								{/if}
 								{#if block && !settled}
 									<span class="mt-1 block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
 								{/if}
@@ -402,11 +413,11 @@
 						{/if}
 					{/each}
 				</div>
-				{#if picks.length < choice.pick && !choice.optional}
+				{#if mine.length < choice.pick && !choice.optional}
 					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {choice.pick} to carry on.</p>
 				{/if}
 			</section>
-		{/if}
+		{/each}
 
 		{#if start && (paid === null || startOpen)}
 			{@const label = game.campaign?.fighter.find((c) => c.key === start.key)?.label.toLowerCase() ?? start.key}

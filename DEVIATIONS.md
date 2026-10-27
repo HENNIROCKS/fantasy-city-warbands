@@ -33,6 +33,7 @@ Transcribed from the Playtest v1.03, where the Fighters List, the scrolls, the A
 - [ ] Wargear costs what the Armoury list says, where an item page prints another price: Cloister Demonic Familiar 30s (item page 20s)
 - [ ] Wargear is named as the Armoury list names it: Lantern/Torch (item page: Torchlight/Lantern)
 - [ ] Rotling: its Demonic Rot Strike has Rend –, as its scroll prints it, where the Cloister's melee table prints -1
+- [ ] Will of the Saints casts critically on 10+, where the Lore of the Saints prints [1o+]
 
 ### Open upstream
 

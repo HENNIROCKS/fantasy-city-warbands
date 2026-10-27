@@ -10,7 +10,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["veteran-of-the-city"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "veteran-of-the-city", "pick": 2, "skills": ["old-dogs", "veteran"] }
+		]
 	},
 	{
 		"id": "noble",
@@ -23,7 +26,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
 		"abilities": ["trained-duellist"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "trained-duellist", "pick": 1, "skills": ["old-dogs", "veteran"], "given": ["duellist"] }
+		]
 	},
 	{
 		"id": "witch-hunter",
@@ -36,7 +42,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["seasoned-warrior", "recite-holy-litanies"],
 		"wargear_lists": ["main", "champion", "witch-hunters"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "seasoned-warrior", "pick": 1, "skills": ["old-dogs", "veteran"] }
+		]
 	},
 	{
 		"id": "high-wizard",
@@ -49,7 +58,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-spellcraft"],
 		"wargear_lists": ["wizard"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "master-of-spellcraft", "pick": 2, "lore": "sanctioned-magic" }
+		]
 	},
 	{
 		"id": "guild-wizard",
@@ -62,7 +74,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["guild-magic"],
 		"wargear_lists": ["wizard"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "guild-magic", "pick": 1, "lore": "sanctioned-magic" }
+		]
 	},
 	{
 		"id": "guild-cleric",
@@ -75,7 +90,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["holy-magic"],
 		"wargear_lists": ["cleric"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "holy-magic", "pick": 1, "lore": "the-saints" }
+		]
 	},
 	{
 		"id": "guild-champion",
@@ -88,7 +106,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 3, "willpower": 3, "life": 5 },
 		"abilities": ["seasoned-warrior"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "seasoned-warrior", "pick": 1, "skills": ["old-dogs", "veteran"] }
+		]
 	},
 	{
 		"id": "plague-doctor",
