@@ -33,7 +33,8 @@
 	--ui-danger: #b91c1c;
 	--ui-danger-bg: rgba(185, 28, 28, 0.18);
 	--ui-backdrop: rgba(0, 0, 0, 0.6);
-	/* The page behind everything, as the layout's bg-zinc-900 sets it. */
+	/* The page behind everything, as the layout's bg-zinc-900 sets it. app.html
+	   gives html this background, with both themes' values as fallbacks. */
 	--ui-page: var(--color-zinc-900);
 }
 
@@ -60,23 +61,19 @@
 	--ui-page: #e4ddd3;
 }
 
-/* What Safari shows when the page is pulled past its edge. */
-html {
-	background-color: var(--ui-page);
-}
-
 /* ── Cards ────────────────────────────────────────────────────────────────── */
 
 /*
  * The card surface and type follow the Wyrdcry Card Creator, as the Warband
  * Deck prints them. A card is paper in both themes, so these do not change
- * with it. The files sit under src/ rather than static/, so the build gives
- * them the deploy's base path.
+ * with it. Grenze Gotisch sits in static/, as the start screen in app.html
+ * shows it before this file loads; the build gives either place the deploy's
+ * base path.
  */
 
 @font-face {
 	font-family: 'Grenze Gotisch';
-	src: url('./lib/assets/card/GrenzeGotisch-Regular.ttf') format('truetype');
+	src: url('/GrenzeGotisch-Regular.ttf') format('truetype');
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;

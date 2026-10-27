@@ -202,6 +202,10 @@
 				An unofficial fan project, not commercial, with no affiliation with or endorsement from Games
 				Workshop.
 			</p>
+			<p class="text-zinc-400">
+				The start screen shows an etching after Urs Graf, 1524, from the Wellcome Collection, in the
+				public domain. The game logos belong to their games.
+			</p>
 		</section>
 
 		<section class="space-y-3">

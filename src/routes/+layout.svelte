@@ -4,11 +4,15 @@
 	import StorageWarning from '$lib/components/StorageWarning.svelte';
 	import UpdateBar from '$lib/components/UpdateBar.svelte';
 	import { storage } from '$lib/core/storage.svelte';
+	import { dismissStartScreen } from '$lib/start-screen';
 	import { theme } from '$lib/theme.svelte';
 
 	let { children } = $props();
 
-	onMount(() => theme.init());
+	onMount(() => {
+		theme.init();
+		dismissStartScreen();
+	});
 
 	/* Raised once a visit: a failing browser fails on every write, and a sheet
 	   coming back with each tap would stand in the way of the export it asks for. */

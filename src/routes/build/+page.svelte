@@ -32,6 +32,7 @@
 		withPicks,
 		withWargear
 	} from '$lib/core/warband';
+	import { rememberGame } from '$lib/start-screen';
 	import { planned, systems, upgraded } from '$lib/systems';
 
 	/*
@@ -129,6 +130,9 @@
 
 	const gameId = $derived(warband?.game ?? page.url.searchParams.get('game'));
 	const system = $derived(gameId ? systems[gameId] : null);
+	$effect(() => {
+		if (system) rememberGame(system.game.id);
+	});
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	const issues = $derived(warband && system && faction ? validate(warband, system.game, faction) : []);
 	const cost = $derived(warband && faction ? warbandCost(warband, faction) : 0);

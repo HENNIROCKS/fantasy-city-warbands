@@ -33,6 +33,7 @@
 - [x] ⚔️ Black Death City: bloodied fighters on the card, and the flee test at the end of the round
 - [x] ⚔️ Black Death City: each caster's prepared spells rolled before the battle and shown on its card
 - [x] 📄 Black Death City's roster with its sheet's fields: Crit, weapon traits, Black Rot, holdings
+- [x] 🎨 A start screen with an etching after Urs Graf, in the colour of the game opened last
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
