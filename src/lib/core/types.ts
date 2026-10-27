@@ -863,11 +863,11 @@ export interface Faction {
 	author: string;
 	source?: Source;
 	/**
-	 * The faction's own rules, shown as text when it is picked. `except` is a
-	 * keyword id whose carriers a rule leaves out, `only` one only whose carriers
+	 * The faction's own rules, shown as text when it is picked. `except` are
+	 * keyword ids whose carriers a rule leaves out, `only` one only whose carriers
 	 * it applies to; the card of any other fighter prints a hint in its place.
 	 */
-	rules: { name: string; text: string; except?: string; only?: string }[];
+	rules: { name: string; text: string; except?: string[]; only?: string }[];
 	/** Per faction, because Wyrdcry sets it per faction; a game with one size for all repeats it here. */
 	size: Span;
 	choices: Choice[];

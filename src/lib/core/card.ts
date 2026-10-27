@@ -343,17 +343,18 @@ export function fighterCard(
 
 	/* The faction's standing rules, then what the warband picked under its
 	   choices. A rule that leaves this fighter out keeps its line, with a hint
-	   where its text would stand – Sudden Accusation on a War Hound. A pick that
-	   raises this fighter's characteristics says it is in the profile above. */
+	   where its text would stand – Sudden Accusation on a War Hound, any of
+	   Wyrdcry's on a HIRED SWORD. A pick that raises this fighter's
+	   characteristics says it is in the profile above. */
 	const named = (keyword: string) => `\`${keyword.replaceAll('-', ' ').toUpperCase()}\``;
 	const factionRules: CardEntry[] = [
 		...faction.rules.map((r): CardEntry => {
-			const hint =
-				r.except && keywords.includes(r.except)
-					? `Does not apply to a ${named(r.except)}.`
-					: r.only && !keywords.includes(r.only)
-						? `Applies only to a ${named(r.only)}.`
-						: null;
+			const left = r.except?.find((k) => keywords.includes(k));
+			const hint = left
+				? `Does not apply to a ${named(left)}.`
+				: r.only && !keywords.includes(r.only)
+					? `Applies only to a ${named(r.only)}.`
+					: null;
 			return hint ? { label: r.name, text: hint, leftOut: true } : { label: r.name, text: r.text };
 		}),
 		...faction.choices.flatMap((c) =>
