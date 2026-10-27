@@ -47,10 +47,15 @@ export function createFighter(fighterId: string): FighterInstance {
 	return { instanceId: newId(), fighterId, name: '', wargear: [], picks: [] };
 }
 
-/** The options picked under the fighter's own choice, in the order the choice offers them. */
+/** Every option the fighter's own choices offer, choice after choice. */
+export function offeredOptions(fighter: Fighter): FighterChoiceOption[] {
+	return (fighter.choices ?? []).flatMap((c) => c.options);
+}
+
+/** The options the fighter has under its own choices, picked or given, in the order the choices offer them. */
 export function chosenOptions(instance: FighterInstance, fighter: Fighter): FighterChoiceOption[] {
 	const picks = instance.picks ?? [];
-	return fighter.choice?.options.filter((o) => picks.includes(o.id)) ?? [];
+	return (fighter.choices ?? []).flatMap((c) => c.options.filter((o) => picks.includes(o.id) || c.given?.includes(o.id)));
 }
 
 /**
@@ -205,7 +210,8 @@ export function withFighter(warband: Warband, fighterId: string, faction: Factio
 }
 
 /**
- * Another recruit of the fighter's type, picking and carrying what it does.
+ * Another recruit of the fighter's type, picking and carrying what it does –
+ * except a pick only one fighter may have, such as a skill, which stays open.
  * Nothing it gained or lost in a campaign comes along, nor its name or texts.
  */
 export function withCopy(warband: Warband, instanceId: string, faction: Faction, game: GameSystem): Warband {
@@ -213,7 +219,9 @@ export function withCopy(warband: Warband, instanceId: string, faction: Faction,
 	if (!model) return warband;
 	const added = withFighter(warband, model.fighterId, faction, game);
 	const recruit = added.fighters.find((f) => !warband.fighters.some((g) => g.instanceId === f.instanceId))!;
-	const copy = { ...recruit, wargear: [...model.wargear], picks: [...(model.picks ?? [])] };
+	const fighter = faction.fighters.find((f) => f.id === model.fighterId);
+	const theirs = new Set((fighter?.choices ?? []).filter((c) => c.unique).flatMap((c) => c.options.map((o) => o.id)));
+	const copy = { ...recruit, wargear: [...model.wargear], picks: (model.picks ?? []).filter((id) => !theirs.has(id)) };
 	return { ...added, fighters: added.fighters.map((f) => (f.instanceId === recruit.instanceId ? copy : f)) };
 }
 

@@ -29,7 +29,7 @@
 - [x] 🃏 Black Death City's armour, shields and Heavy Plating counted into the card's figures, and every rule or piece of wargear counted in says so
 - [x] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [x] 🃏 Black Death City: a two-handed melee weapon beside a Held Item loses an attack on the card
-- [ ] 📚 Black Death City: skills and spells picked on recruitment
+- [x] 📚 Black Death City: skills and signature spells picked on recruitment, a skill for one fighter only
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

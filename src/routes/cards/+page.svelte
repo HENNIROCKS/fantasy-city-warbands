@@ -146,7 +146,7 @@
 	const pickedName = (fighterId: string, picks: string[] = []) =>
 		offered
 			.find((h) => h.fighter.id === fighterId)
-			?.fighter.choice?.options.filter((o) => picks.includes(o.id))
+			?.fighter.choices?.flatMap((c) => c.options).filter((o) => picks.includes(o.id))
 			.map((o) => o.name)
 			.join(', ') ?? '';
 
@@ -701,7 +701,7 @@
 		}
 		if (offer.refused) return;
 		const id = offer.hireling.fighter.id;
-		if (offer.hireling.fighter.choice && !picks.length) {
+		if (offer.hireling.fighter.choices?.length && !picks.length) {
 			choosing = choosing === id ? null : id;
 			return;
 		}
@@ -998,7 +998,8 @@
 					</button>
 				{/if}
 				{#each hireOffers as offer, i (offer.hireling.fighter.id)}
-					{@const choice = offer.hireling.fighter.choice}
+					<!-- A hired sword picks one thing at most, its role. -->
+					{@const choice = offer.hireling.fighter.choices?.[0]}
 					{@const open = choosing === offer.hireling.fighter.id}
 					{@const picked = offer.held ? pickedName(offer.hireling.fighter.id, offer.held.picks) : ''}
 					{@const source = offer.hireling.source}

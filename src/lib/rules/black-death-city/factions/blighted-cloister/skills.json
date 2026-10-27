@@ -1,0 +1,15 @@
+[
+	{
+		"id": "ordained-of-the-cloister",
+		"name": "Ordained of the Cloister",
+		"who": "Cloister Leaders and Champions only",
+		"skills": [
+			{ "id": "shepherd-the-afflicted", "name": "Shepherd the Afflicted", "text": "Add 1 to the maximum distance other friendly fighters can move if they started the move within 6\" of this fighter." },
+			{ "id": "demonic-conduit", "name": "Demonic Conduit", "text": "Once per battle, when a friendly *Demon* fighter would be set up from reserve, they can instead be set up within 3\" of this fighter, not engaged in melee with any enemy fighters." },
+			{ "id": "rite-of-contagion", "name": "Rite of Contagion", "text": "Once per battle, if this fighter is not engaged, this fighter can use the following bonus action:\n\n**Rite of Contagion [Bonus Action]:** Each enemy fighter within 12\" of this fighter must pass a Willpower test else suffer 1 point of damage and be *poisoned* (See the Poison weapon trait)." },
+			{ "id": "last-rites", "name": "Last Rites", "text": "Each time another fighter is taken down within 6\" of this fighter, this fighter can heal 1 life point." },
+			{ "id": "unholy-sermon", "name": "Unholy Sermon", "text": "Once per battle, if this fighter is not engaged, this fighter can use the following bonus action:\n\n**Unholy Sermon [Bonus Action]:** Until the end of the round, add 1 to Attack rolls for melee attacks made by friendly fighters while they are within 6\" of this fighter." },
+			{ "id": "the-black-benediction", "name": "The Black Benediction", "text": "Subtract 1 from the Damage and Critical Damage values of weapons while they target this fighter (to a minimum of 1)." }
+		]
+	}
+]

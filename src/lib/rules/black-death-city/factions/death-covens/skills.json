@@ -1,0 +1,15 @@
+[
+	{
+		"id": "dark-aristocracy",
+		"name": "Dark Aristocracy",
+		"who": "Undead Aristocrat Leaders and Champions only",
+		"skills": [
+			{ "id": "cloud-of-bats", "name": "Cloud of Bats", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Cloud of Bats [Bonus Action]:** Remove the fighter from the battlefield, set them up again anywhere on the battlefield, wholly within 9\" horizontally of their previous location. They cannot be set up engaged in melee." },
+			{ "id": "mesmeric-gaze", "name": "Mesmeric Gaze", "text": "Once per battle, when this fighter makes a Melee Attack action, it can attempt to *mesmerise* the defending fighter. If they do so, the commanding players each roll a dice and add their fighter’s Willpower value to the score. If this fighter’s total exceeds the defending fighter’s total, they are *mesmerised* for that action. While they are mesmerised, subtract 1 from the Attacks value of their melee weapons (off-hand attacks are not affected)." },
+			{ "id": "unholy-strength", "name": "Unholy Strength", "text": "This fighters melee weapons gain the *Bludgeon* weapon trait." },
+			{ "id": "supernatural-healing", "name": "Supernatural Healing", "text": "This fighter cannot suffer permanent injuries. If they suffer a lasting injury it is always temporary.\n\nIn addition, if this fighter is killed. You can immediately make a Willpower test for them. If passed, they are not killed but must miss the next d3 battles as they slumber. Pick a Champion in your warband to be the Leader in their absence. That fighter temporarily gains the *Leader* keyword and loses the *Champion* keyword until the Leader returns." },
+			{ "id": "leech-blood", "name": "Leech Blood", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Leech Blood [Bonus Action]:** Each enemy fighter within 9\" of this fighter must take a Willpower test. If they fail, they suffer 1 damage and this fighter heals 1 life." },
+			{ "id": "relentless-attacker", "name": "Relentless Attacker", "text": "Subtract 1 from parry rolls made against attacks made by this fighter." }
+		]
+	}
+]

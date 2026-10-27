@@ -47,8 +47,9 @@ that game's campaign.
   two-handed ranged weapon, and Rare 0-x across the warband
 - Make the choice a fighter brings on recruitment: an Eshin Sorcerer's spell, a
   Mercenary Champion's Fight or Shoot, the Mutation Table row rolled at the
-  table, a Misbegotten's bloodline mutation at its price. A raised
-  characteristic is counted into the profile
+  table, a Misbegotten's bloodline mutation at its price, a Black Death City
+  fighter's skills and signature spells – a skill for one fighter of the
+  warband only. A raised characteristic is counted into the profile
 - Never go too far: whatever would take the warband over its budget, past a
   fighter's or a group's limit, or against its Origin is disabled, and says why
 - See what is still missing – a leader, enough henchmen, an open choice – on
@@ -135,8 +136,7 @@ who count as half in a Wyrdcry warband's morale, and Wyrdcry's optional
 Underdogs. Wyrdcry's abilities and faction rules and the special rules
 of Black Death City's fighters are shown as text; a faction rule that leaves a
 fighter out, or applies only to a keyword it lacks, shows a hint on its card
-instead. Not there yet: the skills and spells Black Death City's fighters pick
-on recruitment.
+instead.
 
 ## Using it at the table
 

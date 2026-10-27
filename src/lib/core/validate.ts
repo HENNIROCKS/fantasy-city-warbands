@@ -13,7 +13,7 @@
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
-import { fighterCost } from './warband';
+import { fighterCost, fighterName, offeredOptions } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -99,6 +99,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	   took the lead counts as a LEADER. */
 	const resolved: { fighter: Fighter; keywords: string[] }[] = [];
 	const successor = warband.fighters.find((f) => f.leader);
+	/* Who has each option of a unique choice, by its id. */
+	const held = new Map<string, string>();
 	for (const instance of warband.fighters) {
 		const fighter = fighters.get(instance.fighterId);
 		if (!fighter) {
@@ -144,12 +146,14 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			});
 		}
 
-		const choice = fighter.choice;
-		if (choice) {
-			const picked = instance.picks ?? [];
+		const picked = instance.picks ?? [];
+		const offered = new Set(offeredOptions(fighter).map((o) => o.id));
+		/* A pick no choice offers, or one picked twice, is one too many for the first choice. */
+		const stray = picked.some((id, i) => !offered.has(id) || picked.indexOf(id) !== i);
+		for (const [i, choice] of (fighter.choices ?? []).entries()) {
 			const options = new Set(choice.options.map((o) => o.id));
 			const valid = new Set(picked.filter((id) => options.has(id)));
-			const tooMany = valid.size > choice.pick || valid.size !== picked.length;
+			const tooMany = valid.size > choice.pick || (i === 0 && stray);
 			if (tooMany || (valid.size < choice.pick && !choice.optional)) {
 				issues.push({
 					code: 'fighter-choice',
@@ -158,6 +162,22 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 					short: tooMany ? `Pick ${choice.pick} only` : 'Choice open',
 					instanceId: instance.instanceId
 				});
+			}
+		}
+
+		/* No Duplicates: an option of a unique choice is the first fighter's that has it, alive. */
+		for (const choice of instance.away === 'dead' ? [] : (fighter.choices ?? []).filter((c) => c.unique)) {
+			for (const option of choice.options.filter((o) => picked.includes(o.id) || choice.given?.includes(o.id))) {
+				const holder = held.get(option.id);
+				if (holder) {
+					issues.push({
+						code: 'duplicate-pick',
+						kind: 'excess',
+						message: `${fighter.name}: ${option.name} is ${holder}'s already.`,
+						short: 'Taken',
+						instanceId: instance.instanceId
+					});
+				} else held.set(option.id, fighterName(instance, faction));
 			}
 		}
 

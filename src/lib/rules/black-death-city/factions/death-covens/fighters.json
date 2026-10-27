@@ -10,7 +10,11 @@
 		"profile": { "move": 5, "blade": 3, "bow": 5, "armour": 6, "initiative": 5, "willpower": 4, "life": 6 },
 		"abilities": ["noble-blood", "spellcraft-blood"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "noble-blood", "pick": 1, "skills": ["dark-aristocracy", "veteran"] },
+			{ "source": "spellcraft-blood", "pick": 1, "lore": "blood" }
+		]
 	},
 	{
 		"id": "necromancer",
@@ -23,7 +27,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-necromancy"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "master-of-necromancy", "pick": 2, "lore": "necromancy" }
+		]
 	},
 	{
 		"id": "lycanfell-noble",
@@ -36,7 +43,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["noble-blood", "bestial-transformation"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "noble-blood", "pick": 1, "skills": ["dark-aristocracy", "veteran"] }
+		]
 	},
 	{
 		"id": "barrow-lord",
@@ -49,7 +59,10 @@
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 6 },
 		"abilities": ["noble-lineage", "unshakeable"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "noble-lineage", "pick": 2, "skills": ["veteran"] }
+		]
 	},
 	{
 		"id": "necromancers-apprentice",
@@ -62,7 +75,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["spellcraft-necromancy"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "spellcraft-necromancy", "pick": 1, "lore": "necromancy" }
+		]
 	},
 	{
 		"id": "barrow-champion",
@@ -75,7 +91,10 @@
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
 		"abilities": ["veteran-in-life", "unshakeable"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "veteran-in-life", "pick": 1, "skills": ["veteran"] }
+		]
 	},
 	{
 		"id": "bloodcursed-courtesan",
@@ -88,7 +107,10 @@
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 5, "willpower": 4, "life": 4 },
 		"abilities": ["blood-magic"],
 		"wargear_lists": ["practitioner"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "blood-magic", "pick": 1, "lore": "blood" }
+		]
 	},
 	{
 		"id": "bloodcursed-knight",
@@ -101,7 +123,10 @@
 		"profile": { "move": 5, "blade": 3, "bow": 5, "armour": 6, "initiative": 5, "willpower": 4, "life": 5 },
 		"abilities": ["martial-lineage"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choices": [
+			{ "source": "martial-lineage", "pick": 1, "skills": ["dark-aristocracy", "veteran"] }
+		]
 	},
 	{
 		"id": "misbegotten",
@@ -115,18 +140,20 @@
 		"abilities": ["bloodline-mutations"],
 		"wargear_lists": ["main", "champion"],
 		"gear": [],
-		"choice": {
-			"source": "bloodline-mutations",
-			"prompt": "You can pick 1 bloodline mutation when this fighter is recruited. Each costs silver on top of the fighter.",
-			"pick": 1,
-			"optional": true,
-			"noun": { "one": "bloodline mutation", "many": "bloodline mutations" },
-			"options": [
-				{ "id": "bat-wings", "name": "Bat Wings", "cost": 15, "text": "This fighter has the *Fly* keyword.", "keywords": ["fly"] },
-				{ "id": "wulfen-legs", "name": "Wulfen Legs", "cost": 10, "text": "This fighter's Move value is 7\".", "bonus": { "move": 2 } },
-				{ "id": "hulking-form", "name": "Hulking Form", "cost": 30, "text": "This fighter's Life value is 8.", "bonus": { "life": 4 } }
-			]
-		}
+		"choices": [
+			{
+				"source": "bloodline-mutations",
+				"prompt": "You can pick 1 bloodline mutation when this fighter is recruited. Each costs silver on top of the fighter.",
+				"pick": 1,
+				"optional": true,
+				"noun": { "one": "bloodline mutation", "many": "bloodline mutations" },
+				"options": [
+					{ "id": "bat-wings", "name": "Bat Wings", "cost": 15, "text": "This fighter has the *Fly* keyword.", "keywords": ["fly"] },
+					{ "id": "wulfen-legs", "name": "Wulfen Legs", "cost": 10, "text": "This fighter's Move value is 7\".", "bonus": { "move": 2 } },
+					{ "id": "hulking-form", "name": "Hulking Form", "cost": 30, "text": "This fighter's Life value is 8.", "bonus": { "life": 4 } }
+				]
+			}
+		]
 	},
 	{
 		"id": "skeleton-warrior",

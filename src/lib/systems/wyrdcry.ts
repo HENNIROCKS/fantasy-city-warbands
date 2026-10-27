@@ -926,27 +926,30 @@ function build(
 					return { id: o.id, name: o.name, text: o.text, ...(effect ? { effect } : {}) };
 				})
 			})),
-		fighters: fighters.map((f) => ({
-			id: f.id,
-			name: f.name,
-			cost: f.cost,
-			limit: f.limit,
-			keywords: f.keywords,
-			profile: f.profile,
-			rules: f.abilities.flatMap((id) => {
-				const a = ability.get(id);
-				return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
-			}),
-			...fluffOf(f.description),
-			/* Offered whether the fighter may take it or not: a player looking for a
-			   Handgun needs to read that it is for HEROes, not to find it missing. */
-			wargear: takesNothing(f)
-				? []
-				: [...new Set([...equipment.map((e) => e.id), ...tradingPost, ...magicFor(f.keywords), ...lootFor(equipment.map((e) => e.id))])],
-			unequipped: takesNothing(f),
-			gear: f.gear,
-			choice: choiceOf(f.choose, rules, ability)
-		})),
+		fighters: fighters.map((f) => {
+			const choice = choiceOf(f.choose, rules, ability);
+			return {
+				id: f.id,
+				name: f.name,
+				cost: f.cost,
+				limit: f.limit,
+				keywords: f.keywords,
+				profile: f.profile,
+				rules: f.abilities.flatMap((id) => {
+					const a = ability.get(id);
+					return a ? [{ name: a.name, text: a.text, type: a.type }] : [];
+				}),
+				...fluffOf(f.description),
+				/* Offered whether the fighter may take it or not: a player looking for a
+				   Handgun needs to read that it is for HEROes, not to find it missing. */
+				wargear: takesNothing(f)
+					? []
+					: [...new Set([...equipment.map((e) => e.id), ...tradingPost, ...magicFor(f.keywords), ...lootFor(equipment.map((e) => e.id))])],
+				unequipped: takesNothing(f),
+				gear: f.gear,
+				...(choice ? { choices: [choice] } : {})
+			};
+		}),
 		/* What a fighter carries from the start, gets from a table row or finds
 		   has to resolve as well as what it can buy. */
 		wargear: [
@@ -1046,7 +1049,7 @@ const hirelings: Hireling[] = hiredSwords
 				wargear: [],
 				unequipped: 'A HIRED SWORD comes with its own equipment',
 				gear: h.gear,
-				...(choice ? { choice } : {})
+				...(choice ? { choices: [choice] } : {})
 			},
 			wargear: [...new Set([...h.gear, ...(choice?.options ?? []).flatMap((o) => o.gear ?? [])])].flatMap((id) => catalogue.get(id) ?? []),
 			factions: [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)],
