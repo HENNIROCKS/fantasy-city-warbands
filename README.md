@@ -233,4 +233,8 @@ The code is MIT, see [LICENSE](LICENSE). The rules data under `src/lib/rules/`
 is not covered by it: it belongs to the authors of the games. The Wilhelm
 scream (`src/lib/assets/sounds/`) is converted from
 [Wilhelm_Scream.ogg](https://commons.wikimedia.org/wiki/File:Wilhelm_Scream.ogg)
-on Wikimedia Commons, released there under CC0.
+on Wikimedia Commons, released there under CC0. The start screen's etching
+(`static/start-screen-v2.webp`) is cropped from
+[an etching after Urs Graf, 1524](https://wellcomecollection.org/works/nuac38hn)
+in the Wellcome Collection, marked there as public domain. The game logos in
+`static/` belong to their games, as the rules data does.
