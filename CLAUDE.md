@@ -43,6 +43,10 @@ fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
 entsteht eine neue Datei mit dem Datum des Tages, und die vorige geht per
 `trash` in den Papierkorb; ist keine Frage mehr offen, liegt keine Datei dort.
 
+Eine Regelfrage, im Gespräch oder als Antwort für den Discord, beginnt mit den
+Fundstellen: Datendatei mit Zeile, Homebrew- oder Design-Notiz im Vault, Seite
+im Regelbuch. Danach kommt die Schlussfolgerung.
+
 Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
 (`docs/<spiel>/`), dann nach Themen, eine Seite je Thema; was für alle Spiele
 gleich gilt, liegt direkt in `docs/`. Die App liest dieselben Dateien beim
@@ -99,6 +103,10 @@ den Daten, das der Kern für jedes Spiel liest, als ein Haken mit festen Ids.
 Eine Änderung für ein Spiel wird an allen Spielen geprüft – Daten laden, die
 anderen Spiele durch die geänderten Funktionen, je eine Bande auf jeder
 geänderten Seite.
+
+SSR ist aus (`src/routes/+layout.ts`). `<svelte:head>` setzt Titel und
+Meta-Tags erst im Browser, im ausgelieferten HTML stehen sie nicht. Was Crawler
+und Link-Vorschauen lesen sollen, steht deshalb statisch in `src/app.html`.
 
 **Wyrdcry** wird hier gepflegt. Der Bestand stammt aus dem handgepflegten
 Regelbestand des Warband Decks (`src/lib/rules/` im Archiv),
