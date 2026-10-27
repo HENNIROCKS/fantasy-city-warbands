@@ -92,6 +92,7 @@
 				<div class="rule">
 					<p class="name">{rule.label}</p>
 					{#if rule.text}<p class="text"><RuleText text={rule.text} /></p>{/if}
+					{#if rule.note}<p class="text note"><svg class="check" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 5 9.5 10 2.5" /></svg>{rule.note}</p>{/if}
 				</div>
 			{/each}
 
@@ -266,6 +267,28 @@
 		font-size: 15px;
 		line-height: 1.45;
 		white-space: pre-wrap;
+	}
+
+	/* The app speaking, not the rulebook, as on the card. */
+	.note {
+		margin-top: 4px;
+		font-style: italic;
+		color: var(--card-ink-muted);
+	}
+
+	/* Drawn rather than typed, so it does not depend on the fonts carrying a tick. */
+	.check {
+		/* Tailwind's preflight sets every svg to block. */
+		display: inline;
+		width: 0.8em;
+		height: 0.8em;
+		margin-right: 0.25em;
+		vertical-align: -0.05em;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
 	/* The button in the unit this sheet is built in. */

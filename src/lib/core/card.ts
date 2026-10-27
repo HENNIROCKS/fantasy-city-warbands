@@ -32,7 +32,7 @@ export interface CardValue {
 	format?: StatFormat;
 	/** What the figure is made of, the profile first. Only on a fighter's characteristics. */
 	layers?: StatLayer[];
-	/** The game's `statFloor`, for whoever adds the battle's layers on top. */
+	/** The characteristic's `floor`, else the game's `statFloor`, for whoever adds the battle's layers on top. */
 	floor?: number;
 	/** What changes the figure in one situation only, beside it rather than in it. */
 	conditions?: CardCondition[];
@@ -319,8 +319,20 @@ export function fighterCard(
 				name: wargear.name,
 				count,
 				text: wargear.text ?? '',
+				/* What it does whenever it is carried is in the figures already, and its text says so. */
 				...(wargear.text
-					? { explanation: { title: wargear.name, rules: [{ label: wargear.singleUse ? 'Single use' : wargear.kind === 'armour' ? 'Armour' : 'Item', text: wargear.text }] } }
+					? {
+							explanation: {
+								title: wargear.name,
+								rules: [
+									{
+										label: wargear.singleUse ? 'Single use' : wargear.kind === 'armour' ? 'Armour' : 'Item',
+										text: wargear.text,
+										...(wargear.effects?.length || wargear.sets?.length ? { note: 'Already included.' } : {})
+									}
+								]
+							}
+						}
 					: {}),
 				...(wargear.singleUse
 					? { copies: Array.from({ length: count }, (_, i) => (mine[i] ? { at: mine[i].at, ...(mine[i].on ? { on: nameOf(mine[i].on) } : {}) } : null)) }
@@ -400,10 +412,17 @@ export function fighterCard(
 			const by = injured.forbid.find((f) => f.type === r.type?.toLowerCase());
 			return by ? [[r.name, `Cannot be used: ${by.source}.`] as const] : [];
 		});
+	/* A talent or an injury that changes a figure, or a weapon the fighter
+	   carries, is in the tables above. A talent taken for a weapon is named
+	   after it: Weapon Master (Sword). */
+	const shown = [...advanced.weapons, ...injured.weapons].filter((w) => carried.some((c) => c.wargear.id === w.wargear));
+	const changing = new Set([...advanced.stats, ...injured.stats, ...shown].map((c) => c.source));
+	const included = ownRules.filter((r) => changing.has(r.name) || [...changing].some((s) => r.name.startsWith(`${s} (`)));
 	const fighterRules = ruleEntries(
 		ownRules,
 		new Map([
 			...(raised ? [[raised, 'Already included.'] as const] : []),
+			...included.map((r) => [r.name, 'Already included.'] as const),
 			...lent.map(({ rule, source }) => [rule.name, `For this battle: ${source}.`] as const),
 			...barred(ownRules)
 		])
@@ -442,7 +461,7 @@ export function fighterCard(
 		stats: game.stats.map((s) => {
 			const raw = statLayers.get(s.key);
 			if (!raw) return { key: s.key, label: s.label, short: s.short, value: formatStat(s, profile?.[s.key]) };
-			const layers = floored(raw, game.statFloor);
+			const layers = floored(raw, s.floor ?? game.statFloor);
 			const amount = layers.reduce((sum, layer) => sum + layer.amount, 0);
 			return {
 				key: s.key,
@@ -452,14 +471,14 @@ export function fighterCard(
 				amount,
 				format: s.format,
 				layers,
-				floor: game.statFloor,
+				floor: s.floor ?? game.statFloor,
 				conditions: statConditions.get(s.key) ?? []
 			};
 		}),
 		/* With its levels and wargear, as the table counts it, so damage counts down from the same figure. */
 		health: {
 			key: game.health,
-			value: floored(statLayers.get(game.health) ?? [], game.statFloor).reduce((sum, layer) => sum + layer.amount, 0)
+			value: floored(statLayers.get(game.health) ?? [], game.stats.find((s) => s.key === game.health)?.floor ?? game.statFloor).reduce((sum, layer) => sum + layer.amount, 0)
 		},
 		/* As on the Warband Deck's card: what the fighter carries out of a game
 		   rather than into one, where the game keeps a campaign. */
@@ -485,7 +504,9 @@ export function fighterCard(
  * How each numeric characteristic is made up, as the Warband Deck's card has it:
  * the profile, what the fighter's own pick, the warband's picks, its levels, its
  * talents and its injuries add, then what its bought wargear adds whenever it is carried. Wargear on the profile is not
- * counted: the profile already carries it.
+ * counted: the profile already carries it. Wargear that replaces a characteristic,
+ * such as Black Death City's armour, comes right after the profile, as what it
+ * takes off or puts on, so that everything else adds to the new figure.
  */
 function layersOf(
 	instance: FighterInstance,
@@ -501,6 +522,15 @@ function layersOf(
 	const add = (key: string, layer: StatLayer) => {
 		if (layer.amount !== 0) map.get(key)?.push(layer);
 	};
+	/* What it carries from the start counts as what it bought, a hired sword's Heavy Armour as a warrior's. */
+	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
+	const pieces = [...fighter.gear, ...instance.wargear].flatMap((id) => wargear.get(id) ?? []);
+	for (const piece of pieces) {
+		for (const { stat, value } of piece.sets ?? []) {
+			const current = map.get(stat)?.reduce((sum, layer) => sum + layer.amount, 0);
+			if (current !== undefined) add(stat, { kind: 'equipment', source: piece.name, amount: value - current });
+		}
+	}
 
 	const source = fighter.choice?.source;
 	for (const option of chosenOptions(instance, fighter)) {
@@ -517,11 +547,8 @@ function layersOf(
 		});
 	}
 	for (const rule of rules) add(rule.stat, { kind: 'permanent', source: rule.source, amount: rule.bonus });
-	/* What it carries from the start counts as what it bought, a hired sword's Heavy Armour as a warrior's. */
-	const wargear = new Map(faction.wargear.map((w) => [w.id, w]));
-	for (const id of [...fighter.gear, ...instance.wargear]) {
-		const piece = wargear.get(id);
-		for (const effect of piece?.effects ?? []) add(effect.stat, { kind: 'equipment', source: piece!.name, amount: effect.bonus });
+	for (const piece of pieces) {
+		for (const effect of piece.effects ?? []) add(effect.stat, { kind: 'equipment', source: piece.name, amount: effect.bonus });
 	}
 	return map;
 }
