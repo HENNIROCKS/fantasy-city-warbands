@@ -904,10 +904,11 @@ function build(
 		origin: meta.origin,
 		author: meta.author,
 		...(meta.source ? { source: meta.source } : {}),
-		/* A rule with a pick is asked for as a choice; the rest is read, not decided. */
+		/* A rule with a pick is asked for as a choice; the rest is read, not decided.
+		   A HIRED SWORD carries no faction keyword, so none of them reaches it. */
 		rules: rules
 			.filter((r) => r.pick === null)
-			.map((r) => ({ name: r.name, text: r.text, ...(r.except ? { except: r.except } : {}), ...(r.only ? { only: r.only } : {}) })),
+			.map((r) => ({ name: r.name, text: r.text, except: [...(r.except ? [r.except] : []), 'hired-sword'], ...(r.only ? { only: r.only } : {}) })),
 		size: meta.warband_size,
 		choices: rules
 			.filter((r) => r.pick !== null)
