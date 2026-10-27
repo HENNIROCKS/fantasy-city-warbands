@@ -38,6 +38,13 @@ export interface GroupLimit {
 	limit: Span;
 }
 
+/** A change one of the game's rules makes to a weapon's column, and the rule, shown with the weapon. */
+export interface WeaponAdjustment {
+	stat: string;
+	amount: number;
+	rule: Rule;
+}
+
 export interface GameSystem {
 	id: string;
 	name: string;
@@ -92,10 +99,13 @@ export interface GameSystem {
 	/** Abilities every fighter carrying `keyword` has, `any` for all of them. */
 	universal: UniversalRule[];
 	/**
-	 * Where the game lets two of the same melee weapon add an attack, as
-	 * Wyrdcry does: the weapon column it adds to, and the rule that says so.
+	 * What the game's rules do to a weapon's figures for what the fighter
+	 * carries: Wyrdcry's Dual Wielding adds an attack to two of the same melee
+	 * weapon, Black Death City's Held Items take one off a two-handed melee
+	 * weapon. `count` is how many of the weapon it carries, `carried` every
+	 * piece it carries, the weapon included, once each.
 	 */
-	dualWielding?: { stat: string; rule: Rule };
+	weaponAdjustments?: (weapon: Wargear, count: number, carried: Wargear[], faction: Faction) => WeaponAdjustment[];
 	/**
 	 * The profile a fighter fights with that carries no melee weapon, as
 	 * Wyrdcry's Unarmed, and the keywords of fighters that never do – a BEAST

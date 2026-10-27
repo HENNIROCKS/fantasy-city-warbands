@@ -267,17 +267,19 @@ export function fighterCard(
 		.filter(({ wargear }) => wargear.kind === 'melee' || wargear.kind === 'ranged')
 		.sort((a, b) => Number(a.wargear.kind === 'melee') - Number(b.wargear.kind === 'melee'))
 		.map(({ wargear, count }): CardWeapon => {
-			/* The extra attack belongs to the weapon in hand, so it is the row's own number. */
-			const dual = count > 1 && wargear.kind === 'melee' ? game.dualWielding : undefined;
+			/* What the game's rules change for what else the fighter carries, such as
+			   Dual Wielding's extra attack, belongs to the weapon in hand, so it is the row's own number. */
+			const adjusted = game.weaponAdjustments?.(wargear, count, carried.map((c) => c.wargear), faction) ?? [];
 			/* A level spent on this weapon, such as a heroic talent's point of critical damage, or an injury's cut to its reach. */
 			const raised = changed.filter((w) => w.wargear === wargear.id);
 			const values = game.weaponStats.map((s) => {
 				const own = raised.find((w) => w.stat === s.key)?.value;
 				const value = own ?? wargear.profile?.[s.key] ?? '–';
-				return dual?.stat === s.key && /^\d+$/.test(value) ? String(Number(value) + 1) : value;
+				const amount = adjusted.filter((a) => a.stat === s.key).reduce((sum, a) => sum + a.amount, 0);
+				return amount && /^\d+$/.test(value) ? String(Number(value) + amount) : value;
 			});
 			/* A rule a single-use piece gave the weapon, and one a piece took off it for the battle, which keeps its line and says so. */
-			const own = [...(wargear.rules ?? []), ...(dual ? [dual.rule] : [])];
+			const own = [...(wargear.rules ?? []), ...adjusted.map((a) => a.rule)];
 			const gained = uses
 				.flatMap(({ piece, on }) => {
 					const rule = on === wargear.id ? piece.used?.weapon?.rule : undefined;
@@ -290,9 +292,11 @@ export function fighterCard(
 				...gained,
 				...raised.map((w) => ({ name: w.source, text: `Counted into the ${game.weaponStats.find((s) => s.key === w.stat)?.label ?? w.stat} above.` }))
 			]
-				.map((r) => {
+				/* A rule of the game's that changes the row says it is in the row already. */
+				.map((r): CardEntry => {
 					const off = stripped.find((s) => s.rule === r.name);
-					return { label: r.name, text: off ? `Not in this battle: ${off.source}.` : r.text };
+					if (off) return { label: r.name, text: `Not in this battle: ${off.source}.` };
+					return { label: r.name, text: r.text, ...(adjusted.some((a) => a.rule.name === r.name) ? { note: 'Already included.' } : {}) };
 				})
 				.sort((a, b) => a.label.localeCompare(b.label));
 			const name = times(wargear.name, count);
