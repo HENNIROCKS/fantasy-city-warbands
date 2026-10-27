@@ -27,8 +27,8 @@
 - [x] 🛠️ Black Death City: starting experience asked on recruitment, and the warband rating
 - [x] 📚 Black Death City: the fighters' special rules as text
 - [x] 🃏 Black Death City's armour, shields and Heavy Plating counted into the card's figures, and every rule or piece of wargear counted in says so
+- [x] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 📚 Black Death City: skills and spells picked on recruitment
-- [ ] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

@@ -114,7 +114,19 @@
 		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 5, "willpower": 2, "life": 4 },
 		"abilities": ["bloodline-mutations"],
 		"wargear_lists": ["main", "champion"],
-		"gear": []
+		"gear": [],
+		"choice": {
+			"source": "bloodline-mutations",
+			"prompt": "You can pick 1 bloodline mutation when this fighter is recruited. Each costs silver on top of the fighter.",
+			"pick": 1,
+			"optional": true,
+			"noun": { "one": "bloodline mutation", "many": "bloodline mutations" },
+			"options": [
+				{ "id": "bat-wings", "name": "Bat Wings", "cost": 15, "text": "This fighter has the *Fly* keyword.", "keywords": ["fly"] },
+				{ "id": "wulfen-legs", "name": "Wulfen Legs", "cost": 10, "text": "This fighter's Move value is 7\".", "bonus": { "move": 2 } },
+				{ "id": "hulking-form", "name": "Hulking Form", "cost": 30, "text": "This fighter's Life value is 8.", "bonus": { "life": 4 } }
+			]
+		}
 	},
 	{
 		"id": "skeleton-warrior",

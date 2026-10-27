@@ -412,11 +412,14 @@ export function fighterCard(
 			const by = injured.forbid.find((f) => f.type === r.type?.toLowerCase());
 			return by ? [[r.name, `Cannot be used: ${by.source}.`] as const] : [];
 		});
-	/* A talent or an injury that changes a figure, or a weapon the fighter
-	   carries, is in the tables above. A talent taken for a weapon is named
-	   after it: Weapon Master (Sword). */
+	/* A talent, an injury or a pick of its own that changes a figure, or a
+	   weapon the fighter carries, is in the tables above. A talent taken for a
+	   weapon is named after it: Weapon Master (Sword). */
 	const shown = [...advanced.weapons, ...injured.weapons].filter((w) => carried.some((c) => c.wargear.id === w.wargear));
-	const changing = new Set([...advanced.stats, ...injured.stats, ...shown].map((c) => c.source));
+	const changing = new Set([
+		...[...advanced.stats, ...injured.stats, ...shown].map((c) => c.source),
+		...options.filter((o) => o.bonus && !raises(o)).map((o) => o.name)
+	]);
 	const included = ownRules.filter((r) => changing.has(r.name) || [...changing].some((s) => r.name.startsWith(`${s} (`)));
 	const fighterRules = ruleEntries(
 		ownRules,
@@ -532,9 +535,12 @@ function layersOf(
 		}
 	}
 
+	/* A pick with a text of its own is a rule on the card and named after itself, Hulking Form; a bare
+	   characteristic after the rule it comes out of, Martial Discipline. */
 	const source = fighter.choice?.source;
 	for (const option of chosenOptions(instance, fighter)) {
-		for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: source ?? option.name, amount: bonus });
+		const by = option.text ? option.name : (source ?? option.name);
+		for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: by, amount: bonus });
 	}
 	for (const { stat, bonus, source } of pickedStats(fighter, effects)) add(stat, { kind: 'permanent', source, amount: bonus });
 	for (const advance of instance.advances ?? []) {

@@ -5,7 +5,7 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import type { Faction, Fighter, GameSystem, Rule, Source, StartRoll, Wargear, Warband } from '$lib/core/types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband } from '$lib/core/types';
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
@@ -92,6 +92,8 @@ interface RawFighter {
 	/** Names of the faction's wargear lists this fighter buys from. */
 	wargear_lists: string[];
 	gear: string[];
+	/** What it picks on recruitment; `source` is the id of the ability the choice comes out of. */
+	choice?: Omit<FighterChoice, 'source'> & { source: string };
 }
 
 /**
@@ -269,6 +271,12 @@ function build(
 			if (!a) throw new Error(`Black Death City ${meta.id}/${f.id}: no ability ${id}`);
 			return { name: a.name, text: a.text, ...(a.type ? { type: a.type } : {}) };
 		});
+	const choiceOf = (f: RawFighter): FighterChoice | undefined => {
+		if (!f.choice) return undefined;
+		const a = ability.get(f.choice.source);
+		if (!a) throw new Error(`Black Death City ${meta.id}/${f.id}: no ability ${f.choice.source} for its choice`);
+		return { ...f.choice, source: a.name };
+	};
 	for (const f of fighters) starts.set(`${meta.id}/${f.id}`, startOf(f.starting_experience, `${meta.id}/${f.id}`));
 	return {
 		id: meta.id,
@@ -303,7 +311,8 @@ function build(
 			rules: rulesOf(f),
 			...(f.description ? { fluff: f.description } : {}),
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
-			gear: f.gear
+			gear: f.gear,
+			...(f.choice ? { choice: choiceOf(f) } : {})
 		})),
 		/* What only the carrying rules read stays out of the shared form; Rare
 		   is a limit every game may have, so it goes in. */
