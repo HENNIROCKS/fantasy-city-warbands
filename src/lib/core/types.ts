@@ -205,13 +205,6 @@ export interface GameSystem {
 			failed: string;
 		};
 	};
-	/**
-	 * The warband with the wargear ids an older edition of the rules used
-	 * replaced by the ones the data uses now, for a warband stored or imported
-	 * under that edition. The same warband when nothing needs replacing.
-	 * Without it, a warband is read as it is stored.
-	 */
-	upgrade?: (warband: Warband, faction: Faction) => Warband;
 }
 
 /**
@@ -747,6 +740,12 @@ export interface Wargear {
 	rules?: Rule[];
 	/** How many fighters of a warband may carry it at the same time, such as Black Death City's Rare 0-1. */
 	rare?: number;
+	/**
+	 * Ids, as the app stores them, that a stored warband or another tool's file
+	 * may carry for this piece: Black Death City's Arablast of the Playtest
+	 * v1.01 for the Arbalest. Swapped on load and import, see `upgrade`.
+	 */
+	replaces?: string[];
 	/** What has to be found at the table before it is bought, such as Wyrdcry's `a Rarity roll of 6+`; the builder asks for it. */
 	found?: string;
 	/** A heading of its own in the builder's list, such as Wyrdcry's Trading Post; without it the piece stands under its kind. */

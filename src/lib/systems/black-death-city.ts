@@ -54,7 +54,6 @@ export const game: GameSystem = {
 	universal: [],
 	carry,
 	weaponAdjustments: adjust,
-	upgrade,
 	/* Experience and the warband rating are all the playtest counts so far; its
 	   campaign chapter is still to come. */
 	campaign: {
@@ -210,26 +209,6 @@ function carry(fighter: Fighter, faction: Faction, wargear: string[]) {
 		const refused = w && refuse(known([...fighter.gear, ...wargear.slice(0, i)]), w);
 		return refused ? [{ message: `${w.name}: ${refused.message}.`, short: refused.short }] : [];
 	});
-}
-
-/**
- * Warbands built under the Playtest v1.01 carry two ids v1.03 no longer has:
- * the Cursed Sword is the Cursed Blade, and the Arablast is the Ogre Arbalest
- * for a fighter offered one and the Arbalest for anyone else and in the stash.
- */
-function upgrade(warband: Warband, faction: Faction): Warband {
-	const renamed = (id: string, fighter?: Fighter) =>
-		id === 'cursed-sword' ? 'cursed-blade' : id === 'arablast' ? (fighter?.wargear.includes('ogre-arbalest') ? 'ogre-arbalest' : 'arbalest') : id;
-	const old = (ids: string[]) => ids.some((id) => id === 'cursed-sword' || id === 'arablast');
-	if (!warband.fighters.some((f) => old(f.wargear)) && !old(warband.stash ?? [])) return warband;
-	return {
-		...warband,
-		fighters: warband.fighters.map((instance) => {
-			const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
-			return old(instance.wargear) ? { ...instance, wargear: instance.wargear.map((id) => renamed(id, fighter)) } : instance;
-		}),
-		...(warband.stash ? { stash: warband.stash.map((id) => renamed(id)) } : {})
-	};
 }
 
 /** A special rule as a scroll prints it; `type` where its name carries one, `[Action]`. */
