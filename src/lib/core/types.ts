@@ -22,6 +22,8 @@ export interface StatDef {
 	/** For a narrow screen, where a long label does not fit its column: `Init` for Initiative. */
 	short?: string;
 	format: StatFormat;
+	/** How far modifiers take it at most, before the game's `statFloor`: Black Death City's Armour 2+. */
+	floor?: number;
 }
 
 /**
@@ -741,6 +743,11 @@ export interface Wargear {
 	group?: string;
 	/** What it adds whenever it is carried, such as Heavy Armour's +3 Armour and −1 Move. */
 	effects?: StatEffect[];
+	/**
+	 * What it replaces a characteristic with whenever it is carried, such as
+	 * Black Death City's Cuirass, Armour 5+. Counted before everything else adds.
+	 */
+	sets?: { stat: string; value: number }[];
 	/** What it adds in one situation only, such as the Shield's Fight against a melee attack. */
 	conditions?: StatCondition[];
 	/**

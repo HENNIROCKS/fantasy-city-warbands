@@ -21,7 +21,8 @@ export const game: GameSystem = {
 		{ key: 'move', label: 'Move', format: 'inches' },
 		{ key: 'blade', label: 'Blade', format: 'target' },
 		{ key: 'bow', label: 'Bow', format: 'target' },
-		{ key: 'armour', label: 'Armour', format: 'target' },
+		/* Armour cannot be improved past 2+. */
+		{ key: 'armour', label: 'Armour', format: 'target', floor: 2 },
 		{ key: 'initiative', label: 'Initiative', short: 'Init', format: 'plain' },
 		{ key: 'willpower', label: 'Willpower', short: 'Will', format: 'plain' },
 		{ key: 'life', label: 'Life', format: 'plain' }
