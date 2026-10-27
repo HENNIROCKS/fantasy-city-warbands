@@ -9,6 +9,15 @@
     "effect": { "kind": "ratio", "keyword": "goblin", "per": "orc", "max": 2 }
   },
   {
+    "id": "get-stuck-in",
+    "name": "Get Stuck In!",
+    "phase": "battle",
+    "text": "[Trait] All `GREENSKIN MARAUDERS` fighters have this trait. If this fighter made a move action this battle round, add 1 to its Fight characteristic for its melee attack actions until the end of the battle round.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
     "id": "animosity",
     "name": "Animosity",
     "only": "henchman",
