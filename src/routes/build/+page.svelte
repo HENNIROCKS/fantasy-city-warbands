@@ -27,6 +27,7 @@
 		fighterType,
 		roleOf,
 		withFighter,
+		withFighterPicks,
 		withInstance,
 		withPicks,
 		withWargear
@@ -599,6 +600,7 @@
 						{effects}
 						issues={issues.filter((i) => i.instanceId === instance.instanceId)}
 						blocked={(wargearId) => blockedBy(withWargear(warband!, instance.instanceId, wargearId))}
+						pickBlocked={(picks) => blockedBy(withFighterPicks(warband!, instance.instanceId, picks))}
 						paid={paid?.get(instance.instanceId) ?? null}
 						dead={deadLeaders(warband, faction).some((f) => f.instanceId === instance.instanceId)}
 						{rarity}

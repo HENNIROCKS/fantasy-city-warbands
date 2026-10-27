@@ -150,7 +150,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			const options = new Set(choice.options.map((o) => o.id));
 			const valid = new Set(picked.filter((id) => options.has(id)));
 			const tooMany = valid.size > choice.pick || valid.size !== picked.length;
-			if (tooMany || valid.size < choice.pick) {
+			if (tooMany || (valid.size < choice.pick && !choice.optional)) {
 				issues.push({
 					code: 'fighter-choice',
 					kind: tooMany ? 'excess' : 'missing',

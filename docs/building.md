@@ -34,6 +34,11 @@ the second.
 experience such as 40+d6. Roll the die at the table and tap the result under
 the fighter; until then it is still to do.
 
+**A pick with a price.** Some fighters may pick something extra when they are
+recruited, such as a Misbegotten's bloodline mutation. Its price stands beside
+it and is added to the fighter's cost. You can leave it empty. Once the warband
+has fought, it stays as picked.
+
 **Another of the same.** Duplicate beside a fighter recruits another of its
 kind with the same equipment and choice, at its full price. Give it a name of
 its own.

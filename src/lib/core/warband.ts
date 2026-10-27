@@ -80,10 +80,10 @@ export function fighterName(instance: FighterInstance, faction: Faction): string
 	return instance.name.trim() || `Unnamed ${fighterType(instance, faction)}`;
 }
 
-/** What one fighter costs with everything it carries, the warband's picks counted into its own price. */
+/** What one fighter costs with everything it carries and what its own pick costs, the warband's picks counted into its own price. */
 export function fighterCost(instance: FighterInstance, faction: Faction, effects: ActiveEffect[]): number {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
-	const base = fighter ? recruitCost(fighter, effects) : 0;
+	const base = fighter ? recruitCost(fighter, effects) + chosenOptions(instance, fighter).reduce((sum, o) => sum + (o.cost ?? 0), 0) : 0;
 	return instance.wargear.reduce((sum, id) => sum + (faction.wargear.find((w) => w.id === id)?.cost ?? 0), base);
 }
 
@@ -230,6 +230,10 @@ export function withWargear(warband: Warband, instanceId: string, wargearId: str
 			f.instanceId === instanceId ? { ...f, wargear: [...f.wargear, wargearId] } : f
 		)
 	};
+}
+
+export function withFighterPicks(warband: Warband, instanceId: string, picks: string[]): Warband {
+	return { ...warband, fighters: warband.fighters.map((f) => (f.instanceId === instanceId ? { ...f, picks } : f)) };
 }
 
 export function withPicks(warband: Warband, choiceId: string, picked: string[]): Warband {

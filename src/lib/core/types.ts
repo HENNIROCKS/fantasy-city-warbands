@@ -794,6 +794,8 @@ export interface FighterChoiceOption {
 	keywords?: string[];
 	/** Wargear ids the option is, such as a mutation that attacks like a weapon. Free, like `gear`. */
 	gear?: string[];
+	/** What it adds to the fighter's cost, such as a Misbegotten's bloodline mutation. */
+	cost?: number;
 	/** What the fighter is called once it has picked this, in place of its type: a hired sword's role, `River Troll`. */
 	title?: string;
 	/** A picture of its own, in place of the fighter's `image`: a hired sword's role. */
@@ -807,6 +809,8 @@ export interface FighterChoice {
 	/** The fighter rule the choice comes out of, by name; its card entry says the pick is already included. */
 	source?: string;
 	pick: number;
+	/** Whether it may be left open, picking fewer than `pick` or none, as a Misbegotten may go without a bloodline mutation. */
+	optional?: true;
 	options: FighterChoiceOption[];
 	/** What one option is called, in the singular and plural: `magical ability`. */
 	noun?: { one: string; many: string };

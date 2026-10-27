@@ -12,6 +12,7 @@
 		effects,
 		issues,
 		blocked,
+		pickBlocked,
 		paid,
 		dead,
 		rarity,
@@ -32,6 +33,8 @@
 		issues: Issue[];
 		/** What would stop this fighter from being given a piece of wargear, or null. */
 		blocked: (wargearId: string) => Issue | null;
+		/** What would stop its own choice from being changed to these picks, such as a mutation over the budget, or null. */
+		pickBlocked: (picks: string[]) => Issue | null;
 		/**
 		 * What the fighter carried when the builder was opened on a warband that
 		 * has fought, so is paid for: it is dismissed and stashed on the back of
@@ -212,6 +215,14 @@
 	/** `21-23` as the rules print a range of results. */
 	const roll = (id: string) => id.replace('-', '–');
 
+	/* Once full, the oldest pick makes room, so a pick of one is swapped in a single tap. */
+	function nextPicks(id: string, pick: number): string[] {
+		const picks = instance.picks ?? [];
+		if (picks.includes(id)) return picks.filter((p) => p !== id);
+		if (picks.length < pick) return [...picks, id];
+		return [...picks.slice(1), id];
+	}
+
 	async function choose(id: string) {
 		const choice = fighter?.choice;
 		if (!choice) return;
@@ -221,10 +232,7 @@
 			return;
 		}
 		asking = null;
-		/* Once full, the oldest pick makes room, so a pick of one is swapped in a single tap. */
-		if (picks.includes(id)) instance.picks = picks.filter((p) => p !== id);
-		else if (picks.length < choice.pick) instance.picks = [...picks, id];
-		else instance.picks = [...picks.slice(1), id];
+		instance.picks = nextPicks(id, choice.pick);
 		await tick();
 		document.getElementById(optionId(id))?.focus();
 	}
@@ -344,9 +352,14 @@
 		{#if fighter.choice}
 			{@const choice = fighter.choice}
 			{@const picks = instance.picks ?? []}
+			<!-- A pick with a price is paid for once the warband has fought, as its wargear is. -->
+			{@const settled = !!paid && choice.options.some((o) => o.cost)}
 			<section>
 				<p class="sublabel">{choice.source ?? choice.roll ?? 'Choose'} · {picks.length} / {choice.pick}</p>
 				<div class="mb-2 text-zinc-400"><RichText text={choice.prompt} /></div>
+				{#if settled && !closed}
+					<p class="mb-2 text-zinc-400">Paid for: it stays as picked.</p>
+				{/if}
 				<!-- A characteristic needs no explaining, so two fit a row; a spell or a
 				     row of a table is a paragraph, read before it is picked. -->
 				<div class="grid gap-2 {choice.options.every((o) => !o.text) ? 'grid-cols-2' : ''}">
@@ -366,25 +379,29 @@
 								</div>
 							</div>
 						{:else}
+							{@const block = picks.includes(option.id) ? null : pickBlocked(nextPicks(option.id, choice.pick))}
 							<button
 								type="button"
 								id={optionId(option.id)}
 								class="choice"
 								aria-pressed={picks.includes(option.id)}
-								disabled={closed}
+								disabled={closed || settled || !!block}
 								onclick={() => choose(option.id)}
 							>
 								<span class="block font-semibold"
 									>{choice.roll ? `${roll(option.id)} ${option.name}` : option.name}{#if option.type}<span
 											class="font-normal text-zinc-400">{' · '}{option.type[0].toUpperCase() + option.type.slice(1)}</span
-										>{/if}</span
+										>{/if}{#if option.cost}<span class="font-normal text-zinc-400">{' · '}+{option.cost}&nbsp;{game.currency}</span>{/if}</span
 								>
 								{#if option.text}<span class="block text-zinc-400"><RichText text={option.text} /></span>{/if}
+								{#if block && !settled}
+									<span class="mt-1 block font-semibold" style="color: var(--ui-warn-text)">{block.short}</span>
+								{/if}
 							</button>
 						{/if}
 					{/each}
 				</div>
-				{#if picks.length < choice.pick}
+				{#if picks.length < choice.pick && !choice.optional}
 					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {choice.pick} to carry on.</p>
 				{/if}
 			</section>
