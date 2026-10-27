@@ -32,13 +32,11 @@ export type DeckReadResult =
 	| { ok: false; message: string };
 
 /**
- * Where the builder's game data, which its files are written in, names a piece
- * differently from the ruleset here: its id, to this ruleset's.
+ * A bare id as this app stores it, a piece the builder's game data names
+ * differently by its `replaces`; one the game data does not know stays as it
+ * is, and the card names it unknown.
  */
-const RENAMED: Record<string, string> = { 'weeping-blades': 'weeping-blade' };
-
-/** A bare id as this app stores it; one the game data does not know stays as it is, and the card names it unknown. */
-const gear = (ids: string[]) => ids.map((id) => wargearId(RENAMED[id] ?? id) ?? id);
+const gear = (ids: string[]) => ids.map((id) => wargearId(id) ?? id);
 
 const signed = (n: number) => (n > 0 ? `+${n}` : String(n));
 

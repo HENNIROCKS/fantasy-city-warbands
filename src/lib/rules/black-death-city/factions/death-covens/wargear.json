@@ -2,7 +2,7 @@
 	{ "id": "arcane-staff", "name": "Arcane Staff", "kind": "melee", "cost": 10, "profile": { "attacks": "2", "rend": "–", "damage": "1/d3" }, "traits": ["arcane", "off-hand"] },
 	{ "id": "axe", "name": "Axe", "kind": "melee", "cost": 16, "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3" }, "traits": ["off-hand"] },
 	{ "id": "club-mace-hammer", "name": "Club/Mace/Hammer", "kind": "melee", "cost": 14, "profile": { "attacks": "3", "rend": "–", "damage": "1/d3" }, "traits": ["bludgeon", "off-hand"] },
-	{ "id": "cursed-blade", "name": "Cursed Blade", "kind": "melee", "cost": 40, "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3" }, "traits": ["arcane", "guard", "off-hand", "poison"] },
+	{ "id": "cursed-blade", "name": "Cursed Blade", "kind": "melee", "cost": 40, "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3" }, "traits": ["arcane", "guard", "off-hand", "poison"], "replaces": ["cursed-sword"] },
 	{ "id": "dagger", "name": "Dagger", "kind": "melee", "cost": 10, "profile": { "attacks": "3", "rend": "–", "damage": "1/d3" }, "traits": ["off-hand"] },
 	{ "id": "ensorcelled-weapon", "name": "Ensorcelled Weapon", "kind": "melee", "cost": 26, "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3" }, "traits": ["arcane"] },
 	{ "id": "flail", "name": "Flail", "kind": "melee", "cost": 14, "profile": { "attacks": "3", "rend": "–", "damage": "1/d3" }, "traits": ["off-hand", "wrap"] },

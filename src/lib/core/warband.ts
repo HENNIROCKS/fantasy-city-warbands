@@ -232,6 +232,36 @@ export function withWargear(warband: Warband, instanceId: string, wargearId: str
 	};
 }
 
+/**
+ * The piece that replaces an id the faction no longer knows, by its
+ * `Wargear.replaces`: the first offered to the fighter, else the first in the
+ * faction's data. Null for a known id and for one nothing replaces.
+ */
+function replacementOf(id: string, faction: Faction, fighter?: Fighter): string | null {
+	if (faction.wargear.some((w) => w.id === id)) return null;
+	const candidates = faction.wargear.filter((w) => w.replaces?.includes(id));
+	return (candidates.find((w) => fighter?.wargear.includes(w.id)) ?? candidates[0])?.id ?? null;
+}
+
+/**
+ * The warband with every replaced id its fighters carry or its stash holds
+ * swapped for the piece that replaces it, for a warband stored or imported
+ * under an older edition of the rules. The same warband where nothing changes.
+ */
+export function upgrade(warband: Warband, faction: Faction): Warband {
+	const swap = (ids: string[], fighter?: Fighter) => {
+		const swapped = ids.map((id) => replacementOf(id, faction, fighter) ?? id);
+		return swapped.some((id, i) => id !== ids[i]) ? swapped : ids;
+	};
+	const fighters = warband.fighters.map((instance) => {
+		const wargear = swap(instance.wargear, faction.fighters.find((f) => f.id === instance.fighterId));
+		return wargear === instance.wargear ? instance : { ...instance, wargear };
+	});
+	const stash = warband.stash && swap(warband.stash);
+	if (fighters.every((f, i) => f === warband.fighters[i]) && stash === warband.stash) return warband;
+	return { ...warband, fighters, ...(stash ? { stash } : {}) };
+}
+
 export function withFighterPicks(warband: Warband, instanceId: string, picks: string[]): Warband {
 	return { ...warband, fighters: warband.fighters.map((f) => (f.instanceId === instanceId ? { ...f, picks } : f)) };
 }

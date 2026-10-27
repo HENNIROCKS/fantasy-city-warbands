@@ -624,7 +624,8 @@ const catalogue = new Map<string, Wargear>([
 			kind: w.type === 'ranged' ? 'ranged' : 'melee',
 			cost: w.cost,
 			profile: { range: range(w.range), attacks: String(w.attacks), damage: `${w.hit}/${w.crit}` },
-			rules: w.rules.flatMap((id) => weaponRule.get(id) ?? [])
+			rules: w.rules.flatMap((id) => weaponRule.get(id) ?? []),
+			...('replaces' in w && w.replaces ? { replaces: w.replaces.map((id) => `weapon:${id}`) } : {})
 		}
 	]),
 	...items.flatMap((i): [string, Wargear][] =>
@@ -988,11 +989,13 @@ function zeal(rules: RawRule[]): FactionCounter | undefined {
 
 /**
  * The prefixed id of a weapon or item the Warband Builder and the Warband Deck
- * store bare, or null where the game data has neither.
+ * store bare – or of the piece that replaces it, where the builder's game data
+ * names it differently – or null where the game data has neither.
  */
 export function wargearId(bare: string): string | null {
-	for (const id of [`weapon:${bare}`, `item:${bare}`]) if (catalogue.has(id)) return id;
-	return null;
+	const ids = [`weapon:${bare}`, `item:${bare}`];
+	for (const id of ids) if (catalogue.has(id)) return id;
+	return [...catalogue.values()].find((w) => w.replaces?.some((id) => ids.includes(id)))?.id ?? null;
 }
 
 /** Each faction folder's files, keyed by path. */
