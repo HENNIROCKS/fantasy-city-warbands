@@ -5,7 +5,7 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband } from '$lib/core/types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
@@ -53,6 +53,7 @@ export const game: GameSystem = {
 	],
 	universal: [],
 	carry,
+	weaponAdjustments: adjust,
 	upgrade,
 	/* Experience and the warband rating are all the playtest counts so far; its
 	   campaign chapter is still to come. */
@@ -122,7 +123,7 @@ function traitRule(id: string): Rule[] {
  * of an item slot. One two-handed weapon at most, melee or ranged. Neither a
  * Held Item nor Full-Plate goes with a two-handed ranged weapon, though
  * Full-Plate does with a Brace of Pistols. A Held Item beside a two-handed melee
- * weapon is allowed and costs that weapon an attack, which is the card's to show.
+ * weapon is allowed and costs that weapon an attack, which `adjust` gives the card.
  * Wargear the scroll says the fighter is equipped with fills its slot too: the
  * Rat-Mutant's claw is one of its two melee weapons.
  */
@@ -180,6 +181,24 @@ function refuse(held: RawWargear[], w: RawWargear): { message: string; short: st
 		return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not with two-handed ranged' };
 	}
 	return null;
+}
+
+/* The Held Items box's wording (p. 15). */
+const HELD_TWO_HANDED: WeaponAdjustment = {
+	stat: 'attacks',
+	amount: -1,
+	rule: {
+		name: 'Held Item',
+		text: "A fighter can be equipped with a held item and a two-handed melee weapon (eg. a Spear and Shield), however, subtract 1 from the Attacks value of the fighter's two-handed melee weapons."
+	}
+};
+
+/** A two-handed melee weapon beside a Held Item loses an attack. */
+function adjust(weapon: Wargear, _count: number, carried: Wargear[], faction: Faction): WeaponAdjustment[] {
+	const of = rows.get(faction.id);
+	const raw = of?.get(weapon.id);
+	if (!raw || raw.kind !== 'melee' || !twoHanded(raw)) return [];
+	return carried.some((c) => of!.get(c.id)?.held) ? [HELD_TWO_HANDED] : [];
 }
 
 function carry(fighter: Fighter, faction: Faction, wargear: string[]) {

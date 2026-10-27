@@ -71,7 +71,9 @@ that game's campaign.
   for each fighter with its fluff – from its rules, where they give one, until
   you write your own – its profile, its cost – in Wyrdcry beside its renown –
   its weapons and rules; a Wyrdcry fighter without a
-  melee weapon fights Unarmed, as the table then says. In Wyrdcry a
+  melee weapon fights Unarmed, as the table then says. A weapon's Attacks
+  count in Wyrdcry's Dual Wielding, and in Black Death City a Held Item beside
+  a two-handed melee weapon. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its

@@ -199,7 +199,8 @@
 			.join(' · ');
 
 	/** What the second copy is for, as the game names it: ` – dual wield`, ` – a pair`. */
-	const pairFor = (w: Wargear) => (w.kind === 'melee' && game.dualWielding ? ' – dual wield' : w.kind === 'ranged' ? ' – a pair' : '');
+	const pairFor = (w: Wargear) =>
+		w.kind === 'melee' && game.weaponAdjustments?.(w, 2, [w], faction).length ? ' – dual wield' : w.kind === 'ranged' ? ' – a pair' : '';
 
 	/* A second of the same piece, where the game's carrying rules allow one: two
 	   swords to dual wield, a pair of pistols. */

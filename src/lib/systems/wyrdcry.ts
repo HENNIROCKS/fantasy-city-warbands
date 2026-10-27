@@ -4,7 +4,7 @@
  * file. Every folder under `factions/` is one faction.
  */
 
-import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, WargearUse, Warband } from '$lib/core/types';
+import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, WargearUse, Warband, WeaponAdjustment } from '$lib/core/types';
 import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { explore } from './wyrdcry-explore';
@@ -20,6 +20,16 @@ import heroicTalents from '$lib/rules/wyrdcry/heroic-talents.json';
 import underdogs from '$lib/rules/wyrdcry/underdogs.json';
 import magicItems from '$lib/rules/wyrdcry/magic-items.json';
 import loot from '$lib/rules/wyrdcry/loot.json';
+
+/* The rulebook's wording, as the Warband Deck carries it. */
+const DUAL_WIELDING: WeaponAdjustment = {
+	stat: 'attacks',
+	amount: 1,
+	rule: {
+		name: 'Dual Wielding',
+		text: 'If a fighter is equipped with two melee weapons of the same type (for example, two swords), they are considered to be dual wielding. While a fighter is dual wielding, improve the Attack characteristic of the weapon they are using by 1.'
+	}
+};
 
 export const game: GameSystem = {
 	id: 'wyrdcry',
@@ -59,14 +69,7 @@ export const game: GameSystem = {
 		{ key: 'damage', label: 'Damage' }
 	],
 	universal: universal.map((u) => ({ name: u.name, text: u.text, type: u.type, keyword: u.keyword })),
-	/* The rulebook's wording, as the Warband Deck carries it. */
-	dualWielding: {
-		stat: 'attacks',
-		rule: {
-			name: 'Dual Wielding',
-			text: 'If a fighter is equipped with two melee weapons of the same type (for example, two swords), they are considered to be dual wielding. While a fighter is dual wielding, improve the Attack characteristic of the weapon they are using by 1.'
-		}
-	},
+	weaponAdjustments: (weapon, count) => (count > 1 && weapon.kind === 'melee' ? [DUAL_WIELDING] : []),
 	carry,
 	/* "A fighter that isn't equipped with any melee weapon is considered to be
 	   unarmed, and uses the Unarmed weapon profile." BEAST and THRALL are out
