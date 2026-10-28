@@ -29,12 +29,29 @@ export const game: GameSystem = {
 		{ key: 'life', label: 'Life', format: 'plain' }
 	],
 	health: 'life',
-	/* The playtest names a blank roster but does not print one yet. */
+	/* The fields of the playtest's roster sheet (pp. 136–141 of the high-res
+	   file): damage and its critical apart, the weapons' traits, Black Rot to
+	   tick, the origin, and the holdings and canal leeches to fill in by hand
+	   until the app keeps a campaign. */
 	roster: {
 		title: 'Black Death City Warband Roster',
-		stats: ['Mv', 'Bl', 'Bw', 'Ar', 'In', 'Wp', 'Lf'],
-		weapons: ['Rng', 'Att', 'Rend', 'Dmg'],
-		campaign: ['Exp']
+		stats: ['Mv', 'Bl', 'Bw', 'Ar', 'In', 'Wl', 'Lf'],
+		weapons: ['Rng', 'Atk', 'Rnd', 'Dmg', 'Crit'],
+		campaign: ['Exp'],
+		split: 'damage',
+		traits: true,
+		marks: { label: 'Black Rot', count: 3 },
+		figures: [
+			{ label: 'Battles', value: (w) => String(w.history?.length ?? 0) },
+			{ label: 'Won', value: (w) => String(w.history?.filter((h) => h.result === 'win').length ?? 0) },
+			{ label: 'Fighters lost', value: (w) => String(w.fighters.filter((f) => f.away === 'dead').length) },
+			{ label: 'Holdings ransacked', value: () => '' }
+		],
+		blanks: [
+			{ label: 'Jars of Canal Leeches', withStash: true },
+			{ label: 'Holdings', slots: ['Stronghold', '1', '2', '3', '4', '5'] }
+		],
+		choices: true
 	},
 	roles: ['leader', 'champion', 'henchman', 'brute', 'beast'],
 	groups: [

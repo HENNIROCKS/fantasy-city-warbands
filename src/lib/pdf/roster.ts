@@ -66,27 +66,46 @@ function prefix(rule: RosterRule): Content[] {
 	return rule.tag ? [{ text: `${rule.tag} `, bold: true }] : [];
 }
 
-function nameCell(name: string, type: string): TableCell {
+/** `more` stands under the type, such as the warband's picks. */
+function nameCell(name: string, type: string, more: Content[] = []): TableCell {
 	return {
 		stack: [
 			{ text: name, bold: true },
-			{ text: type, fontSize: 8.5 }
+			{ text: type, fontSize: 8.5 },
+			...more
 		]
 	};
 }
 
+/* A blank to write on by hand. */
+const BLANK = '________________';
+
 function warbandTable(roster: Roster): Content {
+	const across = (text: ContentText['text']): TableCell[] => [{ text, colSpan: roster.figures.length + 1 }, ...roster.figures.map(() => '')];
+	const beside = roster.blanks.filter((b) => b.withStash);
 	return {
 		table: {
 			headerRows: 1,
 			widths: ['*', ...roster.figures.map(() => 'auto')],
 			body: [
 				[th('Warband / Game & Faction'), ...roster.figures.map((f) => th(figure(f.label)))],
-				[nameCell(roster.name, roster.subtitle), ...roster.figures.map((f) => figure(f.value))],
-				/* As on the Warband Deck's sheet: the stash on a line of its own, across the table. */
-				...(roster.stash
-					? [[{ text: [{ text: 'Stash: ', bold: true }, roster.stash], colSpan: roster.figures.length + 1 }, ...roster.figures.map(() => '')]]
-					: [])
+				[
+					nameCell(
+						roster.name,
+						roster.subtitle,
+						roster.picked.map((p) => ({ text: [{ text: `${p.label}: `, bold: true }, p.value], fontSize: 8.5 }))
+					),
+					...roster.figures.map((f) => figure(f.value))
+				],
+				/* As on the Warband Deck's sheet: the stash on a line of its own, across the
+				   table, with what the game's sheet keeps beside it left blank. */
+				...(roster.stash || beside.length
+					? [across([{ text: 'Stash: ', bold: true }, roster.stash, ...beside.flatMap((b) => ['      ', { text: `${b.label}: `, bold: true }])])]
+					: []),
+				...roster.blanks
+					.filter((b) => !b.withStash)
+					.map((b) => across([{ text: `${b.label}: `, bold: true }, (b.slots ?? ['']).map((slot) => `${slot} ${BLANK}`.trim()).join('   ')])),
+				...(roster.notes ? [across([{ text: 'Notes: ', bold: true }, ...rich(roster.notes)])] : [])
 			]
 		},
 		layout: ruled(),
@@ -100,46 +119,76 @@ function warbandTable(roster: Roster): Content {
 const line = (cell: ContentText, i: number): ContentText => ({ ...cell, margin: [0, i === 0 ? 0 : 2.5, 0, 0] });
 
 /* The weapons with their profiles in the game's columns, the name first, then
-   armour and items under the names in one line, since they have no profile. */
+   armour and items under the names in one line, since they have no profile –
+   and where the game says so, each weapon's traits level with it. */
 function profiles(fighter: RosterFighter, roster: Roster): TableCell[] {
 	const names: ContentText[] = fighter.weapons.map((weapon) => ({ text: weapon.name }));
 	if (fighter.items) names.push({ text: fighter.items });
 	return [
 		names.length ? { stack: names.map(line) } : '–',
-		...roster.weaponLabels.map((_, column) => ({ stack: fighter.weapons.map((weapon, i) => line(figure(weapon.values[column] ?? ''), i)) }))
+		...roster.weaponLabels.map((_, column) => ({ stack: fighter.weapons.map((weapon, i) => line(figure(weapon.values[column] ?? ''), i)) })),
+		...(roster.traits
+			? [fighter.weapons.length ? { stack: fighter.weapons.map((weapon, i) => line({ text: weapon.traits || '–', fontSize: 8 }, i)) } : '–']
+			: [])
 	];
 }
+
+/* Circles to tick by hand, as many as the game's column asks for. */
+function circles(count: number): Content {
+	return { canvas: Array.from({ length: count }, (_, k) => ({ type: 'ellipse' as const, x: 5 + k * 12, y: 6, r1: 4, r2: 4, lineWidth: THIN })) };
+}
+
+/* A rule's type in brackets, `[Attack Spell] `, which the game's sheet leaves out. */
+const untyped = (label: string) => label.replace(/^\[[^\]]+\]\s*/, '');
 
 function fighterTable(roster: Roster): Content {
 	/* The figure columns, counted from 0: the stats, the campaign's counters,
 	   the cost – then, after keywords, abilities and the weapon's name, its profile. */
 	const figures = Array.from({ length: roster.statLabels.length + roster.campaignLabels.length + 1 }, (_, i) => i + 1);
-	const profile = roster.weaponLabels.map((_, i) => figures.length + 4 + i);
+	/* Where the traits take a column, the keywords and the notes give way to it: one column fewer before the profile. */
+	const profile = roster.weaponLabels.map((_, i) => figures.length + (roster.traits ? 3 : 4) + i);
 
 	const head: TableCell[] = [
 		th({ text: 'Name / Type', noWrap: true }),
 		...[...roster.statLabels, ...roster.campaignLabels, roster.currency].map((text) => th(figure(text))),
-		th('Keywords'),
-		th('Abilities'),
+		...(roster.traits ? [th('Wargear, Spells, Skills')] : [th('Keywords'), th('Abilities')]),
 		th({ text: 'Weapons & Equipment', noWrap: true }),
 		...roster.weaponLabels.map((text) => th(figure(text))),
-		th('Notes')
+		...(roster.traits ? [th({ text: 'Weapon Traits', noWrap: true })] : []),
+		...(roster.marks ? [th({ text: roster.marks.label, noWrap: true })] : []),
+		...(roster.traits ? [] : [th('Notes')])
 	];
 
+	const notes = (fighter: RosterFighter) => fighter.notes.map((note) => ({ text: rich(note) }));
 	const rows = roster.fighters.map((fighter): TableCell[] => [
 		nameCell(fighter.name, fighter.type),
 		...[...fighter.stats, ...fighter.campaign, fighter.cost].map(figure),
-		{ text: fighter.keywords.toUpperCase(), fontSize: 8 },
-		fighter.abilities.length ? { stack: fighter.abilities } : '–',
+		...(roster.traits
+			? [
+					fighter.abilities.length || fighter.notes.length
+						? { stack: [...fighter.abilities.map(untyped), ...notes(fighter).map((note) => ({ ...note, italics: true }))] }
+						: '–'
+				]
+			: [{ text: fighter.keywords.toUpperCase(), fontSize: 8 }, fighter.abilities.length ? { stack: fighter.abilities } : '–']),
 		...profiles(fighter, roster),
-		fighter.notes.length ? { stack: fighter.notes.map((note) => ({ text: rich(note) })) } : '–'
+		...(roster.marks ? [circles(roster.marks.count)] : []),
+		...(roster.traits ? [] : [fighter.notes.length ? { stack: notes(fighter) } : '–'])
 	]);
 
 	return {
 		table: {
 			headerRows: 1,
 			dontBreakRows: true,
-			widths: ['*', ...figures.map(() => 'auto'), 85, 100, 110, ...profile.map(() => 'auto'), 70],
+			widths: [
+				'*',
+				...figures.map(() => 'auto'),
+				...(roster.traits ? [105] : [85, 100]),
+				roster.traits ? 100 : 110,
+				...profile.map(() => 'auto'),
+				...(roster.traits ? [110] : []),
+				...(roster.marks ? ['auto'] : []),
+				...(roster.traits ? [] : [70])
+			],
 			body: [head, ...rows]
 		},
 		layout: ruled([...figures, ...profile])

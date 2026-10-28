@@ -73,10 +73,31 @@ export interface GameSystem {
 	/**
 	 * How the roster PDF heads its columns, in the order of `stats`,
 	 * `weaponStats` and a fighter's campaign counters, `campaign.fighter` – and
-	 * what it is called. A game whose sheet differs in more than its columns
-	 * gets its own layout here.
+	 * what it is called. What the game's own sheet asks for beyond that is
+	 * declared here as well.
 	 */
-	roster: { title: string; stats: string[]; weapons: string[]; campaign?: string[] };
+	roster: {
+		title: string;
+		stats: string[];
+		weapons: string[];
+		campaign?: string[];
+		/** The weapon stat, by key, whose `a/b` fills two columns, as Black Death City's Dmg and Crit; `weapons` heads both. */
+		split?: string;
+		/**
+		 * Each weapon's traits in a column of their own, as Black Death City's sheet
+		 * has them. The keywords and the notes column give way; a fighter's notes
+		 * stand under its abilities, which are named without their type.
+		 */
+		traits?: boolean;
+		/** A column of empty circles to tick by hand on each fighter, such as Black Death City's three of Black Rot. */
+		marks?: { label: string; count: number };
+		/** The warband's counts in place of won, drawn and lost, each a heading and its figure; empty where the app keeps none. */
+		figures?: { label: string; value: (warband: Warband) => string }[];
+		/** Lines to fill in by hand: beside the stash, or on a line of their own with a blank for each of `slots`. */
+		blanks?: { label: string; slots?: string[]; withStash?: boolean }[];
+		/** Whether the warband's picks under its faction's choices, `Origin: Swords for Hire`, and its notes stand under its name. */
+		choices?: boolean;
+	};
 	/**
 	 * The keywords that name a fighter's role, first match wins: a Wyrdcry
 	 * Captain is both `leader` and `hero` and reads as a leader.
