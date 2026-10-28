@@ -8,7 +8,7 @@ tap on a fighter starts it too.
 **Before the battle.** Tap **Battle → Before the battle** and enter your
 opponent's rating: the app says who is the underdog, and asks who won the
 roll-off when both ratings are equal. Then tap the scenario and the twist the
-dice show. All three stand in a box on the warband card; tap a name to read
+dice show. All three stand in a box on the warband card; tap an entry to read
 its rules. You can change them until the second round.
 
 **Prepared spells.** Before the battle each wizard and priest rolls a dice on
