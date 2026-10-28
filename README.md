@@ -90,7 +90,8 @@ campaign.
 - Keep Wyrdcry's magic items: one to a fighter, never sold, 5 reputation each,
   and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, in
-  Black Death City bloodied fighters, the flee test and the prepared spells, and
+  Black Death City the underdog, the scenario and its twist, bloodied fighters,
+  the flee test and the prepared spells, and
   in Wyrdcry morale, Zeal and the single-use items ticked off; end it with its
   result in the battle history, or cancel it – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
@@ -137,8 +138,8 @@ wargear each fighter may take and how much of it at once, the warband's
 choice and its effect on the roster, the profiles and the prices, the choice a Wyrdcry fighter makes on
 recruitment, the Greenskin Marauders' two GOBLINs per ORC, the fighters
 who count as half in a Wyrdcry warband's morale, and Wyrdcry's optional
-Underdogs. Wyrdcry's abilities and faction rules and the special rules
-of Black Death City's fighters are shown as text; a faction rule that leaves a
+Underdogs. Wyrdcry's abilities and faction rules, the special rules of
+Black Death City's fighters and its scenarios and twists are shown as text; a faction rule that leaves a
 fighter out, or applies only to a keyword it lacks, shows a hint on its card
 instead.
 

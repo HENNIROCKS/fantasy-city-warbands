@@ -77,20 +77,31 @@ export function setOpponent(battle: BattleState | null, rules: Underdog, warband
 		return unasked;
 	}
 	/* The roll-off only stands while the figures are level. */
-	const tieWon = behind === 0 && current.underdog?.tieWon ? { tieWon: true } : {};
+	const was = current.underdog?.tieWon;
+	const tieWon = behind === 0 && was !== undefined ? { tieWon: was } : {};
 	return { ...current, underdog: { opponent, bonuses, ...tieWon } };
 }
 
 /**
  * The battle with the roll-off for equal figures answered: won makes the
- * warband the underdog. Only where the game rolls off and the figures are
- * level; anything else leaves the battle as it is.
+ * warband the underdog; null takes the answer back. Only where the game rolls
+ * off and the figures are level; anything else leaves the battle as it is.
  */
-export function setTieWon(battle: BattleState | null, rules: Underdog, warband: Warband, won: boolean): BattleState | null {
+export function setTieWon(battle: BattleState | null, rules: Underdog, warband: Warband, won: boolean | null): BattleState | null {
 	const asked = battle?.underdog;
 	if (!battle || !asked || !rules.ties || asked.opponent !== rules.reputation(warband)) return battle;
 	const { tieWon: _was, ...rest } = asked;
-	return { ...battle, underdog: won ? { ...rest, tieWon: true } : rest };
+	return { ...battle, underdog: won === null ? rest : { ...rest, tieWon: won } };
+}
+
+/** Who the underdog is, as far as it is answered: the warband, its opponent, or a roll-off still owed; null where nobody asked or neither is. */
+export function underdogSide(rules: Underdog | undefined, warband: Warband, battle: BattleState | null): 'you' | 'opponent' | 'roll-off' | null {
+	const asked = battle?.underdog;
+	if (!rules || !asked) return null;
+	const behind = asked.opponent - rules.reputation(warband);
+	if (isUnderdog(rules, behind, asked.tieWon)) return 'you';
+	if (behind === 0 && rules.ties) return asked.tieWon === undefined ? 'roll-off' : 'opponent';
+	return isUnderdog(rules, -behind) ? 'opponent' : null;
 }
 
 /** Why a bonus cannot be picked or put back, in a few words for its button; null where it can. */

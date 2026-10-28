@@ -270,6 +270,8 @@ export interface Underdog {
 	bonuses: UnderdogBonus[];
 	/** The figure compared with the opponent's: Wyrdcry's reputation, Black Death City's rating. */
 	reputation: (warband: Warband) => number;
+	/** What that figure is called, in a sentence: `reputation`, `rating`. */
+	figure: string;
 	/** Why the warband gains nothing by a bonus, such as Bounty at the highest standing; null where it does. */
 	refuse?: (warband: Warband, bonus: UnderdogBonus) => string | null;
 	/** Whether equal figures are settled by a roll-off, whose winner is the underdog. Without it, nobody is. */

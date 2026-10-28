@@ -157,6 +157,7 @@ export const game: GameSystem = {
 		gap: underdogs.gap,
 		roll: underdogs.roll,
 		bonuses: underdogs.bonuses as UnderdogBonus[],
+		figure: 'reputation',
 		reputation: (warband) => figures(warband).reputation,
 		refuse: (warband, bonus) =>
 			bonus.effect === 'standing' && tierFor(warband.tally?.favour ?? 0) === campaign.favour_tiers.at(-1)

@@ -2,12 +2,14 @@
 	import bannerMask from '$lib/assets/card/banderole-mask.svg?raw';
 	import RuleText from '$lib/components/RuleText.svelte';
 	import type { CardEntry, RosterEntry, WarbandCardData } from '$lib/core/card';
+	import { explain } from '$lib/explanation';
 	import { fitText } from '$lib/fit-text';
 
 	/*
 	 * The warband itself as the first card of the deck, as the Warband Deck lays
 	 * it out: the name in a banderole, the fluff, two boxes of figures with the
-	 * roster across them, then the stash and the notes.
+	 * roster across them and, in a battle, what it was set up with; then the
+	 * stash and the notes.
 	 */
 	let {
 		card,
@@ -80,6 +82,23 @@
 					<p class="none">No fighters yet.</p>
 				{/each}
 			</div>
+
+			{#if card.setup?.length}
+				<!-- Names only, so the card stays short; each opens its rules over the card. -->
+				<dl class="stats wide">
+					{#each card.setup as row (row.key)}
+						<dt>{row.label}</dt>
+						<dd use:fitText>
+							{#if row.explanation}
+								{@const explanation = row.explanation}
+								<button class="jump" onclick={() => explain(explanation)} aria-label="{row.label} {row.value}, its rules"><span data-fit>{row.value}</span></button>
+							{:else}
+								<span data-fit>{row.value}</span>
+							{/if}
+						</dd>
+					{/each}
+				</dl>
+			{/if}
 		</div>
 
 		{#if card.reminders?.length}
@@ -297,6 +316,11 @@
 		grid-column: 1 / -1;
 		display: grid;
 		row-gap: calc(14 * var(--u));
+	}
+
+	/* What the battle was set up with, across both columns like the roster. */
+	.wide {
+		grid-column: 1 / -1;
 	}
 
 	.group h3 {

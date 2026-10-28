@@ -83,8 +83,8 @@ export interface BattleState extends BattleRound {
 	hired: Hire[];
 	/**
 	 * The opponent's figure the underdog is worked out from, and the bonuses
-	 * picked, by id; `tieWon` where the figures are equal and the warband won
-	 * the roll-off. Missing where nobody asked.
+	 * picked, by id; `tieWon` where the figures are equal and the roll-off is
+	 * answered, true where the warband won it. Missing where nobody asked.
 	 */
 	underdog?: { opponent: number; bonuses: string[]; tieWon?: boolean };
 	/** The scenario the battle is fought to, by id, and its twist, by its roll; missing where none was picked. */
