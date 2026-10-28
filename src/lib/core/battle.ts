@@ -89,6 +89,14 @@ export interface BattleState extends BattleRound {
 	underdog?: { opponent: number; bonuses: string[]; tieWon?: boolean };
 	/** The scenario the battle is fought to, by id, and its twist, by its roll; missing where none was picked. */
 	scenario?: { id: string; twist: number | null };
+	/** The points both warbands have scored to the scenario; missing until the first is counted. */
+	score?: Score;
+}
+
+/** The points of the warband and of its opponent. */
+export interface Score {
+	us: number;
+	them: number;
 }
 
 /** What a fighter carries before anything has happened to it. */
@@ -113,7 +121,8 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		undo: stored.undo ?? null,
 		hired: stored.hired ?? [],
 		...(stored.underdog ? { underdog: stored.underdog } : {}),
-		...(stored.scenario ? { scenario: stored.scenario } : {})
+		...(stored.scenario ? { scenario: stored.scenario } : {}),
+		...(stored.score ? { score: stored.score } : {})
 	};
 }
 
@@ -207,6 +216,13 @@ export function unuseItem(battle: BattleState | null, instanceId: string, at: nu
 export function adjustCounter(battle: BattleState | null, delta: number): BattleState {
 	const current = battle ?? start();
 	return { ...current, counter: Math.max(0, current.counter + delta), undo: null };
+}
+
+/** Counts a side's points up or down, starting a battle if none is running. They cannot fall below nothing. */
+export function adjustScore(battle: BattleState | null, side: keyof Score, delta: number): BattleState {
+	const current = battle ?? start();
+	const score = current.score ?? { us: 0, them: 0 };
+	return { ...current, score: { ...score, [side]: Math.max(0, score[side] + delta) }, undo: null };
 }
 
 /**

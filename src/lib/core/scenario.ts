@@ -4,9 +4,9 @@
  * table and the results tapped; both are kept with the battle.
  */
 
-import { start, type BattleState } from './battle';
+import { start, type BattleState, type Score } from './battle';
 import type { CardValue } from './card';
-import type { GameSystem, Scenario, Twist, Warband } from './types';
+import type { GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
 import { underdogSide } from './underdog';
 
 /** The scenario picked for the battle and its twist; null where none is picked or the game has none. */
@@ -19,18 +19,30 @@ export function scenarioOf(game: GameSystem, battle: BattleState | null): { scen
 
 /**
  * The battle with the scenario picked, starting it if none is running, as
- * hiring does; another scenario drops the twist, which belongs to the one
- * before. Null takes the scenario back.
+ * hiring does; another scenario drops the twist and the points, which
+ * belong to the one before. Null takes the scenario back.
  */
 export function setScenario(battle: BattleState | null, id: string | null): BattleState | null {
 	if (id === null) {
 		if (!battle?.scenario) return battle;
-		const { scenario: _picked, ...rest } = battle;
+		const { scenario: _picked, score: _scored, ...rest } = battle;
 		return rest;
 	}
 	const current = battle ?? start();
 	if (current.scenario?.id === id) return current;
-	return { ...current, scenario: { id, twist: null } };
+	const { score: _scored, ...rest } = current;
+	return { ...rest, scenario: { id, twist: null } };
+}
+
+/** The points both warbands have scored to the scenario; `over` where the end of this round ends the battle. */
+export type ScoreState = ScenarioScore & Score & { over: boolean };
+
+/** The points as they stand, where the scenario picked counts them. */
+export function scoreOf(game: GameSystem, battle: BattleState | null): ScoreState | null {
+	const rules = scenarioOf(game, battle)?.scenario.score;
+	if (!rules) return null;
+	const { us, them } = battle?.score ?? { us: 0, them: 0 };
+	return { ...rules, us, them, over: Math.max(us, them) >= rules.ends && us !== them };
 }
 
 /** The battle with the twist picked by its roll, or taken back with null; only once a scenario is picked. */

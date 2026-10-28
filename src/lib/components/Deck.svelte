@@ -7,6 +7,7 @@
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
 	import { battleEffects, downCount, isWavering, isWounded, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard, FighterCardData } from '$lib/core/card';
+	import type { ScoreState } from '$lib/core/scenario';
 	import type { FactionCounter, GameSystem } from '$lib/core/types';
 	import { explanation } from '$lib/explanation';
 	import type { PhotoView } from '$lib/photo';
@@ -42,6 +43,8 @@
 		onlevels,
 		onunderdog,
 		underdogLabel = 'Underdog',
+		score = null,
+		onscore,
 		onhire,
 		hireLabel = '',
 		onrolls,
@@ -95,6 +98,10 @@
 		onunderdog?: () => void;
 		/** What the menu calls it: `Underdog`, or `Before the battle` where the scenario is asked with it. */
 		underdogLabel?: string;
+		/** The points both warbands have scored, where the scenario counts them, under the warband card. */
+		score?: ScoreState | null;
+		/** Opens the sheet that counts them. */
+		onscore?: () => void;
 		/** Opens what is on offer for hire, where the game hires and the battle is still being set up. */
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
@@ -477,6 +484,8 @@
 			stage={stage?.label ?? null}
 			{wavering}
 			flee={fleeing ? rules?.flee : undefined}
+			{score}
+			{onscore}
 			{toAct}
 			{out}
 			onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}

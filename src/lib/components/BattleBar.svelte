@@ -1,6 +1,7 @@
 <script lang="ts">
 	import MenuButton from '$lib/components/MenuButton.svelte';
 	import { roundEnd, type BattleState, type FighterBattleState } from '$lib/core/battle';
+	import type { ScoreState } from '$lib/core/scenario';
 	import type { BattleRounds, FactionCounter, GameSystem } from '$lib/core/types';
 
 	/*
@@ -21,6 +22,8 @@
 		stage = null,
 		wavering = false,
 		flee,
+		score = null,
+		onscore,
 		toAct = 0,
 		out = 0,
 		onwound,
@@ -72,6 +75,10 @@
 		wavering?: boolean;
 		/** The game's flee test, given only while the end of this round asks it. */
 		flee?: NonNullable<GameSystem['battle']>['flee'];
+		/** The points both warbands have scored, where the scenario counts them; `over` where the end of this round ends the battle. */
+		score?: ScoreState | null;
+		/** Opens the sheet that counts them. */
+		onscore?: () => void;
 		/** How many fighters still have to act this round. */
 		toAct?: number;
 		/** How many fighters are out of action. */
@@ -127,6 +134,10 @@
 	const left = $derived(fighter ? Math.max(0, health - fighter.damage) : 0);
 	const unknown = $derived(health <= 0);
 	const ends = $derived(battle ? roundEnd(battle.round, rounds) : 'next');
+	/* Where the count or the points stand under the warband card, the standing line is in the menu only. */
+	const inMenu = $derived(!!counter || !!(score && battle));
+	/* What the trigger carries for the standing line, as it asks something of the warband. */
+	const alarm = $derived(inMenu ? (flee ? 'flee test' : wavering ? 'wavering' : null) : null);
 
 	const BUTTON = 'border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700 focus-visible:bg-zinc-700';
 </script>
@@ -234,21 +245,34 @@
 						+
 					</button>
 				</div>
+			{:else if score && battle}
+				<!-- Points scored to the scenario take the standing line's place as
+				     the count does; both sides are counted in a sheet, as a step here
+				     would leave no room for the other. -->
+				<button
+					class="readout score border-zinc-700 bg-zinc-800 hover:bg-zinc-700 focus-visible:bg-zinc-700"
+					aria-label="{score.label}: you {score.us}, your opponent {score.them}{score.over ? ', the battle ends' : ''}"
+					onclick={() => onscore?.()}
+				>
+					<span class="figure">{score.us} <span class="of text-zinc-400">:</span> {score.them}</span>
+					<span class="sub" class:alert={score.over}>{score.over ? 'Battle ends' : score.label}</span>
+				</button>
 			{:else}
 				<p class="summary text-zinc-400" aria-live="polite">
 					{@render standing()}
 				</p>
 			{/if}
 			<div class="actions">
-				<!-- Where the count takes the standing line's place, the menu's trigger
-				     carries the morale instead, so it shows under the warband card too.
+				<!-- Where the count or the points take the standing line's place, the
+				     menu's trigger carries the morale or the flee test instead, so it
+				     shows under the warband card too.
 				     With nothing to offer, as for a disbanded warband, it is left out. -->
 				{#if battle || !closed || levelsOpen > 0}<MenuButton
-					label={counter && wavering ? 'Battle, wavering' : 'Battle'}
-					class="action {BUTTON} {counter && wavering ? 'warn' : ''}"
+					label={alarm ? `Battle, ${alarm}` : 'Battle'}
+					class="action {BUTTON} {alarm ? 'warn' : ''}"
 				>
 					{#snippet trigger()}Battle{/snippet}
-					{#if counter && (battle || !closed)}
+					{#if inMenu && (battle || !closed)}
 						<p>{@render standing()}</p>
 					{/if}
 					{#if battle}
@@ -256,8 +280,11 @@
 						     on another round by a roll, the end of the round asks for it, and its
 						     answers lead on or out; after the last round there is no next. Ending
 						     the battle by hand stays beside the flee test, for a scenario won or
-						     a warband that flees of its own will. -->
-						{#if flee}
+						     a warband that flees of its own will. Points enough end it before
+						     any flee test. -->
+						{#if score?.over}
+							<p>End of round {battle.round} – {score.label.toLowerCase()} {score.us} to {score.them}: the battle ends.</p>
+						{:else if flee}
 							<p>End of round {battle.round} – {flee.label}, {flee.roll}:</p>
 							<button onclick={() => onnext?.()}>{flee.goOn}: Round {battle.round + 1}</button>
 							<button onclick={() => onend?.()}>{flee.end}: The warband flees</button>
@@ -292,7 +319,7 @@
 					{/if}
 					{#if battle}
 						<hr />
-						{#if ends !== 'roll'}<button onclick={() => onend?.()}>End battle</button>{/if}
+						{#if ends !== 'roll' || score?.over}<button onclick={() => onend?.()}>End battle</button>{/if}
 						{#if oncancelbattle}
 							<button onclick={() => oncancelbattle?.()}>Cancel battle</button>
 						{/if}
@@ -411,6 +438,12 @@
 	.of {
 		font-weight: 400;
 		font-size: 1rem;
+	}
+
+	/* The figure framed on all sides, as a button of its own. */
+	.score {
+		border-width: 1px;
+		border-radius: 6px;
 	}
 
 	.summary {

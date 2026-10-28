@@ -29,6 +29,13 @@ show who has acted.
 out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Back
 to round …** undoes it, until you tap something new.
 
+**Points.** Where the scenario is won on points – victory points, domination
+marks, death marks – the score stands under the warband card, and the round
+moves into the Battle menu. Tap the score to count your points and your
+opponent's. Once a warband has enough and the score is not tied, it says
+*Battle ends*, and at the end of the round the Battle menu offers only **End
+battle**.
+
 **Flee test.** Once five or more of your fighters are bloodied or out of
 action, the warband card says *Flee test*. At the end of the round the Battle
 menu asks for your roll: **2+** leads to the next round, **1** means your
