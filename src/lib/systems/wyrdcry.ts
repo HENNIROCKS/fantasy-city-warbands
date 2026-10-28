@@ -34,6 +34,7 @@ const DUAL_WIELDING: WeaponAdjustment = {
 export const game: GameSystem = {
 	id: 'wyrdcry',
 	name: 'Wyrdcry',
+	logo: 'logo-wyrdcry.svg',
 	edition: 'v1.0',
 	author: 'Johan Markström',
 	currency: 'gc',

@@ -119,7 +119,7 @@
 		/** The fighters' photos by instanceId, for the image field. */
 		photos?: Map<string, PhotoView>;
 		/** The box the deck comes out of, with what its front names and when it can be seen; null for none. */
-		tuck?: { name: string; line: string; ready: Promise<void> } | null;
+		tuck?: { name: string; line: string; logo?: string; ready: Promise<void> } | null;
 		/** Says the box has slid out of sight. */
 		ontucked?: () => void;
 	} = $props();
@@ -446,7 +446,7 @@
 		{/if}
 
 		{#if tuck}
-			<TuckBox name={tuck.name} line={tuck.line} ready={tuck.ready} onopen={unbox} ondone={() => ontucked?.()} />
+			<TuckBox name={tuck.name} line={tuck.line} logo={tuck.logo} ready={tuck.ready} onopen={unbox} ondone={() => ontucked?.()} />
 		{/if}
 	</div>
 

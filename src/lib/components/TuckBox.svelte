@@ -3,8 +3,9 @@
 
 	/*
 	 * The box the deck comes out of, as a tuck box holds a deck of playing cards:
-	 * in the warband's colour on the card's texture, the banderole's name and line
-	 * printed on its front, a notch at the top for the thumb. It covers the cards
+	 * in the warband's colour on the card's texture, the warband's name, its
+	 * faction and the game's logo printed on its front, a notch at the top for
+	 * the thumb. It covers the cards
 	 * for a moment once `ready` settles, then drops out of sight, saying when it
 	 * starts and when it is gone. Until then it holds back every tap and swipe
 	 * meant for the cards.
@@ -12,13 +13,16 @@
 	let {
 		name,
 		line,
+		logo,
 		ready,
 		onopen,
 		ondone
 	}: {
 		name: string;
-		/** What the banderole names under the warband: game and faction. */
+		/** The faction, under the name. */
 		line: string;
+		/** Where the game's logo is, set apart below the two lines; none where the game has none. */
+		logo?: string;
 		/** Settles once the box can be seen, as when the start screen is gone. */
 		ready: Promise<void>;
 		onopen: () => void;
@@ -71,6 +75,7 @@
 		<div class="label">
 			<p class="name">{name}</p>
 			<p class="line">{line}</p>
+			{#if logo}<img class="logo" src={logo} alt="" />{/if}
 		</div>
 	</div>
 </div>
@@ -113,9 +118,9 @@
 		transform: translateY(100%);
 	}
 
-	/* Set as the banderole is, in the card's type unit: the box spans the stack,
-	   the card the stack less its gutters. Above the middle, where a box's
-	   label sits. */
+	/* In the banderole's lettering and the card's type unit, the faction nearly
+	   as large as the name: the box spans the stack, the card the stack less its
+	   gutters. Above the middle, where a box's label sits. */
 	.label {
 		position: absolute;
 		top: 30%;
@@ -131,14 +136,22 @@
 	.name {
 		margin: 0;
 		font-weight: 600;
-		font-size: calc(34 * var(--t));
+		font-size: calc(32 * var(--t));
 		line-height: 1.1;
 		overflow-wrap: anywhere;
 	}
 
 	.line {
 		margin: calc(2 * var(--t)) 0 0;
-		font-size: calc(20 * var(--t));
+		font-size: calc(28 * var(--t));
 		line-height: 1.2;
+	}
+
+	/* White as the start screen draws it, near enough the paper of the type. */
+	.logo {
+		display: block;
+		width: 42%;
+		margin: 28px auto 0;
+		filter: brightness(0) invert(1);
 	}
 </style>
