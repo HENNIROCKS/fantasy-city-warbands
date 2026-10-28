@@ -1,9 +1,10 @@
 /**
  * The underdog of a battle, as Wyrdcry's optional Underdogs has it (Campaign
- * Book 1.0, p. 30): worked out in the battle's setup from both warbands'
- * figures, before anyone is hired. The opponent's figure is asked for and kept
- * with the battle, so the bonuses follow it when it is corrected; the
- * warband's own is read off the warband.
+ * Book 1.0, p. 30) and Black Death City's setup (Playtest v1.03, p. 17):
+ * worked out in the battle's setup from both warbands' figures, before anyone
+ * is hired. The opponent's figure is asked for and kept with the battle, so
+ * the bonuses follow it when it is corrected; the warband's own is read off
+ * the warband.
  */
 
 import { release, start, type BattleState } from './battle';
@@ -24,13 +25,18 @@ export function bonusesFor(rules: Underdog, behind: number): number {
 	return Math.min(rules.bonuses.length, Math.max(0, Math.floor(behind / rules.gap)));
 }
 
+/** Whether a warband `behind` its opponent is the underdog: far enough behind, or level and the winner of the roll-off where the game rolls off. */
+export function isUnderdog(rules: Underdog, behind: number, tieWon = false): boolean {
+	return behind >= rules.gap || (behind === 0 && !!rules.ties && tieWon);
+}
+
 /** The warband as the underdog of the battle running; null where it is not one, or nobody asked. */
 export function underdogOf(rules: Underdog | undefined, warband: Warband, battle: BattleState | null): UnderdogState | null {
 	const asked = battle?.underdog;
 	if (!rules || !asked) return null;
 	const behind = asked.opponent - rules.reputation(warband);
+	if (!isUnderdog(rules, behind, asked.tieWon)) return null;
 	const allowed = bonusesFor(rules, behind);
-	if (!allowed) return null;
 	const picked = rules.bonuses.filter((b) => asked.bonuses.includes(b.id));
 	return { behind, allowed, picked, roll: rules.roll };
 }
@@ -45,12 +51,15 @@ const rescued = (warband: Warband) => (warband.next ?? []).filter((n) => n.freeH
  * The battle with the opponent's figure, starting it if none is running, as
  * hiring does. Where it now allows fewer bonuses, the last picked go first –
  * the debt called in last of all while a hired sword came of it, and with it
- * that hired sword. Without a battle and without a bonus to pick, nothing is
- * started; with no figure at all, the question is taken back as if never asked.
+ * that hired sword. Without a battle, nothing is started unless the figure
+ * makes the warband the underdog, or leaves the figures level where the game
+ * rolls off for it; with no figure at all, the question is taken back as if
+ * never asked.
  */
 export function setOpponent(battle: BattleState | null, rules: Underdog, warband: Warband, opponent: number | null): BattleState | null {
-	const allowed = opponent === null ? 0 : bonusesFor(rules, opponent - rules.reputation(warband));
-	if (!battle && !allowed) return null;
+	const behind = opponent === null ? null : opponent - rules.reputation(warband);
+	const allowed = behind === null ? 0 : bonusesFor(rules, behind);
+	if (!battle && (behind === null || !(isUnderdog(rules, behind) || (behind === 0 && rules.ties)))) return null;
 	let current = battle ?? start();
 	const debt = freeHire(rules);
 	const owed = current.hired.filter((h) => h.free).length > rescued(warband);
@@ -67,7 +76,21 @@ export function setOpponent(battle: BattleState | null, rules: Underdog, warband
 		const { underdog: _asked, ...unasked } = current;
 		return unasked;
 	}
-	return { ...current, underdog: { opponent, bonuses } };
+	/* The roll-off only stands while the figures are level. */
+	const tieWon = behind === 0 && current.underdog?.tieWon ? { tieWon: true } : {};
+	return { ...current, underdog: { opponent, bonuses, ...tieWon } };
+}
+
+/**
+ * The battle with the roll-off for equal figures answered: won makes the
+ * warband the underdog. Only where the game rolls off and the figures are
+ * level; anything else leaves the battle as it is.
+ */
+export function setTieWon(battle: BattleState | null, rules: Underdog, warband: Warband, won: boolean): BattleState | null {
+	const asked = battle?.underdog;
+	if (!battle || !asked || !rules.ties || asked.opponent !== rules.reputation(warband)) return battle;
+	const { tieWon: _was, ...rest } = asked;
+	return { ...battle, underdog: won ? { ...rest, tieWon: true } : rest };
 }
 
 /** Why a bonus cannot be picked or put back, in a few words for its button; null where it can. */
