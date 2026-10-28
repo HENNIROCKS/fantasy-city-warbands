@@ -1,7 +1,7 @@
 # CLAUDE.md – Fantasy City Warbands
 
 Eine SvelteKit-App, mit der man eine Bande für ein Skirmish-Spiel in einer
-Fantasy-Stadt baut und umbaut: Wyrdcry und Black Death City, Mordheim und
+Fantasy-Stadt baut und umbaut: Black Death City und Wyrdcry, Mordheim und
 Necropolis irgendwann.
 Was die App kann und wie sie deployt wird, steht in der `README.md`.
 
@@ -32,15 +32,15 @@ weiter von Gedrucktem ab, wandert sie als `[x]` darüber, sonst wird sie
 gelöscht; die Antwort steht in der Vault-Notiz. Ist nichts offen, entfällt die
 Überschrift.
 
-Was bei Wyrdcry oder Black Death City unter „Open upstream“ steht, und jede
+Was bei Black Death City oder Wyrdcry unter „Open upstream“ steht, und jede
 Lesart `[ ]`, die nur der Autor klären kann, steht zugleich als Frage in
-`_works/wyrdcry-questions-<datum>.txt` bzw. `_works/bdc-questions-<datum>.txt`
+`_works/bdc-questions-<datum>.txt` bzw. `_works/wyrdcry-questions-<datum>.txt`
 – ein Post für den Discord des Autors des Spiels: englisch, einfache Sprache,
 keine Anrede, kein Begleittext, keine Ausrufezeichen, keine Gedankenstriche,
 unter 2000 Zeichen. Je Frage eine nummerierte Zeile mit der Quelle (Seite,
-Datei) in Klammern, gegliedert bei Wyrdcry nach Rulebook, Campaign Book, Daten
-und Fraktionen, bei Black Death City nach den Teilen des Playtests: Armoury,
-Magic, Campaign und Factions. Kommt eine Frage dazu oder
+Datei) in Klammern, gegliedert bei Black Death City nach den Teilen des Playtests:
+Armoury, Magic, Campaign und Factions, bei Wyrdcry nach Rulebook, Campaign
+Book, Daten und Fraktionen. Kommt eine Frage dazu oder
 fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
 entsteht eine neue Datei mit dem Datum des Tages, und die vorige geht per
 `trash` in den Papierkorb; ist keine Frage mehr offen, liegt keine Datei dort.

@@ -56,8 +56,8 @@ body:
     attributes:
       label: Which game?
       options:
-        - Wyrdcry
         - Black Death City
+        - Wyrdcry
         - Doesn't depend on the game
 
   - type: input

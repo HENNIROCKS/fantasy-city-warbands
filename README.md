@@ -2,14 +2,14 @@
 
 Build a warband for a skirmish game set in a fantasy city, play its battles
 from a deck of cards and carry it through a campaign. Two games so far:
-[Wyrdcry](https://wyrdcry.net) and [Black Death City](https://www.blackdeathcity.com/).
+[Black Death City](https://www.blackdeathcity.com/) and [Wyrdcry](https://wyrdcry.net).
 Mordheim and Necropolis will follow eventually.
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
-Unofficial fan project. No connection to Games Workshop, Johan Markström and
-the Wyrdcry project, Sam Pearson and Black Death City, or Peter Vigors and
-Necropolis.
+Unofficial fan project. No connection to Sam Pearson and Black Death City,
+Games Workshop, Peter Vigors and Necropolis, or Johan Markström and the
+Wyrdcry project.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
@@ -24,7 +24,7 @@ that game's campaign.
 ## What it does
 
 - Build a warband in five steps: game, faction, the choice the whole warband
-  makes (State Pride in Wyrdcry, Origin in Black Death City), fighters, finish
+  makes (Origin in Black Death City, State Pride in Wyrdcry), fighters, finish
 - See how much of each game the app carries before picking it: a ring on the
   game's tile with one piece per area, such as carrying limits, battle,
   aftermath or advancement, filled where it is built
@@ -73,8 +73,8 @@ that game's campaign.
   you write your own – its profile, its cost – in Wyrdcry beside its renown –
   its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. A weapon's Attacks
-  count in Wyrdcry's Dual Wielding, and in Black Death City a Held Item beside
-  a two-handed melee weapon. In Wyrdcry a
+  count in Black Death City's Held Item beside a two-handed melee weapon, and
+  in Wyrdcry's Dual Wielding. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its

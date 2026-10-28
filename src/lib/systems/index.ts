@@ -11,8 +11,8 @@ export interface System {
 
 /** Every game the app can build a warband for, by its id. */
 export const systems: Record<string, System> = {
-  [wyrdcry.game.id]: wyrdcry,
   [blackDeathCity.game.id]: blackDeathCity,
+  [wyrdcry.game.id]: wyrdcry,
 };
 
 /** Games that are meant to come but have no data yet: shown, but not selectable. */

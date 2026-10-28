@@ -59,7 +59,7 @@
 		},
 		{
 			question: 'Which rules does the app follow?',
-			answer: `Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook 1.0.1, the Campaign Book 1.0 and the factions as wyrdcry.net has them. Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list.`
+			answer: `Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list. Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook 1.0.1, the Campaign Book 1.0 and the factions as wyrdcry.net has them.`
 		}
 	];
 
