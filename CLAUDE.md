@@ -39,7 +39,7 @@ Lesart `[ ]`, die nur der Autor klären kann, steht zugleich als Frage in
 keine Anrede, kein Begleittext, keine Ausrufezeichen, keine Gedankenstriche,
 unter 2000 Zeichen. Je Frage eine nummerierte Zeile mit der Quelle (Seite,
 Datei) in Klammern, gegliedert bei Black Death City nach den Teilen des Playtests:
-Armoury, Magic, Campaign und Factions, bei Wyrdcry nach Rulebook, Campaign
+Scenarios, Armoury, Magic, Campaign und Factions, bei Wyrdcry nach Rulebook, Campaign
 Book, Daten und Fraktionen. Kommt eine Frage dazu oder
 fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
 entsteht eine neue Datei mit dem Datum des Tages, und die vorige geht per

@@ -39,3 +39,5 @@ Transcribed from the Playtest v1.03, where the Fighters List, the scrolls, the A
 
 - [ ] Blighted Cloister: Blessed Rabble has the same leader as Priesthood of Sorcerers
 - [ ] Selling from the stash: the playtest has no campaign chapter yet, so a piece only leaves the stash thrown away
+- [ ] Street of Death, Heavy Downpour: the sentence on when the rain ends breaks off; the app shows it as printed
+- [ ] Scenarios: the scenario table, Battle for the Tower, Coin Purse and Heirloom point to pg xx; the exploration roll and the relic table are not in the playtest yet
