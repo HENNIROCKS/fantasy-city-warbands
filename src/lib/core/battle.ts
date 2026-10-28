@@ -267,6 +267,18 @@ export function isWavering(battle: BattleState | null, fighters: Counted[], wave
 	return wavers(out, fighters.length);
 }
 
+/**
+ * How many of the given fighters are out of action or wounded, as a game's
+ * `flee` counts them; each fighter's Health arrives with it.
+ */
+export function downCount(battle: BattleState | null, fighters: { instanceId: string; health: number }[], wounded: { at: (health: number) => number } | undefined): number {
+	if (!battle) return 0;
+	return fighters.filter((f) => {
+		const state = stateOf(battle, f.instanceId);
+		return state.out || isWounded(state, f.health, wounded);
+	}).length;
+}
+
 /** The stages a count has reached, lowest first; the stages arrive sorted. */
 export function reached(stages: CounterStage[], counter: number): CounterStage[] {
 	return stages.filter((stage) => stage.at <= counter);
@@ -297,10 +309,11 @@ export function roundEnd(round: number, rounds: BattleRounds | undefined): 'next
 /**
  * Whether the damage a fighter holds makes it wounded, where the game knows
  * such a state: read off the damage, so taking a point back undoes it. A
- * fighter out of action is that rather than wounded.
+ * fighter out of action is that rather than wounded, and one whose Health is
+ * unknown – none, as for a type the faction no longer has – is neither.
  */
 export function isWounded(state: FighterBattleState, health: number, wounded: { at: (health: number) => number } | undefined): boolean {
-	return !!wounded && !state.out && state.damage >= wounded.at(health);
+	return !!wounded && health > 0 && !state.out && state.damage >= wounded.at(health);
 }
 
 /**

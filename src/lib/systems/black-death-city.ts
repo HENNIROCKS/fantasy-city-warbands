@@ -63,6 +63,16 @@ export const game: GameSystem = {
 		start: (fighter, faction) => starts.get(`${faction.id}/${fighter.id}`) ?? null,
 		/* The rulebook's Warband Rating, short enough for the card's figures box. */
 		values: (warband) => [{ key: 'rating', label: 'Rating', value: String(rating(warband)) }]
+	},
+	battle: {
+		waiting: false,
+		marks: [],
+		/* With 1 point of life left a fighter is bloodied: it makes a move or an
+		   action in its activation, not both (p. 11). */
+		wounded: { label: 'Bloodied', at: (life) => life - 1 },
+		/* At the end of each round, 5 or more fighters bloodied or taken down make
+		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
+		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
 	}
 };
 

@@ -204,6 +204,24 @@ export interface GameSystem {
 			/** The mark failing it sets, which also ends the question. */
 			failed: string;
 		};
+		/**
+		 * When the warband tests whether it flees at the end of a round, as Black
+		 * Death City's Flee test: asked in place of the next round, its answers lead
+		 * on or end the battle. Whether it is due is worked out rather than latched,
+		 * as the wavering is.
+		 */
+		flee?: {
+			/** `Flee test`. */
+			label: string;
+			/** Whether so many fighters out of action or `wounded` make the warband test, for its size. */
+			breaks: (down: number, size: number) => boolean;
+			/** What is rolled, as the question names it: `roll a dice`. */
+			roll: string;
+			/** The results that pass: `2+`. */
+			goOn: string;
+			/** The results on which the warband flees: `1`. */
+			end: string;
+		};
 	};
 }
 

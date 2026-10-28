@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MenuButton from '$lib/components/MenuButton.svelte';
 	import { roundEnd, type BattleState, type FighterBattleState } from '$lib/core/battle';
-	import type { BattleRounds, FactionCounter } from '$lib/core/types';
+	import type { BattleRounds, FactionCounter, GameSystem } from '$lib/core/types';
 
 	/*
 	 * The battle under the thumb, below the deck, as the Wyrdcry Warband Deck
@@ -20,6 +20,7 @@
 		counter,
 		stage = null,
 		wavering = false,
+		flee,
 		toAct = 0,
 		out = 0,
 		onwound,
@@ -66,6 +67,8 @@
 		stage?: string | null;
 		/** Whether the warband's morale is wavering. */
 		wavering?: boolean;
+		/** The game's flee test, given only while the end of this round asks it. */
+		flee?: NonNullable<GameSystem['battle']>['flee'];
 		/** How many fighters still have to act this round. */
 		toAct?: number;
 		/** How many fighters are out of action. */
@@ -240,10 +243,16 @@
 						<p>{@render standing()}</p>
 					{/if}
 					{#if battle}
-						<!-- Where the game decides on another round by a roll, the end of the
-						     round asks for it, and its answers lead on or out; after the last
-						     round there is no next. -->
-						{#if ends === 'roll' && rounds}
+						<!-- Where the warband has to test whether it flees, or the game decides
+						     on another round by a roll, the end of the round asks for it, and its
+						     answers lead on or out; after the last round there is no next. Ending
+						     the battle by hand stays beside the flee test, for a scenario won or
+						     a warband that flees of its own will. -->
+						{#if flee}
+							<p>End of round {battle.round} – {flee.label}, {flee.roll}:</p>
+							<button onclick={() => onnext?.()}>{flee.goOn}: Round {battle.round + 1}</button>
+							<button onclick={() => onend?.()}>{flee.end}: The warband flees</button>
+						{:else if ends === 'roll' && rounds}
 							<p>End of round {battle.round} – {rounds.roll}:</p>
 							<button onclick={() => onnext?.()}>{rounds.goOn}: Round {battle.round + 1}</button>
 							<button onclick={() => onend?.()}>{rounds.end}: End battle</button>
@@ -288,7 +297,8 @@
 {#snippet standing()}
 	{#if battle}
 		Round {battle.round} · {toAct} to act{#if out > 0}{' '}· {out} out{/if}{#if wavering}{' '}·
-			<span class="wavering">Wavering</span>{/if}
+			<span class="alert">Wavering</span>{/if}{#if flee}{' '}·
+			<span class="alert">{flee.label}</span>{/if}
 	{:else}
 		No battle
 	{/if}
@@ -427,10 +437,11 @@
 		stroke-linejoin: round;
 	}
 
-	/* The one state of the warband that asks something of every fighter: in the
-	   colour for what needs doing. */
-	.wavering {
+	/* The states of the warband that ask something of it – every fighter's test,
+	   the warband's flee test: in the colour for what needs doing. */
+	.alert {
 		font-weight: 600;
+		white-space: nowrap;
 		color: var(--ui-warn-text);
 	}
 

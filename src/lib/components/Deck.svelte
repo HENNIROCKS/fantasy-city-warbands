@@ -4,7 +4,7 @@
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
-	import { battleEffects, isWavering, isWounded, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
+	import { battleEffects, downCount, isWavering, isWounded, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard, FighterCardData } from '$lib/core/card';
 	import type { FactionCounter, GameSystem } from '$lib/core/types';
 	import { explanation } from '$lib/explanation';
@@ -161,9 +161,13 @@
 	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
 	const out = $derived(outOfAction(battle, fighterIds));
 	const toAct = $derived(remaining(battle, fighterIds));
-	/* A hired fighter acts with the rest but leaves the warband's morale alone. */
-	const roster = $derived(cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight }] : [])));
+	/* A hired fighter acts with the rest but leaves the warband's morale and its flee test alone. */
+	const roster = $derived(
+		cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight, health: c.health.value }] : []))
+	);
 	const wavering = $derived(rules?.wavering ? isWavering(battle, roster, rules.wavering.wavers) : false);
+	/* Whether the end of this round asks the warband's flee test. */
+	const fleeing = $derived(rules?.flee && battle ? rules.flee.breaks(downCount(battle, roster, rules.wounded), roster.length) : false);
 	const stage = $derived(counter && battle ? (reached(counter.stages, battle.counter).at(-1) ?? null) : null);
 
 	/** What the battle does to one fighter's card – its single-use pieces used after the marks – and whether the wavering warband asks it for a test. */
@@ -427,6 +431,7 @@
 			{counter}
 			stage={stage?.label ?? null}
 			{wavering}
+			flee={fleeing ? rules?.flee : undefined}
 			{toAct}
 			{out}
 			onwound={(delta) => topFighter && onwound?.(topFighter.instanceId, delta, topFighter.health.value)}
