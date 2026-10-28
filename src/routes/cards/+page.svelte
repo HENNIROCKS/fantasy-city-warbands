@@ -29,13 +29,13 @@
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
-	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
+	import { loadBattle, loadPhotos, loadSound, loadTuckBox, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { shareLink } from '$lib/share';
-	import { rememberGame } from '$lib/start-screen';
+	import { rememberGame, startScreenGone } from '$lib/start-screen';
 	import { systems, upgraded } from '$lib/systems';
 
 	/*
@@ -99,6 +99,9 @@
 		photos = new Map();
 	}
 
+	/* Whether the cards open from their box, read with the warband so it is known before they show. */
+	let tuckBox = $state(false);
+
 	$effect.pre(() => {
 		const current = id;
 		warband = null;
@@ -109,10 +112,11 @@
 		if (!current) return;
 		/* A read for an id left meanwhile comes back to nothing. */
 		let left = false;
-		Promise.all([loadWarband(current), loadBattle(current)]).then(async ([w, b]) => {
+		Promise.all([loadWarband(current), loadBattle(current), loadTuckBox()]).then(async ([w, b, box]) => {
 			if (left) return;
 			warband = w && upgraded(w);
 			battle = b;
+			tuckBox = box;
 			loadedId = current;
 			if (!w) return;
 			const found = await loadPhotos(current, w.fighters.map((f) => f.instanceId));
@@ -852,7 +856,34 @@
 	 * the start.
 	 */
 	let cameFromApp = $state(false);
-	afterNavigate(({ type }) => (cameFromApp = type !== 'enter'));
+
+	/*
+	 * The deck comes out of its box when the warband is opened from the list or
+	 * the app is opened straight onto it – not on coming back from the builder or
+	 * the settings, not into a battle, and not where motion is to be kept down
+	 * or the box is switched off; `tuckBox` is read with the warband.
+	 */
+	let boxed = $state(false);
+	let unboxed: Promise<void> = Promise.resolve();
+
+	afterNavigate(({ type, from }) => {
+		cameFromApp = type !== 'enter';
+		const box = (type === 'enter' || from?.route.id === '/') && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (box) unboxed = startScreenGone();
+		boxed = box;
+	});
+
+	const tuck = $derived.by(() => {
+		const card = cards[0];
+		if (!boxed || !tuckBox || battle || warband?.disbanded || card?.kind !== 'warband') return null;
+		return { name: card.name, line: card.subtitle, ready: unboxed };
+	});
+
+	/* Decided once the warband is read: a box held back then, as by a battle,
+	   does not come later when the battle ends. */
+	$effect(() => {
+		if (loadedId && boxed && !tuck) boxed = false;
+	});
 
 	function back(event: MouseEvent) {
 		if (!cameFromApp) return;
@@ -927,6 +958,8 @@
 				ondone={done}
 				oncancel={() => (editingId = null)}
 				{photos}
+				{tuck}
+				ontucked={() => (boxed = false)}
 			>
 				{#snippet back(card)}
 					{#if card.kind === 'warband' && warband}

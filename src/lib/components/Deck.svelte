@@ -3,6 +3,7 @@
 	import BattleBar from '$lib/components/BattleBar.svelte';
 	import Explanation from '$lib/components/Explanation.svelte';
 	import FighterCard from '$lib/components/FighterCard.svelte';
+	import TuckBox from '$lib/components/TuckBox.svelte';
 	import WarbandCard from '$lib/components/WarbandCard.svelte';
 	import { battleEffects, downCount, isWavering, isWounded, outOfAction, reached, remaining, stateOf, type BattleState } from '$lib/core/battle';
 	import type { DeckCard, FighterCardData } from '$lib/core/card';
@@ -53,7 +54,9 @@
 		onedit,
 		ondone,
 		oncancel,
-		photos
+		photos,
+		tuck = null,
+		ontucked
 	}: {
 		cards: DeckCard[];
 		columns: string[];
@@ -115,12 +118,19 @@
 		oncancel?: () => void;
 		/** The fighters' photos by instanceId, for the image field. */
 		photos?: Map<string, PhotoView>;
+		/** The box the deck comes out of, with what its front names and when it can be seen; null for none. */
+		tuck?: { name: string; line: string; ready: Promise<void> } | null;
+		/** Says the box has slid out of sight. */
+		ontucked?: () => void;
 	} = $props();
 
 	/** Duration of the fly-out; the same number drives transition and switch point. */
 	const FLY = 260;
 	/** Duration of each half of turning a card over. */
 	const TURN = 220;
+	/** How the cards settle as their box drops: a little up and larger, past their place and back.
+	    The delay counts from the box starting to drop; how long it falls, TuckBox sets. */
+	const UNBOX = { duration: 800, delay: 50, easing: 'cubic-bezier(0.25, 1.2, 0.5, 1)', fill: 'backwards' } as const;
 	/** Fraction of the width past which a released card flies out instead of springing back. */
 	const DISTANCE = 0.25;
 	/** Flick: from this speed in px/ms a short distance counts too. */
@@ -138,6 +148,8 @@
 	/** Direction the card is flying out in: -1 left, 1 right, 0 = it rests. */
 	let leaving = $state(0);
 	let reduced = $state(false);
+	/** Whether the box has started to drop, the cards rising out of it. */
+	let unboxed = $state(false);
 
 	let pointer: number | null = null;
 	let startX = 0;
@@ -213,6 +225,16 @@
 	const progress = $derived(
 		leaving ? 1 : Math.min(1, Math.abs(dx) / ((stack?.clientWidth ?? 320) * DISTANCE))
 	);
+
+	/* Out of the box: the cards rise from where `.tucked` holds them, a little
+	   lower and smaller, as from inside it. On `translate` and `scale`, which
+	   leave the swipe's `transform` and transition alone. */
+	function unbox() {
+		unboxed = true;
+		for (const el of stack?.querySelectorAll<HTMLElement>(':scope > .pane') ?? []) {
+			el.animate([{ translate: '0 12px', scale: 0.96 }, { translate: '0 0', scale: 1 }], UNBOX);
+		}
+	}
 
 	onMount(() => {
 		const query = matchMedia('(prefers-reduced-motion: reduce)');
@@ -347,8 +369,8 @@
 
 	function onKeyDown(event: KeyboardEvent) {
 		/* The open explanation keeps the keys for itself, and the arrows move the
-		   caret in a field on the back, not the deck. */
-		if (cards.length < 2 || explanation() || editing) return;
+		   caret in a field on the back, not the deck. The box holds the deck still. */
+		if (cards.length < 2 || explanation() || editing || tuck) return;
 		if (event.key === 'ArrowRight') fly(-1);
 		else if (event.key === 'ArrowLeft') fly(1);
 		else return;
@@ -359,7 +381,7 @@
 <svelte:window onkeydown={onKeyDown} />
 
 <div class="deck">
-	<div class="stack" class:dragging bind:this={stack}>
+	<div class="stack" class:dragging class:boxed={!!tuck} class:tucked={!!tuck && !unboxed} bind:this={stack}>
 		{#if beneath >= 0}
 			{#key cards[beneath].instanceId}
 				<div
@@ -421,6 +443,10 @@
 					></span>
 				{/each}
 			</div>
+		{/if}
+
+		{#if tuck}
+			<TuckBox name={tuck.name} line={tuck.line} ready={tuck.ready} onopen={unbox} ondone={() => ontucked?.()} />
 		{/if}
 	</div>
 
@@ -523,6 +549,23 @@
 		-webkit-user-select: none;
 	}
 
+	/* Holds the cards inside the stack while the box is there, whatever pose and
+	   overshoot they are given, rather than showing below it. */
+	.stack.boxed {
+		overflow: hidden;
+	}
+
+	/* The strokes come in once the box is gone, with the cards settled. */
+	.boxed > .ticks {
+		opacity: 0;
+	}
+
+	/* Inside the box until it drops: the pose `unbox` starts from. */
+	.tucked > .pane {
+		translate: 0 12px;
+		scale: 0.96;
+	}
+
 	/* The card is what scrolls here, not the page, and its scrolling stays
 	   inside it rather than dragging the page along. */
 	.pane {
@@ -578,6 +621,7 @@
 		gap: 4px;
 		z-index: 2;
 		pointer-events: none;
+		transition: opacity 200ms;
 	}
 
 	/* Ink on paper rather than one of the UI colours: the strokes lie on the
