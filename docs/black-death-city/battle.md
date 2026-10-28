@@ -5,6 +5,12 @@ The cards count the battle for you. You still roll the dice and move the models.
 **Start.** Tap **Battle → Start battle** under the warband card. Your first
 tap on a fighter starts it too.
 
+**Prepared spells.** Before the battle each wizard and priest rolls a dice on
+each lore it knows. Tap **Battle → Prepared spells** and tap what the dice
+shows; the menu says how many are still to roll. The spell stands on the
+caster's card for this battle. A roll that shows a signature spell brings
+nothing. You can change a roll until the second round.
+
 **Damage.** Under a fighter's card, **−** takes one point of life and **+**
 gives it back. With one point left the card says *Bloodied*. At none the
 fighter is out of action, and you hear a scream. You can switch the scream off

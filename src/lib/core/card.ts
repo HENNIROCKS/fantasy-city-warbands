@@ -237,14 +237,19 @@ export function heldUses(used: UsedPiece[], carried: string[], faction: Faction)
 	});
 }
 
-/** `used` are the single-use pieces the fighter used in the battle running, `next` what the warband's last exploring left for its next battle. */
+/**
+ * `used` are the single-use pieces the fighter used in the battle running and
+ * `rolled` what it rolled before it, `next` what the warband's last exploring
+ * left for its next battle.
+ */
 export function fighterCard(
 	instance: FighterInstance,
 	faction: Faction,
 	game: GameSystem,
 	picks: Record<string, string[]> = {},
 	used: UsedPiece[] = [],
-	next: NextBattle[] = []
+	next: NextBattle[] = [],
+	rolled: Record<string, number> = {}
 ): FighterCardData {
 	const fighter = faction.fighters.find((f) => f.id === instance.fighterId);
 	const type = fighter?.name ?? instance.fighterId;
@@ -408,7 +413,14 @@ export function fighterCard(
 	const lent = uses
 		.flatMap(({ piece }) => (piece.used?.rules ?? []).map((rule) => ({ rule, source: piece.name })))
 		.filter(({ rule }, i, all) => !standing.some((r) => r.name === rule.name) && all.findIndex((l) => l.rule.name === rule.name) === i);
-	const ownRules = [...standing, ...lent.map(({ rule }) => rule)];
+	/* What it rolled before the battle, unless it has that already among its picks, as a signature spell. */
+	const prepared = (fighter?.beforeBattle ?? []).flatMap((table) => {
+		const option = table.options.find((o) => o.roll === rolled[table.id]);
+		if (!option || (instance.picks ?? []).includes(option.id)) return [];
+		const rule: Rule = { name: option.name, text: option.text, ...(option.type ? { type: option.type } : {}) };
+		return [{ rule, note: `For this battle: rolled ${option.roll} on the ${table.name}.` }];
+	});
+	const ownRules = [...standing, ...lent.map(({ rule }) => rule), ...prepared.map(({ rule }) => rule)];
 	/* An injury that bars a type of ability, as Alcoholic bars reactions, leaves
 	   them on the card and says so under each. */
 	const barred = (rules: Rule[]) =>
@@ -431,6 +443,7 @@ export function fighterCard(
 			...raised.map((source) => [source, 'Already included.'] as const),
 			...included.map((r) => [r.name, 'Already included.'] as const),
 			...lent.map(({ rule, source }) => [rule.name, `For this battle: ${source}.`] as const),
+			...prepared.map(({ rule, note }) => [rule.name, note] as const),
 			...barred(ownRules)
 		])
 	);

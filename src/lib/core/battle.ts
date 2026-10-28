@@ -42,6 +42,8 @@ export interface FighterBattleState {
 	 * fighter no longer carries, or a weapon it no longer holds, is ignored on read.
 	 */
 	used: UsedPiece[];
+	/** What it rolled before the battle, by the id of the fighter's `BattleRoll`. */
+	rolled: Record<string, number>;
 }
 
 /** One single-use piece used in the battle. */
@@ -84,7 +86,7 @@ export interface BattleState extends BattleRound {
 }
 
 /** What a fighter carries before anything has happened to it. */
-export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {}, used: [] };
+export const FRESH: FighterBattleState = { activated: false, waiting: false, damage: 0, out: false, marks: {}, used: [], rolled: {} };
 
 export function start(): BattleState {
 	return { startedAt: new Date().toISOString(), round: 1, counter: 0, fighters: {}, undo: null, hired: [] };
@@ -174,6 +176,14 @@ export function toggleWaiting(battle: BattleState | null, instanceId: string): B
 export function toggleMark(battle: BattleState | null, instanceId: string, key: string): BattleState {
 	const marks = stateOf(battle, instanceId).marks;
 	return write(battle, instanceId, { marks: { ...marks, [key]: !marks[key] } });
+}
+
+/** A roll before the battle on one of the fighter's tables; the same result again takes it back. */
+export function rollFor(battle: BattleState | null, instanceId: string, table: string, roll: number): BattleState {
+	const rolled = { ...stateOf(battle, instanceId).rolled };
+	if (rolled[table] === roll) delete rolled[table];
+	else rolled[table] = roll;
+	return write(battle, instanceId, { rolled });
 }
 
 /** A single-use piece used, on the weapon it picks where it picks one. It belongs to the battle, as the next round keeps it. */

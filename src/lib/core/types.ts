@@ -204,6 +204,8 @@ export interface GameSystem {
 			/** The mark failing it sets, which also ends the question. */
 			failed: string;
 		};
+		/** What the fighters' `beforeBattle` rolls are called in the Battle menu: `Prepared spells`. */
+		rolls?: string;
 		/**
 		 * When the warband tests whether it flees at the end of a round, as Black
 		 * Death City's Flee test: asked in place of the next round, its answers lead
@@ -895,6 +897,21 @@ export interface Fighter {
 	 * so an option's id is unique across the choices.
 	 */
 	choices?: FighterChoice[];
+	/** The tables it rolls on before each battle, such as the spell lores a Black Death City caster prepares from. */
+	beforeBattle?: BattleRoll[];
+}
+
+/**
+ * A table a fighter rolls a dice on before each battle. The result belongs to
+ * the battle; one the fighter already has among its picks, as a signature
+ * spell, brings nothing.
+ */
+export interface BattleRoll {
+	id: string;
+	/** `Lore of Sanctioned Magic`. */
+	name: string;
+	/** Each a rule the fighter has for the battle, by the result that brings it. */
+	options: (Rule & { id: string; roll: number })[];
 }
 
 /** Where the rules for a faction or a hired sword can be read, linked where it is picked. */

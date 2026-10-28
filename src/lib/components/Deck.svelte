@@ -42,6 +42,8 @@
 		onunderdog,
 		onhire,
 		hireLabel = '',
+		onrolls,
+		rollsLabel = '',
 		onshow,
 		readonly = false,
 		editing = false,
@@ -91,6 +93,10 @@
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
 		hireLabel?: string;
+		/** Opens the fighters' rolls before the battle, where any has one and the battle is still being set up. */
+		onrolls?: () => void;
+		/** What the menu calls them, with how many are still to roll: `Prepared spells (2 to roll)`. */
+		rollsLabel?: string;
 		/** Opens the code that shows the opponent the warband, while no battle runs. */
 		onshow?: () => void;
 		/** Cards only to look at, as an opponent sees them: no battle bar, nothing to turn over. */
@@ -455,6 +461,8 @@
 			{onunderdog}
 			{onhire}
 			{hireLabel}
+			{onrolls}
+			{rollsLabel}
 			{onshow}
 			{ondone}
 			{oncancel}

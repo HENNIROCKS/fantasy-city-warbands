@@ -39,6 +39,8 @@
 		onunderdog,
 		onhire,
 		hireLabel = '',
+		onrolls,
+		rollsLabel = '',
 		onshow,
 		editing = false,
 		editable = true,
@@ -96,6 +98,10 @@
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
 		hireLabel?: string;
+		/** Opens the fighters' rolls before the battle; given while the battle is still being set up. */
+		onrolls?: () => void;
+		/** What the menu calls them, with how many are still to roll. */
+		rollsLabel?: string;
 		/** Opens the code that shows the opponent the warband; given while no battle runs. */
 		onshow?: () => void;
 		/** Whether the card on top is turned over to be written on. */
@@ -270,6 +276,9 @@
 					{/if}
 					{#if onhire && !closed}
 						<button onclick={() => onhire?.()}>{hireLabel}</button>
+					{/if}
+					{#if onrolls && !closed}
+						<button onclick={() => onrolls?.()}>{rollsLabel}</button>
 					{/if}
 					{#if onshow && !battle && !closed}
 						<button onclick={() => onshow?.()}>Show to opponent</button>

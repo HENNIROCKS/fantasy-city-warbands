@@ -31,6 +31,7 @@
 - [x] 🃏 Black Death City: a two-handed melee weapon beside a Held Item loses an attack on the card
 - [x] 📚 Black Death City: skills and signature spells picked on recruitment, a skill for one fighter only
 - [x] ⚔️ Black Death City: bloodied fighters on the card, and the flee test at the end of the round
+- [x] ⚔️ Black Death City: each caster's prepared spells rolled before the battle and shown on its card
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

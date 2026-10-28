@@ -20,7 +20,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { adjustCounter, allocate, hire, isWavering, nextRound, release, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
+	import { adjustCounter, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
@@ -30,7 +30,7 @@
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
-	import type { Faction, FighterInstance, Warband } from '$lib/core/types';
+	import type { Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
@@ -196,7 +196,10 @@
 		];
 		return [
 			{ ...own, roster, reminders },
-			...w.fighters.map((f) => fighterCard(f, faction, system.game, w.picks, stateOf(battle, f.instanceId).used, w.next)),
+			...w.fighters.map((f) => {
+				const state = stateOf(battle, f.instanceId);
+				return fighterCard(f, faction, system.game, w.picks, state.used, w.next, state.rolled);
+			}),
 			...hired
 		];
 	});
@@ -755,6 +758,40 @@
 		if (next !== battle) setBattle(next);
 	}
 
+	/* The tables fighters roll on before the battle, as Black Death City's casters
+	   prepare their spells: asked in one sheet while the battle is being set up,
+	   for every fighter that takes part. */
+	let rollsOpen = $state(false);
+	const rollers = $derived.by(() => {
+		if (!warband || !faction) return [];
+		return warband.fighters.flatMap((f) => {
+			const fighter = faction!.fighters.find((t) => t.id === f.fighterId);
+			if (f.away || !fighter?.beforeBattle?.length) return [];
+			return [{ instance: f, fighter, tables: fighter.beforeBattle }];
+		});
+	});
+	const rollsOwed = $derived(rollers.reduce((sum, r) => sum + r.tables.filter((t) => stateOf(battle, r.instance.instanceId).rolled[t.id] === undefined).length, 0));
+	const rollsLabel = $derived(`${system?.game.battle?.rolls ?? ''}${rollsOwed ? ` (${rollsOwed} to roll)` : ''}`);
+
+	function openRolls() {
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+		rollsOpen = true;
+	}
+
+	async function closeRolls() {
+		rollsOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
+	/** What a result the fighter already picked is, as its choice names it: `signature spell`; null for any other. */
+	function pickedAs(instance: FighterInstance, fighter: Fighter, id: string): string | null {
+		if (!(instance.picks ?? []).includes(id)) return null;
+		return fighter.choices?.find((c) => c.options.some((o) => o.id === id))?.noun?.one ?? 'pick';
+	}
+
 	/* The code an opponent scans to see the warband's cards, with the link it
 	   holds; `copied` and `failed` say what handing the link on came to. Without
 	   a code – a browser that cannot pack the warband, a link too long for one –
@@ -877,6 +914,8 @@
 				onunderdog={system.game.underdog && settingUp(battle) ? openUnderdog : undefined}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
 				hireLabel={hiring?.label ?? ''}
+				onrolls={rollers.length && system.game.battle?.rolls && settingUp(battle) ? openRolls : undefined}
+				{rollsLabel}
 				onshow={openShow}
 				editing={editingId !== null}
 				doneDisabled={backBlocked}
@@ -972,6 +1011,41 @@
 			{/if}
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeUnderdog}>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if rollsOpen && system?.game.battle?.rolls}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="rolls-title">
+			<h2 id="rolls-title">{system.game.battle.rolls}</h2>
+			<p class="count">Roll a dice for each and tap what it shows.</p>
+			<div class="max-h-[60dvh] overflow-y-auto">
+				{#each rollers as { instance, fighter, tables } (instance.instanceId)}
+					{#each tables as table (table.id)}
+						{@const rolled = stateOf(battle, instance.instanceId).rolled[table.id]}
+						<p class="field-label" id="roll-{instance.instanceId}-{table.id}">
+							{instance.name.trim() ? `${instance.name}, ${fighter.name}` : fighter.name} · {table.name}
+						</p>
+						<div class="mb-4 space-y-1.5" role="group" aria-labelledby="roll-{instance.instanceId}-{table.id}">
+							{#each table.options as option (option.id)}
+								{@const known = pickedAs(instance, fighter, option.id)}
+								<button
+									type="button"
+									class="choice"
+									aria-pressed={rolled === option.roll}
+									onclick={() => setBattle(rollFor(battle, instance.instanceId, table.id, option.roll))}
+								>
+									<span class="inline-block w-6 font-semibold">{option.roll}</span>{option.name}{#if known}<span class="text-zinc-400">{' '}· {known}, no effect</span>{/if}
+								</button>
+							{/each}
+						</div>
+					{/each}
+				{/each}
+			</div>
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeRolls} use:focusOnMount>Done</button>
 			</div>
 		</div>
 	</div>

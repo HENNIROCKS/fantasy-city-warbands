@@ -57,6 +57,7 @@
 		"keywords": ["leader", "mercenary", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-spellcraft"],
+		"prepares": ["sanctioned-magic"],
 		"wargear_lists": ["wizard"],
 		"gear": [],
 		"choices": [
@@ -73,6 +74,7 @@
 		"keywords": ["champion", "mercenary", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["guild-magic"],
+		"prepares": ["sanctioned-magic"],
 		"wargear_lists": ["wizard"],
 		"gear": [],
 		"choices": [
@@ -89,6 +91,7 @@
 		"keywords": ["champion", "mercenary", "human", "priest"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["holy-magic"],
+		"prepares": ["the-saints"],
 		"wargear_lists": ["cleric"],
 		"gear": [],
 		"choices": [
