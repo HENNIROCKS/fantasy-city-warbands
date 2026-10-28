@@ -14,30 +14,14 @@
 - [x] 🛠️ Keep a warband up to date: come back to any step, duplicate or remove a fighter, star a favourite, delete after a question, recruit and dismiss between battles
 - [x] 📚 Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book and the six official factions, with the author's answers; where the app reads the rules its own way, in DEVIATIONS.md
 - [x] 📚 Wyrdcry homebrew: Clan Pestilens, the Greenskin Marauders and six hired swords
-- [x] 📚 Black Death City Playtest v1.03: the four factions with their wargear, Origins and carrying limits, older saved warbands carried over
-- [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos, fluff and notes on the back, derived values explained when tapped, pictures for hired swords
-- [x] ⚔️ Track a battle on the cards: damage, states, rounds with undo, Wyrdcry's morale, poison, wounds, the fifth round and single-use items
-- [x] 📈 Wyrdcry's campaign: the aftermath with renown, favour, income and the battle history, injuries, renown spent on characteristics and heroic talents, a new leader, Underdogs
+- [x] 📚 Black Death City Playtest v1.03: the four factions with their wargear, Origins and carrying limits, starting experience and the warband rating, special rules, skills and signature spells, the Misbegotten's mutations, the six scenarios with their twists; older saved warbands carried over
+- [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos, fluff and notes on the back, derived values explained when tapped, pictures for hired swords; Black Death City's armour, shields, Heavy Plating and a Held Item beside a two-handed weapon counted into the figures
+- [x] ⚔️ Track a battle on the cards: damage, states, rounds with undo, the result into the battle history or Cancel battle; Wyrdcry's morale, poison, wounds, the fifth round and single-use items; Black Death City's bloodied fighters, flee test, prepared spells, underdog, scenario, twist and both warbands' points
+- [x] 📈 Wyrdcry's campaign: the aftermath with renown, favour, income and the battle history, injuries, renown spent on characteristics and heroic talents, a new leader, Underdogs, the loot tables, magic items and Explore District
 - [x] 📈 Wyrdcry between battles: the stash, the Trading Post with its rarity roll, hired swords for one battle, corrections by hand
-- [x] 📄 Files: export and import as JSON, from the Warband Deck and the Warband Builder too, the roster as a PDF, a read-only link as a QR code for the opponent
-- [x] 🎨 The interface: light and dark mode in the Card Creator's design, the app icon, an about page, guides under the gear, the update bar, a ring per game for how much of it the app carries
+- [x] 📄 Files: export and import as JSON, from the Warband Deck and the Warband Builder too, the roster as a PDF with Black Death City's sheet's fields, a read-only link as a QR code for the opponent
+- [x] 🎨 The interface: light and dark mode in the Card Creator's design, the app icon, an about page, guides under the gear, the update bar, a ring per game for how much of it the app carries, a start screen after Urs Graf and the tuck box
 - [x] ⚙️ Under the hood: deploy to GitHub Pages, storage in IndexedDB, offline once opened, a new version offered as soon as it is deployed
-- [x] 📈 Wyrdcry: the loot tables and the magic items, unique in the campaign and counted into the reputation
-- [x] 📈 Wyrdcry: Explore District after a battle – the search party, its exploration rolls, the encounters and Scout
-- [x] 🛠️ Black Death City: starting experience asked on recruitment, and the warband rating
-- [x] 📚 Black Death City: the fighters' special rules as text
-- [x] 🃏 Black Death City's armour, shields and Heavy Plating counted into the card's figures, and every rule or piece of wargear counted in says so
-- [x] 📚 Black Death City: the Misbegotten's bloodline mutations and their cost
-- [x] 🃏 Black Death City: a two-handed melee weapon beside a Held Item loses an attack on the card
-- [x] 📚 Black Death City: skills and signature spells picked on recruitment, a skill for one fighter only
-- [x] ⚔️ Black Death City: bloodied fighters on the card, and the flee test at the end of the round
-- [x] ⚔️ Black Death City: each caster's prepared spells rolled before the battle and shown on its card
-- [x] 📄 Black Death City's roster with its sheet's fields: Crit, weapon traits, Black Rot, holdings
-- [x] 🎨 A start screen with an etching after Urs Graf, in red
-- [x] 🎨 The deck comes out of a tuck box in the warband's colour, opened with a tap
-- [x] ⚔️ Every game asks for the result as a battle ends and adds it to the battle history; Cancel battle in every game
-- [x] ⚔️ Black Death City: the underdog, the scenario and its twist before the battle, their rules a tap away on the warband card
-- [x] ⚔️ Black Death City: both warbands' points where the scenario is won on points, and the round that ends the battle by them
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
