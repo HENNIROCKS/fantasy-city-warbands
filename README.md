@@ -18,8 +18,9 @@ version. In Wyrdcry, ending a battle brings renown, favour and income, rolls
 injuries and loot and adds it to the warband's history, and renown is spent on a
 characteristic and a heroic talent. It imports the Warband Deck's and the
 Warband Builder's files. In Black Death City it asks for each recruit's
-starting experience roll and counts the warband rating; it does not yet know
-that game's campaign.
+starting experience roll and counts the warband rating, and ending a battle
+adds its result to the warband's history; it does not yet know that game's
+campaign.
 
 ## What it does
 
@@ -90,7 +91,8 @@ that game's campaign.
   and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, in
   Black Death City bloodied fighters, the flee test and the prepared spells, and
-  in Wyrdcry morale, Zeal and the single-use items ticked off – see [The battle in Black Death City](docs/black-death-city/battle.md)
+  in Wyrdcry morale, Zeal and the single-use items ticked off; end it with its
+  result in the battle history, or cancel it – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is

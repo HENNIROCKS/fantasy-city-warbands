@@ -30,7 +30,9 @@ warband flees and ends the battle. To flee of your own will, or when the
 scenario is won, tap **End battle**.
 
 **Stopping.** The battle stays on your phone, even if you close the app.
-**End battle** drops it after asking, and nothing in the warband changes.
+**End battle** asks for the result – win, draw or loss – and adds it to the
+warband's battle history, with your opponent if you like. **Cancel battle**
+drops the battle, and nothing in the warband changes.
 
 While a battle runs, no equipment moves on the backs of the cards.
 

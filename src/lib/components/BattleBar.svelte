@@ -83,9 +83,9 @@
 		onstart?: () => void;
 		onnext?: () => void;
 		onundo?: () => void;
-		/** Ends the battle: asks the aftermath where the game has one, else whether to drop it. */
+		/** Ends the battle: asks the aftermath where the game has one, else the result alone. */
 		onend?: () => void;
-		/** Drops the battle without its aftermath, after asking. Only where the game has an aftermath. */
+		/** Drops the battle after asking, without a result or an aftermath. */
 		oncancelbattle?: () => void;
 		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
 		levelsOpen?: number;
