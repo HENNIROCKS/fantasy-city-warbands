@@ -9,6 +9,7 @@
 		"keywords": ["leader", "verminkin", "priest"],
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-plague-magic"],
+		"prepares": ["poxes"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [
@@ -73,6 +74,7 @@
 		"keywords": ["champion", "verminkin", "wizard"],
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
 		"abilities": ["spellcaster"],
+		"prepares": ["the-under-tunnels"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [
@@ -89,6 +91,7 @@
 		"keywords": ["champion", "verminkin", "priest"],
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 4 },
 		"abilities": ["holy-magic"],
+		"prepares": ["poxes"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [

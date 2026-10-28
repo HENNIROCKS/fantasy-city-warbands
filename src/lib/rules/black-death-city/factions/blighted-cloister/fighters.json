@@ -25,6 +25,7 @@
 		"keywords": ["leader", "cloister", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 6 },
 		"abilities": ["master-of-dark-spellcraft"],
+		"prepares": ["blessed-maggots"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": [],
 		"choices": [
@@ -41,6 +42,7 @@
 		"keywords": ["champion", "cloister", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 5 },
 		"abilities": ["dark-spellcraft"],
+		"prepares": ["blessed-maggots"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": [],
 		"choices": [
@@ -73,6 +75,7 @@
 		"keywords": ["champion", "cloister", "beastman", "wizard"],
 		"profile": { "move": 6, "blade": 4, "bow": 6, "armour": 6, "initiative": 4, "willpower": 4, "life": 5 },
 		"abilities": ["darkcloven-magic", "ram-horns"],
+		"prepares": ["blessed-maggots", "rot"],
 		"wargear_lists": ["practitioner", "practitioner-items"],
 		"gear": []
 	},
@@ -86,6 +89,7 @@
 		"keywords": ["champion", "cloister", "demon", "wizard"],
 		"profile": { "move": 4, "blade": 3, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 6 },
 		"abilities": ["demonic-spellcraft", "demonic-wards", "fear"],
+		"prepares": ["rot"],
 		"wargear_lists": ["practitioner-items"],
 		"gear": ["demonic-rot-blade"],
 		"choices": [

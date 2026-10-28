@@ -89,8 +89,8 @@ that game's campaign.
 - Keep Wyrdcry's magic items: one to a fighter, never sold, 5 reputation each,
   and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, in
-  Black Death City bloodied fighters and the flee test, and in Wyrdcry morale,
-  Zeal and the single-use items ticked off – see [The battle in Black Death City](docs/black-death-city/battle.md)
+  Black Death City bloodied fighters, the flee test and the prepared spells, and
+  in Wyrdcry morale, Zeal and the single-use items ticked off – see [The battle in Black Death City](docs/black-death-city/battle.md)
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is

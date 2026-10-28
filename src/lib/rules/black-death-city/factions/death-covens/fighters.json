@@ -9,6 +9,7 @@
 		"keywords": ["leader", "undead", "wizard", "vampyre", "aristocrat"],
 		"profile": { "move": 5, "blade": 3, "bow": 5, "armour": 6, "initiative": 5, "willpower": 4, "life": 6 },
 		"abilities": ["noble-blood", "spellcraft-blood"],
+		"prepares": ["blood"],
 		"wargear_lists": ["main", "champion"],
 		"gear": [],
 		"choices": [
@@ -26,6 +27,7 @@
 		"keywords": ["leader", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 5, "life": 5 },
 		"abilities": ["master-of-necromancy"],
+		"prepares": ["necromancy"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [
@@ -74,6 +76,7 @@
 		"keywords": ["champion", "human", "wizard"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 4, "life": 4 },
 		"abilities": ["spellcraft-necromancy"],
+		"prepares": ["necromancy"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [
@@ -106,6 +109,7 @@
 		"keywords": ["champion", "undead", "wizard", "vampyre", "aristocrat"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 5, "willpower": 4, "life": 4 },
 		"abilities": ["blood-magic"],
+		"prepares": ["blood"],
 		"wargear_lists": ["practitioner"],
 		"gear": [],
 		"choices": [

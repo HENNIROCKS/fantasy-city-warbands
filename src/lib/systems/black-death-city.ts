@@ -5,7 +5,7 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
+import type { BattleRoll, Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
@@ -70,6 +70,8 @@ export const game: GameSystem = {
 		/* With 1 point of life left a fighter is bloodied: it makes a move or an
 		   action in its activation, not both (p. 11). */
 		wounded: { label: 'Bloodied', at: (life) => life - 1 },
+		/* Before the battle each caster prepares a spell from each lore it knows (p. 34). */
+		rolls: 'Prepared spells',
 		/* At the end of each round, 5 or more fighters bloodied or taken down make
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
@@ -105,6 +107,8 @@ interface RawFighter {
 	gear: string[];
 	/** What it picks on recruitment, one entry per ability that lets it pick. */
 	choices?: RawChoice[];
+	/** The ids of the spell lores it prepares a spell from before each battle. */
+	prepares?: string[];
 }
 
 /**
@@ -345,6 +349,12 @@ function build(
 		if (lost.length) throw new Error(`${where}: given ${lost.join(', ')} is not among its options`);
 		return choices;
 	};
+	/* Before each battle a caster prepares a random spell from each lore it knows (p. 34). */
+	const preparesOf = (f: RawFighter): BattleRoll[] =>
+		(f.prepares ?? []).map((id) => {
+			const known = lore.get(id) ?? fail(`Black Death City ${meta.id}/${f.id}: no spell lore ${id} to prepare from`);
+			return { id: known.id, name: known.name, options: known.spells };
+		});
 	for (const f of fighters) starts.set(`${meta.id}/${f.id}`, startOf(f.starting_experience, `${meta.id}/${f.id}`));
 	return {
 		id: meta.id,
@@ -380,7 +390,8 @@ function build(
 			...(f.description ? { fluff: f.description } : {}),
 			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
 			gear: f.gear,
-			...(f.choices?.length ? { choices: choicesOf(f) } : {})
+			...(f.choices?.length ? { choices: choicesOf(f) } : {}),
+			...(f.prepares?.length ? { beforeBattle: preparesOf(f) } : {})
 		})),
 		/* What only the carrying rules read stays out of the shared form; Rare
 		   is a limit every game may have, so it goes in. */
