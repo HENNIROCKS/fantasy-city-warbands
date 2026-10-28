@@ -153,6 +153,7 @@
 	let reduced = $state(false);
 	/** Whether the box has started to drop, the cards rising out of it. */
 	let unboxed = $state(false);
+	let box: TuckBox | undefined = $state();
 
 	let pointer: number | null = null;
 	let startX = 0;
@@ -370,6 +371,15 @@
 		if (index >= 0) current = index;
 	}
 
+	/* While the box waits, a tap on the bar opens it instead of acting on cards
+	   out of sight – turning one over or starting a battle behind the box. */
+	function onBoxedClick(event: MouseEvent) {
+		if (!tuck || unboxed) return;
+		event.preventDefault();
+		event.stopPropagation();
+		box?.unbox();
+	}
+
 	function onKeyDown(event: KeyboardEvent) {
 		/* The open explanation keeps the keys for itself, and the arrows move the
 		   caret in a field on the back, not the deck. The box holds the deck still. */
@@ -383,7 +393,7 @@
 
 <svelte:window onkeydown={onKeyDown} />
 
-<div class="deck">
+<div class="deck" onclickcapture={onBoxedClick}>
 	<div class="stack" class:dragging class:boxed={!!tuck} class:tucked={!!tuck && !unboxed} bind:this={stack}>
 		{#if beneath >= 0}
 			{#key cards[beneath].instanceId}
@@ -449,7 +459,7 @@
 		{/if}
 
 		{#if tuck}
-			<TuckBox name={tuck.name} line={tuck.line} logo={tuck.logo} ready={tuck.ready} onopen={unbox} ondone={() => ontucked?.()} />
+			<TuckBox bind:this={box} name={tuck.name} line={tuck.line} logo={tuck.logo} ready={tuck.ready} onopen={unbox} ondone={() => ontucked?.()} />
 		{/if}
 	</div>
 
