@@ -6,6 +6,7 @@
 			"roll": 1,
 			"name": "A Deadly Encounter",
 			"page": 37,
+			"score": { "label": "Victory points", "ends": 8 },
 			"intro": "Two rival warbands meet in the shadow-cast ruins of the city. With neither willing to back down, a bloody battle quickly ensues.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with clusters of ruined buildings and narrow winding streets between them." },
@@ -55,6 +56,7 @@
 			"roll": 3,
 			"name": "No Quarter",
 			"page": 41,
+			"score": { "label": "Domination marks", "ends": 10 },
 			"intro": "In a battle for dominance, two rival warbands show no mercy as they attempt to drive the other from an important district in the city.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with 2 streets that run down the central lines of the battlefield converging at a crossroads in the centre. Clusters of ruined buildings are set up in each of the quadrants." },
@@ -79,6 +81,7 @@
 			"roll": 4,
 			"name": "The Chapel",
 			"page": 43,
+			"score": { "label": "Death marks", "ends": 8 },
 			"intro": "Here lies once hallowed ground. A chapel dedicated to one of the city’s many saints. Now destroyed and its roof caved in. It may have been stripped of all its treasures long ago, but the only way to find out is to first venture inside.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a **chapel** at the centre. The chapel is an area 12\" by 16\", and can be denoted with four corner ruins or other suitable terrain features.\nOutside the chapel should consist of narrow streets and ruined buildings." },

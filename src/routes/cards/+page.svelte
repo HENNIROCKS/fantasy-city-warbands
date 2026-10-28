@@ -21,10 +21,10 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
-	import { adjustCounter, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
+	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
-	import { scenarioOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
+	import { scenarioOf, scoreOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
 	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
@@ -790,6 +790,21 @@
 		if (next !== battle) setBattle(next);
 	}
 
+	/* The points both warbands score to the scenario, counted in a sheet from the readout under the warband card. */
+	const score = $derived(system ? scoreOf(system.game, battle) : null);
+	let scoreOpen = $state(false);
+
+	function openScore() {
+		opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		scoreOpen = true;
+	}
+
+	async function closeScore() {
+		scoreOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
 	/* The tables fighters roll on before the battle, as Black Death City's casters
 	   prepare their spells: asked in one sheet while the battle is being set up,
 	   for every fighter that takes part. */
@@ -973,6 +988,8 @@
 				onlevels={() => (spending = true)}
 				onunderdog={(system.game.underdog || system.game.scenarios) && settingUp(battle) ? openUnderdog : undefined}
 				underdogLabel={system.game.scenarios ? 'Before the battle' : 'Underdog'}
+				{score}
+				onscore={openScore}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
 				hireLabel={hiring?.label ?? ''}
 				onrolls={rollers.length && system.game.battle?.rolls && settingUp(battle) ? openRolls : undefined}
@@ -1123,6 +1140,39 @@
 			</div>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeUnderdog}>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if scoreOpen && score && battle}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="score-title">
+			<h2 id="score-title">{score.label}</h2>
+			<p class="count">{score.ends} or more at the end of a round ends the battle, unless tied</p>
+			{#each [{ side: 'us', label: 'You' }, { side: 'them', label: 'Your opponent' }] as const as row (row.side)}
+				<section class="mb-3">
+					<p class="field-label" id="score-{row.side}">{row.label}</p>
+					<div class="tally-row" role="group" aria-labelledby="score-{row.side}">
+						<button
+							type="button"
+							class="tally-step"
+							aria-label="Less {score.label.toLowerCase()} for {row.label.toLowerCase()}"
+							disabled={score[row.side] <= 0}
+							onclick={() => setBattle(adjustScore(battle, row.side, -1))}>−</button
+						>
+						<output class="tally-count">{score[row.side]}</output>
+						<button type="button" class="tally-step" aria-label="More {score.label.toLowerCase()} for {row.label.toLowerCase()}" onclick={() => setBattle(adjustScore(battle, row.side, 1))}
+							>+</button
+						>
+					</div>
+				</section>
+			{/each}
+			{#if score.over}
+				<p class="notice">The battle ends at the end of this round.</p>
+			{/if}
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeScore}>Done</button>
 			</div>
 		</div>
 	</div>

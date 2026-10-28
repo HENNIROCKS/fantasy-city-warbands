@@ -300,11 +300,23 @@ export interface Scenario {
 	name: string;
 	/** The page it is printed on, for questions about it. */
 	page: number;
+	/** What both warbands score towards, where the scenario is won on points. Without it, nothing is counted. */
+	score?: ScenarioScore;
 	intro: string;
 	sections: ScenarioSection[];
 	/** What its twist is rolled with: `d6`, `d3`. */
 	twistRoll: string;
 	twists: Twist[];
+}
+
+/**
+ * Points both warbands score through the battle: at the end of a round, a
+ * warband with `ends` or more ends it, unless the score is tied.
+ */
+export interface ScenarioScore {
+	/** `Victory points`, `Domination marks`. */
+	label: string;
+	ends: number;
 }
 
 export interface ScenarioSection {
