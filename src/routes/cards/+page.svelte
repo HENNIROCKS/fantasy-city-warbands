@@ -5,6 +5,7 @@
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
+	import BattleEndSheet from '$lib/components/BattleEndSheet.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 	import CardBack, {
 		type BackCampaign,
@@ -25,7 +26,7 @@
 	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
-	import { today } from '$lib/core/history';
+	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
@@ -579,33 +580,50 @@
 		}
 	}
 
-	/* Dropping a battle loses it for good, so it is asked in a sheet first, with
-	   the focus on the answer that keeps playing: ending it where the game has
-	   no aftermath, cancelling it where it does. Closed again, the focus goes
-	   back to where it came from – for an entry of a menu, the button that
-	   opened the menu, since the entry is gone with it. The page behind the
-	   sheet is inert meanwhile, which drops the focus it held. */
-	let asking = $state<'end' | 'cancel' | null>(null);
+	/* Cancelling a battle loses it for good, so it is asked in a sheet first,
+	   and ending one where the game has no aftermath asks the result in a sheet;
+	   either opens with the focus on the answer that keeps playing. Closed
+	   again, the focus goes back to where it came from – for an entry of a
+	   menu, the button that opened the menu, since the entry is gone with it.
+	   The page behind the sheet is inert meanwhile, which drops the focus it
+	   held. */
+	let asking = $state(false);
+	let ending = $state<BattleEnd | null>(null);
 	let opener: HTMLElement | null = null;
 	/* How many were out when it was asked, as the bar counted them. */
 	let askedOut = $state(0);
 
-	function ask(what: 'end' | 'cancel', out: number) {
+	function holdFocus(out: number) {
 		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		const menu = active?.closest('[popover]');
 		opener = menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
 		askedOut = out;
-		asking = what;
+	}
+
+	function askCancel(out: number) {
+		holdFocus(out);
+		asking = true;
 	}
 
 	async function keepPlaying() {
-		asking = null;
+		asking = false;
+		ending = null;
 		await tick();
 		opener?.focus();
 	}
 
 	function dropBattle() {
-		asking = null;
+		asking = false;
+		setBattle(null);
+	}
+
+	/* The warband first, as the aftermath writes it: only once it is stored does the battle go. */
+	async function applyBattleEnd() {
+		if (!warband || !ending) return;
+		const updated = recordBattle($state.snapshot(warband) as Warband, $state.snapshot(ending));
+		if (!(await saveWarband(updated))) return;
+		warband = updated;
+		ending = null;
 		setBattle(null);
 	}
 
@@ -615,7 +633,12 @@
 
 	function endBattle(out: number) {
 		const rules = system?.game.aftermath;
-		if (!rules || !warband) return ask('end', out);
+		if (!warband) return;
+		if (!rules) {
+			holdFocus(out);
+			ending = startBattleEnd(battle, warband.history ?? []);
+			return;
+		}
 		const fighters = cards.flatMap((c) =>
 			c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, name: c.name, keywordIds: c.keywordIds, away: c.away !== null }] : []
 		);
@@ -899,13 +922,13 @@
 		if (event.key !== 'Escape') return;
 		if (dismissing) keepFighter();
 		else if (hiringOpen) closeHiring();
-		else if (asking) keepPlaying();
+		else if (asking || ending) keepPlaying();
 		else if (spending) spending = false;
 		else if (showing) closeShow();
 	}}
 />
 
-<div class="flex h-dvh flex-col" inert={asking !== null || dismissing !== null || hiringOpen || aftermath !== null || (spending && levels.length > 0) || showing !== null}>
+<div class="flex h-dvh flex-col" inert={asking || ending !== null || dismissing !== null || hiringOpen || aftermath !== null || (spending && levels.length > 0) || showing !== null}>
 	<PageHeader {title} back={resolve('/')} onback={back} />
 
 	{#if id && loadedId !== id}
@@ -939,7 +962,7 @@
 				onnext={() => battle && setBattle(nextRound(battle, roundMarks, wavers()))}
 				onundo={() => battle && setBattle(undoRound(battle))}
 				onend={endBattle}
-				oncancelbattle={system.game.aftermath && ((out) => ask('cancel', out))}
+				oncancelbattle={askCancel}
 				levelsOpen={levels.length}
 				levelLabel={system.game.advancement?.label ?? ''}
 				healthLabel={system.game.stats.find((s) => s.key === system.game.health)?.label ?? ''}
@@ -1206,20 +1229,21 @@
 	</div>
 {/if}
 
+{#if ending && battle}
+	<BattleEndSheet round={battle.round} out={askedOut} bind:end={ending} onapply={applyBattleEnd} onclose={keepPlaying} />
+{/if}
+
 {#if asking && battle}
-	{@const verb = asking === 'end' ? 'End' : 'Cancel'}
 	<div class="sheet-backdrop">
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="drop-title">
-			<h2 id="drop-title">{verb} the battle?</h2>
+			<h2 id="drop-title">Cancel the battle?</h2>
 			<p class="count">Round {battle.round}{#if askedOut > 0}{' '}· {askedOut} out of action{/if}</p>
 			<p class="notice">
-				Wounds, activations and who is out of action are dropped{asking === 'cancel'
-					? ', and nobody rolls for renown'
-					: ''}. The warband itself does not change.
+				Wounds, activations and who is out of action are dropped, and nothing goes into the battle history. The warband itself does not change.
 			</p>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={keepPlaying} use:focusOnMount>Keep playing</button>
-				<button type="button" class="btn danger" onclick={dropBattle}>{verb} battle</button>
+				<button type="button" class="btn danger" onclick={dropBattle}>Cancel battle</button>
 			</div>
 		</div>
 	</div>

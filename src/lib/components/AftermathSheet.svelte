@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BattleResult from '$lib/components/BattleResult.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 	import {
 		battleAt,
@@ -45,10 +46,9 @@
 		type FighterFind
 	} from '$lib/core/explore';
 	import { activeEffects, recruitCost } from '$lib/core/effects';
-	import { RESULT_LABELS, displayDate, opponent } from '$lib/core/history';
 	import { newExcess, validate } from '$lib/core/validate';
 	import { withFighter } from '$lib/core/warband';
-	import type { Aftermath, BattleRecord, Encounter, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
+	import type { Aftermath, Encounter, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
 
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
@@ -154,10 +154,6 @@
 	const roller = $derived([...rolling, ...exploreRolling].find((r) => r.page === current) ?? null);
 
 	const step = (by: number) => (page = pages[Math.min(pages.length - 1, Math.max(0, at + by))]);
-
-	function pick(result: BattleRecord['result']) {
-		draft.result = draft.result === result ? null : result;
-	}
 
 	/* A tap picks the result; a tap on the picked one takes it back, and with it what was answered after it. */
 	function roll(key: string, id: string) {
@@ -421,35 +417,14 @@
 				<h2 class="name" id="aftermath-title">End the battle</h2>
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
-					<section>
-						<h3 class="heading"><span id="aftermath-result">Result</span><span class="rule"></span></h3>
-						<div class="results" role="group" aria-labelledby="aftermath-result">
-							{#each Object.entries(RESULT_LABELS) as [key, label] (key)}
-								<button class="segment" aria-pressed={draft.result === key} onclick={() => pick(key as BattleRecord['result'])}>{label}</button>
-							{/each}
-						</div>
+					<BattleResult bind:end={draft}>
 						{#if draft.underdog}
 							<p class="hint">
 								Underdog, {draft.underdog.behind} behind: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}{#if draft.underdog.picked.length}{' '}·
 									{draft.underdog.picked.map((b) => b.name).join(', ')}{/if}.
 							</p>
 						{/if}
-					</section>
-
-					<section>
-						<h3 class="heading"><span>Battle history</span><span class="rule"></span></h3>
-						<button class="switch-row" role="switch" aria-checked={draft.record} disabled={!draft.result} onclick={() => (draft.record = !draft.record)}>
-							Add to the battle history<span class="track" aria-hidden="true"></span>
-						</button>
-						{#if draft.recorded}
-							{@const r = draft.recorded}
-							<p class="note">Already in the history: {displayDate(r.date)} {opponent(r)} – {RESULT_LABELS[r.result]}</p>
-						{/if}
-						{#if draft.result && draft.record}
-							<input class="field" type="text" placeholder="Opponent's warband" aria-label="Opponent's warband" autocomplete="off" bind:value={draft.opponentWarband} />
-							<input class="field" type="text" placeholder="Opponent's name" aria-label="Opponent's name" autocomplete="off" bind:value={draft.opponentPlayer} />
-						{/if}
-					</section>
+					</BattleResult>
 				</div>
 			</div>
 
@@ -946,7 +921,7 @@
 </div>
 
 <style>
-	/* The result as one pill of three across the card, as on the back of the warband card; a roll's outcome likewise. */
+	/* A roll's outcome as one pill across the card, as the result is (`BattleResult`). */
 	.results .segment {
 		flex: 1;
 	}

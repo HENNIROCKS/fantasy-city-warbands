@@ -35,6 +35,7 @@
 - [x] 📄 Black Death City's roster with its sheet's fields: Crit, weapon traits, Black Rot, holdings
 - [x] 🎨 A start screen with an etching after Urs Graf, in red
 - [x] 🎨 The deck comes out of a tuck box in the warband's colour as it is opened
+- [x] ⚔️ Every game asks for the result as a battle ends and adds it to the battle history; Cancel battle in every game
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

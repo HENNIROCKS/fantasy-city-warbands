@@ -82,7 +82,7 @@
 		onundo?: () => void;
 		/** Asks to end the battle, with how many fighters are out of action. */
 		onend?: (out: number) => void;
-		/** Drops the battle without its aftermath; only where the game has one. */
+		/** Asks to drop the battle without a result or an aftermath, with how many fighters are out of action. */
 		oncancelbattle?: (out: number) => void;
 		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
 		levelsOpen?: number;

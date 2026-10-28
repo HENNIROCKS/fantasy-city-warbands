@@ -2,7 +2,7 @@
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
  * then the injuries of who was taken out of action, then the roll each fighter
  * makes for a level, then what a search party finds (`explore.ts`) and the
- * income, then the line in the battle history – answered in the aftermath's
+ * income, then the line in the battle history (`history.ts`) – answered in the aftermath's
  * sheet and written into the warband in one go. What each answer is worth is
  * the game's (`GameSystem.aftermath`, `GameSystem.injuries`); what an injury
  * does once – a death, a surgeon, a missed battle, a robbery, a capture – is
@@ -13,12 +13,12 @@ import { stateOf, type BattleState } from './battle';
 import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
 import { encountersOf, findsOf, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type FighterFind, type Finds } from './explore';
-import { today } from './history';
+import { battleRecord, startBattleEnd, type BattleEnd } from './history';
 import { canLead, disbandedAfter, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { standingRaised, type UnderdogState } from './underdog';
-import { newId, profileOf, withFighter } from './warband';
+import { profileOf, withFighter } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
@@ -38,7 +38,7 @@ export interface AftermathRow {
 	levels: number;
 }
 
-export interface AftermathDraft {
+export interface AftermathDraft extends BattleEnd {
 	rows: AftermathRow[];
 	/**
 	 * Who the battle left out of action, by instance id. The injury rolls and
@@ -67,20 +67,10 @@ export interface AftermathDraft {
 	marked: string[];
 	/** Who takes the lead where the leader dies, by instance id; null while none is picked. */
 	successor: string | null;
-	result: BattleRecord['result'] | null;
 	/** Wyrdstone shards delivered. */
 	shards: number;
 	/** Who went to explore, the encounters they ran into and what they found, where the game sends a search party out. */
 	explore: ExploreAnswer;
-	/** Whether the battle goes into the history. */
-	record: boolean;
-	opponentWarband: string;
-	opponentPlayer: string;
-	/**
-	 * A line already in the history from the day the battle started on, which
-	 * is likely this battle entered by hand. Its presence starts `record` off.
-	 */
-	recorded: BattleRecord | null;
 }
 
 /** A fighter as the aftermath needs it: its name, and the keywords it carries, as the rules write them. */
@@ -107,9 +97,8 @@ export function startAftermath(
 	underdog: UnderdogState | null = null
 ): AftermathDraft {
 	const earns = (f: AftermathFighter) => !f.keywordIds.some((k) => rules.excluded.includes(k));
-	const since = today(battle ? new Date(battle.startedAt) : undefined);
-	const recorded = history.filter((r) => r.date >= since).at(-1) ?? null;
 	return {
+		...startBattleEnd(battle, history),
 		rows: fighters
 			.filter((f) => earns(f) && !f.away)
 			.map((f) => ({
@@ -134,13 +123,8 @@ export function startAftermath(
 		stolen: {},
 		marked: [],
 		successor: null,
-		result: null,
 		shards: 0,
 		explore: noExploration(),
-		record: recorded === null,
-		opponentWarband: '',
-		opponentPlayer: '',
-		recorded
 	};
 }
 
@@ -433,18 +417,6 @@ function withFind(fighter: FighterInstance, find: FighterFind, rules: Aftermath)
 	for (const id of find.injuries) if (!held.includes(id)) held.push(id);
 	if (find.heal.length || find.injuries.length) next = { ...next, injuries: held };
 	return find.levels > 0 ? rules.gainLevels(next, find.levels) : next;
-}
-
-/** The battle's line in the history, or null where none is to be added. */
-export function battleRecord(draft: AftermathDraft, at = new Date()): BattleRecord | null {
-	if (!draft.record || !draft.result) return null;
-	return {
-		id: newId(),
-		date: today(at),
-		result: draft.result,
-		opponentWarband: draft.opponentWarband.trim(),
-		opponentPlayer: draft.opponentPlayer.trim()
-	};
 }
 
 /**
