@@ -138,7 +138,7 @@ wargear each fighter may take and how much of it at once, the warband's
 choice and its effect on the roster, the profiles and the prices, the choice a Wyrdcry fighter makes on
 recruitment, the Greenskin Marauders' two GOBLINs per ORC, the fighters
 who count as half in a Wyrdcry warband's morale, and Wyrdcry's optional
-Underdogs. Wyrdcry's abilities and faction rules, the special rules of
+Underdogs, and the points a Black Death City scenario is won on. Wyrdcry's abilities and faction rules, the special rules of
 Black Death City's fighters and its scenarios and twists are shown as text; a faction rule that leaves a
 fighter out, or applies only to a keyword it lacks, shows a hint on its card
 instead.
