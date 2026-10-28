@@ -117,8 +117,9 @@ that game's campaign.
 - Delete a warband after a question that says what is lost and offers the
   export first
 - Dark and light mode, under the gear
-- Settings, docs and about under the gear: the scream on or off, the guides,
-  the games, where their rules come from, and answers to the first questions
+- Settings, docs and about under the gear: the scream and the tuck box on or
+  off, the guides, the games, where their rules come from, and answers to the
+  first questions
 
 ## Games and their rules
 
@@ -237,4 +238,5 @@ on Wikimedia Commons, released there under CC0. The start screen's etching
 (`static/start-screen-v2.webp`) is cropped from
 [an etching after Urs Graf, 1524](https://wellcomecollection.org/works/nuac38hn)
 in the Wellcome Collection, marked there as public domain. The game logos in
-`static/` belong to their games, as the rules data does.
+`static/` belong to their games, as the rules data does, and are used with
+their permission.

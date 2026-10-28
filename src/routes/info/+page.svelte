@@ -4,16 +4,26 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
 	import { planned, systems } from '$lib/systems';
-	import { loadSound, saveSound } from '$lib/core/storage.svelte';
+	import { loadSound, loadTuckBox, saveSound, saveTuckBox } from '$lib/core/storage.svelte';
 	import { theme } from '$lib/theme.svelte';
 
-	/* Kept on this device, as the theme is; the cards read it as they open. */
-	let sound = $state(true);
+	/* Kept on this device, as the theme is; the cards read them as they open.
+	   Both are null until read, their switches hidden meanwhile and made anew
+	   once known, so they do not slide from a guess to what is stored. */
+	let sound = $state<boolean | null>(null);
 	loadSound().then((on) => (sound = on));
 
 	function toggleSound() {
 		sound = !sound;
 		saveSound(sound);
+	}
+
+	let tuckBox = $state<boolean | null>(null);
+	loadTuckBox().then((on) => (tuckBox = on));
+
+	function toggleTuckBox() {
+		tuckBox = !tuckBox;
+		saveTuckBox(tuckBox);
 	}
 
 	/** Each game's own site and where its rules come from, by game id. */
@@ -160,9 +170,19 @@
 					>, from Wikimedia Commons under CC0
 				</p>
 			</div>
-			<button type="button" class="switch" role="switch" aria-checked={sound} aria-labelledby="sound-label" onclick={toggleSound}>
-				<span class="switch-track"><span class="switch-knob"></span></span>
-			</button>
+			{#key sound === null}
+				<button type="button" class="switch" class:invisible={sound === null} role="switch" aria-checked={sound === true} aria-labelledby="sound-label" onclick={toggleSound}>
+					<span class="switch-track"><span class="switch-knob"></span></span>
+				</button>
+			{/key}
+		</div>
+		<div class="flex items-center justify-between gap-4">
+			<p id="tuck-box-label" class="font-semibold text-zinc-200">Open the cards from a tuck box</p>
+			{#key tuckBox === null}
+				<button type="button" class="switch" class:invisible={tuckBox === null} role="switch" aria-checked={tuckBox === true} aria-labelledby="tuck-box-label" onclick={toggleTuckBox}>
+					<span class="switch-track"><span class="switch-knob"></span></span>
+				</button>
+			{/key}
 		</div>
 	</section>
 
@@ -204,7 +224,7 @@
 			</p>
 			<p class="text-zinc-400">
 				The start screen shows an etching after Urs Graf, 1524, from the Wellcome Collection, in the
-				public domain. The game logos belong to their games.
+				public domain. The game logos belong to their games and are used with their permission.
 			</p>
 		</section>
 

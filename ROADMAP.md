@@ -34,6 +34,7 @@
 - [x] ⚔️ Black Death City: each caster's prepared spells rolled before the battle and shown on its card
 - [x] 📄 Black Death City's roster with its sheet's fields: Crit, weapon traits, Black Rot, holdings
 - [x] 🎨 A start screen with an etching after Urs Graf, in the colour of the game opened last
+- [x] 🎨 The deck comes out of a tuck box in the warband's colour as it is opened
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
@@ -46,6 +47,5 @@ Nothing promised, nothing planned.
 - 🃏 Faction rules on the warband card as well, not only on every fighter card
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
-- 🎨 Virtual tuck box for each deck
 - 🃏 A picture on every other hired sword's card, black on white beside its file
 - 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged

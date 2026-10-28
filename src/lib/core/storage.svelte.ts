@@ -292,6 +292,19 @@ export function saveSound(on: boolean): Promise<boolean> {
 	});
 }
 
+/** Whether the cards come out of a tuck box as a warband opens. On unless switched off on this device. */
+export async function loadTuckBox(): Promise<boolean> {
+	return (await read<boolean | undefined>(META, (s) => s.get('tuck-box'), undefined)) !== false;
+}
+
+export function saveTuckBox(on: boolean): Promise<boolean> {
+	return write([META], (tx) => {
+		const s = tx.objectStore(META);
+		if (on) s.delete('tuck-box');
+		else s.put(false, 'tuck-box');
+	});
+}
+
 /**
  * The id of the warband starred on this device, at the top of the list. One at
  * most, and never part of the warband, so neither an export nor its date
