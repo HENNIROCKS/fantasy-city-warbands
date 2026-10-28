@@ -19,7 +19,7 @@ export const areas: Area[] = [
 	{ label: 'What a fighter may carry', built: (game) => !!game.carry },
 	{ label: "The fighters' special rules as text", built: (_, factions) => fighters(factions).some((f) => f.rules.length > 0) },
 	{ label: 'Choices on recruitment', built: (_, factions) => fighters(factions).some((f) => !!f.choices?.length) },
-	/* Counting damage, states and rounds is the core's; `game.battle` only adds a game's own states. */
+	/* Counting damage, states and rounds is the core's; `game.battle` only adds a game's own states and tests. */
 	{ label: 'Tracking a battle', built: () => true },
 	{ label: 'The aftermath of a battle', built: (game) => !!game.aftermath },
 	{ label: 'Advancement', built: (game) => !!game.advancement },
