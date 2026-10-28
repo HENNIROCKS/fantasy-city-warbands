@@ -248,21 +248,34 @@ export interface GameSystem {
 			end: string;
 		};
 	};
+	/** The scenarios a battle is fought to, rolled for before it, as Black Death City's. Without it, none. */
+	scenarios?: {
+		/** What the scenario is rolled with: `d6`. */
+		roll: string;
+		list: Scenario[];
+	};
 }
 
 /**
- * Wyrdcry's optional Underdogs: a warband `gap` or more reputation behind its
- * opponent picks a bonus for each `gap` it is behind, and each of its fighters
- * adds `roll` to the aftermath's roll.
+ * The underdog of a battle: a warband `gap` or more behind its opponent. In
+ * Wyrdcry's optional Underdogs it picks a bonus for each `gap` it is behind,
+ * and each of its fighters adds `roll` to the aftermath's roll; in Black Death
+ * City it is merely the warband with the lesser rating, which the scenarios
+ * and the rules for ties ask for.
  */
 export interface Underdog {
 	gap: number;
 	roll: number;
+	/** Empty where being the underdog brings no bonus to pick. */
 	bonuses: UnderdogBonus[];
-	/** The figure compared with the opponent's: Wyrdcry's reputation. */
+	/** The figure compared with the opponent's: Wyrdcry's reputation, Black Death City's rating. */
 	reputation: (warband: Warband) => number;
 	/** Why the warband gains nothing by a bonus, such as Bounty at the highest standing; null where it does. */
 	refuse?: (warband: Warband, bonus: UnderdogBonus) => string | null;
+	/** Whether equal figures are settled by a roll-off, whose winner is the underdog. Without it, nobody is. */
+	ties?: boolean;
+	/** What being the underdog means at the table, on the warband card. Without it, the card names the aftermath's roll. */
+	text?: string;
 }
 
 export interface UnderdogBonus {
@@ -275,6 +288,35 @@ export interface UnderdogBonus {
 	 * reminder on the warband card.
 	 */
 	effect?: 'free-hire' | 'standing';
+}
+
+/** A scenario a battle is fought to: what it asks before, during and after the battle, and its own twists. */
+export interface Scenario {
+	id: string;
+	/** The result on the scenario table that picks it. */
+	roll: number;
+	name: string;
+	/** The page it is printed on, for questions about it. */
+	page: number;
+	intro: string;
+	sections: ScenarioSection[];
+	/** What its twist is rolled with: `d6`, `d3`. */
+	twistRoll: string;
+	twists: Twist[];
+}
+
+export interface ScenarioSection {
+	/** Under which heading the scenario prints it: before the battle, during it, or for the campaign. */
+	phase: 'before' | 'during' | 'campaign';
+	name: string;
+	text: string;
+}
+
+/** What unexpected fate a scenario's battle takes, rolled on its own table. */
+export interface Twist {
+	roll: number;
+	name: string;
+	text: string;
 }
 
 /** One fighter on offer for hire, with the wargear only it carries and the factions it fights for. */

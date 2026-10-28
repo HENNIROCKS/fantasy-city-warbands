@@ -5,11 +5,12 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import type { BattleRoll, Faction, Fighter, FighterChoice, GameSystem, Rule, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
+import type { BattleRoll, Faction, Fighter, FighterChoice, GameSystem, Rule, Scenario, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 import veteranSkills from '$lib/rules/black-death-city/skills.json';
+import scenarios from '$lib/rules/black-death-city/scenarios.json';
 
 export const game: GameSystem = {
 	id: 'black-death-city',
@@ -93,7 +94,9 @@ export const game: GameSystem = {
 		/* At the end of each round, 5 or more fighters bloodied or taken down make
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
-	}
+	},
+	/* Every battle is fought to one of six scenarios, each with its own twists (pp. 35–48). */
+	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[] }
 };
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */

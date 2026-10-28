@@ -81,8 +81,14 @@ export interface BattleState extends BattleRound {
 	undo: BattleRound | null;
 	/** Who was hired for this battle, in the order they were hired. Their states are kept under `fighters` like anyone's. */
 	hired: Hire[];
-	/** The opponent's figure the underdog is worked out from, and the bonuses picked, by id; missing where nobody asked. */
-	underdog?: { opponent: number; bonuses: string[] };
+	/**
+	 * The opponent's figure the underdog is worked out from, and the bonuses
+	 * picked, by id; `tieWon` where the figures are equal and the warband won
+	 * the roll-off. Missing where nobody asked.
+	 */
+	underdog?: { opponent: number; bonuses: string[]; tieWon?: boolean };
+	/** The scenario the battle is fought to, by id, and its twist, by its roll; missing where none was picked. */
+	scenario?: { id: string; twist: number | null };
 }
 
 /** What a fighter carries before anything has happened to it. */
@@ -106,7 +112,8 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		morale: stored.morale ?? false,
 		undo: stored.undo ?? null,
 		hired: stored.hired ?? [],
-		...(stored.underdog ? { underdog: stored.underdog } : {})
+		...(stored.underdog ? { underdog: stored.underdog } : {}),
+		...(stored.scenario ? { scenario: stored.scenario } : {})
 	};
 }
 
