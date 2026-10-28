@@ -1,16 +1,8 @@
-/* The start screen is markup in app.html, there before the app loads; its
-   colour follows the game opened last, which a script there reads from here. */
-
-const KEY = 'fantasy-city-warbands:last-game';
+/* The start screen is markup in app.html, there before the app loads; this
+   fades it out and tells when it is gone. */
 
 /** How long the screen stands at least, from the page's start, so its logos have faded in. */
 const HOLD = 4100;
-
-export function rememberGame(id: string) {
-	try {
-		localStorage.setItem(KEY, id);
-	} catch {}
-}
 
 /** Fades the screen out once it has stood its time, at once on a tap. */
 export function dismissStartScreen() {

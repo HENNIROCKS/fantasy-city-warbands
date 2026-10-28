@@ -35,7 +35,7 @@
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { shareLink } from '$lib/share';
-	import { rememberGame, startScreenGone } from '$lib/start-screen';
+	import { startScreenGone } from '$lib/start-screen';
 	import { systems, upgraded } from '$lib/systems';
 
 	/*
@@ -128,9 +128,6 @@
 		};
 	});
 	const system = $derived(warband ? systems[warband.game] : null);
-	$effect(() => {
-		if (system) rememberGame(system.game.id);
-	});
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	/** A piece's name as the faction lists it, its id where the faction has none. */
 	const wargearName = (id: string) => faction?.wargear.find((w) => w.id === id)?.name ?? id;
