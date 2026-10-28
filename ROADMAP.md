@@ -32,6 +32,7 @@
 - [x] 📚 Black Death City: skills and signature spells picked on recruitment, a skill for one fighter only
 - [x] ⚔️ Black Death City: bloodied fighters on the card, and the flee test at the end of the round
 - [x] ⚔️ Black Death City: each caster's prepared spells rolled before the battle and shown on its card
+- [x] 📄 Black Death City's roster with its sheet's fields: Crit, weapon traits, Black Rot, holdings
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

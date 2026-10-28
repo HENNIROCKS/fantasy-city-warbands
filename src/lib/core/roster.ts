@@ -21,8 +21,8 @@ export interface RosterFighter {
 	keywords: string;
 	/** The fighter's own rules and those an item gives, labelled as on the card: `[Triple] Murder-Stab`. */
 	abilities: string[];
-	/** Each with its values in the order of the game's weapon columns. */
-	weapons: { name: string; values: string[] }[];
+	/** Each with its values in the order of the game's weapon columns, and its rules' names: `Reload, Two-handed`. */
+	weapons: { name: string; values: string[]; traits: string }[];
 	/** Armour and items – no profile, so they share one line. */
 	items: string;
 	/** Why the fighter sits out, if it does, then the player's own notes from the back of the card. */
@@ -55,6 +55,16 @@ export interface Roster {
 	weaponLabels: string[];
 	/** The headings over the fighters' campaign counters, none where the game keeps no campaign. */
 	campaignLabels: string[];
+	/** Whether the weapons' traits take a column of their own, as the game's `roster.traits` says. */
+	traits: boolean;
+	/** The game's column of circles to tick by hand, such as Black Rot. */
+	marks?: { label: string; count: number };
+	/** The lines to fill in by hand, as the game's `roster.blanks`. */
+	blanks: { label: string; slots?: string[]; withStash?: boolean }[];
+	/** What the warband picked under its faction's choices, `Origin`, where the game shows it; empty otherwise. */
+	picked: { label: string; value: string }[];
+	/** The player's notes on the warband, where the game shows its picks; empty otherwise. */
+	notes: string;
 	/** The heading over the cost column: `gc`, `silver`. */
 	currency: string;
 	fighters: RosterFighter[];
@@ -76,7 +86,8 @@ function entries(card: FighterCardData, kind: string): CardEntry[] {
 	return card.sections.filter((s) => s.kind === kind).flatMap((s) => s.entries);
 }
 
-function toFighter(card: FighterCardData): RosterFighter {
+/** `split` is the place among the weapon values of the one whose `a/b` fills two columns, -1 for none. */
+function toFighter(card: FighterCardData, split: number): RosterFighter {
 	return {
 		name: card.name,
 		type: card.subtitle,
@@ -85,11 +96,21 @@ function toFighter(card: FighterCardData): RosterFighter {
 		campaign: card.campaign.filter((v) => v.key !== 'cost').map((v) => v.value),
 		keywords: card.keywords.join(', '),
 		abilities: entries(card, 'fighter').map((e) => e.label),
-		weapons: card.weapons.map((w) => ({ name: w.name, values: w.values })),
+		weapons: card.weapons.map((w) => ({
+			name: w.name,
+			values: split < 0 ? w.values : w.values.flatMap((v, i) => (i === split ? splitValue(v) : [v])),
+			traits: (w.explanation?.rules ?? []).map((r) => r.label).join(', ')
+		})),
 		items: card.items.map((i) => (i.count > 1 ? `${i.name} ×${i.count}` : i.name)).join(', '),
 		/* Why the fighter sits out, as the band across its card says it, ahead of the player's own notes. */
 		notes: [...(card.away ? [card.away] : []), ...entries(card, 'notes').map((e) => e.text)]
 	};
+}
+
+/** `1/d6` as two columns; a value without the slash keeps the second empty, a dash. */
+function splitValue(value: string): [string, string] {
+	const at = value.indexOf('/');
+	return at < 0 ? [value, '–'] : [value.slice(0, at), value.slice(at + 1)];
 }
 
 /**
@@ -143,6 +164,7 @@ function collectRules(cards: FighterCardData[]): RosterRule[] {
 export function toRoster(warband: Warband, faction: Faction, game: GameSystem): Roster {
 	const card: WarbandCardData = warbandCard(warband, faction, game);
 	const fighters = warband.fighters.map((f) => fighterCard(f, faction, game, warband.picks));
+	const split = game.roster.split ? game.weaponStats.findIndex((s) => s.key === game.roster.split) : -1;
 
 	return {
 		title: game.roster.title,
@@ -154,7 +176,11 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 				.flat()
 				.filter((v) => !v.target)
 				.map((v) => ({ label: v.label, value: v.value })),
-			...(game.campaign ? [{ label: 'Won / Drawn / Lost', value: card.results.join(' / ') }] : [])
+			...(game.roster.figures
+				? game.roster.figures.map((f) => ({ label: f.label, value: f.value(warband) }))
+				: game.campaign
+					? [{ label: 'Won / Drawn / Lost', value: card.results.join(' / ') }]
+					: [])
 		],
 		stash: card.stash,
 		statLabels: game.roster.stats,
@@ -163,7 +189,14 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		   ones, the card's own labels stand in. */
 		campaignLabels: game.campaign ? (game.roster.campaign ?? game.campaign.fighter.map((c) => c.label)) : [],
 		currency: game.currency,
-		fighters: fighters.map(toFighter),
+		traits: game.roster.traits ?? false,
+		...(game.roster.marks ? { marks: game.roster.marks } : {}),
+		blanks: game.roster.blanks ?? [],
+		picked: game.roster.choices
+			? faction.choices.map((c) => ({ label: c.name, value: c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => o.name).join(', ') }))
+			: [],
+		notes: game.roster.choices ? (warband.notes?.trim() ?? '') : '',
+		fighters: fighters.map((f) => toFighter(f, split)),
 		rules: collectRules(fighters)
 	};
 }
