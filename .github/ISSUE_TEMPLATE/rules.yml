@@ -13,8 +13,8 @@ body:
     attributes:
       label: Which game?
       options:
-        - Wyrdcry
         - Black Death City
+        - Wyrdcry
     validations:
       required: true
 
@@ -51,7 +51,7 @@ body:
     id: source
     attributes:
       label: Which book and page?
-      description: The app follows Wyrdcry Rulebook 1.0.1 and Campaign Book 1.0, and the Black Death City Playtest v1.03. Homebrew factions and hired swords follow their own documents, linked where the app shows the faction.
+      description: The app follows the Black Death City Playtest v1.03, and Wyrdcry Rulebook 1.0.1 and Campaign Book 1.0. Homebrew factions and hired swords follow their own documents, linked where the app shows the faction.
       placeholder: Rulebook 1.0.1, page 24
 
   - type: textarea

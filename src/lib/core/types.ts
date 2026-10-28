@@ -759,7 +759,7 @@ export interface ChoiceOption {
 	effect?: ChoiceEffect;
 }
 
-/** A decision taken once for the whole warband: Wyrdcry's State Pride, Black Death City's Origin. */
+/** A decision taken once for the whole warband: Black Death City's Origin, Wyrdcry's State Pride. */
 export interface Choice {
 	id: string;
 	name: string;
