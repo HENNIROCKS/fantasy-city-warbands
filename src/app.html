@@ -34,17 +34,13 @@
 			})();
 		</script>
 		<!-- The start screen stands until the app has loaded and src/lib/start-screen.ts
-		     fades it out. Its colour is the game opened last, which that file keeps
-		     under the key below, Black Death City's red before any. A warband opened
-		     from a scanned code goes without it. -->
+		     fades it out. Its colour is a fixed red, the same for every game. A
+		     warband opened from a scanned code goes without it. -->
 		<script>
 			(() => {
 				if (/\/view(\.html)?\/?$/.test(location.pathname)) return;
 				const root = document.documentElement;
 				root.classList.add('start');
-				try {
-					root.dataset.startGame = localStorage.getItem('fantasy-city-warbands:last-game') ?? '';
-				} catch {}
 				const etching = document.createElement('link');
 				etching.rel = 'preload';
 				etching.as = 'image';
@@ -95,9 +91,6 @@
 				position: absolute;
 				inset: 0;
 				background: #fb2702;
-			}
-			html[data-start-game='wyrdcry'] #start-screen .ground {
-				background: #125d3c;
 			}
 			#start-screen.gone {
 				opacity: 0;
