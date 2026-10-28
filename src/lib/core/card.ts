@@ -636,6 +636,8 @@ export interface WarbandCardData {
 	fluff: string;
 	/** What the battle running brings besides its fighters, such as the underdog's bonuses; the deck sets it while the battle lasts. */
 	reminders?: CardEntry[];
+	/** What the battle was set up with – underdog, scenario, twist – in a box across the card, each opening its rules; the deck sets it while the battle lasts. */
+	setup?: CardValue[];
 	/** `35 gc, Sword, Lucky Charm`: the gold left, then the weapons and the rest in the stash; empty where there is neither. */
 	stash: string;
 	notes: string;

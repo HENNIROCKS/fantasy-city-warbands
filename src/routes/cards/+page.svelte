@@ -23,7 +23,8 @@
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { adjustCounter, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
-	import { bonusBlocked, freeHireOpen, setOpponent, toggleBonus, underdogOf } from '$lib/core/underdog';
+	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
+	import { scenarioOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
 	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
@@ -189,9 +190,10 @@
 			leader: false
 		}));
 		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;
-		/* The underdog's bonuses stand on the warband's card while the battle lasts, as reminders for the table. */
+		/* The underdog's bonuses stand on the warband's card while the battle lasts, as reminders for the table;
+		   where the game gives the underdog no bonus, it stands in the box of the battle's setup instead. */
 		const reminders = [
-			...(underdog
+			...(underdog && !system.game.underdog?.text
 				? [
 						{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.` },
 						...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
@@ -201,7 +203,7 @@
 			...(w.next ?? []).filter((n) => !n.explore).map((n) => ({ label: `(Next battle) ${n.source}`, text: n.text }))
 		];
 		return [
-			{ ...own, roster, reminders },
+			{ ...own, roster, reminders, setup: battle ? setupValues(system.game, w, battle) : [] },
 			...w.fighters.map((f) => {
 				const state = stateOf(battle, f.instanceId);
 				return fighterCard(f, faction, system.game, w.picks, state.used, w.next, state.rolled);
@@ -758,7 +760,8 @@
 	}
 
 	/* Whether the warband is the underdog, asked in a sheet while the battle is
-	   being set up: the opponent's reputation in, the bonuses it allows picked. */
+	   being set up: the opponent's figure in, the bonuses it allows picked. Where
+	   the game rolls for a scenario, the same sheet asks for it and its twist. */
 	let underdogOpen = $state(false);
 	/* As typed, so a figure that makes no underdog – and starts no battle – still says so. */
 	let opponentText = $state<number | null>(null);
@@ -781,8 +784,9 @@
 	function enterOpponent(value: string) {
 		const rules = system?.game.underdog;
 		const figure = value.trim() === '' ? null : Number(value);
-		if (!rules || !warband || (figure !== null && !Number.isFinite(figure))) return;
-		const next = setOpponent(battle, rules, warband, figure === null ? null : Math.max(0, Math.round(figure)));
+		if (!rules || !warband || (figure !== null && !Number.isFinite(figure)) || (figure === null && !battle)) return;
+		/* With the scenario asked beside it, the figure belongs to the battle being set up whatever it says. */
+		const next = setOpponent(system?.game.scenarios ? (battle ?? start()) : battle, rules, warband, figure === null ? null : Math.max(0, Math.round(figure)));
 		if (next !== battle) setBattle(next);
 	}
 
@@ -967,7 +971,8 @@
 				levelLabel={system.game.advancement?.label ?? ''}
 				healthLabel={system.game.stats.find((s) => s.key === system.game.health)?.label ?? ''}
 				onlevels={() => (spending = true)}
-				onunderdog={system.game.underdog && settingUp(battle) ? openUnderdog : undefined}
+				onunderdog={(system.game.underdog || system.game.scenarios) && settingUp(battle) ? openUnderdog : undefined}
+				underdogLabel={system.game.scenarios ? 'Before the battle' : 'Underdog'}
 				onhire={offered.length && settingUp(battle) ? openHiring : undefined}
 				hireLabel={hiring?.label ?? ''}
 				onrolls={rollers.length && system.game.battle?.rolls && settingUp(battle) ? openRolls : undefined}
@@ -1023,50 +1028,99 @@
 	/>
 {/if}
 
-{#if underdogOpen && warband && system?.game.underdog}
+{#if underdogOpen && warband && system && (system.game.underdog || system.game.scenarios)}
 	{@const rules = system.game.underdog}
+	{@const scenarios = system.game.scenarios}
+	{@const picked = scenarioOf(system.game, battle)}
 	<div class="sheet-backdrop">
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="underdog-title">
-			<h2 id="underdog-title">Underdog</h2>
-			<p class="count">Your reputation {rules.reputation(warband)} · {rules.gap} behind for each bonus</p>
-			<label class="field-label" for="underdog-opponent">Opponent's reputation</label>
-			<input
-				id="underdog-opponent"
-				class="field-input mb-3"
-				type="number"
-				inputmode="numeric"
-				min="0"
-				bind:value={opponentText}
-				oninput={(e) => enterOpponent(e.currentTarget.value)}
-				use:focusOnMount
-			/>
-			{#if underdog}
-				<p class="mb-3 text-zinc-400">
-					{underdog.behind} behind: {underdog.allowed}
-					{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.
-				</p>
-				<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
-					{#each rules.bonuses as bonus (bonus.id)}
-						{@const on = underdog.picked.some((b) => b.id === bonus.id)}
-						{@const blocked = bonusBlocked(rules, warband, battle, bonus)}
-						<button
-							type="button"
-							class="choice"
-							aria-pressed={on}
-							disabled={blocked !== null}
-							onclick={() => setBattle(toggleBonus(rules, warband!, battle, bonus))}
-						>
-							<span class="block font-semibold">{bonus.name}</span>
-							<span class="block text-zinc-400"><RichText text={bonus.text} /></span>
-							{#if blocked}
-								<span class="block font-semibold" style="color: var(--ui-warn-text)">{blocked}</span>
-							{/if}
-						</button>
-					{/each}
-				</div>
-			{:else if opponentText !== null}
-				<p class="mb-3 text-zinc-400">Not the underdog: {rules.gap} or more behind makes it one.</p>
+			<h2 id="underdog-title">{scenarios ? 'Before the battle' : 'Underdog'}</h2>
+			{#if rules}
+				<p class="count">Your {rules.figure} {rules.reputation(warband)}{#if rules.bonuses.length}{' '}· {rules.gap} behind for each bonus{/if}</p>
 			{/if}
+			<!-- With the scenario asked as well, the sheet runs longer than the screen and scrolls as one. -->
+			<div class={scenarios ? 'max-h-[60dvh] overflow-y-auto' : ''}>
+				{#if rules}
+					<label class="field-label" for="underdog-opponent">Opponent's {rules.figure}</label>
+					<input
+						id="underdog-opponent"
+						class="field-input mb-3"
+						type="number"
+						inputmode="numeric"
+						min="0"
+						bind:value={opponentText}
+						oninput={(e) => enterOpponent(e.currentTarget.value)}
+						use:focusOnMount
+					/>
+					{#if rules.bonuses.length}
+						{#if underdog}
+							<p class="mb-3 text-zinc-400">
+								{underdog.behind} behind: {underdog.allowed}
+								{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.
+							</p>
+							<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
+								{#each rules.bonuses as bonus (bonus.id)}
+									{@const on = underdog.picked.some((b) => b.id === bonus.id)}
+									{@const blocked = bonusBlocked(rules, warband, battle, bonus)}
+									<button
+										type="button"
+										class="choice"
+										aria-pressed={on}
+										disabled={blocked !== null}
+										onclick={() => setBattle(toggleBonus(rules, warband!, battle, bonus))}
+									>
+										<span class="block font-semibold">{bonus.name}</span>
+										<span class="block text-zinc-400"><RichText text={bonus.text} /></span>
+										{#if blocked}
+											<span class="block font-semibold" style="color: var(--ui-warn-text)">{blocked}</span>
+										{/if}
+									</button>
+								{/each}
+							</div>
+						{:else if opponentText !== null}
+							<p class="mb-3 text-zinc-400">Not the underdog: {rules.gap} or more behind makes it one.</p>
+						{/if}
+					{:else}
+						<!-- Without bonuses the question is only who the underdog is; level figures ask for the roll-off. -->
+						{@const side = underdogSide(rules, warband, battle)}
+						{#if side === 'you'}
+							<p class="mb-4 text-zinc-400">You are the underdog{#if underdog && underdog.behind > 0}, {underdog.behind} behind{/if}.</p>
+						{:else if side === 'opponent'}
+							<p class="mb-4 text-zinc-400">Your opponent is the underdog.</p>
+						{/if}
+						{#if rules.ties && battle?.underdog && battle.underdog.opponent === rules.reputation(warband)}
+							{@const won = battle.underdog.tieWon}
+							<p class="field-label" id="underdog-tie">Equal {rules.figure}s · the roll-off</p>
+							<div class="mb-4 space-y-1.5" role="group" aria-labelledby="underdog-tie">
+								<button type="button" class="choice" aria-pressed={won === true} onclick={() => setBattle(setTieWon(battle, rules, warband!, won === true ? null : true))}>Won · you are the underdog</button>
+								<button type="button" class="choice" aria-pressed={won === false} onclick={() => setBattle(setTieWon(battle, rules, warband!, won === false ? null : false))}>Lost · your opponent is</button>
+							</div>
+						{/if}
+					{/if}
+				{/if}
+				{#if scenarios}
+					<p class="field-label" id="scenario-roll">Scenario · {scenarios.roll}</p>
+					<div class="mb-4 space-y-1.5" role="group" aria-labelledby="scenario-roll">
+						{#each scenarios.list as scenario (scenario.id)}
+							{@const on = picked?.scenario.id === scenario.id}
+							<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setScenario(battle, on ? null : scenario.id))}>
+								<span class="inline-block w-6 font-semibold">{scenario.roll}</span>{scenario.name}
+							</button>
+						{/each}
+					</div>
+					{#if picked}
+						<p class="field-label" id="twist-roll">Twist · {picked.scenario.twistRoll}</p>
+						<div class="mb-4 space-y-1.5" role="group" aria-labelledby="twist-roll">
+							{#each picked.scenario.twists as twist (twist.roll)}
+								{@const on = picked.twist?.roll === twist.roll}
+								<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setTwist(battle, on ? null : twist.roll))}>
+									<span class="inline-block w-6 font-semibold">{twist.roll}</span>{twist.name}
+								</button>
+							{/each}
+						</div>
+					{/if}
+				{/if}
+			</div>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeUnderdog}>Done</button>
 			</div>

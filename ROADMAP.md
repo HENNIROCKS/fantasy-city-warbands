@@ -36,6 +36,7 @@
 - [x] 🎨 A start screen with an etching after Urs Graf, in red
 - [x] 🎨 The deck comes out of a tuck box in the warband's colour as it is opened
 - [x] ⚔️ Every game asks for the result as a battle ends and adds it to the battle history; Cancel battle in every game
+- [x] ⚔️ Black Death City: the underdog, the scenario and its twist before the battle, their rules a tap away on the warband card
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

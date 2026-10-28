@@ -41,6 +41,7 @@
 		healthLabel = '',
 		onlevels,
 		onunderdog,
+		underdogLabel = 'Underdog',
 		onhire,
 		hireLabel = '',
 		onrolls,
@@ -90,8 +91,10 @@
 		/** What the game calls the characteristic damage counts down: `Health`, `Life`. */
 		healthLabel?: string;
 		onlevels?: () => void;
-		/** Opens the question whether the warband is the underdog, where the game has one and the battle is still being set up. */
+		/** Opens the question whether the warband is the underdog, and the scenario where the game rolls for one, while the battle is still being set up. */
 		onunderdog?: () => void;
+		/** What the menu calls it: `Underdog`, or `Before the battle` where the scenario is asked with it. */
+		underdogLabel?: string;
 		/** Opens what is on offer for hire, where the game hires and the battle is still being set up. */
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
@@ -485,6 +488,7 @@
 			editable={!topFighter?.hired}
 			onedit={() => onedit?.(cards[current].instanceId)}
 			{onunderdog}
+			{underdogLabel}
 			{onhire}
 			{hireLabel}
 			{onrolls}

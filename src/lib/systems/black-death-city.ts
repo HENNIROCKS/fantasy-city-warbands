@@ -95,6 +95,18 @@ export const game: GameSystem = {
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
 	},
+	/* The warband with the lesser rating is the underdog, a roll-off settling
+	   equal ratings; it brings no bonus, but the rounds and the scenarios ask
+	   for it (pp. 17–18). */
+	underdog: {
+		gap: 1,
+		roll: 0,
+		bonuses: [],
+		reputation: (warband) => rating(warband),
+		figure: 'rating',
+		ties: true,
+		text: 'The warband with the lesser rating. It has priority when the priority roll is a tie, makes its flee test first when both warbands must, and resolves its rules before the battle first. Some scenarios name it as well.'
+	},
 	/* Every battle is fought to one of six scenarios, each with its own twists (pp. 35–48). */
 	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[] }
 };

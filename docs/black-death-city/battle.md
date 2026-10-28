@@ -5,6 +5,12 @@ The cards count the battle for you. You still roll the dice and move the models.
 **Start.** Tap **Battle → Start battle** under the warband card. Your first
 tap on a fighter starts it too.
 
+**Before the battle.** Tap **Battle → Before the battle** and enter your
+opponent's rating: the app says who is the underdog, and asks who won the
+roll-off when both ratings are equal. Then tap the scenario and the twist the
+dice show. All three stand in a box on the warband card; tap a name to read
+its rules. You can change them until the second round.
+
 **Prepared spells.** Before the battle each wizard and priest rolls a dice on
 each lore it knows. Tap **Battle → Prepared spells** and tap what the dice
 shows; the menu says how many are still to roll. The spell stands on the

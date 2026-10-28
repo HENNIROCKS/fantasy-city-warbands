@@ -37,6 +37,7 @@
 		levelLabel = '',
 		onlevels,
 		onunderdog,
+		underdogLabel = 'Underdog',
 		onhire,
 		hireLabel = '',
 		onrolls,
@@ -92,8 +93,10 @@
 		levelLabel?: string;
 		/** Opens the sheet that spends them. */
 		onlevels?: () => void;
-		/** Opens the question whether the warband is the underdog; given while the battle is still being set up. */
+		/** Opens the question whether the warband is the underdog, and the scenario where the game rolls for one; given while the battle is still being set up. */
 		onunderdog?: () => void;
+		/** What the menu calls it: `Underdog`, or `Before the battle` where the scenario is asked with it. */
+		underdogLabel?: string;
 		/** Opens what is on offer for hire; given while the battle is still being set up. */
 		onhire?: () => void;
 		/** What the game calls the fighters hired, many of them: `Hired swords`. */
@@ -272,7 +275,7 @@
 						<button onclick={() => onstart?.()}>Start battle</button>
 					{/if}
 					{#if onunderdog && !closed}
-						<button onclick={() => onunderdog?.()}>Underdog</button>
+						<button onclick={() => onunderdog?.()}>{underdogLabel}</button>
 					{/if}
 					{#if onhire && !closed}
 						<button onclick={() => onhire?.()}>{hireLabel}</button>
