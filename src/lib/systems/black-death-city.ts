@@ -14,6 +14,7 @@ import veteranSkills from '$lib/rules/black-death-city/skills.json';
 export const game: GameSystem = {
 	id: 'black-death-city',
 	name: 'Black Death City',
+	logo: 'logo-bdc.svg',
 	edition: 'Playtest v1.03',
 	author: 'Sam Pearson',
 	currency: 'silver',

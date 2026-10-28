@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { tick, untrack } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
-	import { resolve } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { APP_TITLE } from '$lib/app';
 	import AftermathSheet from '$lib/components/AftermathSheet.svelte';
@@ -872,8 +872,9 @@
 
 	const tuck = $derived.by(() => {
 		const card = cards[0];
-		if (!boxed || !tuckBox || battle || warband?.disbanded || card?.kind !== 'warband') return null;
-		return { name: card.name, line: card.subtitle, ready: unboxed };
+		if (!boxed || !tuckBox || battle || warband?.disbanded || !faction || card?.kind !== 'warband') return null;
+		const logo = system?.game.logo;
+		return { name: card.name, line: faction.name, logo: logo && asset(`/${logo}`), ready: unboxed };
 	});
 
 	/* Decided once the warband is read: a box held back then, as by a battle,

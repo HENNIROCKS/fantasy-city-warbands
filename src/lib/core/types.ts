@@ -60,6 +60,8 @@ export interface GameSystem {
 	budget: number;
 	/** What one of its `unique` pieces is called, where it has them: `magic item`. Taken by the warband and added to its stash. */
 	uniqueName?: string;
+	/** The game's logo, a file in `static/`, drawn in the card's paper colour where the app shows it. */
+	logo?: string;
 	/** In the order the profile prints them. */
 	stats: StatDef[];
 	/** The key of the stat that damage counts down: `health`, `life`. */
