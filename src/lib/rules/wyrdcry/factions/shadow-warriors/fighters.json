@@ -1,0 +1,104 @@
+[
+  {
+    "id": "shadow-master",
+    "name": "Shadow Master",
+    "cost": 165,
+    "limit": { "min": 1, "max": 1 },
+    "description": "Shadow Master is the honoured title of one who has fought the Shadow War for so long that he rules the darkness he fights from. Often of the old Nagarythe nobility, he gathers a small band of followers and seeks a life away from the grudging charity of Ulthuan.",
+    "profile": {
+      "move": 6,
+      "fight": 5,
+      "shoot": 5,
+      "defense": 0,
+      "health": 14,
+      "bravery": 3
+    },
+    "keywords": ["elf", "shadow-warriors", "hero", "leader"],
+    "abilities": ["assassin", "sharpshooter"],
+    "gear": [],
+    "choose": null
+  },
+  {
+    "id": "shadow-walker",
+    "name": "Shadow Walker",
+    "cost": 130,
+    "limit": { "min": 0, "max": 3 },
+    "description": "A walker in the shadows has made friends with the darkness; he does not command it, but it aids him when asked. Walkers are seasoned trackers and hunters and the most trusted lieutenants of their Master.",
+    "profile": {
+      "move": 6,
+      "fight": 4,
+      "shoot": 5,
+      "defense": 0,
+      "health": 12,
+      "bravery": 4
+    },
+    "keywords": ["elf", "shadow-warriors", "hero"],
+    "abilities": ["dual-wielder"],
+    "gear": [],
+    "choose": null
+  },
+  {
+    "id": "shadow-weaver",
+    "name": "Shadow Weaver",
+    "cost": 130,
+    "limit": { "min": 0, "max": 1 },
+    "description": "The mages of Nagarythe learned to bend the Winds of Magic into concealment and confusion. Like a tailor, the Shadow Weaver takes the threads of shadow and fashions them into whatever shape the fight demands.",
+    "profile": {
+      "move": 6,
+      "fight": 4,
+      "shoot": 4,
+      "defense": 0,
+      "health": 10,
+      "bravery": 4
+    },
+    "keywords": ["elf", "shadow-warriors", "hero", "wizard"],
+    "abilities": ["shadow-shroud"],
+    "gear": [],
+    "choose": {
+      "source": null,
+      "prompt": "When recruiting a Shadow Weaver, you must select one of the following magical abilities. In addition, the Shadow Weaver may select another magical ability instead of selecting a heroic talent.",
+      "kind": "ability",
+      "pick": 1,
+      "instead_of_talent": 1,
+      "abilities": ["the-living-shadows", "one-with-shadow", "shadowstep", "shadow-bind"]
+    }
+  },
+  {
+    "id": "shadow-warrior",
+    "name": "Shadow Warrior",
+    "cost": 105,
+    "limit": { "min": 0, "max": null },
+    "description": "Most Shadow Warriors are veterans of at least one battle, and every one of them has lost someone to the depravity of the Dark Elves.",
+    "profile": {
+      "move": 6,
+      "fight": 4,
+      "shoot": 4,
+      "defense": 0,
+      "health": 10,
+      "bravery": 4
+    },
+    "keywords": ["elf", "shadow-warriors", "henchman"],
+    "abilities": ["fade-away"],
+    "gear": [],
+    "choose": null
+  },
+  {
+    "id": "shadow-novice",
+    "name": "Shadow Novice",
+    "cost": 65,
+    "limit": { "min": 0, "max": null },
+    "description": "Untested elves newly inducted into the warband, often younger cousins leaving Ulthuan for the first time. Their existence is hard, and the step from novice to warrior is a short one.",
+    "profile": {
+      "move": 6,
+      "fight": 3,
+      "shoot": 3,
+      "defense": 0,
+      "health": 8,
+      "bravery": 5
+    },
+    "keywords": ["elf", "shadow-warriors", "henchman"],
+    "abilities": [],
+    "gear": [],
+    "choose": null
+  }
+]

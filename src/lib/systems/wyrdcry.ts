@@ -365,11 +365,16 @@ interface RawFaction {
 	may_hire?: string[];
 }
 
-/** A row of a faction's `equipment.json`: `hero` sells to fighters with that keyword only. */
+/**
+ * A row of a faction's `equipment.json`: `hero` sells to fighters with that
+ * keyword only. `cost` is the faction's own price, such as the Shadow Warriors'
+ * Elven Cloak; the piece is then sold in the faction's entry without a Rarity roll.
+ */
 interface Allowance {
 	id: string;
 	allow: string;
 	restrict?: string;
+	cost?: number;
 }
 
 interface RawFighter {
@@ -574,12 +579,16 @@ const hiredImages = new Map(
 );
 
 /* A hired sword's own weapon goes into the shared list; one whose id is
-   taken there already is left out, so the game's own weapon keeps its profile. */
+   taken there already is left out, so the game's own weapon keeps its profile.
+   A homebrew faction may sell the same weapon, as the Shadow Warriors sell the
+   Elf Ranger's Elven Bow; only a different profile is worth a warning. */
+const profileOf = (w: { range: object; attacks: number; hit: number; crit: number; rules: string[] }) =>
+	JSON.stringify([w.range, w.attacks, w.hit, w.crit, w.rules]);
 const hiredWeapons = hiredSwords
 	.flatMap((h) => h.weapons)
 	.filter((w) => {
-		const taken = weapons.some((own) => own.id === w.id);
-		if (taken && import.meta.env.DEV) console.warn(`hired sword weapon "${w.id}" is a shared weapon already`);
+		const taken = weapons.find((own) => own.id === w.id);
+		if (taken && profileOf(taken) !== profileOf(w) && import.meta.env.DEV) console.warn(`hired sword weapon "${w.id}" is a shared weapon already`);
 		return !taken;
 	});
 
@@ -962,7 +971,13 @@ function build(
 				...fighters.flatMap((f) => f.gear),
 				...rules.flatMap((r) => (r.table ?? []).flatMap((row) => (row.weapon ? [`weapon:${row.weapon}`] : [])))
 			])
-		].flatMap((id) => catalogue.get(id) ?? []),
+		].flatMap((id) => {
+			const piece = catalogue.get(id);
+			const cost = equipment.find((e) => e.id === id)?.cost;
+			if (!piece || cost === undefined) return piece ?? [];
+			const { found: _found, group: _group, ...own } = piece;
+			return { ...own, cost };
+		}),
 		counter: zeal(rules),
 		weights: Object.fromEntries(
 			rules.flatMap((r) => (r.effect?.kind === 'morale' ? (r.effect.fighters ?? []).map((id) => [id, r.effect!.weight ?? 1]) : []))

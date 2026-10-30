@@ -1,0 +1,47 @@
+[
+  {
+    "id": "shadows-of-nagarythe",
+    "name": "Shadows of Nagarythe",
+    "phase": "battle",
+    "text": "When setting up a battle, up to two fighters from your warband may be kept hidden in reserve. In the second battle round, when it is your turn to activate a fighter, you may reveal and activate one of them instead. Set it up on the battlefield floor within 2\" of a terrain piece and more than 6\" from enemy fighters.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "hatred",
+    "name": "Hatred",
+    "phase": "battle",
+    "text": "[Trait] All `SHADOW WARRIORS` fighters have this trait. The folk of Nagarythe never forgave the kin who followed Malekith into the worship of Chaos. Add 1 to this fighter's Fight and Shoot characteristics when making attack actions targeting a `POSSESSED` fighter.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "disengage",
+    "name": "Disengage",
+    "phase": "battle",
+    "text": "[Double] All `SHADOW WARRIORS` fighters have this ability. A fighter can only use this ability if they are within 1\" of an enemy fighter. This fighter makes a free Retreat action.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "barbed-arrows",
+    "name": "Barbed Arrows",
+    "phase": "battle",
+    "text": "[Double] All `SHADOW WARRIORS` fighters have this ability. Add 1 to the Critical Damage characteristic of this fighter's next ranged attack action this activation.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  },
+  {
+    "id": "distaste-for-poison",
+    "name": "Distaste for Poison",
+    "phase": "recruitment",
+    "text": "Poison is the craft of the Dark Elves, and the Shadow Warriors will not touch it. A `SHADOW WARRIORS` warband may not buy Dark Venom or any weapon with the Poisoned special rule.",
+    "pick": null,
+    "options": [],
+    "effect": null
+  }
+]

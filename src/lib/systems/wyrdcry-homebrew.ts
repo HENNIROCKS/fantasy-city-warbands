@@ -4,7 +4,9 @@
  * with its own weapons, weapon rules and racial limits, an official one may
  * not. The shared files stay what the game prints, and deleting a faction's
  * folder takes its additions with it. An id the shared list holds already is
- * refused, so the game's own entry keeps its profile.
+ * refused, so the game's own entry keeps its profile – except a race the game
+ * names without printing its limits, such as the ELF, whose limits a homebrew
+ * faction may fill in.
  */
 
 import sharedWeapons from '$lib/rules/wyrdcry/weapons.json';
@@ -50,4 +52,6 @@ function merged<T extends { id: string }>(shared: T[], added: T[], what: string)
 
 export const weapons = merged(sharedWeapons, additions.flatMap((h) => h.weapons ?? []), 'weapon');
 export const weaponRules = merged(sharedWeaponRules, additions.flatMap((h) => h['weapon-rules'] ?? []), 'weapon rule');
-export const racialLimits = merged(sharedLimits, additions.flatMap((h) => h['racial-limits'] ?? []), 'racial limit');
+const addedLimits = additions.flatMap((h) => h['racial-limits'] ?? []);
+const filledLimits = sharedLimits.map((limit) => (limit.profile ? limit : (addedLimits.find((added) => added.id === limit.id && added.profile) ?? limit)));
+export const racialLimits = merged(filledLimits, addedLimits.filter((added) => !filledLimits.includes(added)), 'racial limit');

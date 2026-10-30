@@ -1,0 +1,56 @@
+[
+  {
+    "id": "assassin",
+    "name": "Assassin",
+    "type": "trait",
+    "text": "After this fighter takes an enemy fighter out of action, it may make a free move action."
+  },
+  {
+    "id": "dual-wielder",
+    "name": "Dual Wielder",
+    "type": "trait",
+    "text": "When this fighter is dual wielding two of the same weapon, the off-hand weapon makes two hit rolls instead of one."
+  },
+  {
+    "id": "fade-away",
+    "name": "Fade Away",
+    "type": "reaction",
+    "text": "Once per battle round, when an enemy fighter ends a move action within 3\" of this fighter but not within 1\" of it, this fighter may make a free move action."
+  },
+  {
+    "id": "one-with-shadow",
+    "name": "One With Shadow",
+    "type": "triple",
+    "text": "Magical ability. Until the end of the battle round, fighters within (X/2)\" of this fighter are not visible to fighters more than 1\" away from them."
+  },
+  {
+    "id": "shadow-bind",
+    "name": "Shadow Bind",
+    "type": "quad",
+    "text": "Magical ability. Select a visible enemy fighter within 18\" of this fighter and within 2\" of a terrain piece. Until the end of the battle round, that fighter cannot make move actions."
+  },
+  {
+    "id": "shadow-shroud",
+    "name": "Shadow Shroud",
+    "type": "trait",
+    "text": "While this fighter is in cover, that cover cannot be ignored."
+  },
+  {
+    "id": "shadowstep",
+    "name": "Shadowstep",
+    "type": "triple",
+    "text": "Magical ability. Select a friendly fighter within 6\" of this fighter that is not within 1\" of an enemy fighter. Remove it from the battlefield and set it up again within 12\" of this fighter, within 2\" of a terrain piece and more than 1\" from enemy fighters."
+  },
+  {
+    "id": "sharpshooter",
+    "name": "Sharpshooter",
+    "type": "triple",
+    "text": "For this fighter's next ranged attack action this activation, add 1 to its Hit Damage and Critical Damage characteristics. That attack action ignores cover."
+  },
+  {
+    "id": "the-living-shadows",
+    "name": "The Living Shadows",
+    "type": "double",
+    "text": "Magical ability. Select a visible enemy fighter within 12\" of this fighter and within 2\" of a terrain piece and roll a dice. On a 3+, allocate (X/2) damage points to that fighter."
+  }
+]
