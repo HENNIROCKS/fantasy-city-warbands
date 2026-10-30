@@ -6,8 +6,8 @@ keeps your Origin's limits for you.
 
 **The back of a fighter's card.** Tap the pencil under the card. There you can:
 
-- write a name, fluff and notes, and add a photo of the model; the fluff starts
-  with the line the fighter's scroll quotes, ready to rewrite
+- write a name, fluff and notes, and add a photo of the model, which
+  takes the place of its initials; the fluff starts with the line the fighter's scroll quotes, ready to rewrite
 - move equipment to the stash and back
 - correct the fighter's experience
 - dismiss the fighter, once the warband has a battle in its history. Nothing is
