@@ -1,0 +1,49 @@
+{
+  "keywords": [
+    { "id": "elf", "name": "ELF", "type": "race", "rules": [] },
+    {
+      "id": "shadow-warriors",
+      "name": "SHADOW WARRIORS",
+      "type": "faction",
+      "rules": []
+    }
+  ],
+  "racial-limits": [
+    {
+      "id": "elf",
+      "name": "Elf",
+      "profile": {
+        "move": 8,
+        "fight": 7,
+        "shoot": 7,
+        "health": 24,
+        "bravery": 2
+      }
+    }
+  ],
+  "weapon-rules": [],
+  "weapons": [
+    {
+      "id": "elven-bow",
+      "name": "Elven Bow",
+      "type": "ranged",
+      "range": { "min": 0, "max": 18 },
+      "attacks": 2,
+      "hit": 2,
+      "crit": 4,
+      "rules": [],
+      "cost": 20
+    },
+    {
+      "id": "ithilmar-sword",
+      "name": "Ithilmar Sword",
+      "type": "melee",
+      "range": { "min": 0, "max": 1 },
+      "attacks": 3,
+      "hit": 2,
+      "crit": 4,
+      "rules": ["parry", "pierce-1"],
+      "cost": 25
+    }
+  ]
+}

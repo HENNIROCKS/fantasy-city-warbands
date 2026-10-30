@@ -1,0 +1,11 @@
+{
+  "id": "shadow-warriors",
+  "name": "Shadow Warriors",
+  "keyword": "SHADOW WARRIORS",
+  "warband_size": { "min": 3, "max": 9 },
+  "origin": "homebrew",
+  "version": "0.1",
+  "may_hire": ["elf-ranger", "freelance-knight", "ogre-bodyguard", "troll-slayer", "warrior-priest"],
+  "author": "Hendrik Berends",
+  "source": { "name": "Shadow Warriors", "url": "https://drive.google.com/file/d/1UK0g_yK5WyrZquBzdpGsuOFysNeSCtFL/view" }
+}

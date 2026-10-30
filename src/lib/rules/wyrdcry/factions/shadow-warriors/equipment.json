@@ -1,0 +1,14 @@
+[
+  { "id": "weapon:dagger", "allow": "all" },
+  { "id": "weapon:spear", "allow": "all" },
+  { "id": "weapon:axe", "allow": "all" },
+  { "id": "weapon:sword", "allow": "all" },
+  { "id": "weapon:ithilmar-sword", "allow": "hero" },
+  { "id": "weapon:great-weapon", "allow": "hero" },
+  { "id": "weapon:throwing-dagger", "allow": "all" },
+  { "id": "weapon:bow", "allow": "all" },
+  { "id": "weapon:elven-bow", "allow": "all" },
+  { "id": "item:shield", "allow": "all" },
+  { "id": "item:light-armour", "allow": "all" },
+  { "id": "item:elven-cloak", "allow": "all", "cost": 25 }
+]
