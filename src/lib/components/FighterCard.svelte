@@ -57,6 +57,18 @@
 	/* The player's photo, else the picture the fighter's data brings, filling the field. */
 	const shown = $derived(photo ?? (card.image ? { url: card.image, size: 'cover', position: '50% 50%' } : null));
 
+	/* Where there is no picture, the field carries the fighter's initials: first
+	   and last word of the name, or of the type for a fighter without a name; a
+	   hyphen divides words. A single word gives its first two letters, a type of
+	   one word its first. */
+	const initials = $derived.by(() => {
+		const first = (word: string) => word.match(/\p{L}/u)?.[0] ?? '';
+		const words = (card.unnamed ? card.subtitle : card.name).trim().split(/[\s-]+/);
+		if (words.length > 1) return (first(words[0]) + first(words[words.length - 1])).toUpperCase();
+		const [one = '', two = ''] = words[0].match(/\p{L}/gu) ?? [];
+		return card.unnamed ? one.toUpperCase() : one.toUpperCase() + two.toLowerCase();
+	});
+
 	/* Each figure as the Warband Deck's card reads it: the layers the card was
 	   built with, then the battle's own – what a mark or a stage of the faction's
 	   count adds, kept above the game's floor, and last the damage Health counts
@@ -118,6 +130,7 @@
 					? ` --photo: url(${shown.url}); --photo-size: ${shown.size}; --photo-pos: ${shown.position};`
 					: ''}"
 			></div>
+			{#if !shown && initials}<span class="initials" aria-hidden="true">{initials}</span>{/if}
 		</div>
 		<div class="image-header">
 			<h2 class="name" style="--chars: {card.name.length}">
@@ -232,6 +245,22 @@
 			),
 			var(--photo) var(--photo-pos) / var(--photo-size) no-repeat,
 			var(--card-green);
+	}
+
+	/* A watermark over the field and its blood; decoration, the name beside it
+	   carries the text. */
+	.initials {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: 'Grenze Gotisch', serif;
+		font-weight: 600;
+		font-size: calc(100 * var(--u));
+		line-height: 1;
+		color: rgb(255 255 255 / 0.32);
+		pointer-events: none;
 	}
 
 	/* A picture from the data is black on white: screened over the card's colour,

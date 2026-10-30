@@ -80,7 +80,8 @@ campaign.
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its
   rules, with the characteristic, the keyword or the bar on reactions it brings
-- Turn a fighter's card over to write on it, add a photo, move equipment to
+- Turn a fighter's card over to write on it, add a photo (without one the card
+  shows the fighter's initials), move equipment to
   and from the stash, correct its campaign, spend renown or dismiss it – see
   [Between battles in Black Death City](docs/black-death-city/between-battles.md)
   and [in Wyrdcry](docs/wyrdcry/between-battles.md)
