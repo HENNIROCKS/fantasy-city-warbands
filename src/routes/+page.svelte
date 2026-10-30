@@ -295,7 +295,7 @@
 		</div>
 
 		<section>
-			<p class="field-label">Your warbands</p>
+			<p class="field-label">Your warbands{#if loaded && warbands.length > 0}{' '}({warbands.length}){/if}</p>
 			{#if !loaded}
 				<!-- Read in a moment; nothing to say until then. -->
 			{:else if warbands.length === 0}

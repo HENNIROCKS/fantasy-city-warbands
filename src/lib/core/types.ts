@@ -1008,6 +1008,8 @@ export interface Faction {
 	origin: 'official' | 'homebrew';
 	/** Who wrote the rules this faction comes from. */
 	author: string;
+	/** Which version of a homebrew faction the data follows; an official one has none. */
+	version?: string;
 	source?: Source;
 	/**
 	 * The faction's own rules, shown as text when it is picked. `except` are

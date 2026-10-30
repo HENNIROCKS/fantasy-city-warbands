@@ -360,6 +360,7 @@ interface RawFaction {
 	warband_size: { min: number; max: number | null };
 	origin: 'official' | 'homebrew';
 	author: string;
+	version?: string;
 	source?: Source;
 	/** Hired swords a homebrew faction adds itself to, beside those whose own file names it. */
 	may_hire?: string[];
@@ -918,6 +919,7 @@ function build(
 		name: meta.name,
 		origin: meta.origin,
 		author: meta.author,
+		...(meta.version ? { version: meta.version } : {}),
 		...(meta.source ? { source: meta.source } : {}),
 		/* A rule with a pick is asked for as a choice; the rest is read, not decided.
 		   A HIRED SWORD carries no faction keyword, so none of them reaches it. */
