@@ -98,8 +98,7 @@ campaign.
   and [in Wyrdcry](docs/wyrdcry/battle.md)
 - Hire a Wyrdcry hired sword for one battle – the ten official ones and six
   homebrew, the Goblin Shaman's role and the Troll's kin picked as it is
-  hired, each source linked, the homebrew ones and the Rat Ogre with a picture
-  of their own, the Dark Warrior refused beside what her rules forbid – listed
+  hired, each source linked and with a picture of its own, the Dark Warrior refused beside what her rules forbid – listed
   on the warband card, its fee
   paid in the aftermath – see
   [Hired swords](docs/wyrdcry/hired-swords.md)

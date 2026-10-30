@@ -11,8 +11,8 @@ in the same visit.
 
 **The back of a fighter's card.** Tap the pencil under the card. There you can:
 
-- write a name, fluff and notes, and add a photo of the model; a fighter
-  starts with the fluff its rules give it, where they give one, ready to rewrite
+- write a name, fluff and notes, and add a photo of the model, which
+  takes the place of its initials; a fighter starts with the fluff its rules give it, where they give one, ready to rewrite
 - move equipment to the stash and back
 - correct renown, injuries and why a fighter sits out
 - spend renown. Your leader starts with one level, which buys a heroic

@@ -39,8 +39,7 @@ Send it away and the next one is free instead.
 
 **In the battle.** Its card comes after your fighters, and the warband card
 lists it under *Hired swords*; tap its name to go there. It carries the fluff
-its rules give it, and the Rat Ogre and the homebrew ones a picture whose ink
-takes your warband's colour. Count its damage and
+its rules give it, and a picture whose ink takes your warband's colour. Count its damage and
 mark it activated like any fighter. It does not count when the app checks
 whether your warband wavers, and it has nothing to write on its back.
 

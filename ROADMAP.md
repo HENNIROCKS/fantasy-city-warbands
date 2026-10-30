@@ -13,7 +13,7 @@
 - [x] 🛠️ Build a warband in five steps – game, faction, the warband's choice, fighters, finish – with budget, limits and what a fighter may carry checked, and whatever would break them disabled with the reason
 - [x] 🛠️ Keep a warband up to date: come back to any step, duplicate or remove a fighter, star a favourite, delete after a question, recruit and dismiss between battles
 - [x] 📚 Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book and the six official factions, with the author's answers; where the app reads the rules its own way, in DEVIATIONS.md
-- [x] 📚 Wyrdcry homebrew: Clan Pestilens, the Greenskin Marauders and six hired swords
+- [x] 📚 Wyrdcry homebrew: Clan Pestilens, the Greenskin Marauders, the Shadow Warriors and six hired swords
 - [x] 📚 Black Death City Playtest v1.03: the four factions with their wargear, Origins and carrying limits, starting experience and the warband rating, special rules, skills and signature spells, the Misbegotten's mutations, the six scenarios with their twists; older saved warbands carried over
 - [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos or else initials, fluff and notes on the back, derived values explained when tapped, pictures for hired swords; Black Death City's armour, shields, Heavy Plating and a Held Item beside a two-handed weapon counted into the figures
 - [x] ⚔️ Track a battle on the cards: damage, states, rounds with undo, the result into the battle history or Cancel battle; Wyrdcry's morale, poison, wounds, the fifth round and single-use items; Black Death City's bloodied fighters, flee test, prepared spells, underdog, scenario, twist and both warbands' points
@@ -34,5 +34,4 @@ Nothing promised, nothing planned.
 - 🃏 Faction rules on the warband card as well, not only on every fighter card
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
-- 🃏 A picture on every other hired sword's card, black on white beside its file
 - 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged
