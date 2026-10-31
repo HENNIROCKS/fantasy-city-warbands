@@ -569,16 +569,6 @@ const hiredSwords = Object.values(
 	import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.json', { eager: true, import: 'default' })
 ) as RawHiredSword[];
 
-/*
- * A hired sword's picture lies beside its file, named by its id: `dark-warrior.jpg`;
- * a role's by both ids: `troll-river-troll.jpg`.
- */
-const hiredImages = new Map(
-	Object.entries(import.meta.glob('/src/lib/rules/wyrdcry/hired-swords/*.jpg', { eager: true, import: 'default', query: '?url' }) as Record<string, string>).map(
-		([path, url]) => [path.replace(/^.*\/|\.jpg$/g, ''), url]
-	)
-);
-
 /* A hired sword's own weapon goes into the shared list; one whose id is
    taken there already is left out, so the game's own weapon keeps its profile.
    A homebrew faction may sell the same weapon, as the Shadow Warriors sell the
@@ -1049,11 +1039,7 @@ const hirelings: Hireling[] = hiredSwords
 	.map((h) => {
 		/* An ability a role brings is the role's, not the hired sword's own. */
 		const roles = new Set((h.choose?.roles ?? []).map((r) => r.ability));
-		const chosen = choiceOf(h.choose, [], new Map(h.abilities.map((a) => [a.id, a])));
-		const choice = chosen && {
-			...chosen,
-			options: chosen.options.map((o) => (hiredImages.has(`${h.id}-${o.id}`) ? { ...o, image: hiredImages.get(`${h.id}-${o.id}`) } : o))
-		};
+		const choice = choiceOf(h.choose, [], new Map(h.abilities.map((a) => [a.id, a])));
 		return {
 			fighter: {
 				id: h.id,
@@ -1064,7 +1050,6 @@ const hirelings: Hireling[] = hiredSwords
 				profile: h.profile,
 				rules: h.abilities.filter((a) => !roles.has(a.id)).map((a) => ({ name: a.name, text: a.text, type: a.type })),
 				...fluffOf(h.description),
-				...(hiredImages.has(h.id) ? { image: hiredImages.get(h.id) } : {}),
 				wargear: [],
 				unequipped: 'A HIRED SWORD comes with its own equipment',
 				gear: h.gear,

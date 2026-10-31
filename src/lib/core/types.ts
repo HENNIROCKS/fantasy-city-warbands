@@ -965,8 +965,6 @@ export interface FighterChoiceOption {
 	group?: string;
 	/** What the fighter is called once it has picked this, in place of its type: a hired sword's role, `River Troll`. */
 	title?: string;
-	/** A picture of its own, in place of the fighter's `image`: a hired sword's role. */
-	image?: string;
 }
 
 /** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */
@@ -1013,8 +1011,6 @@ export interface Fighter {
 	rules: Rule[];
 	/** The background its rules give it, on its card and the back's field until the player writes their own. */
 	fluff?: string;
-	/** The URL of a picture its data brings, black on white, in the image field where there is no photo. */
-	image?: string;
 	/**
 	 * The wargear ids offered to this fighter. Whether it may take one, and
 	 * beside what, is the game's `carry`.

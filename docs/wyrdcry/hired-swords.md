@@ -10,7 +10,7 @@ up the battle.
 
 **A pick.** The Goblin Shaman comes in one of six roles, the Troll as a Stone
 or a River Troll. Tap it, then tap the role: its card is named after it and
-shows the talent, the weapon and the picture that come with it. To pick again,
+shows the talent and the weapon that come with it. To pick again,
 send it away and hire it anew.
 
 **Homebrew.** Six of them are homebrew, listed under their own heading at the
@@ -39,7 +39,7 @@ Send it away and the next one is free instead.
 
 **In the battle.** Its card comes after your fighters, and the warband card
 lists it under *Hired swords*; tap its name to go there. It carries the fluff
-its rules give it, and a picture whose ink takes your warband's colour. Count its damage and
+its rules give it. Count its damage and
 mark it activated like any fighter. It does not count when the app checks
 whether your warband wavers, and it has nothing to write on its back.
 
