@@ -188,10 +188,14 @@ export function toggleWaiting(battle: BattleState | null, instanceId: string): B
 	return write(battle, instanceId, { waiting: !stateOf(battle, instanceId).waiting, activated: false });
 }
 
-/** A mark the game declares, set or cleared. It neither ends an activation nor excludes another state. */
-export function toggleMark(battle: BattleState | null, instanceId: string, key: string): BattleState {
+/**
+ * A mark the game declares, set or cleared. It neither ends an activation nor
+ * excludes another state, except that setting it clears the marks in `clears`.
+ */
+export function toggleMark(battle: BattleState | null, instanceId: string, key: string, clears: string[] = []): BattleState {
 	const marks = stateOf(battle, instanceId).marks;
-	return write(battle, instanceId, { marks: { ...marks, [key]: !marks[key] } });
+	const cleared = marks[key] ? [] : clears;
+	return write(battle, instanceId, { marks: { ...Object.fromEntries(Object.entries(marks).filter(([k]) => !cleared.includes(k))), [key]: !marks[key] } });
 }
 
 /** A roll before the battle on one of the fighter's tables; the same result again takes it back. */
@@ -227,12 +231,17 @@ export function adjustScore(battle: BattleState | null, side: keyof Score, delta
 
 /**
  * Allocates or takes back damage points. A fighter holding damage equal to its
- * Health is out of action, and anything past that is discarded.
+ * Health is out of action, and anything past that is discarded. Going out of
+ * action clears the marks listed in `drops`, which taking the damage back does
+ * not restore.
  */
-export function allocate(battle: BattleState | null, instanceId: string, delta: number, health: number): BattleState {
+export function allocate(battle: BattleState | null, instanceId: string, delta: number, health: number, drops: string[] = []): BattleState {
 	const ceiling = Math.max(0, health);
-	const damage = Math.min(ceiling, Math.max(0, stateOf(battle, instanceId).damage + delta));
-	return write(battle, instanceId, { damage, out: health > 0 && damage >= health });
+	const state = stateOf(battle, instanceId);
+	const damage = Math.min(ceiling, Math.max(0, state.damage + delta));
+	const out = health > 0 && damage >= health;
+	const marks = out && !state.out ? Object.fromEntries(Object.entries(state.marks).filter(([key]) => !drops.includes(key))) : state.marks;
+	return write(battle, instanceId, { damage, out, marks });
 }
 
 /**
@@ -269,13 +278,19 @@ export function undoRound(battle: BattleState): BattleState {
 
 /**
  * How many of the given fighters still have to act this round. A fighter that is
- * waiting counts – it is coming back – and one that is out of action does not.
+ * waiting counts – it is coming back – and one that is out of action or carries
+ * a mark of `gone` does not.
  */
-export function remaining(battle: BattleState | null, instanceIds: string[]): number {
+export function remaining(battle: BattleState | null, instanceIds: string[], gone: string[] = []): number {
 	return instanceIds.filter((id) => {
 		const state = stateOf(battle, id);
-		return !state.activated && !state.out;
+		return !state.activated && !state.out && !gone.some((key) => state.marks[key]);
 	}).length;
+}
+
+/** How many of the given fighters carry the mark. */
+export function marked(battle: BattleState | null, instanceIds: string[], key: string): number {
+	return instanceIds.filter((id) => stateOf(battle, id).marks[key]).length;
 }
 
 /** How many of the given fighters are out of action. */

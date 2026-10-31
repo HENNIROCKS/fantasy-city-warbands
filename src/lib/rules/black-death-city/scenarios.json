@@ -31,6 +31,11 @@
 			"roll": 2,
 			"name": "Glimmers in the Dark",
 			"page": 39,
+			"score": { "label": "Escaped", "ends": 3, "counts": "escaped" },
+			"marks": [
+				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
+				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
+			],
 			"intro": "There are rumours abound of treasure hidden amidst a ruined district of the city, and now two rival warbands race to be the first to claim it.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with clusters of ruined buildings and narrow winding streets between them." },
@@ -82,6 +87,10 @@
 			"name": "The Chapel",
 			"page": 43,
 			"score": { "label": "Death marks", "ends": 8 },
+			"marks": [
+				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
+				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
+			],
 			"intro": "Here lies once hallowed ground. A chapel dedicated to one of the city’s many saints. Now destroyed and its roof caved in. It may have been stripped of all its treasures long ago, but the only way to find out is to first venture inside.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a **chapel** at the centre. The chapel is an area 12\" by 16\", and can be denoted with four corner ruins or other suitable terrain features.\nOutside the chapel should consist of narrow streets and ruined buildings." },
@@ -131,6 +140,11 @@
 			"roll": 6,
 			"name": "The Find",
 			"page": 47,
+			"score": { "label": "Escaped", "ends": 3, "counts": "escaped" },
+			"marks": [
+				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
+				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
+			],
 			"intro": "A band of fighters have discovered a stash of treasure hidden in a ruined holding, now they must defend it from their rivals and hold out until their allies arrive.",
 			"sections": [
 				{ "phase": "before", "name": "Attacker & Defender", "text": "The players roll off, the winner is the **Attacker**, the loser is the **Defender**. Roll again in the case of a tie." },

@@ -189,7 +189,7 @@
 	});
 	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
 	const out = $derived(outOfAction(battle, fighterIds));
-	const toAct = $derived(remaining(battle, fighterIds));
+	const toAct = $derived(remaining(battle, fighterIds, (rules?.marks ?? []).filter((m) => m.off).map((m) => m.key)));
 	/* A hired fighter acts with the rest but leaves the warband's morale and its flee test alone. */
 	const roster = $derived(
 		cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight, health: c.health.value }] : []))
@@ -217,11 +217,12 @@
 		};
 	}
 
-	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers. */
+	/* The marks the fighter on top can carry: one bound to a keyword only for its carriers, one with an `except` not for theirs, and one that drops or leaves the battlefield not for a fighter out of action, unless it already stands. */
 	const topMarks = $derived(
 		topFighter
 			? (rules?.marks ?? [])
-					.filter((m) => !m.keyword || topFighter.keywordIds.includes(m.keyword))
+					.filter((m) => (!m.keyword || topFighter.keywordIds.includes(m.keyword)) && !m.except?.some((k) => topFighter.keywordIds.includes(k)))
+					.filter((m) => !(m.off || m.dropsOnOut) || !stateOf(battle, topFighter.instanceId).out || stateOf(battle, topFighter.instanceId).marks[m.key])
 					.map((m) => ({ key: m.key, label: m.label, on: !!stateOf(battle, topFighter.instanceId).marks[m.key] }))
 			: []
 	);

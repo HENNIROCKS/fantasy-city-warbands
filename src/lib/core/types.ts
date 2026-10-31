@@ -302,6 +302,8 @@ export interface Scenario {
 	page: number;
 	/** What both warbands score towards, where the scenario is won on points. Without it, nothing is counted. */
 	score?: ScenarioScore;
+	/** States a fighter can be marked with in this scenario's battle, after the game's own. Without it, none. */
+	marks?: BattleMark[];
 	intro: string;
 	sections: ScenarioSection[];
 	/** What its twist is rolled with: `d6`, `d3`. */
@@ -310,13 +312,20 @@ export interface Scenario {
 }
 
 /**
- * Points both warbands score through the battle: at the end of a round, a
- * warband with `ends` or more ends it, unless the score is tied.
+ * Points both warbands score through the battle: by default at the end of a
+ * round, a warband with `ends` or more ends it, unless the score is tied;
+ * `counts` sets that aside.
  */
 export interface ScenarioScore {
 	/** `Victory points`, `Domination marks`. */
 	label: string;
 	ends: number;
+	/**
+	 * The key of a `BattleMark` whose bearers are the warband's own count, so only
+	 * the opponent's is entered. Such a count ends the battle as soon as a warband
+	 * reaches `ends`, not at the end of a round, and cannot be tied.
+	 */
+	counts?: string;
 }
 
 export interface ScenarioSection {
@@ -402,8 +411,16 @@ export interface BattleMark {
 	label: string;
 	/** Only a fighter with this keyword can be marked, such as a `hero` for its heroic reaction. */
 	keyword?: string;
+	/** Never offered to a fighter with one of these keywords, such as a `beast` for what it cannot carry. */
+	except?: string[];
 	/** Whether the next round clears it, or only the end of the battle. */
 	lasts: 'round' | 'battle';
+	/** The fighter has left the battlefield: it has no activation left to make. */
+	off?: true;
+	/** Cleared when the fighter is taken out of action, such as a carried treasure it drops. */
+	dropsOnOut?: true;
+	/** The keys of the marks that setting this one clears, such as the treasure a fighter leaves the battlefield with. */
+	clears?: string[];
 	/** What it does to the characteristics while it stands, by stat key. */
 	bonus?: Record<string, number>;
 	/** What it does in one situation only, such as cover against a ranged attack. */

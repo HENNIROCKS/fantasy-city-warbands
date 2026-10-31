@@ -4,9 +4,9 @@
  * table and the results tapped; both are kept with the battle.
  */
 
-import { start, type BattleState, type Score } from './battle';
+import { marked, start, type BattleState, type Score } from './battle';
 import type { CardValue } from './card';
-import type { GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
+import type { BattleMark, GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
 import { underdogSide } from './underdog';
 
 /** The scenario picked for the battle and its twist; null where none is picked or the game has none. */
@@ -17,32 +17,57 @@ export function scenarioOf(game: GameSystem, battle: BattleState | null): { scen
 	return { scenario, twist: scenario.twists.find((t) => t.roll === picked.twist) ?? null };
 }
 
+/** The battle without the marks the scenario picked brings, which belong to it alone. */
+function withoutScenarioMarks(game: GameSystem, battle: BattleState): BattleState {
+	const own = new Set((game.battle?.marks ?? []).map((m) => m.key));
+	const gone = (scenarioOf(game, battle)?.scenario.marks ?? []).map((m) => m.key).filter((key) => !own.has(key));
+	if (!gone.length) return battle;
+	const fighters = Object.fromEntries(
+		Object.entries(battle.fighters).map(([id, state]) => [id, { ...state, marks: Object.fromEntries(Object.entries(state.marks ?? {}).filter(([key]) => !gone.includes(key))) }])
+	);
+	return { ...battle, fighters };
+}
+
 /**
  * The battle with the scenario picked, starting it if none is running, as
- * hiring does; another scenario drops the twist and the points, which
- * belong to the one before. Null takes the scenario back.
+ * hiring does; another scenario drops the twist, the points and the marks,
+ * which belong to the one before. Null takes the scenario back.
  */
-export function setScenario(battle: BattleState | null, id: string | null): BattleState | null {
+export function setScenario(game: GameSystem, battle: BattleState | null, id: string | null): BattleState | null {
 	if (id === null) {
 		if (!battle?.scenario) return battle;
-		const { scenario: _picked, score: _scored, ...rest } = battle;
+		const { scenario: _picked, score: _scored, ...rest } = withoutScenarioMarks(game, battle);
 		return rest;
 	}
 	const current = battle ?? start();
 	if (current.scenario?.id === id) return current;
-	const { score: _scored, ...rest } = current;
+	const { score: _scored, ...rest } = withoutScenarioMarks(game, current);
 	return { ...rest, scenario: { id, twist: null } };
 }
 
-/** The points both warbands have scored to the scenario; `over` where the end of this round ends the battle. */
+/**
+ * The points both warbands have scored to the scenario; `over` where the battle
+ * ends with this round, or at once where the score `counts` a mark.
+ */
 export type ScoreState = ScenarioScore & Score & { over: boolean };
 
-/** The points as they stand, where the scenario picked counts them. */
+/**
+ * The points as they stand, where the scenario picked counts them. Where it
+ * `counts` a mark, the warband's own are the fighters carrying it and only the
+ * opponent's are entered.
+ */
 export function scoreOf(game: GameSystem, battle: BattleState | null): ScoreState | null {
 	const rules = scenarioOf(game, battle)?.scenario.score;
 	if (!rules) return null;
-	const { us, them } = battle?.score ?? { us: 0, them: 0 };
-	return { ...rules, us, them, over: Math.max(us, them) >= rules.ends && us !== them };
+	const entered = battle?.score ?? { us: 0, them: 0 };
+	const us = rules.counts ? marked(battle, Object.keys(battle?.fighters ?? {}), rules.counts) : entered.us;
+	const { them } = entered;
+	return { ...rules, us, them, over: Math.max(us, them) >= rules.ends && (!!rules.counts || us !== them) };
+}
+
+/** The marks a fighter can carry in the battle: the game's, then those the scenario picked brings. */
+export function battleMarks(game: GameSystem, battle: BattleState | null): BattleMark[] {
+	return [...(game.battle?.marks ?? []), ...(scenarioOf(game, battle)?.scenario.marks ?? [])];
 }
 
 /** The battle with the twist picked by its roll, or taken back with null; only once a scenario is picked. */

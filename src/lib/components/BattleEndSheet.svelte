@@ -11,6 +11,7 @@
 	let {
 		round,
 		out,
+		carried = [],
 		end = $bindable(),
 		onapply,
 		onclose
@@ -18,6 +19,8 @@
 		round: number;
 		/** How many were out of action when it was asked, as the bar counted them. */
 		out: number;
+		/** What fighters carry out of the battle, as the scenario's marks name it: `Holding treasure`, with how many. */
+		carried?: { label: string; count: number }[];
 		end: BattleEnd;
 		onapply: () => void | Promise<void>;
 		onclose: () => void;
@@ -45,7 +48,7 @@
 	<div class="card back sheet" role="dialog" aria-modal="true" aria-labelledby="battle-end-title">
 		<div class="scroll">
 			<h2 class="name" id="battle-end-title">End the battle</h2>
-			<p class="page-count">Round {round}{#if out > 0}{' '}· {out} out of action{/if}</p>
+			<p class="page-count">Round {round}{#if out > 0}{' '}· {out} out of action{/if}{#each carried as c (c.label)}{' '}· {c.count} {c.label.toLowerCase()}{/each}</p>
 			<div class="parchment">
 				<BattleResult bind:end />
 			</div>

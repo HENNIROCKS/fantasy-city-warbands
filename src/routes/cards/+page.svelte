@@ -24,7 +24,7 @@
 	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
-	import { scenarioOf, scoreOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
+	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
 	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
@@ -225,8 +225,11 @@
 		return isWavering(battle, roster, morale.wavers);
 	}
 
+	/* The game's battle rules with the marks the scenario picked adds. */
+	const battleRules = $derived(system?.game.battle ? { ...system.game.battle, marks: battleMarks(system.game, battle) } : undefined);
+
 	/* The marks the next round clears. */
-	const roundMarks = $derived((system?.game.battle?.marks ?? []).filter((m) => m.lasts === 'round').map((m) => m.key));
+	const roundMarks = $derived((battleRules?.marks ?? []).filter((m) => m.lasts === 'round').map((m) => m.key));
 
 	const title = $derived(warband?.name.trim() || faction?.name || 'Cards');
 
@@ -573,7 +576,15 @@
 
 	function wound(instanceId: string, delta: number, health: number) {
 		const wasOut = stateOf(battle, instanceId).out;
-		setBattle(allocate(battle, instanceId, delta, health));
+		setBattle(
+			allocate(
+				battle,
+				instanceId,
+				delta,
+				health,
+				battleRules?.marks.filter((m) => m.dropsOnOut).map((m) => m.key)
+			)
+		);
 		/* Played within the tap itself, which is what lets iOS sound it. */
 		if (sound && !wasOut && stateOf(battle, instanceId).out) {
 			audio ??= new Audio(scream);
@@ -594,6 +605,12 @@
 	let opener: HTMLElement | null = null;
 	/* How many were out when it was asked, as the bar counted them. */
 	let askedOut = $state(0);
+	/* What the scenario's marks hold at the end, such as the treasure carried: each mark by label with the fighters carrying it, where any do. */
+	const carried = $derived(
+		(system ? (scenarioOf(system.game, battle)?.scenario.marks ?? []) : [])
+			.map((m) => ({ label: m.label, count: Object.values(battle?.fighters ?? {}).filter((f) => f.marks?.[m.key]).length }))
+			.filter((m) => m.count > 0)
+	);
 
 	function holdFocus(out: number) {
 		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -967,12 +984,12 @@
 				columns={system.game.weaponStats.map((s) => s.label)}
 				edit={nameField}
 				{battle}
-				rules={system.game.battle}
+				rules={battleRules}
 				counter={faction.counter}
 				onwound={wound}
 				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
 				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
-				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key))}
+				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key, battleRules?.marks.find((m) => m.key === key)?.clears))}
 				onuse={(instanceId, wargear, on) => setBattle(useItem(battle, instanceId, wargear, on))}
 				onunuse={(instanceId, at) => setBattle(unuseItem(battle, instanceId, at))}
 				oncount={(delta) => setBattle(adjustCounter(battle, delta))}
@@ -1120,7 +1137,7 @@
 					<div class="mb-4 space-y-1.5" role="group" aria-labelledby="scenario-roll">
 						{#each scenarios.list as scenario (scenario.id)}
 							{@const on = picked?.scenario.id === scenario.id}
-							<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setScenario(battle, on ? null : scenario.id))}>
+							<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setScenario(system.game, battle, on ? null : scenario.id))}>
 								<span class="inline-block w-6 font-semibold">{scenario.roll}</span>{scenario.name}
 							</button>
 						{/each}
@@ -1149,27 +1166,37 @@
 	<div class="sheet-backdrop">
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="score-title">
 			<h2 id="score-title">{score.label}</h2>
-			<p class="count">{score.ends} or more at the end of a round ends the battle, unless tied</p>
+			<p class="count">
+				{#if score.counts}{score.ends} {score.label.toLowerCase()} end the battle at once{:else}{score.ends} or more at the end of a round ends the battle, unless tied{/if}
+			</p>
 			{#each [{ side: 'us', label: 'You' }, { side: 'them', label: 'Your opponent' }] as const as row (row.side)}
 				<section class="mb-3">
 					<p class="field-label" id="score-{row.side}">{row.label}</p>
-					<div class="tally-row" role="group" aria-labelledby="score-{row.side}">
-						<button
-							type="button"
-							class="tally-step"
-							aria-label="Less {score.label.toLowerCase()} for {row.label.toLowerCase()}"
-							disabled={score[row.side] <= 0}
-							onclick={() => setBattle(adjustScore(battle, row.side, -1))}>−</button
-						>
-						<output class="tally-count">{score[row.side]}</output>
-						<button type="button" class="tally-step" aria-label="More {score.label.toLowerCase()} for {row.label.toLowerCase()}" onclick={() => setBattle(adjustScore(battle, row.side, 1))}
-							>+</button
-						>
-					</div>
+					{#if score.counts && row.side === 'us'}
+						<!-- Counted from the fighters carrying the mark, so there is nothing to step. -->
+						<div class="tally-row" role="group" aria-labelledby="score-{row.side}">
+							<output class="tally-count">{score.us}</output>
+						</div>
+						<p class="count">Mark each fighter on its card, in State.</p>
+					{:else}
+						<div class="tally-row" role="group" aria-labelledby="score-{row.side}">
+							<button
+								type="button"
+								class="tally-step"
+								aria-label="Less {score.label.toLowerCase()} for {row.label.toLowerCase()}"
+								disabled={score[row.side] <= 0}
+								onclick={() => setBattle(adjustScore(battle, row.side, -1))}>−</button
+							>
+							<output class="tally-count">{score[row.side]}</output>
+							<button type="button" class="tally-step" aria-label="More {score.label.toLowerCase()} for {row.label.toLowerCase()}" onclick={() => setBattle(adjustScore(battle, row.side, 1))}
+								>+</button
+							>
+						</div>
+					{/if}
 				</section>
 			{/each}
 			{#if score.over}
-				<p class="notice">The battle ends at the end of this round.</p>
+				<p class="notice">{score.counts ? 'The battle ends now.' : 'The battle ends at the end of this round.'}</p>
 			{/if}
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeScore}>Done</button>
@@ -1334,7 +1361,7 @@
 {/if}
 
 {#if ending && battle}
-	<BattleEndSheet round={battle.round} out={askedOut} bind:end={ending} onapply={applyBattleEnd} onclose={keepPlaying} />
+	<BattleEndSheet round={battle.round} out={askedOut} {carried} bind:end={ending} onapply={applyBattleEnd} onclose={keepPlaying} />
 {/if}
 
 {#if asking && battle}

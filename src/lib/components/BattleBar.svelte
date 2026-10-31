@@ -281,9 +281,11 @@
 						     answers lead on or out; after the last round there is no next. Ending
 						     the battle by hand stays beside the flee test, for a scenario won or
 						     a warband that flees of its own will. Points enough end it before
-						     any flee test. -->
+						     any flee test, and a count of marks ends it at once, in mid-round. -->
 						{#if score?.over}
-							<p>End of round {battle.round} – {score.label.toLowerCase()} {score.us} to {score.them}: the battle ends.</p>
+							<p>
+								{#if score.counts}{score.label} {score.us} to {score.them}{:else}End of round {battle.round} – {score.label.toLowerCase()} {score.us} to {score.them}{/if}: the battle ends.
+							</p>
 						{:else if flee}
 							<p>End of round {battle.round} – {flee.label}, {flee.roll}:</p>
 							<button onclick={() => onnext?.()}>{flee.goOn}: Round {battle.round + 1}</button>
