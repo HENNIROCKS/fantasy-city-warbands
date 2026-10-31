@@ -17,6 +17,26 @@ shows; the menu says how many are still to roll. The spell stands on the
 caster's card for this battle. A roll that shows a signature spell brings
 nothing. You can change a roll until the second round.
 
+**Battle groups.** Most scenarios divide the warband into groups, and the
+groups that do not start on the field wait in reserve. While the battle is being
+set up, tap **Battle → Battle groups**. The app divides the fighters as evenly
+as it can. Tap a fighter and then another to swap them, or tap a fighter and
+then *Move here* under a group. Under *Starts on the field* tap the groups you set up;
+all the others go into reserve. Fighters without a name show their type. A
+fighter in reserve has a hatched stroke above the deck, says *In reserve* on
+its card and no longer counts under *to act*. In Street of Death the Defender's
+first group is the Hit and the fighters who go with them: move those into it by
+hand, as the group sizes need not be equal there. Changing the scenario or its
+twist starts the groups afresh, as does a change of underdog that puts you on
+the other side of the scenario's rules.
+
+**Reinforcements.** From the round the scenario names, **Battle →
+Reinforcements** lists the fighters in reserve by group. Roll for each fighter
+of the group you choose, as the scenario says, and tap what the dice show; the
+fighter comes onto the field. A fighter that does not arrive stays in the list
+for next round. Where a twist lets a group arrive without a roll, tap the
+group.
+
 **Damage.** Under a fighter's card, **−** takes one point of life and **+**
 gives it back. With one point left the card says *Bloodied*. At none the
 fighter is out of action, and you hear a scream. You can switch the scream off

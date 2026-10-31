@@ -23,7 +23,8 @@
 - [x] 🎨 The interface: light and dark mode in the Card Creator's design, the app icon, an about page, guides under the gear, the update bar, a ring per game for how much of it the app carries, a start screen after Urs Graf and the tuck box
 - [x] ⚙️ Under the hood: deploy to GitHub Pages, storage in IndexedDB, offline once opened, a new version offered as soon as it is deployed
 - [x] ⚔️ Black Death City's treasure: who holds it, who escaped with it, the battle ending on a third escape
-- [ ] ⚔️ Black Death City's battle groups: split, reserve and reinforcements
+- [x] ⚔️ Black Death City's battle groups: split, reserve and reinforcements
+- [ ] ⚔️ Black Death City's Street of Death: no flee test for the Defender, who cannot flee
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis

@@ -49,6 +49,11 @@
 		hireLabel = '',
 		onrolls,
 		rollsLabel = '',
+		ongroups,
+		groupsLabel = '',
+		onreinforce,
+		reinforceLabel = '',
+		hiddenMarks = [],
 		onshow,
 		readonly = false,
 		editing = false,
@@ -110,6 +115,14 @@
 		onrolls?: () => void;
 		/** What the menu calls them, with how many are still to roll: `Prepared spells (2 to roll)`. */
 		rollsLabel?: string;
+		/** Opens the battle groups, where the scenario has any and the battle is still being set up. */
+		ongroups?: () => void;
+		groupsLabel?: string;
+		/** Opens the reinforcements, while a fighter is in reserve and its group may arrive. */
+		onreinforce?: () => void;
+		reinforceLabel?: string;
+		/** Marks the State menu does not offer, as one only the app sets. */
+		hiddenMarks?: string[];
 		/** Opens the code that shows the opponent the warband, while no battle runs. */
 		onshow?: () => void;
 		/** Cards only to look at, as an opponent sees them: no battle bar, nothing to turn over. */
@@ -189,7 +202,9 @@
 	});
 	const fighterIds = $derived(cards.filter((c) => c.kind === 'fighter').map((c) => c.instanceId));
 	const out = $derived(outOfAction(battle, fighterIds));
-	const toAct = $derived(remaining(battle, fighterIds, (rules?.marks ?? []).filter((m) => m.off).map((m) => m.key)));
+	/* The keys of the marks that take a fighter off the battlefield, such as being in reserve. */
+	const offMarks = $derived((rules?.marks ?? []).filter((m) => m.off).map((m) => m.key));
+	const toAct = $derived(remaining(battle, fighterIds, offMarks));
 	/* A hired fighter acts with the rest but leaves the warband's morale and its flee test alone. */
 	const roster = $derived(
 		cards.flatMap((c) => (c.kind === 'fighter' && !c.hired ? [{ instanceId: c.instanceId, weight: c.weight, health: c.health.value }] : []))
@@ -223,6 +238,7 @@
 			? (rules?.marks ?? [])
 					.filter((m) => (!m.keyword || topFighter.keywordIds.includes(m.keyword)) && !m.except?.some((k) => topFighter.keywordIds.includes(k)))
 					.filter((m) => !(m.off || m.dropsOnOut) || !stateOf(battle, topFighter.instanceId).out || stateOf(battle, topFighter.instanceId).marks[m.key])
+					.filter((m) => !hiddenMarks.includes(m.key))
 					.map((m) => ({ key: m.key, label: m.label, on: !!stateOf(battle, topFighter.instanceId).marks[m.key] }))
 			: []
 	);
@@ -461,6 +477,7 @@
 						class:activated={state?.activated}
 						class:waiting={state?.waiting}
 						class:out={state?.out}
+						class:off={!state?.out && offMarks.some((key) => state?.marks[key])}
 					></span>
 				{/each}
 			</div>
@@ -513,6 +530,10 @@
 			{hireLabel}
 			{onrolls}
 			{rollsLabel}
+			{ongroups}
+			{groupsLabel}
+			{onreinforce}
+			{reinforceLabel}
 			{onshow}
 			{ondone}
 			{oncancel}
@@ -689,6 +710,16 @@
 
 	.tick.active.out {
 		background: var(--card-blood);
+	}
+
+	/* A fighter off the battlefield, in reserve or escaped, is hatched: it is
+	   neither still to come nor gone from the stack. */
+	.tick.off {
+		background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0 1px, transparent 1px 3px);
+	}
+
+	.tick.active.off {
+		background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0 1px, transparent 1px 3px);
 	}
 
 	@media (prefers-reduced-motion: reduce) {

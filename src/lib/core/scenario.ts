@@ -4,7 +4,7 @@
  * table and the results tapped; both are kept with the battle.
  */
 
-import { marked, start, type BattleState, type Score } from './battle';
+import { marked, start, withoutGroups, type BattleState, type Score } from './battle';
 import type { CardValue } from './card';
 import type { BattleMark, GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
 import { underdogSide } from './underdog';
@@ -36,12 +36,12 @@ function withoutScenarioMarks(game: GameSystem, battle: BattleState): BattleStat
 export function setScenario(game: GameSystem, battle: BattleState | null, id: string | null): BattleState | null {
 	if (id === null) {
 		if (!battle?.scenario) return battle;
-		const { scenario: _picked, score: _scored, ...rest } = withoutScenarioMarks(game, battle);
+		const { scenario: _picked, score: _scored, ...rest } = withoutScenarioMarks(game, withoutGroups(battle, game.scenarios?.reserve));
 		return rest;
 	}
 	const current = battle ?? start();
 	if (current.scenario?.id === id) return current;
-	const { score: _scored, ...rest } = withoutScenarioMarks(game, current);
+	const { score: _scored, ...rest } = withoutScenarioMarks(game, withoutGroups(current, game.scenarios?.reserve));
 	return { ...rest, scenario: { id, twist: null } };
 }
 

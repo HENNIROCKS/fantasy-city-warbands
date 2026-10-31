@@ -108,7 +108,7 @@ export const game: GameSystem = {
 		text: 'The warband with the lesser rating. It has priority when the priority roll is a tie, makes its flee test first when both warbands must, and resolves its rules before the battle first. Some scenarios name it as well.'
 	},
 	/* Every battle is fought to one of six scenarios, each with its own twists (pp. 35–48). */
-	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[] }
+	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[], reinforcements: scenarios.reinforcements, reserve: scenarios.reserve }
 };
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */

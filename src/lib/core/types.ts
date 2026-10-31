@@ -253,6 +253,10 @@ export interface GameSystem {
 		/** What the scenario is rolled with: `d6`. */
 		roll: string;
 		list: Scenario[];
+		/** What a fighter in reserve rolls for each round from the one its group arrives in; a scenario's `groups` can bring its own or none. */
+		reinforcements?: ReinforcementTable;
+		/** The key of the `BattleMark` that puts a fighter in reserve, as the scenarios carry it. */
+		reserve?: string;
 	};
 }
 
@@ -302,6 +306,8 @@ export interface Scenario {
 	page: number;
 	/** What both warbands score towards, where the scenario is won on points. Without it, nothing is counted. */
 	score?: ScenarioScore;
+	/** How the warband is divided into battle groups and when those in reserve arrive. Without it, every fighter starts on the field. */
+	groups?: GroupRule;
 	/** States a fighter can be marked with in this scenario's battle, after the game's own. Without it, none. */
 	marks?: BattleMark[];
 	intro: string;
@@ -340,6 +346,40 @@ export interface Twist {
 	roll: number;
 	name: string;
 	text: string;
+	/** What it changes about the battle groups; null where the battle has none. */
+	groups?: GroupOverride | null;
+}
+
+/** What a fighter in reserve rolls to arrive. */
+export interface ReinforcementTable {
+	/** What is rolled: `d6`. */
+	roll: string;
+	results: {
+		/** As the rules print it: `1–2`, `3–5`, `6`. */
+		roll: string;
+		label: string;
+		/** Whether the fighter is set up on the battlefield; otherwise it stays in reserve. */
+		arrives: boolean;
+		text: string;
+	}[];
+}
+
+/** How a warband is divided into battle groups and when its reserve arrives. */
+export interface GroupRule {
+	count: number;
+	/** The round from which reinforcements arrive. */
+	arrives: number;
+	/** How many groups start on the field unless the players tap otherwise; 1 where missing. */
+	start?: number;
+	/** Missing: the game's table. Null: the groups arrive without a roll. */
+	reinforcements?: ReinforcementTable | null;
+	/** What differs for the underdog's warband. */
+	underdog?: Omit<GroupOverride, 'for'>;
+}
+
+/** A twist's changes to a `GroupRule`, for one side only where `for` says so: the underdog, or the other warband. */
+export interface GroupOverride extends Partial<Omit<GroupRule, 'underdog'>> {
+	for?: 'underdog' | 'other';
 }
 
 /** One fighter on offer for hire, with the wargear only it carries and the factions it fights for. */

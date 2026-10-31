@@ -91,6 +91,18 @@ export interface BattleState extends BattleRound {
 	scenario?: { id: string; twist: number | null };
 	/** The points both warbands have scored to the scenario; missing until the first is counted. */
 	score?: Score;
+	/**
+	 * How the warband is divided into battle groups: how many, each fighter's by
+	 * number from 1, and which start on the field. Missing until the groups are set.
+	 */
+	groups?: BattleGroups;
+}
+
+/** The warband's battle groups. */
+export interface BattleGroups {
+	count: number;
+	of: Record<string, number>;
+	start: number[];
 }
 
 /** The points of the warband and of its opponent. */
@@ -122,7 +134,8 @@ export function readBattle(stored: Partial<BattleState> | null | undefined): Bat
 		hired: stored.hired ?? [],
 		...(stored.underdog ? { underdog: stored.underdog } : {}),
 		...(stored.scenario ? { scenario: stored.scenario } : {}),
-		...(stored.score ? { score: stored.score } : {})
+		...(stored.score ? { score: stored.score } : {}),
+		...(stored.groups ? { groups: stored.groups } : {})
 	};
 }
 
@@ -166,7 +179,8 @@ export function hire(battle: BattleState | null, instanceId: string, fighterId: 
 /** Sent away again before the battle is fought, with whatever it already carries in it. */
 export function release(battle: BattleState, instanceId: string): BattleState {
 	const { [instanceId]: _gone, ...fighters } = battle.fighters;
-	return { ...battle, hired: battle.hired.filter((h) => h.instanceId !== instanceId), fighters };
+	const groups = battle.groups && { ...battle.groups, of: Object.fromEntries(Object.entries(battle.groups.of).filter(([id]) => id !== instanceId)) };
+	return { ...battle, hired: battle.hired.filter((h) => h.instanceId !== instanceId), fighters, ...(groups ? { groups } : {}) };
 }
 
 /** Whether the battle is still being set up, so that a fighter may be hired or sent away: none running, or its first round. */
@@ -196,6 +210,18 @@ export function toggleMark(battle: BattleState | null, instanceId: string, key: 
 	const marks = stateOf(battle, instanceId).marks;
 	const cleared = marks[key] ? [] : clears;
 	return write(battle, instanceId, { marks: { ...Object.fromEntries(Object.entries(marks).filter(([k]) => !cleared.includes(k))), [key]: !marks[key] } });
+}
+
+/** A mark set or cleared, whichever it was before. */
+export function setMark(battle: BattleState | null, instanceId: string, key: string, on: boolean): BattleState {
+	const marks = stateOf(battle, instanceId).marks;
+	return marks[key] === on || (!on && !(key in marks)) ? (battle ?? start()) : write(battle, instanceId, { marks: { ...marks, [key]: on } });
+}
+
+/** The battle without its battle groups and with nobody in reserve, the reserve being the mark `reserve` names. */
+export function withoutGroups(battle: BattleState, reserve: string | undefined): BattleState {
+	const { groups: _groups, ...rest } = battle;
+	return Object.keys(rest.fighters).reduce<BattleState>((next, id) => (reserve && stateOf(next, id).marks[reserve] ? setMark(next, id, reserve, false) : next), rest);
 }
 
 /** A roll before the battle on one of the fighter's tables; the same result again takes it back. */

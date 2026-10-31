@@ -1,5 +1,14 @@
 {
 	"roll": "d6",
+	"reserve": "reserve",
+	"reinforcements": {
+		"roll": "d6",
+		"results": [
+			{ "roll": "1–2", "label": "No Sight, No Sound", "arrives": false, "text": "The fighter does not arrive this round. Make another reinforcement roll for them next round." },
+			{ "roll": "3–5", "label": "Arrival", "arrives": true, "text": "Set up the fighter within 3\" horizontally of a battlefield edge connected to their entry point and more than 6\" from all enemy fighters." },
+			{ "roll": "6", "label": "Outflank", "arrives": true, "text": "Set up the fighter anywhere on the battlefield wholly within 3\" of a battlefield edge more than 6\" from all enemy fighters." }
+		]
+	},
 	"scenarios": [
 		{
 			"id": "a-deadly-encounter",
@@ -7,6 +16,10 @@
 			"name": "A Deadly Encounter",
 			"page": 37,
 			"score": { "label": "Victory points", "ends": 8 },
+			"groups": { "count": 2, "arrives": 3 },
+			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true }
+			],
 			"intro": "Two rival warbands meet in the shadow-cast ruins of the city. With neither willing to back down, a bloody battle quickly ensues.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with clusters of ruined buildings and narrow winding streets between them." },
@@ -20,8 +33,8 @@
 			"twists": [
 				{ "roll": 1, "name": "A Brewing Storm", "text": "Dark clouds gather in the skies above, telling of coming rains.\nAt the start of each round after the first, one of the players rolls a dice. On a 1-4, the rain hasn’t started yet. On a 5+, the rain begins and no more rain rolls are made this battle.\nOnce the rain begins:\n- Fighters can only see for 12\". Other fighters and points on the battlefield, are not visible to a fighter while they are more than 12\" away.\n- Subtract 1 from **misfire rolls**, (to a minimum of 1)." },
 				{ "roll": 2, "name": "Battle for the Tower", "text": "A vantage point lies at the centre of this district. An old tower that can be used to scout out the surrounding area.\nWhen setting up the battlefield, place a tower terrain feature in the centre.\nWhile a warband has any *Leaders* or *Champions* wholly within 6\" horizontally of the centre of the battlefield, they can automatically pass their flee test. In addition, if a warband scores victory points for 'Hold the Centre', they score 3 victory points instead of d3.\nThe winner of the battle can use the tower to scout the nearby city. To represent this, the winner of the battle can re-roll their **exploration roll**." },
-				{ "roll": 3, "name": "Outflank", "text": "Both warbands are attempting to outflank the other and catch them in a deadly trap.\nThe warbands are divided into 3 Battle Groups instead of 2." },
-				{ "roll": 4, "name": "Delayed Arrival", "text": "Reinforcements begin arriving from the start of the 6th round, instead of the 3rd." },
+				{ "roll": 3, "name": "Outflank", "text": "Both warbands are attempting to outflank the other and catch them in a deadly trap.\nThe warbands are divided into 3 Battle Groups instead of 2.", "groups": { "count": 3 } },
+				{ "roll": 4, "name": "Delayed Arrival", "text": "Reinforcements begin arriving from the start of the 6th round, instead of the 3rd.", "groups": { "arrives": 6 } },
 				{ "roll": 5, "name": "Condemned", "text": "At the start of every round, if one of the warbands has fewer victory points than their opponent, the commanding player of that warband can pick 1 enemy fighter on the battlefield to be *condemned* until the end of the round.\nEach time a *condemned* fighter is taken down, the opposing warband scores 1 additional victory point." },
 				{ "roll": 6, "name": "The Chest", "text": "The underdog places a chest on the battlefield floor wholly within 6\" of one of the entry points not picked by a player.\nWe recommend using a suitable terrain feature. If you do not have one, use a token instead.\nWhile a warband has any *Leaders* or *Champions* within 3\" of the chest, they can automatically pass their flee test. In addition, at the end of each round, if a warband has fighters within 3\" of it and there are no enemy fighters within 3\" of it, they score 1 additional victory point.\nThe winner of the battle claims the chest. After the battle they roll on the table below to discover the contents of the chest.\n- **1 Empty All Along:** The chest is empty inside.\n- **2-5 A Modest Find:** The chest contains d6 x 10 silver.\n- **6 A Stash of Silver:** The chest contains 3d6 x 5 silver." }
 			]
@@ -33,9 +46,11 @@
 			"page": 39,
 			"score": { "label": "Escaped", "ends": 3, "counts": "escaped" },
 			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true },
 				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
 				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
 			],
+			"groups": { "count": 3, "arrives": 2 },
 			"intro": "There are rumours abound of treasure hidden amidst a ruined district of the city, and now two rival warbands race to be the first to claim it.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with clusters of ruined buildings and narrow winding streets between them." },
@@ -62,6 +77,10 @@
 			"name": "No Quarter",
 			"page": 41,
 			"score": { "label": "Domination marks", "ends": 10 },
+			"groups": { "count": 3, "arrives": 2 },
+			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true }
+			],
 			"intro": "In a battle for dominance, two rival warbands show no mercy as they attempt to drive the other from an important district in the city.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with 2 streets that run down the central lines of the battlefield converging at a crossroads in the centre. Clusters of ruined buildings are set up in each of the quadrants." },
@@ -74,7 +93,7 @@
 			"twistRoll": "d6",
 			"twists": [
 				{ "roll": 1, "name": "Rolling Fog", "text": "Sweeping mists roll through these quarters of the city, obscuring everything beyond a few yards.\nAt the start of each round, roll for each quarter of the battlefield. On a 4+, that quarter is *masked in fog*.\nFighters are not visible to each other while they are more than 6\" apart if at least one of them is within a quarter *masked in fog*.\nIf after rolling, no quarters are masked in fog, the fog has lifted and no more rolls are made for it this battle." },
-				{ "roll": 2, "name": "Show of Strength", "text": "Ignore the rules for 'Battle Groups' and 'Arriving Reinforcements' this battle. Instead, during deployment, when it is a player's turn to set up fighters, they set up every fighter in their warband within 9\" horizontally of their entry point." },
+				{ "roll": 2, "name": "Show of Strength", "text": "Ignore the rules for 'Battle Groups' and 'Arriving Reinforcements' this battle. Instead, during deployment, when it is a player's turn to set up fighters, they set up every fighter in their warband within 9\" horizontally of their entry point.", "groups": null },
 				{ "roll": 3, "name": "The Forsaken Quarter", "text": "From the **4th round** onwards, at the start of the round if 1 player has fewer domination marks than their opponent they can choose one of the quarters of the battlefield to be the *forsaken quarter* for that round.\nThe *forsaken quarter* cannot be controlled." },
 				{ "roll": 4, "name": "Turf War", "text": "The quarter of the battlefield where a warband’s entry point is located is their *home quarter*. Players score 3 domination marks instead of 1 for controlling the opposing warband’s home quarter." },
 				{ "roll": 5, "name": "The Critical Quarter", "text": "From the **3rd round** onwards, at the start of the round the players randomly determine 1 of the quarters to be the *critical quarter* for that round.\nA player scores 1 additional domination mark for controlling the *critical quarter*." },
@@ -88,9 +107,11 @@
 			"page": 43,
 			"score": { "label": "Death marks", "ends": 8 },
 			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true },
 				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
 				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
 			],
+			"groups": { "count": 3, "arrives": 3 },
 			"intro": "Here lies once hallowed ground. A chapel dedicated to one of the city’s many saints. Now destroyed and its roof caved in. It may have been stripped of all its treasures long ago, but the only way to find out is to first venture inside.",
 			"sections": [
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a **chapel** at the centre. The chapel is an area 12\" by 16\", and can be denoted with four corner ruins or other suitable terrain features.\nOutside the chapel should consist of narrow streets and ruined buildings." },
@@ -114,6 +135,15 @@
 			"roll": 5,
 			"name": "Street of Death",
 			"page": 45,
+			"groups": { "count": 3, "arrives": 3, "reinforcements": { "roll": "d6", "results": [
+					{ "roll": "1", "label": "Opposite edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the edge opposite the escape battlefield edge and more than 6\" from all enemy fighters." },
+					{ "roll": "2–3", "label": "Left edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the left edge and more than 6\" from all enemy fighters." },
+					{ "roll": "4–5", "label": "Right edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the right edge and more than 6\" from all enemy fighters." },
+					{ "roll": "6", "label": "Escape edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the escape battlefield edge and more than 6\" from all enemy fighters." }
+				] }, "underdog": { "count": 2, "arrives": 2 } },
+			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true }
+			],
 			"intro": "A notorious warrior makes their way through the darkened streets of the city, unbeknownst that they have been marked with death and in the shadows beyond blades are drawn and ready to strike!",
 			"sections": [
 				{ "phase": "before", "name": "Ambusher & Defender", "text": "In this battle the underdog warband is the **Ambusher** and their opponent is the **Defender**." },
@@ -132,7 +162,7 @@
 				{ "roll": 3, "name": "Vow of Blood", "text": "Upon seeing their rivals lurking in the darkness beyond, the hit vows not to go down without a fight.\nFor the duration of this battle, add 3 to the hit’s Life Value." },
 				{ "roll": 4, "name": "Hidden Tunnel", "text": "The Defender places 2 tokens anywhere on the battlefield floor within 6\" of each other and not on the street. This is the entrance and exit to a secret tunnel only the hit knows of.\nDuring the battle, if the hit finishes a move within ½\" of one of the tokens and is not engaged in melee, they can move through the tunnel. If they do so, remove them from the battlefield and set them up within ½\" of the other token, then remove both tokens. They can be set up in melee." },
 				{ "roll": 5, "name": "Shadows Lurk Above", "text": "During deployment the Ambusher can set up fighters within 12\" of enemy fighters if the fighters are both:\n- 3\" or more vertically above the battlefield floor.\n- More than 9\" from all enemy fighters." },
-				{ "roll": 6, "name": "Tip-off", "text": "The Defenders have been forewarned of the attack on their comrade and now race to join them.\nBoth of the defender’s battle groups arrive at the start of the 3rd round." }
+				{ "roll": 6, "name": "Tip-off", "text": "The Defenders have been forewarned of the attack on their comrade and now race to join them.\nBoth of the defender’s battle groups arrive at the start of the 3rd round.", "groups": { "for": "other", "reinforcements": null } }
 			]
 		},
 		{
@@ -142,9 +172,11 @@
 			"page": 47,
 			"score": { "label": "Escaped", "ends": 3, "counts": "escaped" },
 			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true },
 				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
 				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
 			],
+			"groups": { "count": 2, "arrives": 3 },
 			"intro": "A band of fighters have discovered a stash of treasure hidden in a ruined holding, now they must defend it from their rivals and hold out until their allies arrive.",
 			"sections": [
 				{ "phase": "before", "name": "Attacker & Defender", "text": "The players roll off, the winner is the **Attacker**, the loser is the **Defender**. Roll again in the case of a tie." },
@@ -162,7 +194,7 @@
 				{ "roll": 1, "name": "On Fire", "text": "A fire has started in the holding that threatens to grow rapidly.\nThe fire is *smouldering* to begin with and has no effect. At the start of each round, a dice is rolled. On a 4+, the fire becomes a *blaze*. In later rounds, if the fire is a blaze and a 4+ is rolled once more it becomes an *inferno* (and no more dice are rolled for it that battle).\n**Blaze:** Each time a fighter finishes a move where they passed within the holding, they suffer d3 damage.\n**Inferno:** In addition to the ‘blaze’ effect, at the end of each round, roll a dice for each treasure token within the holding. On a 4+ it is destroyed and removed from the battlefield." },
 				{ "roll": 2, "name": "Defiant Stand", "text": "The Defender’s warband does not take flee tests this battle." },
 				{ "roll": 3, "name": "Barricaded Holdout", "text": "When setting up the battlefield, keep 3 wall pieces, each no longer than 5\", to one side.\nWhen the Defender sets up fighters in Deployment, they can roll a d3 and place that many of the wall sections on the edge of the holding." },
-				{ "roll": 4, "name": "Delayed Arrival", "text": "Reinforcements begin arriving from the start of the 6th round, instead of the 3rd." },
+				{ "roll": 4, "name": "Delayed Arrival", "text": "Reinforcements begin arriving from the start of the 6th round, instead of the 3rd.", "groups": { "arrives": 6 } },
 				{ "roll": 5, "name": "Surrounded on All Sides", "text": "During deployment, the Attacker can set up fighters from both their battle groups, anywhere on the battlefield wholly within 6\" horizontally of a battlefield edge.\nDuring the battle, fighters from the Defender’s warband can pick up treasure from the 1st round." },
 				{ "roll": 6, "name": "Old Debt Collector’s House", "text": "There are 8 treasure tokens placed within 3\" of the centre of the holding, instead of 5." }
 			]

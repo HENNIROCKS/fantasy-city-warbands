@@ -91,7 +91,7 @@ campaign.
 - Keep Wyrdcry's magic items: one to a fighter, never sold, 5 reputation each,
   and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, in
-  Black Death City the underdog, the scenario and its twist, both warbands' points, treasure held and escaped with, bloodied fighters,
+  Black Death City the underdog, the scenario and its twist, both warbands' points, treasure held and escaped with, battle groups with the reserve and its reinforcements, bloodied fighters,
   the flee test and the prepared spells, and
   in Wyrdcry morale, Zeal and the single-use items ticked off; end it with its
   result in the battle history, or cancel it – see [The battle in Black Death City](docs/black-death-city/battle.md)

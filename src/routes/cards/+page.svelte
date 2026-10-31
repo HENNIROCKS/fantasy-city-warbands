@@ -25,6 +25,7 @@
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
 	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
+	import { applyGroups, arrive, groupRule, groupSide, groupsFor, inReserve, moveFighter, reinforcementTable, resetGroups, swapFighters, toggleStart } from '$lib/core/groups';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
 	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
@@ -746,7 +747,7 @@
 
 	function toggleHire(offer: (typeof hireOffers)[number], picks: string[] = []) {
 		if (offer.held) {
-			if (battle) setBattle(release(battle, offer.held.instanceId));
+			if (battle) setBattle(syncGroups(release(battle, offer.held.instanceId), groupIds.filter((id) => id !== offer.held!.instanceId)));
 			return;
 		}
 		if (offer.refused) return;
@@ -756,7 +757,8 @@
 			return;
 		}
 		/* The debt hires before the talent's half is spent, so a half rolled stays for the next one. */
-		setBattle(hire(battle, newId(), id, !owedFree && rolledHalf && halving !== null, picks, owedFree));
+		const hiredId = newId();
+		setBattle(syncGroups(hire(battle, hiredId, id, !owedFree && rolledHalf && halving !== null, picks, owedFree), [...groupIds, hiredId]));
 		if (!owedFree) rolledHalf = false;
 		choosing = null;
 	}
@@ -803,8 +805,24 @@
 		const figure = value.trim() === '' ? null : Number(value);
 		if (!rules || !warband || (figure !== null && !Number.isFinite(figure)) || (figure === null && !battle)) return;
 		/* With the scenario asked beside it, the figure belongs to the battle being set up whatever it says. */
-		const next = setOpponent(system?.game.scenarios ? (battle ?? start()) : battle, rules, warband, figure === null ? null : Math.max(0, Math.round(figure)));
+		const next = keepGroups(setOpponent(system?.game.scenarios ? (battle ?? start()) : battle, rules, warband, figure === null ? null : Math.max(0, Math.round(figure))));
 		if (next !== battle) setBattle(next);
+	}
+
+	/* A change of underdog or twist that leaves the warband with other rules for its groups takes the groups back, which were set for the rules before. */
+	function keepGroups(next: BattleState | null): BattleState | null {
+		const w = warband;
+		const game = system?.game;
+		if (!game || !w || !battle?.groups || !next) return next;
+		const rule = (b: BattleState) => JSON.stringify(groupRule(game, b, groupSide(game, w, b)));
+		return rule(next) === rule(battle) ? next : resetGroups(system.game, next);
+	}
+
+	/* The groups and the reserve brought up to date with the fighters given, so one hired or sent away after the groups were set stands where its group does. */
+	function syncGroups(next: BattleState | null, ids: string[]): BattleState | null {
+		if (!system || !warband || !next?.groups) return next;
+		const rule = groupRule(system.game, next, groupSide(system.game, warband, next));
+		return rule ? applyGroups(system.game, next, groupsFor(next, ids, rule)) : next;
 	}
 
 	/* The points both warbands score to the scenario, counted in a sheet from the readout under the warband card. */
@@ -820,6 +838,72 @@
 		scoreOpen = false;
 		await tick();
 		opener?.focus();
+	}
+
+	/* The battle groups of the scenario picked: the fighters who take part in them in the order of the roster, named as the card names them
+	   and by their type where they have no name, with the rules of the warband's side. Asked in one sheet while the battle is being set up,
+	   and the fighters in reserve asked in another from the round their group may arrive. */
+	const grouped = $derived(
+		cards.flatMap((c) => (c.kind === 'fighter' && !c.away ? [{ id: c.instanceId, label: c.unnamed ? c.subtitle : c.name }] : []))
+	);
+	const groupIds = $derived(grouped.map((f) => f.id));
+	const groupLabel = $derived(new Map(grouped.map((f) => [f.id, f.label])));
+	const groupRules = $derived(system && warband ? groupRule(system.game, battle, groupSide(system.game, warband, battle)) : null);
+	const groupsNow = $derived(groupRules ? groupsFor(battle, groupIds, groupRules) : null);
+	/* Whether the scenario sets the underdog's groups apart while it is not known which side the warband is on. */
+	const sideOpen = $derived.by(() => {
+		if (!system || !warband) return false;
+		const side = underdogSide(system.game.underdog, warband, battle);
+		return !!scenarioOf(system.game, battle)?.scenario.groups?.underdog && side !== 'you' && side !== 'opponent';
+	});
+	const reserved = $derived(system ? inReserve(system.game, battle, groupIds) : []);
+	const reinforceTable = $derived(system && groupRules ? reinforcementTable(system.game, groupRules) : null);
+	let groupsOpen = $state(false);
+	let reinforceOpen = $state(false);
+	/* The fighter picked in the groups to swap with another or move to a group. */
+	let groupPick = $state<string | null>(null);
+
+	/* Persists the groups as the sheet shows them, so fighters outside the groups that start are in reserve before anything is tapped. */
+	function openGroups() {
+		if (!system || !groupsNow) return;
+		opener = menuOpener();
+		groupPick = null;
+		setBattle(applyGroups(system.game, battle, groupsNow));
+		groupsOpen = true;
+	}
+
+	async function closeGroups() {
+		groupsOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
+	function openReinforce() {
+		opener = menuOpener();
+		reinforceOpen = true;
+	}
+
+	async function closeReinforce() {
+		reinforceOpen = false;
+		await tick();
+		opener?.focus();
+	}
+
+	function menuOpener(): HTMLElement | null {
+		const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		const menu = active?.closest('[popover]');
+		return menu ? document.querySelector<HTMLElement>(`[popovertarget="${menu.id}"]`) : active;
+	}
+
+	/* A tap on a fighter picks it, a tap on another in a different group changes places with it. */
+	function tapFighter(id: string) {
+		if (!system || !groupsNow) return;
+		if (groupPick === null || groupPick === id) {
+			groupPick = groupPick === id ? null : id;
+			return;
+		}
+		setBattle(applyGroups(system.game, battle, swapFighters(groupsNow, groupPick, id)));
+		groupPick = null;
 	}
 
 	/* The tables fighters roll on before the battle, as Black Death City's casters
@@ -1011,6 +1095,11 @@
 				hireLabel={hiring?.label ?? ''}
 				onrolls={rollers.length && system.game.battle?.rolls && settingUp(battle) ? openRolls : undefined}
 				{rollsLabel}
+				hiddenMarks={system.game.scenarios?.reserve ? [system.game.scenarios.reserve] : []}
+				ongroups={groupsNow && settingUp(battle) && grouped.length ? openGroups : undefined}
+				groupsLabel="Battle groups"
+				onreinforce={groupRules && battle && battle.round >= groupRules.arrives && reserved.length ? openReinforce : undefined}
+				reinforceLabel="Reinforcements ({reserved.length} in reserve)"
 				onshow={openShow}
 				editing={editingId !== null}
 				doneDisabled={backBlocked}
@@ -1126,8 +1215,8 @@
 							{@const won = battle.underdog.tieWon}
 							<p class="field-label" id="underdog-tie">Equal {rules.figure}s · the roll-off</p>
 							<div class="mb-4 space-y-1.5" role="group" aria-labelledby="underdog-tie">
-								<button type="button" class="choice" aria-pressed={won === true} onclick={() => setBattle(setTieWon(battle, rules, warband!, won === true ? null : true))}>Won · you are the underdog</button>
-								<button type="button" class="choice" aria-pressed={won === false} onclick={() => setBattle(setTieWon(battle, rules, warband!, won === false ? null : false))}>Lost · your opponent is</button>
+								<button type="button" class="choice" aria-pressed={won === true} onclick={() => setBattle(keepGroups(setTieWon(battle, rules, warband!, won === true ? null : true)))}>Won · you are the underdog</button>
+								<button type="button" class="choice" aria-pressed={won === false} onclick={() => setBattle(keepGroups(setTieWon(battle, rules, warband!, won === false ? null : false)))}>Lost · your opponent is</button>
 							</div>
 						{/if}
 					{/if}
@@ -1147,7 +1236,7 @@
 						<div class="mb-4 space-y-1.5" role="group" aria-labelledby="twist-roll">
 							{#each picked.scenario.twists as twist (twist.roll)}
 								{@const on = picked.twist?.roll === twist.roll}
-								<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setTwist(battle, on ? null : twist.roll))}>
+								<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(keepGroups(setTwist(battle, on ? null : twist.roll)))}>
 									<span class="inline-block w-6 font-semibold">{twist.roll}</span>{twist.name}
 								</button>
 							{/each}
@@ -1235,6 +1324,94 @@
 			</div>
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={closeRolls} use:focusOnMount>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if groupsOpen && groupsNow && groupRules && system}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="groups-title">
+			<h2 id="groups-title">Battle groups</h2>
+			<p class="count">{groupsNow.count} groups, as equal as can be. Tap a fighter, then another to swap them, or Move here under a group.</p>
+			{#if sideOpen}
+				<p class="notice mb-3">Which side you are on is not known yet. Set the underdog in Before the battle first; until then the rules of the other side apply.</p>
+			{/if}
+			<div class="max-h-[60dvh] overflow-y-auto">
+				{#each Array.from({ length: groupsNow.count }, (_, i) => i + 1) as group (group)}
+					{@const members = groupIds.filter((id) => groupsNow.of[id] === group)}
+					<section class="mb-3">
+						<p class="field-label" id="group-{group}">Group {group} · {members.length}</p>
+						<div class="grid grid-cols-2 gap-1.5" role="group" aria-labelledby="group-{group}">
+							{#each members as id (id)}
+								<button type="button" class="choice text-left" aria-pressed={groupPick === id} onclick={() => tapFighter(id)}>{groupLabel.get(id)}</button>
+							{/each}
+						</div>
+						{#if groupPick !== null && groupsNow.of[groupPick] !== group}
+							<button
+								type="button"
+								class="choice mt-1.5"
+								onclick={() => {
+									setBattle(applyGroups(system.game, battle, moveFighter(groupsNow, groupPick!, group)));
+									groupPick = null;
+								}}>Move {groupLabel.get(groupPick)} here</button
+							>
+						{/if}
+					</section>
+				{/each}
+			</div>
+			<p class="field-label" id="groups-start">Starts on the field</p>
+			<div class="mb-4 grid gap-1.5" style="grid-template-columns: repeat({groupsNow.count}, 1fr)" role="group" aria-labelledby="groups-start">
+				{#each Array.from({ length: groupsNow.count }, (_, i) => i + 1) as group (group)}
+					<button
+						type="button"
+						class="choice"
+						aria-pressed={groupsNow.start.includes(group)}
+						onclick={() => setBattle(applyGroups(system.game, battle, toggleStart(groupsNow, group)))}>Group {group}</button
+					>
+				{/each}
+			</div>
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeGroups} use:focusOnMount>Done</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if reinforceOpen && groupRules && system}
+	<div class="sheet-backdrop">
+		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="reinforce-title">
+			<h2 id="reinforce-title">Reinforcements</h2>
+			<p class="count">From round {groupRules.arrives}, {reserved.length} in reserve. {reinforceTable ? `Roll a ${reinforceTable.roll} for each fighter of a group and tap what it shows.` : 'The groups arrive without a roll.'}</p>
+			{#if reinforceTable}
+				{#each reinforceTable.results.filter((r) => !r.arrives) as result (result.roll)}
+					<p class="notice mb-3"><span class="font-semibold">{result.roll} {result.label}:</span> {result.text}</p>
+				{/each}
+			{/if}
+			<div class="max-h-[55dvh] overflow-y-auto">
+				{#each [...new Set(reserved.map((id) => battle?.groups?.of[id] ?? 0))].sort((a, b) => a - b) as group (group)}
+					{@const members = reserved.filter((id) => (battle?.groups?.of[id] ?? 0) === group)}
+					<section class="mb-3">
+						<p class="field-label" id="reserve-{group}">{group ? `Group ${group}` : 'In reserve'} · {members.length}</p>
+						{#if reinforceTable}
+							{#each members as id (id)}
+								{@const arriving = reinforceTable.results.filter((r) => r.arrives)}
+								<p class="mb-1 mt-2 truncate font-semibold">{groupLabel.get(id)}</p>
+								<div class="grid gap-1.5" style="grid-template-columns: repeat({Math.max(arriving.length, 1)}, 1fr)">
+									{#each arriving as result (result.roll)}
+										<button type="button" class="choice" onclick={() => setBattle(arrive(system.game, battle, [id]))}>{result.roll} {result.label}</button>
+									{/each}
+								</div>
+							{/each}
+						{:else}
+							<p class="mb-1.5 text-zinc-400">{members.map((id) => groupLabel.get(id)).join(', ')}</p>
+							<button type="button" class="choice" onclick={() => setBattle(arrive(system.game, battle, members))}>The group arrives</button>
+						{/if}
+					</section>
+				{/each}
+			</div>
+			<div class="sheet-actions">
+				<button type="button" class="btn" onclick={closeReinforce} use:focusOnMount>Done</button>
 			</div>
 		</div>
 	</div>

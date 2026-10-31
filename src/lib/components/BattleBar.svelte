@@ -45,6 +45,10 @@
 		hireLabel = '',
 		onrolls,
 		rollsLabel = '',
+		ongroups,
+		groupsLabel = '',
+		onreinforce,
+		reinforceLabel = '',
 		onshow,
 		editing = false,
 		editable = true,
@@ -112,6 +116,13 @@
 		onrolls?: () => void;
 		/** What the menu calls them, with how many are still to roll. */
 		rollsLabel?: string;
+		/** Opens the battle groups; given while the battle is still being set up, where the scenario has any. */
+		ongroups?: () => void;
+		groupsLabel?: string;
+		/** Opens the reinforcements; given while a fighter is in reserve and its group may arrive. */
+		onreinforce?: () => void;
+		/** What the menu calls them, with how many are in reserve. */
+		reinforceLabel?: string;
 		/** Opens the code that shows the opponent the warband; given while no battle runs. */
 		onshow?: () => void;
 		/** Whether the card on top is turned over to be written on. */
@@ -311,6 +322,12 @@
 					{/if}
 					{#if onrolls && !closed}
 						<button onclick={() => onrolls?.()}>{rollsLabel}</button>
+					{/if}
+					{#if ongroups && !closed}
+						<button onclick={() => ongroups?.()}>{groupsLabel}</button>
+					{/if}
+					{#if onreinforce && battle && !closed}
+						<button onclick={() => onreinforce?.()}>{reinforceLabel}</button>
 					{/if}
 					{#if onshow && !battle && !closed}
 						<button onclick={() => onshow?.()}>Show to opponent</button>
