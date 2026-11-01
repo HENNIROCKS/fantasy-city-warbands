@@ -24,6 +24,7 @@
 - [x] ⚙️ Under the hood: deploy to GitHub Pages, storage in IndexedDB, offline once opened, a new version offered as soon as it is deployed
 - [x] ⚔️ Black Death City's treasure: who holds it, who escaped with it, the battle ending on a third escape
 - [x] ⚔️ Black Death City's battle groups: split, reserve and reinforcements
+- [x] 📈 Wyrdcry's Undead: a VAMPIRE picks the Blood of Von Carstein talents with renown
 - [ ] ⚔️ Black Death City's Street of Death: no flee test for the Defender, who cannot flee
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim

@@ -16,7 +16,24 @@ import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterIns
 
 import talents from '$lib/rules/wyrdcry/heroic-talents.json';
 
-type Talent = (typeof talents)[number];
+/**
+ * A heroic talent, from the Campaign Book's groups or a faction's own – such as
+ * the Undead's Blood of Von Carstein – which only the faction's fighters with
+ * `keyword` may pick, outside the talent groups.
+ */
+type Talent = (typeof talents)[number] & { faction?: string; keyword?: string };
+
+/** The faction rules that bring heroic talents of their own, by faction folder. */
+const ruleFiles = import.meta.glob('/src/lib/rules/wyrdcry/factions/*/rules.json', { eager: true, import: 'default' }) as Record<
+	string,
+	{ name: string; only?: string; talents?: { id: string; name: string; type: string; text: string }[] }[]
+>;
+const factionTalents: Talent[] = Object.entries(ruleFiles).flatMap(([path, rules]) =>
+	rules.flatMap((r) =>
+		(r.only ? (r.talents ?? []) : []).map((t) => ({ ...t, specialization: r.name, faction: path.split('/').at(-2), keyword: r.only }) as Talent)
+	)
+);
+const allTalents: Talent[] = [...talents, ...factionTalents];
 
 /**
  * The characteristics renown can raise, and how far one increase moves each.
@@ -99,12 +116,14 @@ function keywords(instance: FighterInstance, held: string[]): string[] {
 
 /**
  * Whether an advance still holds as a rule taken: a heroic talent the rules
- * still have – a legendary one only from its level on – or a magical ability the
- * fighter was offered. A talent the rules no longer have counts as never taken.
+ * still have – a legendary one only from its level on, a faction's own only on
+ * a fighter with its keyword – or a magical ability the fighter was offered. A
+ * talent the rules no longer have counts as never taken.
  */
 function ruleHolds(advance: Advance, fighter: Fighter): boolean {
 	if (!advance.rule) return false;
 	const talent = talentOf(advance.rule);
+	if (talent?.keyword) return fighter.keywords.includes(talent.keyword);
 	if (talent) return !talent.legendary || advance.level >= LEGENDARY_FROM;
 	return offeredOptions(fighter).some((o) => o.id === advance.rule);
 }
@@ -165,7 +184,7 @@ function limitFor(held: string[]): Record<string, number> | null {
 	return null;
 }
 
-const talentOf = (id: string) => talents.find((t) => t.id === id);
+const talentOf = (id: string) => allTalents.find((t) => t.id === id);
 
 /** The kind of weapon a talent is taken for, such as Weapon Master's melee, or null where it is taken for none. */
 const weaponKind = (talent: Talent): string | null => ('weapon' in talent && talent.weapon) || null;
@@ -226,14 +245,15 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 
 	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) && ruleHolds(a, fighter) ? [talentOf(a.rule)!] : []));
 	const holders = legendaryHolders(warband, faction);
-	const specializations = new Set(held.map((t) => t.specialization));
+	/* A faction's own talents count towards the five, not towards the talent groups. */
+	const specializations = new Set(held.filter((t) => !t.keyword).map((t) => t.specialization));
 	/* Why a talent cannot be taken on this level, the first reason that holds; null where it can. */
 	const blockedFor = (talent: Talent): string | null => {
 		if (held.some((t) => t.id === talent.id)) return 'Already taken';
 		if (talent.legendary && level.level < LEGENDARY_FROM) return `From renown ${LEGENDARY_FROM}`;
 		if (talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)) return 'Another fighter of the warband has it';
 		if (held.length >= MAX_TALENTS) return `Already ${MAX_TALENTS} talents`;
-		if (!specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} talent groups`;
+		if (!talent.keyword && !specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} talent groups`;
 		return null;
 	};
 	const talentRule = (talent: Talent): LevelRule => {
@@ -247,9 +267,10 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 			weapons: kind ? weaponsFor(kind, instance, fighter, faction) : null
 		};
 	};
-	const groups = [...new Set(talents.map((t) => t.specialization))].map((specialization) => ({
+	const own = factionTalents.filter((t) => t.faction === faction.id && fighter.keywords.includes(t.keyword!));
+	const groups = [...new Set([...own, ...talents].map((t) => t.specialization))].map((specialization) => ({
 		heading: specialization[0].toUpperCase() + specialization.slice(1),
-		options: talents.filter((t) => t.specialization === specialization).map(talentRule)
+		options: [...own, ...talents].filter((t) => t.specialization === specialization).map(talentRule)
 	}));
 
 	/* A wizard may learn one more of the abilities it was offered at recruitment in place of a talent. */
@@ -270,9 +291,9 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 
 	return {
 		stats: offered,
-		rules: [...(abilities.length ? [{ heading: 'Magical abilities', options: abilities }] : []), ...groups],
+		rules: [...(abilities.length ? [{ heading: 'Magical Abilities', options: abilities }] : []), ...groups],
 		rulesLabel: 'Heroic Talents',
-		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} talent groups. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
+		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} talent groups${own.length ? ` besides ${own[0].specialization}` : ''}. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
 	};
 }
 
@@ -329,6 +350,7 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 		const weapon = advance.option && (!talent || weaponKind(talent)) ? faction.wargear.find((w) => w.id === advance.option) : undefined;
 		const named = weapon ? `${name} (${weapon.name})` : name;
 		if (ruleHolds(advance, fighter)) return named;
+		if (talent?.keyword) return `${named} – only for a ${talent.keyword.replaceAll('-', ' ').toUpperCase()}`;
 		return talent ? `${named} – not before renown ${LEGENDARY_FROM}` : `${named} – no longer a heroic talent`;
 	}
 	return 'used up';

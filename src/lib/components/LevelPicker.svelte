@@ -83,7 +83,6 @@
 		font-size: calc(18 * var(--t));
 		font-weight: 600;
 		color: var(--card-ink-muted);
-		text-transform: capitalize;
 	}
 
 	.weapon,

@@ -439,6 +439,8 @@ interface RawRule {
 	except?: string;
 	/** A keyword id only whose carriers the rule applies to. */
 	only?: string;
+	/** Heroic talents of the faction's own, for its fighters with `only` to pick with renown; `wyrdcry-renown.ts` reads them. */
+	talents?: { id: string; name: string; type: string; text: string }[];
 }
 
 /**
