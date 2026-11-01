@@ -38,3 +38,4 @@ Nothing promised, nothing planned.
 - ⚙️ A desktop mode that really saves, over the File System Access API
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged
+- 📦 Ready-to-go warbands for each game, to start playing at once and tweak later
