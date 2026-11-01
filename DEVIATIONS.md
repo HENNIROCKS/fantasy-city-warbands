@@ -25,6 +25,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Bejewelled Dagger: a dagger a fighter can carry, sold for 15gc, where the Campaign Book only says it can be sold
 - [ ] Sack of Teeth: the d3×10 gold coins are paid when it is found, where the Campaign Book has the fillings sold
 - [x] Wyrdstone Cluster: the Health lost for each 1 stays for the rest of the campaign, where the Campaign Book does not say for how long
+- [ ] Great Weapon: Damage 3/5 for 45gc, as the site's weapon data gives it, where the Campaign Book 1.0 prints the Warrior Priest's at 3/4 (p. 38)
 - [ ] Heroic talents: a fighter has at most five, as the rules 0.5 and the Warband Deck have it, the Undead's Blood of Von Carstein included, where the Campaign Book 1.0 limits only the talent groups
 
 ## Black Death City

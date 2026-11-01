@@ -42,7 +42,7 @@
 		"limit": { "min": 0, "max": 3 },
 		"description": "",
 		"profile": { "move": 8, "fight": 4, "shoot": 3, "defense": 0, "health": 12, "bravery": 5 },
-		"keywords": ["dire-wolf", "undead", "thrall", "terrifying"],
+		"keywords": ["dire-wolf", "undead", "thrall", "beast", "terrifying"],
 		"abilities": ["chilling-howl", "unfeeling-flesh"],
 		"gear": ["weapon:direwolf-rotten-fangs"],
 		"choose": null

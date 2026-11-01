@@ -105,9 +105,9 @@
 		"range": { "min": 0, "max": 1 },
 		"attacks": 3,
 		"hit": 3,
-		"crit": 4,
+		"crit": 5,
 		"rules": ["two-handed", "pierce-2", "brutal"],
-		"cost": 40
+		"cost": 45
 	},
 	{
 		"id": "fighting-claws",
@@ -218,6 +218,7 @@
 		"hit": 3,
 		"crit": 4,
 		"rules": ["pierce-3", "brutal"],
+		"mutated": true,
 		"cost": 0
 	},
 	{
@@ -229,6 +230,7 @@
 		"hit": 2,
 		"crit": 3,
 		"rules": ["whipcrack"],
+		"mutated": true,
 		"cost": 0
 	},
 	{
@@ -237,9 +239,10 @@
 		"type": "melee",
 		"range": { "min": 0, "max": 1 },
 		"attacks": 1,
-		"hit": 3,
-		"crit": 6,
+		"hit": 2,
+		"crit": 4,
 		"rules": ["pierce-1", "poisoned"],
+		"offHand": true,
 		"cost": 0
 	},
 	{

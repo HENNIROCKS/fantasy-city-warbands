@@ -763,7 +763,8 @@ function slotsFree(held: string[]): { melee: number; ranged: number } {
 			continue;
 		}
 		const weapon = weaponOf.get(id);
-		if (!weapon) continue;
+		/* An off-hand weapon of the body, the Possessed's Scorpion Tail, takes no hand. */
+		if (!weapon || weapon.offHand) continue;
 		if (weapon.type === 'melee') melee += weapon.rules.includes('two-handed') ? 2 : 1;
 		else if (weapon.rules.includes('brace')) {
 			/* Both copies of a braced pair share the one slot. */
@@ -811,10 +812,16 @@ function refuse(raw: RawFighter, equipment: Allowance[], held: string[], id: str
 	if (weapon.type === 'ranged' && raw.abilities.includes('penitent')) {
 		return { message: 'A PENITENT fighter cannot be equipped with ranged weapons', short: 'Not for a PENITENT' };
 	}
+	if (weapon.type === 'ranged' && held.some((entry) => weaponOf.get(entry)?.mutated)) {
+		return { message: 'A fighter with mutated weapons cannot be equipped with any ranged weapons', short: 'Has a mutated weapon' };
+	}
 	if (weapon.type === 'melee') {
 		const cost = weapon.rules.includes('two-handed') ? 2 : 1;
 		if (cost === 2 && carried) return same('A two handed weapon fills both hands');
 		if (weapon.rules.includes('unwieldy') && carried) return { message: 'An unwieldy weapon cannot be dual wielded', short: 'Cannot be dual wielded' };
+		if (free.melee < cost && held.some((entry) => weaponOf.get(entry)?.mutated)) {
+			return { message: 'A mutated weapon counts towards the two melee weapons, so a non-mutated one is forfeit', short: 'A mutation holds a hand' };
+		}
 		if (free.melee < cost) return same(cost === 2 ? 'Needs both hands' : 'No hand free');
 		return null;
 	}

@@ -21,7 +21,7 @@
 		"id": "mutants-and-mutations",
 		"name": "Mutants and Mutations",
 		"phase": "aftermath",
-		"text": "Whenever a `MUTANT` gains renown, before making a characteristics increase or selecting a talent, it must make a Stability test. Roll a dice, and add 1 to the roll for each mutation the fighter has, then consult the results below. A roll of 1 is always treated as a 1, no matter the amount of mutations the fighter has.\n\n- **1-2 The flesh slumbers:** Make a characteristic increase for this fighter or select a talent (if the fighter is a HERO).\n- **3-8 New Mutation:** Roll a D66 and consult the mutation table. If the result is a mutation this fighter already has, roll again.\n- **9+ Consumed by Chaos:** The fighter devolves into a thrashing mass of eyes and tentacles and disappears into the ruins. Remove this fighter from your warband roster, rejoice, and gain 1 point of Favour.",
+		"text": "Whenever a `MUTANT` gains renown, before making a characteristics increase or selecting a talent, it must make a Stability test. Roll a dice, and add 1 to the roll for each mutation the fighter has, then consult the results below. A roll of 1 is always treated as a 1, no matter the amount of mutations the fighter has.\n\n- **1-2 The flesh slumbers:** Make a characteristic increase for this fighter or select a talent (if the fighter is a HERO).\n- **3-8 New Mutation:** Roll a D66 and consult the mutation table. If the result is a mutation this fighter already has, roll again.\n- **9+ Consumed by Chaos:** The fighter devolves into a thrashing mass of eyes and tentacles and disappears into the ruins. Remove this fighter from your warband roster, rejoice, and gain 1 point of Favour.\n\n**Mutated weapons:** Some mutations grant the fighter a mutated weapon, that comes with its own weapon profile. A mutated weapon is part of the fighter's body and counts towards their limit of two melee weapons. If the fighter is already equipped with a melee weapon, they must forfeit a non-mutated melee weapon. A fighter with mutated weapons cannot be equipped with any ranged weapons.",
 		"pick": null,
 		"options": [],
 		"effect": null
@@ -48,7 +48,7 @@
 			{
 				"roll": "21-23",
 				"name": "Tentacles",
-				"text": "Can be used as a melee weapon when making attack actions, using the following weapon profile: Range 2\" | 3 Attacks | 2/3 Damage | Whipcrack.",
+				"text": "Counts as a mutated weapon, using the following weapon profile: Range 2\" | 3 Attacks | 2/3 Damage | Whipcrack.",
 				"weapon": "possessed-tentacles"
 			},
 			{
@@ -75,7 +75,7 @@
 			{
 				"roll": "44-46",
 				"name": "Great Claw",
-				"text": "Can be used as a melee weapon when making attack actions, using the following weapon profile: Range 1\" | 2 Attacks | 3/4 Damage | Piercing 3.",
+				"text": "Counts as a mutated weapon, using the following weapon profile: Range 1\" | 2 Attacks | 3/4 Damage | Piercing 3, Brutal.",
 				"weapon": "possessed-great-claw"
 			},
 			{
@@ -97,7 +97,7 @@
 			{
 				"roll": "64-66",
 				"name": "Scorpion Tail",
-				"text": "Can be used as an off-hand weapon when making melee attack actions, using the following weapon profile: Range 1\" | 1 Attack | 3/6 Damage | Piercing 1, Poisoned.",
+				"text": "Does not count as a mutated weapon. Can be used as an off-hand weapon when making melee attack actions, using the following weapon profile: Range 1\" | 1 Attack | 2/4 Damage | Piercing 1, Poisoned.",
 				"weapon": "possessed-scorpion-tail"
 			}
 		]

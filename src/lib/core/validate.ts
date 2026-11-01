@@ -13,7 +13,7 @@
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
-import { fighterCost, fighterName, offeredOptions } from './warband';
+import { chosenOptions, fighterCost, fighterName, offeredOptions } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -131,7 +131,10 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			}
 		}
 
-		for (const refused of game.carry?.(fighter, faction, instance.wargear) ?? []) {
+		/* What a pick brings, a mutation's weapon, is held like the profile's own gear. */
+		const brought = chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []);
+		const holding = brought.length ? { ...fighter, gear: [...fighter.gear, ...brought] } : fighter;
+		for (const refused of game.carry?.(holding, faction, instance.wargear) ?? []) {
 			issues.push({ code: 'wargear-carry', kind: 'excess', ...refused, instanceId: instance.instanceId });
 		}
 
