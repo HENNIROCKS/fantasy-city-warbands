@@ -129,7 +129,7 @@ campaign.
 | Game | Rules the data follows |
 | --- | --- |
 | Black Death City | Playtest v1.03 |
-| Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net |
+| Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net, its playtest factions included |
 | Mordheim | eventually |
 | Necropolis | eventually |
 

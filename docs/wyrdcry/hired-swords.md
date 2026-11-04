@@ -21,6 +21,9 @@ and none of the three once she is hired: the button says what stands in the
 way. Each heading links to where its hired swords are written: wyrdcry.net, or
 the PDF of the homebrew ones.
 
+**Playtest factions** hire none yet: their rules do not say whom they may hire,
+so the Battle menu has no **Hired swords**.
+
 You can hire before the battle starts and during the first round. Hiring also
 starts the battle, as the first tap at the table does.
 

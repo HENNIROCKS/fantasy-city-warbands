@@ -1,0 +1,20 @@
+[
+	{
+		"id": "primal-fury",
+		"name": "Primal Fury",
+		"phase": "battle",
+		"text": "[Trait] All `BEASTMEN RAIDERS` fighters have this trait. While this fighter is wounded, you may add 1 to its Fight characteristic. It automatically passes any Bravery test it is required to take, but it cannot make reactions.",
+		"pick": null,
+		"options": [],
+		"effect": null
+	},
+	{
+		"id": "raider-ambush",
+		"name": "Raider Ambush",
+		"phase": "battle",
+		"text": "[Trait] All `BEASTMEN RAIDERS` fighters have this trait. Add 1 to the move characteristic of this fighter in the battle round in which they are deployed to the battlefield.",
+		"pick": null,
+		"options": [],
+		"effect": null
+	}
+]

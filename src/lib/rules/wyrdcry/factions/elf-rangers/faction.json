@@ -1,0 +1,10 @@
+{
+	"id": "elf-rangers",
+	"name": "Elf Rangers",
+	"keyword": "ELF RANGERS",
+	"warband_size": { "min": 3, "max": 10 },
+	"origin": "playtest",
+	"version": "2026-11-02",
+	"author": "Johan Markström",
+	"source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/warbands/playtest-factions/elf-rangers/" }
+}

@@ -15,6 +15,7 @@ import { injuryBonus } from './wyrdcry-injuries';
 import type { Advance, AdvanceEffects, Advancement, Faction, Fighter, FighterInstance, Issue, LevelOffer, LevelRule, OpenLevel, Rule, Warband } from '$lib/core/types';
 
 import talents from '$lib/rules/wyrdcry/heroic-talents.json';
+import printedLimits from '$lib/rules/wyrdcry/racial-limits.json';
 
 /**
  * A heroic talent, from the Campaign Book's groups or a faction's own – such as
@@ -34,6 +35,17 @@ const factionTalents: Talent[] = Object.entries(ruleFiles).flatMap(([path, rules
 	)
 );
 const allTalents: Talent[] = [...talents, ...factionTalents];
+
+/** The fighters never promoted to HERO, such as the Ungor with No-horns, as `folder/id`: `promotes: false` in a faction's fighters. */
+const fighterFiles = import.meta.glob('/src/lib/rules/wyrdcry/factions/*/fighters.json', { eager: true, import: 'default' }) as Record<
+	string,
+	{ id: string; promotes?: false }[]
+>;
+const unpromoted = new Set(
+	Object.entries(fighterFiles).flatMap(([path, fighters]) => fighters.filter((f) => f.promotes === false).map((f) => `${path.split('/').at(-2)}/${f.id}`))
+);
+/** Whether the fighter is never promoted, found through its faction keyword, which names the faction's folder. */
+const neverPromoted = (fighterId: string, held: string[]) => held.some((keyword) => unpromoted.has(`${keyword}/${fighterId}`));
 
 /**
  * The characteristics renown can raise, and how far one increase moves each.
@@ -93,12 +105,16 @@ function recruited(instance: FighterInstance, fighter: Fighter): string[] {
 /**
  * The rule a level falls under, read off the keywords the fighter was recruited
  * with. A leader's first level is the one it was recruited with; a henchman's
- * third level is its promotion, from the fourth it is a hero.
+ * third level is its promotion, from the fourth it is a hero – unless it is
+ * never promoted, as the Ungor, and stays a henchman.
  */
-function branchOf(keywords: string[], level: number): Branch {
+function branchOf(fighter: Fighter, keywords: string[], level: number): Branch {
 	if (keywords.includes('leader') && level === 1) return 'start';
 	if (keywords.includes('hero')) return 'hero';
-	if (keywords.includes('henchman')) return level < PROMOTION ? 'henchman' : level === PROMOTION ? 'promotion' : 'hero';
+	if (keywords.includes('henchman')) {
+		if (level < PROMOTION || neverPromoted(fighter.id, keywords)) return 'henchman';
+		return level === PROMOTION ? 'promotion' : 'hero';
+	}
 	return 'none';
 }
 
@@ -107,10 +123,11 @@ const renownOf = (instance: FighterInstance) => instance.tally?.renown ?? 0;
 /**
  * A henchman with three levels of renown is a HERO, from the moment it has them
  * rather than from the moment the level is spent – worked out every time, as the
- * deck's card does. A fighter with neither keyword stays as it is.
+ * deck's card does. A fighter with neither keyword, or one never promoted,
+ * stays as it is.
  */
 function keywords(instance: FighterInstance, held: string[]): string[] {
-	if (renownOf(instance) < PROMOTION || held.includes('hero') || !held.includes('henchman')) return held;
+	if (renownOf(instance) < PROMOTION || held.includes('hero') || !held.includes('henchman') || neverPromoted(instance.fighterId, held)) return held;
 	return held.map((k) => (k === 'henchman' ? 'hero' : k));
 }
 
@@ -136,7 +153,7 @@ function ruleHolds(advance: Advance, fighter: Fighter): boolean {
 function needsOf(instance: FighterInstance, fighter: Fighter, level: number): Part[] {
 	const spent = (instance.advances ?? []).filter((a) => a.level === level);
 	if (spent.some((a) => !a.stat && !a.rule)) return [];
-	return partsOf(branchOf(recruited(instance, fighter), level), level).filter((part) =>
+	return partsOf(branchOf(fighter, recruited(instance, fighter), level), level).filter((part) =>
 		part === 'stat' ? !spent.some((a) => a.stat) : !spent.some((a) => ruleHolds(a, fighter))
 	);
 }
@@ -146,7 +163,7 @@ function open(instance: FighterInstance, fighter: Fighter): OpenLevel[] {
 	const levels: OpenLevel[] = [];
 	for (let level = 1; level <= renownOf(instance); level++) {
 		const needs = needsOf(instance, fighter, level);
-		if (needs.length) levels.push({ level, note: noteFor(branchOf(base, level), level, needs) });
+		if (needs.length) levels.push({ level, note: noteFor(branchOf(fighter, base, level), level, needs) });
 	}
 	return levels;
 }
@@ -175,10 +192,15 @@ function check(warband: Warband, faction: Faction): Issue[] {
 	});
 }
 
-/** The limit of the first of the fighter's keywords that names a race with one. */
-function limitFor(held: string[]): Record<string, number> | null {
+/**
+ * The limit of the first of the fighter's keywords that names a race with one.
+ * A playtest faction reads only the limits the game prints, not those a
+ * homebrew faction fills in.
+ */
+function limitFor(held: string[], faction: Faction): Record<string, number> | null {
+	const from = faction.origin === 'playtest' ? printedLimits : limits;
 	for (const keyword of held) {
-		const limit = limits.find((l) => l.id === keyword);
+		const limit = from.find((l) => l.id === keyword);
 		if (limit?.profile) return limit.profile as Record<string, number>;
 	}
 	return null;
@@ -210,13 +232,15 @@ function weaponsFor(kind: string, instance: FighterInstance, fighter: Fighter, f
 
 function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, level: OpenLevel, warband: Warband): LevelOffer {
 	const base = recruited(instance, fighter);
-	const branch = branchOf(base, level.level);
+	const branch = branchOf(fighter, base, level.level);
 	const needs = needsOf(instance, fighter, level.level);
 	const advances = instance.advances ?? [];
 	const profile = profileOf(instance, fighter, activeEffects(warband, faction));
-	const limit = limitFor(base);
+	const limit = limitFor(base, faction);
+	/* A playtest faction whose race has no printed limits cannot raise a characteristic yet: how far it may go is not decided. */
+	const undefinedLimit = faction.origin === 'playtest' && !limit;
 	/* A henchman never raises the same characteristic twice, at its henchman levels only – a promotion starts clean. */
-	const taken = new Set(advances.filter((a) => a.stat && a.level > 0 && branchOf(base, a.level) === 'henchman').map((a) => a.stat));
+	const taken = new Set(advances.filter((a) => a.stat && a.level > 0 && branchOf(fighter, base, a.level) === 'henchman').map((a) => a.stat));
 
 	const stats = Object.keys(STEP).flatMap((stat) => {
 		const start = profile[stat];
@@ -235,7 +259,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 				from: figure(stat, from),
 				to: figure(stat, to),
 				bonus,
-				blocked: beyond ? 'At its racial limit' : repeat ? 'Already raised by a henchman level' : null
+				blocked: undefinedLimit ? 'Playtest, Undefined' : beyond ? 'At its racial limit' : repeat ? 'Already raised by a henchman level' : null
 			}
 		];
 	});

@@ -20,6 +20,7 @@
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import {
+		ORIGIN_LABEL,
 		createWarband,
 		fighterCost,
 		fighterName,
@@ -190,10 +191,10 @@
 		openFaction = warband?.factionId ?? null;
 	});
 
-	/* The official factions A to Z, then the homebrew ones under a heading of their own: at the table it
-	   decides whether the opponent can look the faction up. */
+	/* The official factions A to Z, then the playtest and the homebrew ones, each under a heading of its own:
+	   at the table it decides whether the opponent can look the faction up, and whether the group allows it. */
 	const factionGroups = $derived(
-		(['official', 'homebrew'] as const)
+		(Object.keys(ORIGIN_LABEL) as Faction['origin'][])
 			.map((origin) => ({
 				origin,
 				factions: (system?.factions ?? []).filter((f) => f.origin === origin).sort((a, b) => a.name.localeCompare(b.name))
@@ -486,7 +487,7 @@
 			<section>
 				<p class="field-label">Pick a warband</p>
 				{#each factionGroups as group (group.origin)}
-					{#if group.origin === 'homebrew'}<p class="field-label mt-6">Homebrew</p>{/if}
+					{#if group.origin !== 'official'}<p class="field-label mt-6">{ORIGIN_LABEL[group.origin]}</p>{/if}
 					<div class="space-y-2">
 						{#each group.factions as f (f.id)}
 							{@const open = openFaction === f.id}

@@ -1,0 +1,45 @@
+[
+	{
+		"id": "warden",
+		"name": "Warden",
+		"cost": 150,
+		"limit": { "min": 1, "max": 1 },
+		"description": "",
+		"profile": { "move": 5, "fight": 5, "shoot": 5, "defense": 0, "health": 12, "bravery": 3 },
+		"keywords": ["elf", "elf-rangers", "hero", "leader"],
+		"abilities": ["call-to-battle", "one-step-ahead"],
+		"gear": [],
+		"choose": null
+	},
+	{
+		"id": "veilwright",
+		"name": "Veilwright",
+		"cost": 120,
+		"limit": { "min": 0, "max": 1 },
+		"description": "",
+		"profile": { "move": 5, "fight": 4, "shoot": 4, "defense": 0, "health": 10, "bravery": 4 },
+		"keywords": ["elf", "elf-rangers", "hero", "wizard"],
+		"abilities": [],
+		"gear": [],
+		"choose": {
+			"source": null,
+			"prompt": "When recruiting a Veilwright, you must select one of the following magical abilities. In addition, the Veilwright may select another magical ability instead of selecting a heroic talent.",
+			"kind": "ability",
+			"pick": 1,
+			"instead_of_talent": 1,
+			"abilities": ["misdirection", "mind-razor", "fools-gold"]
+		}
+	},
+	{
+		"id": "ranger",
+		"name": "Ranger",
+		"cost": 110,
+		"limit": { "min": 0, "max": null },
+		"description": "",
+		"profile": { "move": 5, "fight": 4, "shoot": 4, "defense": 0, "health": 12, "bravery": 4 },
+		"keywords": ["elf", "elf-rangers", "hero"],
+		"abilities": [],
+		"gear": [],
+		"choose": null
+	}
+]

@@ -19,6 +19,10 @@ in the same visit.
   talent only
 - dismiss the fighter. Nothing is paid back.
 
+**A playtest faction.** Its rules do not yet say how far a characteristic may
+rise. Its fighters spend renown on heroic talents, and a characteristic says
+*Playtest, Undefined*. Where nothing is left to take, tap **Use up this level**.
+
 **The back of the warband card.** Name, colour, fluff and notes. You can also
 set the favour, add gold, sell or throw away what lies in the stash, and add or
 strike battles.

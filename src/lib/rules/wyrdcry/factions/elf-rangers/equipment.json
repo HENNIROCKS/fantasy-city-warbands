@@ -1,0 +1,14 @@
+[
+	{ "id": "weapon:dagger", "allow": "all" },
+	{ "id": "weapon:sword", "allow": "all" },
+	{ "id": "weapon:spear", "allow": "all" },
+	{ "id": "weapon:ithilmar-sword", "allow": "all" },
+	{ "id": "weapon:ithilmar-spear", "allow": "all" },
+	{ "id": "weapon:ithilmar-axe", "allow": "all" },
+	{ "id": "weapon:bow", "allow": "all" },
+	{ "id": "weapon:elf-ranger-bow", "allow": "all" },
+	{ "id": "item:shield", "allow": "all" },
+	{ "id": "item:light-armour", "allow": "all" },
+	{ "id": "item:elven-cloak", "allow": "all" },
+	{ "id": "item:hunting-falcon", "allow": "all" }
+]

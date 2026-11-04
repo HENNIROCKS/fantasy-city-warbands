@@ -112,6 +112,17 @@
     "rarity": "common"
   },
   {
+    "id": "hunting-falcon",
+    "slot": null,
+    "name": "Hunting Falcon",
+    "type": "miscellaneous",
+    "text": "Once per activation, the bearer may forfeit an action to send the falcon to harass an enemy fighter. Select any enemy fighter on the battlefield, and roll a d6. On a 3+, allocate 2 damage points to that enemy fighter. On a 6, that fighter must also forfeit one of their actions.",
+    "effects": [],
+    "cost": 50,
+    "rarity": "rare",
+    "faction": "elf-rangers"
+  },
+  {
     "id": "lantern",
     "slot": null,
     "name": "Lantern",

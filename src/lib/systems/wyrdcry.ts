@@ -358,7 +358,7 @@ interface RawFaction {
 	id: string;
 	name: string;
 	warband_size: { min: number; max: number | null };
-	origin: 'official' | 'homebrew';
+	origin: 'official' | 'playtest' | 'homebrew';
 	author: string;
 	version?: string;
 	source?: Source;
@@ -390,6 +390,8 @@ interface RawFighter {
 	gear: string[];
 	choose: RawChoice | null;
 	description: string;
+	/** False for a henchman that is never promoted to HERO, such as the Ungor with No-horns; `wyrdcry-renown.ts` reads it. */
+	promotes?: false;
 }
 
 /**

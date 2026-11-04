@@ -33,17 +33,6 @@
       "crit": 4,
       "rules": [],
       "cost": 20
-    },
-    {
-      "id": "ithilmar-sword",
-      "name": "Ithilmar Sword",
-      "type": "melee",
-      "range": { "min": 0, "max": 1 },
-      "attacks": 3,
-      "hit": 2,
-      "crit": 4,
-      "rules": ["parry", "pierce-1"],
-      "cost": 25
     }
   ]
 }

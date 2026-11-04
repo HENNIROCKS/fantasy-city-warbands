@@ -1,0 +1,82 @@
+[
+	{
+		"id": "chieftain",
+		"name": "Chieftain",
+		"cost": 130,
+		"limit": { "min": 1, "max": 1 },
+		"description": "Exerting dominance over their snarling kin through acts of grisly violence, the Chieftain leads ruinous stampedes into civilised lands.",
+		"profile": { "move": 5, "fight": 4, "shoot": 3, "defense": 0, "health": 16, "bravery": 4 },
+		"keywords": ["beastman", "beastmen-raiders", "hero", "leader"],
+		"abilities": ["bray-for-blood"],
+		"gear": [],
+		"choose": null
+	},
+	{
+		"id": "bestigor",
+		"name": "Bestigor",
+		"cost": 110,
+		"limit": { "min": 0, "max": 3 },
+		"description": "The brutish Bestigor are the elite warriors of the herd, arming themselves with the best weapons and armour plundered from human lands.",
+		"profile": { "move": 5, "fight": 4, "shoot": 3, "defense": 0, "health": 14, "bravery": 4 },
+		"keywords": ["beastman", "beastmen-raiders", "hero"],
+		"abilities": ["endure"],
+		"gear": [],
+		"choose": null
+	},
+	{
+		"id": "bray-shaman",
+		"name": "Bray-Shaman",
+		"cost": 100,
+		"limit": { "min": 0, "max": 1 },
+		"description": "The Bray-Shamans commune directly with the Dark Gods and speak with their voices, making them the most revered of all Beastmen.",
+		"profile": { "move": 5, "fight": 3, "shoot": 3, "defense": 0, "health": 12, "bravery": 5 },
+		"keywords": ["beastman", "beastmen-raiders", "hero", "wizard"],
+		"abilities": [],
+		"gear": [],
+		"choose": {
+			"source": null,
+			"prompt": "When recruiting a Bray-Shaman, you must select one of the following magical abilities. In addition, the Bray-Shaman may select another magical ability instead of selecting a heroic talent.",
+			"kind": "ability",
+			"pick": 1,
+			"instead_of_talent": 1,
+			"abilities": ["devolve", "storm-call", "bestial-surge"]
+		}
+	},
+	{
+		"id": "gor",
+		"name": "Gor",
+		"cost": 75,
+		"limit": { "min": 0, "max": null },
+		"description": "Large, powerful and numerous, the Gor form the spine of every warherd. Though their appearance varies greatly, their horns set them above lesser breeds of beastmen.",
+		"profile": { "move": 5, "fight": 3, "shoot": 3, "defense": 0, "health": 12, "bravery": 5 },
+		"keywords": ["beastman", "beastmen-raiders", "henchman"],
+		"abilities": [],
+		"gear": [],
+		"choose": null
+	},
+	{
+		"id": "ungor",
+		"name": "Ungor",
+		"cost": 60,
+		"limit": { "min": 0, "max": null },
+		"description": "Ungors are vicious and spiteful creatures. They are the lowest creatures in the hierarchy of the wilds, subject to savage torments by larger beastmen.",
+		"profile": { "move": 5, "fight": 2, "shoot": 3, "defense": 0, "health": 10, "bravery": 5 },
+		"keywords": ["beastman", "beastmen-raiders", "henchman"],
+		"abilities": ["no-horns"],
+		"promotes": false,
+		"gear": [],
+		"choose": null
+	},
+	{
+		"id": "chaos-hound",
+		"name": "Chaos Hound",
+		"cost": 90,
+		"limit": { "min": 0, "max": null },
+		"description": "Possessing the ferocity and stature of wolves, these mutated hounds race toward their prey in slavering packs, their fanged maws snapping in anticipation of the kill.",
+		"profile": { "move": 8, "fight": 4, "shoot": 3, "defense": 0, "health": 10, "bravery": 5 },
+		"keywords": ["war-hound", "beastmen-raiders", "beast"],
+		"abilities": [],
+		"gear": ["weapon:warhound-savage-bite"],
+		"choose": null
+	}
+]

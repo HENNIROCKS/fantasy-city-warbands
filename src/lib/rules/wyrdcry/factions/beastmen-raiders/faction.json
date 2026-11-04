@@ -1,0 +1,10 @@
+{
+	"id": "beastmen-raiders",
+	"name": "Beastmen Raiders",
+	"keyword": "BEASTMEN RAIDERS",
+	"warband_size": { "min": 3, "max": 15 },
+	"origin": "playtest",
+	"version": "2026-11-02",
+	"author": "Johan Markström",
+	"source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/warbands/playtest-factions/beastmen-raiders/" }
+}

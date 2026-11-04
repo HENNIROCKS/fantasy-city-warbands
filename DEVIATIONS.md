@@ -27,6 +27,8 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Wyrdstone Cluster: the Health lost for each 1 stays for the rest of the campaign, where the Campaign Book does not say for how long
 - [ ] Great Weapon: Damage 3/5 for 45gc, as the site's weapon data gives it, where the Campaign Book 1.0 prints the Warrior Priest's at 3/4 (p. 38)
 - [ ] Heroic talents: a fighter has at most five, as the rules 0.5 and the Warband Deck have it, the Undead's Blood of Von Carstein included, where the Campaign Book 1.0 limits only the talent groups
+- [ ] Playtest factions and hired swords: the Beastmen Raiders and the Elf Rangers hire none, where the site does not say whom they may hire
+- [ ] Playtest factions and racial limits: no characteristic of a BEASTMAN, ELF or WAR HOUND in a playtest faction can be raised with renown, as the Campaign Book 1.0 prints none for them (p. 11); the Shadow Warriors' homebrew limits for the ELF are not used
 
 ## Black Death City
 

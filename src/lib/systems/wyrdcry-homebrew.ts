@@ -1,8 +1,8 @@
 /**
  * The shared lists of Wyrdcry with what the homebrew factions add to them, as
  * the Warband Deck merges them: a homebrew faction may bring a `homebrew.json`
- * with its own weapons, weapon rules and racial limits, an official one may
- * not. The shared files stay what the game prints, and deleting a faction's
+ * with its own weapons, weapon rules and racial limits, an official or playtest
+ * one may not. The shared files stay what the game prints, and deleting a faction's
  * folder takes its additions with it. An id the shared list holds already is
  * refused, so the game's own entry keeps its profile – except a race the game
  * names without printing its limits, such as the ELF, whose limits a homebrew
@@ -25,7 +25,7 @@ interface Homebrew {
 
 const metas = import.meta.glob('/src/lib/rules/wyrdcry/factions/*/faction.json', { eager: true, import: 'default' }) as Record<
 	string,
-	{ origin: 'official' | 'homebrew' }
+	{ origin: 'official' | 'playtest' | 'homebrew' }
 >;
 const files = import.meta.glob('/src/lib/rules/wyrdcry/factions/*/homebrew.json', { eager: true, import: 'default' }) as Record<string, Homebrew>;
 

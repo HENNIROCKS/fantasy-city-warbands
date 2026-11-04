@@ -1,0 +1,20 @@
+[
+	{
+		"id": "fleet-of-foot",
+		"name": "Fleet of Foot",
+		"phase": "battle",
+		"text": "[Trait] All `ELF RANGERS` fighters have this trait. Once per activation, this fighter can make a free Move action.",
+		"pick": null,
+		"options": [],
+		"effect": null
+	},
+	{
+		"id": "unerring-aim",
+		"name": "Unerring Aim",
+		"phase": "battle",
+		"text": "[Trait] All `ELF RANGERS` fighters have this trait. Once per battle round, when this fighter makes a ranged attack action with a Bow or Elven Bow and haven't made a Move action yet in their activation, the weapon gains the **Pierce 1** special rule.",
+		"pick": null,
+		"options": [],
+		"effect": null
+	}
+]

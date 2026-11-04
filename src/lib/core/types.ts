@@ -1058,11 +1058,11 @@ export interface Faction {
 	/** The `GameSystem.id` this faction belongs to. */
 	game: string;
 	name: string;
-	/** Whether the game's own rules print this faction or it is written by fans. */
-	origin: 'official' | 'homebrew';
+	/** Whether the game's own rules print this faction, its author is still playtesting it, or it is written by fans. */
+	origin: 'official' | 'playtest' | 'homebrew';
 	/** Who wrote the rules this faction comes from. */
 	author: string;
-	/** Which version of a homebrew faction the data follows; an official one has none. */
+	/** Which version of a homebrew faction the data follows, or the date of a playtest one's; an official one has none. */
 	version?: string;
 	source?: Source;
 	/**

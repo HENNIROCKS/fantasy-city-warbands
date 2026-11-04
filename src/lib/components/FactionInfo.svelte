@@ -1,6 +1,6 @@
 <script lang="ts">
 	import RichText from '$lib/components/RichText.svelte';
-	import { fighterSections, formatSpan } from '$lib/core/warband';
+	import { ORIGIN_LABEL, fighterSections, formatSpan } from '$lib/core/warband';
 	import type { Faction, GameSystem } from '$lib/core/types';
 
 	let { faction, game }: { faction: Faction; game: GameSystem } = $props();
@@ -59,9 +59,9 @@
 	{/if}
 
 	<p class="text-zinc-400">
-		{faction.origin === 'homebrew' ? 'Homebrew' : 'Official'} · by {faction.author}{#if faction.source}{' '}·
+		{ORIGIN_LABEL[faction.origin]} · by {faction.author}{#if faction.source}{' '}·
 			<a class="underline" href={faction.source.url} target="_blank" rel="noopener"
-				>{faction.source.name}{#if faction.version}{' '}(v{faction.version}){/if}{' '}<span aria-hidden="true">↗</span></a
+				>{faction.source.name}{#if faction.version}{' '}({faction.origin === 'playtest' ? '' : 'v'}{faction.version}){/if}{' '}<span aria-hidden="true">↗</span></a
 			>{/if}
 	</p>
 </div>

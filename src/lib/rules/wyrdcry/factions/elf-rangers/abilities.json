@@ -1,0 +1,32 @@
+[
+	{
+		"id": "call-to-battle",
+		"name": "Call to Battle",
+		"type": "triple",
+		"text": "Until the end of the battle round, add 1 to the Attacks characteristic of melee attack actions made by visible friendly fighters while they are within 6\" of this fighter."
+	},
+	{
+		"id": "one-step-ahead",
+		"name": "One Step Ahead",
+		"type": "trait",
+		"text": "While this fighter is on the battlefield, you may roll 7 dice in each initiative phase, instead of 6."
+	},
+	{
+		"id": "misdirection",
+		"name": "Misdirection",
+		"type": "reaction",
+		"text": "Use this reaction when an enemy fighter ends a Move action within 3\" of this fighter. Remove this fighter from the battlefield, and then set it up again within 3\" of its original position."
+	},
+	{
+		"id": "mind-razor",
+		"name": "Mind Razor",
+		"type": "triple",
+		"text": "*Magical ability*. Select a visible enemy fighter within 12\" of this fighter. That fighter cannot make move or retreat actions this battle round. If that fighter has already activated in this battle round, they suffer (X/2) damage points instead."
+	},
+	{
+		"id": "fools-gold",
+		"name": "Fool's Gold",
+		"type": "double",
+		"text": "*Magical ability*. Select a visible terrain feature, and then select (X/2) enemy fighters within 6\" of that terrain feature. The selected fighters must take a Bravery test, those who fail immediately makes a free move action that ends as close to that terrain feature as possible."
+	}
+]

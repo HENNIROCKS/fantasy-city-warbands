@@ -11,6 +11,11 @@ piece is one area of the game, filled once it is built.
 its rules are written: its page on wyrdcry.net, the Black Death City site, or
 the PDF of a homebrew faction.
 
+**Playtest and Homebrew.** Below the official factions come those the author
+is still testing, under **Playtest**, then those written by fans, under
+**Homebrew**. Agree with your group before you bring one. A playtest faction
+may change from one update of the app to the next.
+
 **A button is greyed out.** Tapping it would take the warband too far – over
 its budget, past a fighter's limit, beyond what a fighter may carry. The button
 says which.

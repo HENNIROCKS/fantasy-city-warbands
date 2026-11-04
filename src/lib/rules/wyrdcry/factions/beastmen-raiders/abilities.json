@@ -1,0 +1,38 @@
+[
+	{
+		"id": "bray-for-blood",
+		"name": "Bray for Blood",
+		"type": "triple",
+		"text": "A fighter can use this ability after taking an enemy fighter out of action. Until the end of the battle round, each visible friendly fighter within 6\" of this fighter may use the Onslaught ability without needing or using ability dice."
+	},
+	{
+		"id": "endure",
+		"name": "Endure",
+		"type": "reaction",
+		"text": "A fighter can make this reaction after they are targeted by an attack action but before the hit rolls are made. Subtract 1 from the damage points allocated by each hit and critical hit (to a minimum of 1) from that attack action."
+	},
+	{
+		"id": "no-horns",
+		"name": "No-horns",
+		"type": "trait",
+		"text": "This fighter can never be promoted to a `HERO`."
+	},
+	{
+		"id": "devolve",
+		"name": "Devolve",
+		"type": "double",
+		"text": "*Magical ability*. Select a visible enemy fighter within 12\" of this fighter. That fighter must take a bravery test. If it fails, that fighter makes a move action (you decide where it goes). When doing so, the fighter can move away from enemy fighters within 1\" at the start of that move action."
+	},
+	{
+		"id": "storm-call",
+		"name": "Storm Call",
+		"type": "triple",
+		"text": "*Magical ability*. Until the end of the battle-round, friendly fighters within 6\" of this fighter are considered to be in cover."
+	},
+	{
+		"id": "bestial-surge",
+		"name": "Bestial Surge",
+		"type": "triple",
+		"text": "*Magical ability*. Select up to (X/2) friendly fighters within 6\" of this fighter. Each selected fighter makes a free move action, or a free attack action. Then, allocate (X/2) damage points to each selected fighter."
+	}
+]

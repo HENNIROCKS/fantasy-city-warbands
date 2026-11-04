@@ -6,6 +6,9 @@
 import { pickedStats, recruitCost, type ActiveEffect } from './effects';
 import type { Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
 
+/** Where a faction's rules come from, as the app labels it, in the order factions are listed. */
+export const ORIGIN_LABEL: Record<Faction['origin'], string> = { official: 'Official', playtest: 'Playtest', homebrew: 'Homebrew' };
+
 /**
  * A random id. Not `crypto.randomUUID()`: that only exists in a secure context,
  * and a phone opening the dev server by its network address is not one.
