@@ -19,6 +19,7 @@ export const game: GameSystem = {
 	edition: 'Playtest v1.03',
 	author: 'Sam Pearson',
 	currency: 'silver',
+	moneyLabel: 'Silver',
 	budget: 1000,
 	stats: [
 		{ key: 'move', label: 'Move', format: 'inches' },

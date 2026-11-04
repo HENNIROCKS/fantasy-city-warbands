@@ -70,7 +70,9 @@ fighters escaped.
 action, the warband card says *Flee test*. At the end of the round the Battle
 menu asks for your roll: **2+** leads to the next round, **1** means your
 warband flees and ends the battle. To flee of your own will, or when the
-scenario is won, tap **End battle**.
+scenario is won, tap **End battle**. In Street of Death the Defender takes no
+flee test and cannot flee; once **Before the battle** says who the underdog
+is, the app asks the Defender for none.
 
 **Stopping.** The battle stays on your phone, even if you close the app.
 **End battle** asks for the result – win, draw or loss – and adds it to the

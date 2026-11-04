@@ -17,7 +17,7 @@ keeps your Origin's limits for you.
 their equipment, and their experience. The stash does not count.
 
 **The back of the warband card.** Name, colour, fluff and notes. You can also
-add gold, throw away what lies in the stash, and add or strike battles. The
+add silver, throw away what lies in the stash, and add or strike battles. The
 playtest has no rule for selling yet.
 
 **The stash on the front.** The warband card lists the silver left and what

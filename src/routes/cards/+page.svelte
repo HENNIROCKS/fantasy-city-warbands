@@ -24,7 +24,7 @@
 	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
-	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues } from '$lib/core/scenario';
+	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues, takesFleeTest } from '$lib/core/scenario';
 	import { applyGroups, arrive, groupRule, groupSide, groupsFor, inReserve, moveFighter, reinforcementTable, resetGroups, swapFighters, toggleStart } from '$lib/core/groups';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
@@ -226,8 +226,16 @@
 		return isWavering(battle, roster, morale.wavers);
 	}
 
-	/* The game's battle rules with the marks the scenario picked adds. */
-	const battleRules = $derived(system?.game.battle ? { ...system.game.battle, marks: battleMarks(system.game, battle) } : undefined);
+	/* The game's battle rules with the marks the scenario picked adds, without the flee test where it spares the warband's side. */
+	const battleRules = $derived(
+		system?.game.battle
+			? {
+					...system.game.battle,
+					marks: battleMarks(system.game, battle),
+					flee: warband && takesFleeTest(system.game, warband, battle) ? system.game.battle.flee : undefined
+				}
+			: undefined
+	);
 
 	/* The marks the next round clears. */
 	const roundMarks = $derived((battleRules?.marks ?? []).filter((m) => m.lasts === 'round').map((m) => m.key));

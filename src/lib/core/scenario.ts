@@ -70,6 +70,13 @@ export function battleMarks(game: GameSystem, battle: BattleState | null): Battl
 	return [...(game.battle?.marks ?? []), ...(scenarioOf(game, battle)?.scenario.marks ?? [])];
 }
 
+/** Whether the warband takes the game's flee test: not where the scenario picked spares its side, once the underdog is answered. */
+export function takesFleeTest(game: GameSystem, warband: Warband, battle: BattleState | null): boolean {
+	const spared = scenarioOf(game, battle)?.scenario.noFleeTest;
+	if (!spared) return true;
+	return underdogSide(game.underdog, warband, battle) !== (spared === 'underdog' ? 'you' : 'opponent');
+}
+
 /** The battle with the twist picked by its roll, or taken back with null; only once a scenario is picked. */
 export function setTwist(battle: BattleState | null, roll: number | null): BattleState | null {
 	if (!battle?.scenario) return battle;

@@ -182,7 +182,7 @@
 
 		<section>
 			<h3 class="heading"><span>Stash</span><span class="rule"></span></h3>
-			<p class="caption">Gold</p>
+			<p class="caption">{game.moneyLabel}</p>
 			<p class="line">
 				{left + gained}
 				{game.currency}
@@ -194,8 +194,8 @@
 					type="number"
 					inputmode="numeric"
 					min="1"
-					placeholder="Gold to add"
-					aria-label="Gold to add"
+					placeholder="{game.moneyLabel} to add"
+					aria-label="{game.moneyLabel} to add"
 					bind:value={goldInput}
 				/>
 				<button class="add" disabled={!(Number(goldInput) >= 1)} onclick={addGold}>Add</button>

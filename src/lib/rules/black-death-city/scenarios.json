@@ -144,6 +144,7 @@
 			"marks": [
 				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true }
 			],
+			"noFleeTest": "other",
 			"intro": "A notorious warrior makes their way through the darkened streets of the city, unbeknownst that they have been marked with death and in the shadows beyond blades are drawn and ready to strike!",
 			"sections": [
 				{ "phase": "before", "name": "Ambusher & Defender", "text": "In this battle the underdog warband is the **Ambusher** and their opponent is the **Defender**." },

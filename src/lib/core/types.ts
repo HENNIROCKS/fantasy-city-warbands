@@ -56,6 +56,8 @@ export interface GameSystem {
 	currency: string;
 	/** Spelled out where there is room, such as the game's preview: `gold coins`. Without it, `currency`. */
 	currencyName?: string;
+	/** The warband's money as a heading on the back of its card: `Gold`, `Silver`. */
+	moneyLabel: string;
 	/** What a new warband has to spend. */
 	budget: number;
 	/** What one of its `unique` pieces is called, where it has them: `magic item`. Taken by the warband and added to its stash. */
@@ -311,6 +313,8 @@ export interface Scenario {
 	groups?: GroupRule;
 	/** States a fighter can be marked with in this scenario's battle, after the game's own. Without it, none. */
 	marks?: BattleMark[];
+	/** The side whose warband takes no flee test in this battle, as Street of Death's Defender, the underdog's opponent. Without it, both take it. */
+	noFleeTest?: 'underdog' | 'other';
 	intro: string;
 	sections: ScenarioSection[];
 	/** What its twist is rolled with: `d6`, `d3`. */

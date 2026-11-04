@@ -27,7 +27,7 @@
 - [x] 📈 Wyrdcry's Undead: a VAMPIRE picks the Blood of Von Carstein talents with renown
 - [x] 📚 Wyrdcry's site data of November: the Possessed's mutated weapons, the Great Weapon, the Dire Wolf a BEAST
 - [x] 📚 Wyrdcry's playtest factions from wyrdcry.net under their own heading, characteristics locked where no racial limits are printed
-- [ ] ⚔️ Black Death City's Street of Death: no flee test for the Defender, who cannot flee
+- [x] ⚔️ Black Death City's Street of Death: no flee test for the Defender, who cannot flee
 - [ ] 📄 Import the Warband Builder's talents: magical abilities, mutations, heroic talents and injuries onto the fighters, what does not fit into the notes
 - [ ] 📄 The roster per game, as each game's own sheet has it
 - [ ] 📚 Mordheim

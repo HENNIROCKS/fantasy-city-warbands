@@ -39,6 +39,7 @@ export const game: GameSystem = {
 	author: 'Johan Markström',
 	currency: 'gc',
 	currencyName: 'gold coins',
+	moneyLabel: 'Gold',
 	budget: 1000,
 	uniqueName: 'magic item',
 	stats: [
