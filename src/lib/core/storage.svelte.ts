@@ -33,6 +33,8 @@ const PHOTOS = 'photos';
 const LEGACY_WARBANDS = 'fantasy-city-warbands:warbands';
 const LEGACY_BATTLE = 'fantasy-city-warbands:battle:';
 const LEGACY_SOUND = 'fantasy-city-warbands:sound';
+/* The game last picked, which nothing reads any more: cleared with the rest. */
+const LEGACY_LAST_GAME = 'fantasy-city-warbands:last-game';
 
 export const storage = $state({ failing: false });
 
@@ -99,6 +101,7 @@ function readLegacy(): Legacy | null {
 			legacy.soundOff = localStorage.getItem(LEGACY_SOUND) === 'off';
 			legacy.keys.push(LEGACY_SOUND);
 		}
+		if (localStorage.getItem(LEGACY_LAST_GAME) !== null) legacy.keys.push(LEGACY_LAST_GAME);
 	} catch {
 		return null;
 	}
