@@ -12,6 +12,12 @@ Builder on wyrdcry.net.
 Renown, favour, gold, the stash, the battle history, fluff, notes and colour
 come along. Experience does not: the Campaign Book counts renown only.
 
+The builder's special rules come along too. A wizard's magical abilities, a
+mutation and lasting injuries go onto the fighter. Heroic talents, and
+abilities learned in place of one, go onto the fighter's levels of renown,
+lowest first, in the order the file lists them. What has no place here, such
+as a second mutation, goes into the warband's notes, and the sheet names it.
+
 A hired sword on the builder's roster shows as unknown. Here you hire one for
 a single battle – see [Hired swords](hired-swords.md).
 

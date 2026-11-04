@@ -382,6 +382,43 @@ function describe(instance: FighterInstance, fighter: Fighter, faction: Faction,
 
 export const advancement: Advancement = { label: 'Renown', counter: 'renown', open, offer, keywords, effects, describe, check };
 
+/** Every heroic talent, the factions' own included, by id and name, for a file that names them. */
+export const heroicTalents = allTalents.map(({ id, name }) => ({ id, name }));
+
+/**
+ * Rules a file gives a fighter without saying on which level – heroic talents
+ * and the magical abilities learned in place of one – each on the lowest level
+ * that still asks for a rule and where it holds, in the order given. A level
+ * that then still asks for a characteristic is written as used up, so it does
+ * not stand open. What finds no level, is held already, or is one ability more
+ * than the fighter may learn, comes back in `left`.
+ */
+export function placeRules(instance: FighterInstance, fighter: Fighter, ids: string[]): { advances: Advance[]; usedUp: number; left: string[] } {
+	let current = instance;
+	const placed: Advance[] = [];
+	const left: string[] = [];
+	const choice = fighter.choices?.find((c) => c.later);
+	const learned = () => (current.advances ?? []).filter((a) => a.rule && choice?.options.some((o) => o.id === a.rule)).length;
+	for (const rule of ids) {
+		const held = (current.advances ?? []).some((a) => a.rule === rule) || (instance.picks ?? []).includes(rule);
+		const tooMany = !!choice?.options.some((o) => o.id === rule) && learned() >= (choice.later ?? 0);
+		let level = 0;
+		if (!held && !tooMany) {
+			for (let at = 1; at <= renownOf(current) && !level; at++) {
+				if (needsOf(current, fighter, at).includes('rule') && ruleHolds({ level: at, rule }, fighter)) level = at;
+			}
+		}
+		if (!level) {
+			left.push(rule);
+			continue;
+		}
+		placed.push({ level, rule });
+		current = { ...current, advances: [...(current.advances ?? []), { level, rule }] };
+	}
+	const partial = [...new Set(placed.map((a) => a.level))].filter((level) => needsOf(current, fighter, level).length);
+	return { advances: [...placed, ...partial.map((level) => ({ level }))], usedUp: partial.length, left };
+}
+
 /** Levels a file brings without a record of what they were spent on, written as used up so none stands open. */
 export function usedUp(instance: FighterInstance): Advance[] {
 	const spent = new Set((instance.advances ?? []).map((a) => a.level));

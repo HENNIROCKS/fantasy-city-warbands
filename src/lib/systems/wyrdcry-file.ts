@@ -13,7 +13,8 @@ import { activeEffects, recruitCost, type ActiveEffect } from '$lib/core/effects
 import { profileOf } from '$lib/core/warband';
 import type { Advance, BattleRecord, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 import { factions, game, wargearId } from './wyrdcry';
-import { usedUp } from './wyrdcry-renown';
+import { lastingInjuries } from './wyrdcry-injuries';
+import { heroicTalents, placeRules, usedUp } from './wyrdcry-renown';
 
 type Raw = Record<string, unknown>;
 
@@ -70,6 +71,9 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 	let experienced = 0;
 	let overridden = 0;
 	const unexplained: string[] = [];
+	/* The builder's talents, injuries and mutations that find no place here, as lines for the notes. */
+	const unplaced: string[] = [];
+	let placedRules = 0;
 
 	const fighters = parsed.fighters.filter(isObject).map((raw): FighterInstance => {
 		const instanceId = text(raw.instanceId);
@@ -99,10 +103,15 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 
 		const advances = advancesOf(instance, raw, type, effects, renownHistory, modifiers, selections !== null);
 		if (advances.length) instance.advances = advances;
+		/* After the figures are read: the builder leaves what a mutation adds out of them. */
+		const taken = takeTalents(instance, strings(raw.talents), type);
+		usedLevels += taken.usedUp;
+		placedRules += taken.placed;
+		unplaced.push(...taken.left.map((t) => `${name || type?.name || 'Unnamed fighter'}: ${t}`));
 		/* A level the file holds no record of was spent elsewhere, or is lost with the deck's open ones: either way not open here. */
 		const unrecorded = usedUp(instance);
 		if (unrecorded.length) {
-			instance.advances = [...advances, ...unrecorded];
+			instance.advances = [...(instance.advances ?? []), ...unrecorded];
 			usedLevels += unrecorded.length;
 		}
 		for (const a of advances) {
@@ -111,7 +120,7 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 		return instance;
 	});
 
-	const custom = customLines(parsed, faction, fighters, selections !== null);
+	const custom = [...customLines(parsed, faction, fighters, selections !== null), ...unplaced];
 	const notes = [text(parsed.factionNotes).trim(), custom.length ? custom.join('\n') : ''].filter(Boolean).join('\n\n');
 
 	const history = meta && Array.isArray(meta.history) ? meta.history.filter(isRecord) : [];
@@ -140,7 +149,12 @@ export function readDeckFile(parsed: Raw): DeckReadResult {
 
 	const hints: string[] = [];
 	if (pending) hints.push(`${pending} ${pending === 1 ? 'purchase' : 'purchases'} still pending in the builder ${pending === 1 ? 'is' : 'are'} taken as bought.`);
-	if (custom.length) hints.push(`${custom.length} custom ${custom.length === 1 ? 'ability or weapon is' : 'abilities and weapons are'} added to the warband's notes.`);
+	const customOnly = custom.length - unplaced.length;
+	if (customOnly) hints.push(`${customOnly} custom ${customOnly === 1 ? 'ability or weapon is' : 'abilities and weapons are'} added to the warband's notes.`);
+	if (unplaced.length) {
+		hints.push(`${unplaced.length} ${unplaced.length === 1 ? 'talent, injury or mutation finds' : 'talents, injuries and mutations find'} no place on the fighters here and ${unplaced.length === 1 ? 'is' : 'are'} added to the warband's notes: ${unplaced.join(', ')}.`);
+	}
+	if (placedRules) hints.push(`Heroic talents and learned abilities without a level are put on the fighters' renown levels, lowest first, in the file's order.`);
 	if (overridden) hints.push(`The builder's own price for ${overridden} ${overridden === 1 ? 'fighter' : 'fighters'} is left out; the app prices them itself.`);
 	if (usedLevels) {
 		hints.push(`${usedLevels} renown ${usedLevels === 1 ? 'level' : 'levels'} without a record of what ${usedLevels === 1 ? 'it was' : 'they were'} spent on ${usedLevels === 1 ? 'counts' : 'count'} as spent.`);
@@ -219,6 +233,77 @@ function advancesOf(
 		if (rest) advances.push({ level: 0, stat: key, bonus: rest });
 	}
 	return advances;
+}
+
+/** Builder ids the app keeps under another id, which its names do not give either. */
+const ALIASES: Record<string, string> = { 'bodyguard-talent': 'bodyguard', 'maintain-momentum-wits': 'maintain-momentum' };
+
+const slug = (name: string) =>
+	name
+		.toLowerCase()
+		.replace(/[’']/g, '')
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+
+/** The entry a builder id stands for: the same id, its alias, or an entry whose name it spells; a mutation's without `mutation-`. */
+function match<T extends { id: string; name: string }>(id: string, entries: T[]): T | undefined {
+	const bare = ALIASES[id] ?? id.replace(/^mutation-/, '');
+	return entries.find((e) => e.id === id || e.id === bare) ?? entries.find((e) => slug(e.name) === bare);
+}
+
+/**
+ * The builder's talents on one fighter – ids from the site's abilities, without
+ * a level – taken onto the instance where the app has a place for them: a
+ * magical ability into the fighter's pick, a mutation into its roll, a lasting
+ * injury into its injuries as the file has it, a heroic talent or a further
+ * ability onto a level of renown. What the instance already holds, as a deck
+ * file records it, is passed over; what finds no place comes back by name.
+ */
+function takeTalents(instance: FighterInstance, ids: string[], fighter: Fighter | undefined): { placed: number; usedUp: number; left: string[] } {
+	const named = (id: string) => id.replace(/^mutation-/, '').split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+	if (!fighter) return { placed: 0, usedUp: 0, left: ids.map(named) };
+	const abilities = fighter.choices?.find((c) => !c.roll);
+	const mutations = fighter.choices?.find((c) => c.roll);
+	const rules: string[] = [];
+	const left: string[] = [];
+	const picks = [...(instance.picks ?? [])];
+	const injuries = [...(instance.injuries ?? [])];
+	const held = (id: string) => picks.includes(id) || (instance.advances ?? []).some((a) => a.rule === id);
+
+	for (const id of ids) {
+		const ability = abilities && match(id, abilities.options);
+		if (ability) {
+			if (held(ability.id)) continue;
+			if (picks.filter((p) => abilities.options.some((o) => o.id === p)).length < abilities.pick) picks.push(ability.id);
+			else rules.push(ability.id);
+			continue;
+		}
+		const mutation = mutations && match(id, mutations.options);
+		if (mutation) {
+			if (held(mutation.id)) continue;
+			if (!picks.some((p) => mutations.options.some((o) => o.id === p))) picks.push(mutation.id);
+			else left.push(mutation.name);
+			continue;
+		}
+		const injury = match(id, lastingInjuries);
+		if (injury) {
+			injuries.push(injury.id);
+			continue;
+		}
+		const talent = match(id, heroicTalents);
+		if (talent) {
+			if (!held(talent.id)) rules.push(talent.id);
+			continue;
+		}
+		left.push(named(id));
+	}
+
+	if (picks.length) instance.picks = picks;
+	if (injuries.length) instance.injuries = injuries;
+	const placing = placeRules(instance, fighter, rules);
+	if (placing.advances.length) instance.advances = [...(instance.advances ?? []), ...placing.advances];
+	const nameOf = (id: string) => match(id, [...heroicTalents, ...(abilities?.options ?? [])])?.name ?? named(id);
+	return { placed: rules.length - placing.left.length, usedUp: placing.usedUp, left: [...left, ...placing.left.map(nameOf)] };
 }
 
 /**

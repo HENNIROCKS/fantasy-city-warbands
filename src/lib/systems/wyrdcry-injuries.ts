@@ -65,6 +65,9 @@ function held(instance: FighterInstance): RawResult[] {
 	return (instance.injuries ?? []).flatMap((id) => HERO.filter((r) => r.id === id));
 }
 
+/** The results a HERO keeps, by id and name, for a file that names them. */
+export const lastingInjuries = HERO.filter(isLasting).map(({ id, name }) => ({ id, name }));
+
 /** What the fighter's injuries add to a characteristic, for the figure a level of renown starts from. */
 export function injuryBonus(instance: FighterInstance, stat: string): number {
 	return held(instance)
