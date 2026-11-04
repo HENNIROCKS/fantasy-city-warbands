@@ -21,6 +21,7 @@ export const areas: Area[] = [
 	{ label: 'Choices on recruitment', built: (_, factions) => fighters(factions).some((f) => !!f.choices?.length) },
 	/* Counting damage, states and rounds is the core's; `game.battle` only adds a game's own states and tests. */
 	{ label: 'Tracking a battle', built: () => true },
+	{ label: 'Scenarios', built: (game) => !!game.scenarios },
 	{ label: 'The aftermath of a battle', built: (game) => !!game.aftermath },
 	{ label: 'Advancement', built: (game) => !!game.advancement },
 	/* The stash is the core's; a game carries this area once it sells from it and has a list of its own beside the factions', as Wyrdcry's Trading Post. */
