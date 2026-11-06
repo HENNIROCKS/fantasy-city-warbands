@@ -156,10 +156,10 @@
 	const holdings = $derived(game.holdings);
 	const counted = $derived(draft.record);
 	const after = $derived(holdingsAfter(warband, game, draft.result, draft.seize, earned.found?.holdings));
-	const sources = $derived(holdings ? incomeOf(warband, game, faction, after.ids, counted) : []);
+	const sources = $derived(holdings ? incomeOf(warband, game, faction, after.held, counted) : []);
 	const levelUp = $derived(levelGained(warband, game, counted));
 	const leech = $derived(holdings?.leech);
-	const jars = $derived(holdings ? jarsFor(warband, game, after.ids, draft.collect) : 0);
+	const jars = $derived(holdings ? jarsFor(warband, game, after.held, draft.collect) : 0);
 	const leechable = $derived(
 		leech ? warband.fighters.filter((f) => (f.tally?.[leech.counter] ?? 0) > 0 && f.away !== 'dead' && !diesOf(draft, game, faction, f)) : []
 	);
@@ -374,7 +374,7 @@
 		if (draft.result !== 'win') seize.take = seize.prize ? 'prize' : null;
 		else if (!seize.prize) seize.take = null;
 	}
-	const toggleIn = (list: number[], at: number) => (list.includes(at) ? list.filter((n) => n !== at) : [...list, at]);
+	const toggleIn = <T,>(list: T[], at: T) => (list.includes(at) ? list.filter((n) => n !== at) : [...list, at]);
 	/* Silver comes in steps of the roll's multiplier: 5 for `2d6x5`, 1 for `3d6`. */
 	const stepOf = (roll: string) => Number(/x(\d+)/.exec(roll)?.[1] ?? 1);
 	function addSilver(key: string, by: number) {
@@ -1113,9 +1113,9 @@
 									<button class="segment" aria-label="{by} silver more from {source.label}" onclick={() => addSilver(source.key, by)}>+</button>
 								</div>
 							</div>
-							{#if source.holding && source.at !== undefined}
+							{#if source.holding && source.place !== undefined}
 								{@const holding = source.holding}
-								{@const place = source.at}
+								{@const place = source.place}
 								{#if holding.turns}
 									<div class="switches">
 										<button class="switch-row" role="switch" aria-checked={draft.collect.turned.includes(place)} onclick={() => (draft.collect.turned = toggleIn(draft.collect.turned, place))}>

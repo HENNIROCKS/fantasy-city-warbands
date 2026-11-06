@@ -25,14 +25,19 @@ export interface SeizeAnswer {
 	upgrade: string | null;
 }
 
-/** What the income and the downtime answer: totals by source, holdings that turn, d6 tables, counts rolled, fighters leeched. */
+/**
+ * What the income and the downtime answer: totals by source, holdings that
+ * turn, d6 tables, counts rolled, fighters leeched. A holding is answered
+ * under its `place` from `holdingsAfter`, which stays the same when the
+ * seizing changes; an answer whose holding has gone counts for nothing.
+ */
 export interface CollectAnswer {
 	/** Silver by source key: `stronghold`, `holding:<place>`, `treasure`. */
 	silver: Record<string, number>;
-	/** The holdings, by place after the seizing, whose income roll turns them. */
-	turned: number[];
+	/** The holdings, by place, whose income roll turns them. */
+	turned: string[];
 	/** A d6 table's result, by holding place. */
-	tabled: Record<number, number>;
+	tabled: Record<string, number>;
 	/** A count rolled for what a holding gives, by `<place>:<wargear>`. */
 	counts: Record<string, number>;
 	/** For each fighter given a Jar of Canal Leeches, whether the leeching roll took a level of Black Rot. */
@@ -44,6 +49,12 @@ export const noCollecting = (): CollectAnswer => ({ silver: {}, turned: [], tabl
 
 /** A holding on the game's table, by id. */
 export const holdingOf = (game: GameSystem, id: string): Holding | undefined => game.holdings?.table.find((h) => h.id === id);
+
+/** A holding as the first step leaves it: its id, and where it comes from – `own:<place in the warband's list>`, `prize`, `enemy`, `found:<n>`. */
+export interface HeldHolding {
+	id: string;
+	place: string;
+}
 
 /**
  * The holdings as the first step leaves them, in order: those kept, then what
@@ -57,21 +68,21 @@ export function holdingsAfter(
 	result: 'win' | 'draw' | 'loss' | null,
 	seize: SeizeAnswer,
 	found: string[] = []
-): { ids: string[]; over: number } {
+): { held: HeldHolding[]; ids: string[]; over: number } {
 	const max = game.holdings?.max ?? 0;
-	const kept = (warband.holdings ?? []).filter((_, i) => !seize.lost.includes(i) && !seize.forfeit.includes(i));
+	const kept = (warband.holdings ?? []).flatMap((id, i) => (seize.lost.includes(i) || seize.forfeit.includes(i) ? [] : [{ id, place: `own:${i}` }]));
 	const taken =
 		result === 'win'
 			? seize.take === 'prize' && seize.prize
-				? [seize.prize]
+				? [{ id: seize.prize, place: 'prize' }]
 				: seize.take === 'enemy' && seize.enemy
-					? [seize.enemy]
+					? [{ id: seize.enemy, place: 'enemy' }]
 					: []
 			: seize.take === 'prize' && seize.prize
-				? [seize.prize]
+				? [{ id: seize.prize, place: 'prize' }]
 				: [];
-	const ids = [...kept, ...taken];
-	return { ids: [...ids, ...found], over: Math.max(0, ids.length - max) };
+	const held = [...kept, ...taken, ...found.map((id, n) => ({ id, place: `found:${n}` }))];
+	return { held, ids: held.map((h) => h.id), over: Math.max(0, kept.length + taken.length - max) };
 }
 
 /** Where the battle that ends now raises the stronghold a level: the level it reaches. */
@@ -86,23 +97,23 @@ export interface IncomeSource {
 	/** The roll as the rules print it: `4d6x5`, `d3x5 each`. */
 	roll: string;
 	kind: 'stronghold' | 'income' | 'ransack' | 'treasure';
-	/** The holding's place after the seizing, for a holding's income or ransack. */
-	at?: number;
+	/** The holding's place from `holdingsAfter`, for a holding's income or ransack. */
+	place?: string;
 	holding?: Holding;
 }
 
 /** What step 5 collects: the stronghold, each holding with an income or to ransack, and the treasure claimed in the battle. */
-export function incomeOf(warband: Warband, game: GameSystem, faction: Faction, ids: string[], counted: boolean): IncomeSource[] {
+export function incomeOf(warband: Warband, game: GameSystem, faction: Faction, held: HeldHolding[], counted: boolean): IncomeSource[] {
 	const rules = game.holdings;
 	if (!rules) return [];
 	const stronghold = rules.stronghold(warband, faction, (warband.history?.length ?? 0) + (counted ? 1 : 0));
 	return [
 		...(stronghold ? [{ key: 'stronghold', label: `${stronghold.name}, ${ordinal(stronghold.level)} level`, roll: stronghold.income, kind: 'stronghold' as const }] : []),
-		...ids.flatMap((id, at): IncomeSource[] => {
+		...held.flatMap(({ id, place }): IncomeSource[] => {
 			const holding = holdingOf(game, id);
 			if (!holding) return [];
-			if (holding.ransack) return [{ key: `holding:${at}`, label: `${holding.name}, ransacked`, roll: holding.ransack, kind: 'ransack', at, holding }];
-			return holding.income ? [{ key: `holding:${at}`, label: holding.name, roll: holding.income, kind: 'income', at, holding }] : [];
+			if (holding.ransack) return [{ key: `holding:${place}`, label: `${holding.name}, ransacked`, roll: holding.ransack, kind: 'ransack', place, holding }];
+			return holding.income ? [{ key: `holding:${place}`, label: holding.name, roll: holding.income, kind: 'income', place, holding }] : [];
 		}),
 		{ key: 'treasure', label: 'Treasure claimed', roll: 'd3x5 each', kind: 'treasure' }
 	];
@@ -110,8 +121,8 @@ export function incomeOf(warband: Warband, game: GameSystem, faction: Faction, i
 
 export const ordinal = (n: number) => `${n}${n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th'}`;
 
-/** The silver the income brings, all sources together. */
-export const silverOf = (collect: CollectAnswer) => Object.values(collect.silver).reduce((sum, n) => sum + n, 0);
+/** The silver the income brings from the sources there are. */
+export const silverOf = (collect: CollectAnswer, sources: IncomeSource[]) => sources.reduce((sum, s) => sum + (collect.silver[s.key] ?? 0), 0);
 
 /**
  * The warband with its holdings, upgrade, income and downtime written in: the
@@ -134,20 +145,20 @@ export function applyHoldings(
 ): Warband {
 	const rules = game.holdings;
 	if (!rules) return warband;
-	const { ids } = holdingsAfter(before, game, result, seize, found);
+	const { held } = holdingsAfter(before, game, result, seize, found);
 	const ruined = rules.table[0]?.id;
 	const stash = [...(warband.stash ?? [])];
-	const holdings = ids.flatMap((id, at): string[] => {
+	const holdings = held.flatMap(({ id, place }): string[] => {
 		const holding = holdingOf(game, id);
 		if (!holding) return [id];
 		for (const give of holding.gives ?? []) {
-			const count = typeof give.count === 'number' ? give.count : (collect.counts[`${at}:${give.wargear}`] ?? 0);
+			const count = typeof give.count === 'number' ? give.count : (collect.counts[`${place}:${give.wargear}`] ?? 0);
 			for (let n = 0; n < count; n++) stash.push(give.wargear);
 		}
-		const tabled = holding.table?.[(collect.tabled[at] ?? 0) - 1];
+		const tabled = holding.table?.[(collect.tabled[place] ?? 0) - 1];
 		if (tabled) stash.push(tabled);
 		if (holding.ransack) return ruined ? [ruined] : [];
-		if (holding.turns && collect.turned.includes(at)) return holding.turns.into ? [holding.turns.into] : [];
+		if (holding.turns && collect.turned.includes(place)) return holding.turns.into ? [holding.turns.into] : [];
 		return [id];
 	});
 	const upgrades = [...(warband.upgrades ?? []), ...(seize.upgrade && levelGained(before, game, counted) ? [seize.upgrade] : [])];
@@ -167,7 +178,7 @@ export function applyHoldings(
 	});
 	return {
 		...warband,
-		gold: (warband.gold ?? 0) + silverOf(collect),
+		gold: (warband.gold ?? 0) + silverOf(collect, incomeOf(before, game, faction, held, counted)),
 		...(holdings.length || warband.holdings ? { holdings } : {}),
 		...(upgrades.length ? { upgrades } : {}),
 		...(stash.length || warband.stash ? { stash } : {}),
@@ -176,13 +187,13 @@ export function applyHoldings(
 }
 
 /** How many of the pieces leeching uses the downtime has: those in the stash, and those the income brings. */
-export function jarsFor(warband: Warband, game: GameSystem, ids: string[], collect: CollectAnswer): number {
+export function jarsFor(warband: Warband, game: GameSystem, held: HeldHolding[], collect: CollectAnswer): number {
 	const piece = game.holdings?.leech?.wargear;
 	if (!piece) return 0;
-	const held = (warband.stash ?? []).filter((id) => id === piece).length;
-	const brought = ids.reduce((sum, id, at) => {
+	const stashed = (warband.stash ?? []).filter((id) => id === piece).length;
+	const brought = held.reduce((sum, { id, place }) => {
 		const give = holdingOf(game, id)?.gives?.find((g) => g.wargear === piece);
-		return sum + (give ? (typeof give.count === 'number' ? give.count : (collect.counts[`${at}:${piece}`] ?? 0)) : 0);
+		return sum + (give ? (typeof give.count === 'number' ? give.count : (collect.counts[`${place}:${piece}`] ?? 0)) : 0);
 	}, 0);
-	return held + brought;
+	return stashed + brought;
 }
