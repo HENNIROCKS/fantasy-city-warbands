@@ -40,6 +40,7 @@ Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the A
 ### Open upstream
 
 - [ ] Blighted Cloister: Blessed Rabble has the same leader as Priesthood of Sorcerers
+- [ ] Blighted Cloister: Demonic Strength names the Rot-Colossal's Demonic Rot Blade, where it carries a Great Demonic Rot Blade; the app shows it as printed (Playtest v1.10)
 - [ ] Death Covens: the Dire Wolf's Trackers asks for a Hunting Dog in the scouting party (Playtest v1.10)
 - [ ] Selling wargear: half the cost rounded down, where the line beneath prints 50% rounded up (Playtest v1.10)
 - [ ] Street of Death, Heavy Downpour: the sentence on when the rain ends breaks off; the app shows it as printed
