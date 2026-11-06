@@ -29,8 +29,9 @@
 - [x] 📚 Wyrdcry's playtest factions from wyrdcry.net under their own heading, characteristics locked where no racial limits are printed
 - [x] ⚔️ Black Death City's Street of Death: no flee test for the Defender, who cannot flee
 - [x] 📄 Import the Warband Builder's talents: magical abilities, mutations, heroic talents and injuries onto the fighters, what does not fit into the notes
+- [x] 📈 Black Death City's aftermath: injuries permanent or temporary, Black Rot, a champion assuming command, experience and ranks, recuperating
 - [ ] 📄 The roster per game, as each game's own sheet has it
-- [ ] 📈 Black Death City's campaign: aftermath, injuries, ranks, exploration, holdings and strongholds
+- [ ] 📈 Black Death City's campaign: advancement rolls, exploration, holdings, strongholds and income
 - [ ] 📚 Mordheim
 - [ ] 📚 Necropolis
 

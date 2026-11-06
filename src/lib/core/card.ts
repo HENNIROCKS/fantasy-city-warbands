@@ -405,7 +405,8 @@ export function fighterCard(
 		...(fighter?.rules ?? []),
 		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
 		...advanced.rules,
-		...injured.rules
+		...injured.rules,
+		...(instance.leader && game.succession?.rule ? [game.succession.rule] : [])
 	];
 	/* A rule a single-use piece gives for the battle, as Mad Cap Mushrooms' Stupidity, unless the fighter has it already. */
 	const lent = uses
@@ -502,7 +503,10 @@ export function fighterCard(
 		   rather than into one, where the game keeps a campaign. */
 		campaign: [
 			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction, effects)) },
-			...(game.campaign?.fighter.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
+			/* A counter the fighter never gains, as Black Rot for the Undead, only where it holds some. */
+			...(game.campaign?.fighter
+				.filter((c) => !c.excluded?.some((k) => keywords.includes(k)) || (instance.tally?.[c.key] ?? 0) > 0)
+				.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
 		],
 		weapons,
 		items,

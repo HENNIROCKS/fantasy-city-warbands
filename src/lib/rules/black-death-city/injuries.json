@@ -1,0 +1,56 @@
+{
+	"tables": [
+		{
+			"id": "injury",
+			"name": "Injury Table",
+			"dice": "D66",
+			"results": [
+				{ "id": "killed", "name": "Killed", "roll": "11–15", "outcome": "dead", "text": "The fighter is killed." },
+				{ "id": "gut-wound", "name": "Gut Wound", "roll": "16", "type": "injury", "text": "Halve the fighter's Life value (rounding up).", "halve": "life" },
+				{ "id": "blinded-in-one-eye", "name": "Blinded In One Eye", "roll": "21", "type": "injury", "text": "The fighter's Bow value is reduced by 1.", "worsen": "bow" },
+				{ "id": "fractured-arm", "name": "Fractured Arm", "roll": "22", "type": "injury", "text": "The fighter's Blade value is reduced by 1.", "worsen": "blade" },
+				{ "id": "broken-leg", "name": "Broken Leg", "roll": "23", "type": "injury", "text": "Halve the fighter's Move value (rounding up).", "halve": "move" },
+				{ "id": "head-injury", "name": "Head Injury", "roll": "24", "type": "injury", "text": "Halve the fighter's Initiative value (rounding up).", "halve": "initiative" },
+				{ "id": "frayed-nerves", "name": "Frayed Nerves", "roll": "25", "type": "injury", "text": "Halve the fighter's Willpower value (rounding up).", "halve": "willpower" },
+				{ "id": "chronic-black-rot", "name": "Chronic Black Rot", "roll": "26", "text": "The fighter gains 2 levels of Black Rot.", "blackRot": 2 },
+				{ "id": "black-rot", "name": "Black Rot", "roll": "31–46", "text": "The fighter gains 1 level of Black Rot.", "blackRot": 1 },
+				{ "id": "full-recovery", "name": "Full Recovery", "roll": "51–65", "text": "The fighter is found by their allies unconscious with only minor injuries. They make a full recovery." },
+				{ "id": "heroic-escape", "name": "Heroic Escape", "roll": "66", "text": "The fighter makes a full recovery. In addition, they earn 10 bonus experience in Step Three of the aftermath.", "experience": 10 }
+			]
+		},
+		{
+			"id": "beast",
+			"name": "Beast Injury Table",
+			"dice": "D6",
+			"keywords": ["beast"],
+			"results": [
+				{ "id": "beast-killed", "name": "Killed", "roll": "1–2", "outcome": "dead", "text": "The fighter is killed." },
+				{ "id": "beast-full-recovery", "name": "Full Recovery", "roll": "3–6", "text": "The fighter makes a full recovery." }
+			]
+		},
+		{
+			"id": "skeleton-thrall",
+			"name": "Skeleton & Thrall Injury Table",
+			"dice": "D6",
+			"keywords": ["skeleton", "thrall"],
+			"results": [
+				{ "id": "laid-to-rest", "name": "Laid to Rest", "roll": "1", "outcome": "dead", "text": "The undead creature is undone. Treat this result as killed." },
+				{ "id": "thrall-full-recovery", "name": "Full Recovery", "roll": "2–6", "text": "The fighter suffers no lasting effects. Treat this result as full recovery." }
+			]
+		},
+		{
+			"id": "demon",
+			"name": "Demon Injury Table",
+			"dice": "D6",
+			"keywords": ["demon"],
+			"results": [
+				{ "id": "banished", "name": "Banished", "roll": "1", "outcome": "dead", "text": "The demon is banished from the mortal world for 666 years. Treat this result as killed." },
+				{ "id": "fractured-essence", "name": "Fractured Essence", "roll": "2–3", "outcome": "miss-next-battle", "text": "The demon's grip on its corporeal form is momentarily unravelled. The demon misses the next battle." },
+				{ "id": "unharmed", "name": "Unharmed", "roll": "4–6", "text": "Mortal weapons are not enough to deal lasting harm to a creature such as this. Treat this result as full recovery." }
+			]
+		}
+	],
+	"blackRot": { "immune": ["beast", "demon", "undead"], "kills": 4 },
+	"temporary": { "permanent": "1: Permanent", "temporary": "2+: Temporary" },
+	"recover": { "label": "Recuperate", "note": "Roll a dice for each temporary injury a fighter had before this battle: on a 5–6 it is removed.", "heals": "5–6: removed" }
+}

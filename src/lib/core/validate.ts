@@ -114,7 +114,9 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			continue;
 		}
 		if (!(instance.away === 'dead' && recruitedLeader(instance, faction))) {
-			resolved.push({ fighter, keywords: instance.leader && !fighter.keywords.includes(LEADER) ? [...fighter.keywords, LEADER] : fighter.keywords });
+			/* Where the game has it so, it gives up the keyword it took the lead with, and counts as a LEADER only. */
+			const kept = instance.leader && game.succession?.replaces ? fighter.keywords.filter((k) => k !== game.succession!.keyword) : fighter.keywords;
+			resolved.push({ fighter, keywords: instance.leader && !kept.includes(LEADER) ? [...kept, LEADER] : kept });
 		}
 
 		const allowed = new Set(fighter.wargear);
@@ -213,7 +215,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		const count = resolved.filter((r) => r.fighter.id === fighter.id).length;
 		const isLeader = fighter.keywords.includes(LEADER);
 		/* A fighter that took the lead leaves no place for another leader. */
-		const { limit, source } = successor && isLeader ? { limit: { min: 0, max: 0 }, source: null } : limitOf(fighter, effects);
+		const ruled = successor && isLeader && !game.succession?.replaces;
+		const { limit, source } = ruled ? { limit: { min: 0, max: 0 }, source: null } : limitOf(fighter, effects);
 		const kind = compare(count, limit);
 		if (!kind) continue;
 
@@ -221,7 +224,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		let short = kind === 'excess' ? 'Limit reached' : `${fighter.name} needed`;
 		const lost = game.succession && kind === 'missing' && isLeader && lostLeader(warband);
 		const heir = lost && warband.fighters.some((f) => canLead(f, faction, game));
-		if (successor && isLeader) {
+		if (ruled) {
 			message = `${fighter.name}: ${successor.name.trim() || 'a fighter'} leads the warband in its place.`;
 			short = 'Already led';
 		} else if (heir && game.succession) {
@@ -232,7 +235,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			short = 'Disbanded';
 		} else if (lost && game.succession) {
 			/* Taken back from disbanding, or brought in without it: the warband builds on. */
-			message = `No leader: recruit a ${game.succession.keyword.toUpperCase()} to take the lead.`;
+			message = game.succession.recruits ? game.succession.none : `No leader: recruit a ${game.succession.keyword.toUpperCase()} to take the lead.`;
 			short = 'No leader';
 		} else if (source && limit.max === 0) {
 			message = `${fighter.name} cannot be recruited with ${source}.`;

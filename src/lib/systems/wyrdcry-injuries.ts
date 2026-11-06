@@ -157,5 +157,6 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 		return raw && isLasting(raw) ? result(raw) : null;
 	}
 
-	return { table, exempt, resolve, apply, effects, result: kept };
+	/* A dead fighter's bought wargear goes to the stash on a 3+ (Campaign Book, p. 8). */
+	return { table, exempt, resolve, apply, effects, result: kept, salvage: { label: 'Recovered on a 3+' } };
 }

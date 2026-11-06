@@ -1,9 +1,11 @@
 /**
  * Ending a battle as the Wyrdcry Warband Deck does: the result and the shards,
  * then the injuries of who was taken out of action, then the roll each fighter
- * makes for a level, then what a search party finds (`explore.ts`) and the
- * income, then the line in the battle history (`history.ts`) – answered in the aftermath's
- * sheet and written into the warband in one go. What each answer is worth is
+ * makes for a level – or, as in Black Death City, the experience it earns –,
+ * the temporary injuries that heal, then what a search party finds
+ * (`explore.ts`) and the income, then the line in the battle history
+ * (`history.ts`) – answered in the aftermath's sheet and written into the
+ * warband in one go. What each answer is worth is
  * the game's (`GameSystem.aftermath`, `GameSystem.injuries`); what an injury
  * does once – a death, a surgeon, a missed battle, a robbery, a capture – is
  * the same in every game and carried out here.
@@ -36,6 +38,8 @@ export interface AftermathRow {
 	answers: Record<string, boolean>;
 	/** The levels its roll – both rolls, when it is marked – came to, as tapped. */
 	levels: number;
+	/** What it earns into the game's `experience` counter, as tapped. */
+	earned: number;
 }
 
 export interface AftermathDraft extends BattleEnd {
@@ -51,6 +55,10 @@ export interface AftermathDraft extends BattleEnd {
 	recovered: Record<string, boolean>;
 	/** For a fighter whose result needs a surgeon, what came of it, by instance id. Missing changes nothing. */
 	surgeon: Record<string, SurgeonAnswer>;
+	/** For a fighter that keeps an [Injury], whether it is temporary, where the game's `duration` asks; missing reads as permanent. */
+	temporary: Record<string, boolean>;
+	/** The temporary injuries taken before this aftermath that heal in it, by `healKey`. */
+	healed: string[];
 	/** The single-use pieces used up in the battle, by instance id: the place of each in the fighter's wargear. */
 	used: Record<string, number[]>;
 	/** What the roll a used piece asks for came to, by `usedKey`: true for the result that brings the injury. Missing is not yet rolled and changes nothing. */
@@ -109,7 +117,8 @@ export function startAftermath(
 				answers: Object.fromEntries(
 					rules.modifiers.map((q) => [q.key, q.start === 'not-out' ? !stateOf(battle, f.instanceId).out : q.start === 'yes'])
 				),
-				levels: 0
+				levels: 0,
+				earned: 0
 			})),
 		excluded: fighters.filter((f) => !earns(f) && !f.away).map((f) => f.name),
 		hired,
@@ -118,6 +127,8 @@ export function startAftermath(
 		injuries: {},
 		recovered: {},
 		surgeon: {},
+		temporary: {},
+		healed: [],
 		used: {},
 		afterUse: {},
 		stolen: {},
@@ -140,6 +151,7 @@ export function toggleOut(draft: AftermathDraft, rules: Aftermath, instanceId: s
 		delete draft.injuries[instanceId];
 		delete draft.recovered[instanceId];
 		delete draft.surgeon[instanceId];
+		delete draft.temporary[instanceId];
 		delete draft.stolen[instanceId];
 	}
 	const row = draft.rows.find((r) => r.instanceId === instanceId);
@@ -296,7 +308,15 @@ export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, d
 
 /** The score a row's roll needs on the die: the game's target, less 1 for each modifier that holds and what the underdog adds. */
 export function scoreNeeded(row: AftermathRow, rules: Aftermath, draft: AftermathDraft): number {
-	return rules.roll.target - Object.values(row.answers).filter(Boolean).length - (draft.underdog?.roll ?? 0);
+	return (rules.roll?.target ?? 0) - Object.values(row.answers).filter(Boolean).length - (draft.underdog?.roll ?? 0);
+}
+
+/** The key a temporary injury that heals is answered under: the fighter and the result. */
+export const healKey = (instanceId: string, injury: string) => `${instanceId}:${injury}`;
+
+/** The fighters that came into the battle with a temporary injury, each with those injuries, in the warband's order. */
+export function healingOf(warband: Warband): { instance: FighterInstance; injuries: string[] }[] {
+	return warband.fighters.flatMap((instance) => (instance.away !== 'dead' && instance.temporary?.length ? [{ instance, injuries: instance.temporary }] : []));
 }
 
 /** Who took part and was not taken out of action, by instance id. */
@@ -394,7 +414,9 @@ export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, d
 	const tally = { ...warband.tally };
 	for (const [key, amount] of Object.entries(found?.tally ?? {})) tally[key] = (tally[key] ?? 0) + amount;
 	const raised = found ? { ...warband, tally } : warband;
-	const earned = rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog));
+	const earned = rules.income
+		? rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog))
+		: { tally, gold: purse(warband, game), lines: [] };
 	const spent = spentOf(warband, game, draft);
 	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) - spent.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
 	return { ...earned, gold: earned.gold + kept, found };
@@ -470,11 +492,15 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		const surgeon = outcome === 'surgeon' ? draft.surgeon[roll.key] : undefined;
 		spent += feeOf(draft, game, faction, fighter, roll);
 		const dies = diesOf(draft, game, faction, fighter, roll);
-		const hurt = game.injuries.apply(fighter, type, faction, rolledAt(draft, fighter, roll)!);
+		let hurt = game.injuries.apply(fighter, type, faction, rolledAt(draft, fighter, roll)!);
+		const { result } = resolution;
+		if (game.injuries.duration && draft.temporary[roll.key] && result.type === 'injury' && hurt.injuries?.includes(result.id) && !hurt.temporary?.includes(result.id)) {
+			hurt = { ...hurt, temporary: [...(hurt.temporary ?? []), result.id] };
+		}
 		const carried = hurt.wargear.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
 		if (dies && staysDead(game, type)) return { ...hurt, away: 'dead' };
 		if (dies) {
-			const kept = surgeon === 'died' || draft.recovered[roll.key];
+			const kept = surgeon === 'died' || (!!game.injuries.salvage && draft.recovered[roll.key]);
 			if (kept) stash.push(...hurt.wargear);
 			spent += recruitCost(type, effects) + (kept ? 0 : carried);
 			return null;
@@ -500,6 +526,8 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			spent += taken.reduce((sum, piece) => sum + priceOf(piece, faction), 0);
 			fighter = { ...fighter, wargear: fighter.wargear.filter((piece) => !taken.includes(piece)) };
 		}
+		const row = rows.get(id);
+		if (row && rules.experience?.before) fighter = rules.experience.before(fighter);
 		const type = faction.fighters.find((f) => f.id === before.fighterId);
 		if (type) {
 			const hurt = injure(fighter, type, battleAt(fighter));
@@ -513,9 +541,24 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			if (roll && draft.afterUse[usedKey(id, index)] && !held.includes(roll.injury)) fighter = { ...fighter, injuries: [...held, roll.injury] };
 		}
 		if (id === heir) fighter = { ...fighter, leader: true };
-		const row = rows.get(fighter.instanceId);
 		const levels = row ? levelsEarned(row, marks) : 0;
 		if (levels > 0) fighter = rules.gainLevels(fighter, levels);
+		const counter = rules.experience?.counter;
+		if (counter && row?.tookPart && row.earned > 0) {
+			const tally = fighter.tally ?? {};
+			fighter = { ...fighter, tally: { ...tally, [counter]: (tally[counter] ?? 0) + row.earned } };
+		}
+		const heals = (fighter.temporary ?? []).filter((injury) => draft.healed.includes(healKey(id, injury)));
+		if (heals.length) {
+			const temporary = fighter.temporary!.filter((injury) => !heals.includes(injury));
+			const injuries = [...(fighter.injuries ?? [])];
+			for (const injury of heals) {
+				const at = injuries.indexOf(injury);
+				if (at >= 0) injuries.splice(at, 1);
+			}
+			const { temporary: _temporary, ...rest } = fighter;
+			fighter = { ...rest, injuries, ...(temporary.length ? { temporary } : {}) };
+		}
 		/* Exploring comes after renown: what an encounter does to the fighter it picked, then the injury roll it asked. */
 		for (const find of earned.found?.fighters.filter((f) => f.instanceId === id) ?? []) {
 			if (find.remove && type) {

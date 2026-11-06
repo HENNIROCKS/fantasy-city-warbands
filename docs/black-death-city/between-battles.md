@@ -9,7 +9,7 @@ keeps your Origin's limits for you.
 - write a name, fluff and notes, and add a photo of the model, which
   takes the place of its initials; the fluff starts with the line the fighter's scroll quotes, ready to rewrite
 - move equipment to the stash and back
-- correct the fighter's experience
+- correct the fighter's experience and Black Rot
 - dismiss the fighter, once the warband has a battle in its history. Nothing is
   paid back.
 

@@ -19,8 +19,8 @@ injuries and loot and adds it to the warband's history, and renown is spent on a
 characteristic and a heroic talent. It imports the Warband Deck's and the
 Warband Builder's files. In Black Death City it asks for each recruit's
 starting experience roll and counts the warband rating, and ending a battle
-adds its result to the warband's history; it does not yet know that game's
-campaign.
+rolls injuries, counts experience and ranks and heals temporary injuries; the
+rest of that game's campaign is still to come.
 
 ## What it does
 
@@ -108,6 +108,11 @@ campaign.
   their loot and what they do to a fighter, and income, written in with
   Apply – see
   [The aftermath](docs/wyrdcry/aftermath.md)
+- End a Black Death City battle in a few pages: result, injuries on the table
+  each fighter rolls on, permanent or temporary, Black Rot, a champion who
+  assumes command, the experience each fighter earns with its rank, and the
+  temporary injuries that heal – see
+  [The aftermath in Black Death City](docs/black-death-city/aftermath.md)
 - Spend each level of renown on a characteristic, a heroic talent or a
   legendary ability, after the battle or from the Battle menu
 - Export a warband as a file, import it again here or elsewhere, and import

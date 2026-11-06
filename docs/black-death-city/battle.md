@@ -75,10 +75,10 @@ flee test and cannot flee; once **Before the battle** says who the underdog
 is, the app asks the Defender for none.
 
 **Stopping.** The battle stays on your phone, even if you close the app.
-**End battle** asks for the result – win, draw or loss – and adds it to the
-warband's battle history, with your opponent if you like. **Cancel battle**
-drops the battle, and nothing in the warband changes.
+**End battle** opens the [aftermath](aftermath.md), which starts with the
+result – win, draw or loss – for the warband's battle history. **Cancel
+battle** drops the battle, and nothing in the warband changes.
 
 While a battle runs, no equipment moves on the backs of the cards.
 
-Next: [Between battles](between-battles.md)
+Next: [The aftermath](aftermath.md)

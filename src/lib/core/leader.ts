@@ -23,7 +23,10 @@ export function leaderOf(warband: Warband, faction: Faction): FighterInstance | 
 export function keywordsOf(instance: FighterInstance, fighter: Fighter, game: GameSystem): string[] {
 	const recruited = [...new Set([...fighter.keywords, ...chosenOptions(instance, fighter).flatMap((o) => o.keywords ?? [])])];
 	const held = game.advancement ? game.advancement.keywords(instance, recruited) : recruited;
-	return instance.leader && !held.includes(LEADER) ? [...held, LEADER] : held;
+	if (!instance.leader) return held;
+	/* Where the game has it so, the keyword that let the fighter take the lead gives way to LEADER. */
+	const kept = game.succession?.replaces ? held.filter((k) => k !== game.succession!.keyword) : held;
+	return kept.includes(LEADER) ? kept : [...kept, LEADER];
 }
 
 /** Whether the fighter carries what the game asks of a new leader, leaving aside whether the warband needs one. */
@@ -49,7 +52,7 @@ export function mayLead(warband: Warband, faction: Faction, game: GameSystem, in
 
 /** Whether the warband lost its leader and no fighter can take the lead, so the game has it disbanded. */
 export function leaderless(warband: Warband, faction: Faction, game: GameSystem): boolean {
-	return !!game.succession && !leaderOf(warband, faction) && lostLeader(warband) && !warband.fighters.some((f) => canLead(f, faction, game));
+	return !!game.succession && !game.succession.recruits && !leaderOf(warband, faction) && lostLeader(warband) && !warband.fighters.some((f) => canLead(f, faction, game));
 }
 
 /**

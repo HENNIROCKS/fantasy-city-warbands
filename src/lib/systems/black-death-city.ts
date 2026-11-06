@@ -11,6 +11,8 @@ import { fighterCost } from '$lib/core/warband';
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 import veteranSkills from '$lib/rules/black-death-city/skills.json';
 import scenarios from '$lib/rules/black-death-city/scenarios.json';
+import ranks from '$lib/rules/black-death-city/ranks.json';
+import { BLACK_ROT, injuries, injuryExperience } from './black-death-city-injuries';
 
 export const game: GameSystem = {
 	id: 'black-death-city',
@@ -43,7 +45,7 @@ export const game: GameSystem = {
 		campaign: ['Exp'],
 		split: 'damage',
 		traits: true,
-		marks: { label: 'Black Rot', count: 3 },
+		marks: { label: 'Black Rot', count: 3, key: BLACK_ROT },
 		figures: [
 			{ label: 'Battles', value: (w) => String(w.history?.length ?? 0) },
 			{ label: 'Won', value: (w) => String(w.history?.filter((h) => h.result === 'win').length ?? 0) },
@@ -75,11 +77,16 @@ export const game: GameSystem = {
 	universal: [],
 	carry,
 	weaponAdjustments: adjust,
-	/* Experience and the warband rating are what the app counts so far; the
-	   playtest's campaign chapter is not built yet. */
+	/* Experience, Black Rot and the warband rating. Of the campaign chapter
+	   (pp. 133–166), the injuries, experience and ranks of the aftermath are
+	   built, and the recovery of temporary injuries from its downtime. */
 	campaign: {
 		warband: [],
-		fighter: [{ key: 'experience', label: 'Experience' }],
+		fighter: [
+			{ key: 'experience', label: 'Experience' },
+			/* Beasts, Demons and the Undead are immune to it (p. 144). */
+			{ key: BLACK_ROT, label: 'Black Rot', excluded: ['beast', 'demon', 'undead'] }
+		],
 		start: (fighter, faction) => starts.get(`${faction.id}/${fighter.id}`) ?? null,
 		/* The rulebook's Warband Rating, short enough for the card's figures box. */
 		values: (warband) => [{ key: 'rating', label: 'Rating', value: String(rating(warband)) }]
@@ -95,6 +102,40 @@ export const game: GameSystem = {
 		/* At the end of each round, 5 or more fighters bloodied or taken down make
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
+	},
+	/* Steps 2 and 3 of the aftermath sequence: injuries, then experience (pp. 144–146). */
+	aftermath: {
+		experience: {
+			counter: 'experience',
+			label: 'Experience',
+			short: 'exp',
+			note: 'Each fighter that took part earns d6 for surviving, d6 more if the warband lost, 5 for each enemy fighter taken down during its activation, and any bonus experience. Count it at the table and enter the total.',
+			line: (_instance, before, after) => {
+				const from = rankOf(before);
+				const to = rankOf(after);
+				return to > from ? `Rank ${from} → ${to}: ${to - from === 1 ? 'one advancement roll' : `${to - from} advancement rolls`}` : `Rank ${from}`;
+			},
+			besides: (_instance, injury, leading) => [
+				...(injuryExperience(injury) ? [`Heroic Escape: ${injuryExperience(injury)} bonus experience, counted in with Apply`] : []),
+				...(leading ? ['The Burden of Command: d6 bonus experience'] : [])
+			],
+			before: (instance) => (instance.fromRank === undefined ? { ...instance, fromRank: rankOf(instance.tally?.experience ?? 0) } : instance)
+		},
+		modifiers: [],
+		marked: null,
+		/* Thralls and Beasts never earn experience (p. 146). */
+		excluded: ['thrall', 'beast'],
+		gainLevels: (fighter) => fighter
+	},
+	injuries,
+	/* Death of a Leader: a Champion assumes command until a new Leader is recruited (p. 145). */
+	succession: {
+		keyword: 'champion',
+		none: 'No leader and no Champion to assume command: recruit a Leader or a Champion before any other fighter.',
+		note: 'A Champion assumes command: it takes the LEADER keyword in place of CHAMPION, and The Burden of Command, until the warband recruits a new Leader.',
+		replaces: true,
+		recruits: true,
+		rule: { name: 'The Burden of Command', text: 'This fighter earns d6 bonus experience in step 3 of the aftermath sequence.' }
 	},
 	/* The warband with the lesser rating is the underdog, a roll-off settling
 	   equal ratings; it brings no bonus, but the rounds and the scenarios ask
@@ -304,6 +345,11 @@ interface RawOrigin {
 	leader: string;
 	limits?: { fighter: string; limit: { min: number; max: number | null } }[];
 	ungrouped?: string[];
+}
+
+/** The rank a fighter's experience gives it, 1 to 20 (p. 146). */
+export function rankOf(experience: number): number {
+	return ranks.ranks.filter((from) => experience >= from).length;
 }
 
 /** Each fighter's starting experience, keyed `faction/fighter`; a fighter that starts with none is null. */

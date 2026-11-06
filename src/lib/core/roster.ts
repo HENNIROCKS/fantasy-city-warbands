@@ -27,6 +27,8 @@ export interface RosterFighter {
 	items: string;
 	/** Why the fighter sits out, if it does, then the player's own notes from the back of the card. */
 	notes: string[];
+	/** How many of the game's `marks` are filled in, from the counter they show. */
+	marked: number;
 }
 
 export interface RosterRule {
@@ -58,7 +60,7 @@ export interface Roster {
 	/** Whether the weapons' traits take a column of their own, as the game's `roster.traits` says. */
 	traits: boolean;
 	/** The game's column of circles to tick by hand, such as Black Rot. */
-	marks?: { label: string; count: number };
+	marks?: { label: string; count: number; key?: string };
 	/** The lines to fill in by hand, as the game's `roster.blanks`. */
 	blanks: { label: string; slots?: string[]; withStash?: boolean }[];
 	/** What the warband picked under its faction's choices, `Origin`, where the game shows it; empty otherwise. */
@@ -87,13 +89,14 @@ function entries(card: FighterCardData, kind: string): CardEntry[] {
 }
 
 /** `split` is the place among the weapon values of the one whose `a/b` fills two columns, -1 for none. */
-function toFighter(card: FighterCardData, split: number): RosterFighter {
+function toFighter(card: FighterCardData, split: number, marks?: string): RosterFighter {
 	return {
 		name: card.name,
 		type: card.subtitle,
 		stats: card.stats.map((s) => s.value),
 		cost: card.campaign.find((v) => v.key === 'cost')?.value ?? '',
-		campaign: card.campaign.filter((v) => v.key !== 'cost').map((v) => v.value),
+		campaign: card.campaign.filter((v) => v.key !== 'cost' && v.key !== marks).map((v) => v.value),
+		marked: Number(card.campaign.find((v) => v.key === marks)?.value ?? 0),
 		keywords: card.keywords.join(', '),
 		abilities: entries(card, 'fighter').map((e) => e.label),
 		weapons: card.weapons.map((w) => ({
@@ -187,7 +190,7 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 		weaponLabels: game.roster.weapons,
 		/* One heading per counter the card carries; where the game names no short
 		   ones, the card's own labels stand in. */
-		campaignLabels: game.campaign ? (game.roster.campaign ?? game.campaign.fighter.map((c) => c.label)) : [],
+		campaignLabels: game.campaign ? (game.roster.campaign ?? game.campaign.fighter.filter((c) => c.key !== game.roster.marks?.key).map((c) => c.label)) : [],
 		currency: game.currency,
 		traits: game.roster.traits ?? false,
 		...(game.roster.marks ? { marks: game.roster.marks } : {}),
@@ -196,7 +199,7 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 			? faction.choices.map((c) => ({ label: c.name, value: c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => o.name).join(', ') }))
 			: [],
 		notes: game.roster.choices ? (warband.notes?.trim() ?? '') : '',
-		fighters: fighters.map((f) => toFighter(f, split)),
+		fighters: fighters.map((f) => toFighter(f, split, game.roster.marks?.key)),
 		rules: collectRules(fighters)
 	};
 }

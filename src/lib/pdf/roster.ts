@@ -134,8 +134,11 @@ function profiles(fighter: RosterFighter, roster: Roster): TableCell[] {
 }
 
 /* Circles to tick by hand, as many as the game's column asks for. */
-function circles(count: number): Content {
-	return { canvas: Array.from({ length: count }, (_, k) => ({ type: 'ellipse' as const, x: 5 + k * 12, y: 6, r1: 4, r2: 4, lineWidth: THIN })) };
+/* The first `filled` of them filled in, as the counter they show stands. */
+function circles(count: number, filled = 0): Content {
+	return {
+		canvas: Array.from({ length: count }, (_, k) => ({ type: 'ellipse' as const, x: 5 + k * 12, y: 6, r1: 4, r2: 4, lineWidth: THIN, ...(k < filled ? { color: 'black' } : {}) }))
+	};
 }
 
 /* A rule's type in brackets, `[Attack Spell] `, which the game's sheet leaves out. */
@@ -171,7 +174,7 @@ function fighterTable(roster: Roster): Content {
 				]
 			: [{ text: fighter.keywords.toUpperCase(), fontSize: 8 }, fighter.abilities.length ? { stack: fighter.abilities } : '–']),
 		...profiles(fighter, roster),
-		...(roster.marks ? [circles(roster.marks.count)] : []),
+		...(roster.marks ? [circles(roster.marks.count, fighter.marked)] : []),
 		...(roster.traits ? [] : [fighter.notes.length ? { stack: notes(fighter) } : '–'])
 	]);
 

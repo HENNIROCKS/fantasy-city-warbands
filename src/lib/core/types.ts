@@ -97,8 +97,12 @@ export interface GameSystem {
 		 * stand under its abilities, which are named without their type.
 		 */
 		traits?: boolean;
-		/** A column of empty circles to tick by hand on each fighter, such as Black Death City's three of Black Rot. */
-		marks?: { label: string; count: number };
+		/**
+		 * A column of circles on each fighter, such as Black Death City's three of
+		 * Black Rot: as many filled as the fighter's counter `key` holds, the rest
+		 * left to tick by hand. The counter then takes no column of its own.
+		 */
+		marks?: { label: string; count: number; key?: string };
 		/** The warband's counts in place of won, drawn and lost, each a heading and its figure; empty where the app keeps none. */
 		figures?: { label: string; value: (warband: Warband) => string }[];
 		/** Lines to fill in by hand: beside the stash, or on a line of their own with a blank for each of `slots`. */
@@ -189,7 +193,22 @@ export interface GameSystem {
 	 * has happen when no fighter carries it. Without it, the warband recruits
 	 * a new leader instead.
 	 */
-	succession?: { keyword: string; none: string };
+	succession?: {
+		keyword: string;
+		none: string;
+		/** What taking the lead means, for the aftermath's page; without it, that only the keyword passes on. */
+		note?: string;
+		/**
+		 * Whether the fighter that takes the lead gives up `keyword` for LEADER, as
+		 * Black Death City's Champion assuming command – and leads only until the
+		 * warband recruits a new leader, which it may.
+		 */
+		replaces?: boolean;
+		/** Whether a warband left with none to take the lead recruits one, saying `none`, rather than being disbanded. */
+		recruits?: boolean;
+		/** A rule the fighter leading in place of the leader carries while it does, such as The Burden of Command. */
+		rule?: Rule;
+	};
 	/**
 	 * How a piece marked `found` is looked for between battles, as Wyrdcry's
 	 * Rarity roll: a fighter with `keyword` searches on a `target`+, each one
@@ -499,12 +518,32 @@ export interface CounterStage {
 
 /**
  * A game's aftermath: the roll each fighter that took part makes for a level,
- * what adds to it, and what the battle's result and shards bring the warband.
- * The dice are rolled at the table; the app is handed how many levels came of it.
+ * what adds to it, and what the battle's result and shards bring the warband –
+ * or, in place of the roll, the experience each fighter earns. The dice are
+ * rolled at the table; the app is handed how many levels or how much came of it.
  */
 export interface Aftermath {
-	/** The roll, as the rules name it, and the score that earns a level: `Renown roll`, 6. */
-	roll: { label: string; target: number };
+	/** The roll, as the rules name it, and the score that earns a level: `Renown roll`, 6. Without it, no fighter rolls for a level. */
+	roll?: { label: string; target: number };
+	/**
+	 * What each fighter that took part earns into one of its counters instead
+	 * of a roll, such as Black Death City's experience: counted at the table and
+	 * tapped in as one figure, with the rule in a sentence above, and a line
+	 * under a fighter for what it stands to gain besides.
+	 */
+	experience?: {
+		counter: string;
+		label: string;
+		/** The counter in a word behind a figure: `exp`. */
+		short: string;
+		note: string;
+		/** What the fighter stands at and comes to, in a line under it: `Rank 4 → 5: one advancement roll`. Null for none. */
+		line?: (instance: FighterInstance, before: number, after: number) => string | null;
+		/** What else the fighter earns, from its injury result as tapped and whether it leads in place of the leader. */
+		besides?: (instance: FighterInstance, injury: string | null, leading: boolean) => string[];
+		/** The fighter as the first aftermath that counts it finds it, such as the rank it was recruited at; applied before it earns. */
+		before?: (instance: FighterInstance) => FighterInstance;
+	};
 	/**
 	 * What adds 1 to a fighter's roll: `Not taken out of action`. `start` is the
 	 * answer it begins with: yes, no, or yes unless the battle left the fighter
@@ -538,11 +577,12 @@ export interface Aftermath {
 	/**
 	 * What the result and the shards bring: the warband's counters and gold as
 	 * they become, and two lines saying how, as the back of the card shows them.
+	 * Without it, the aftermath has no income page and changes neither.
 	 * `survivors` are the fighters that took part and were not taken out of
 	 * action, by instance id, for what only they bring in; `raised`, the
 	 * standings above its own the income is collected at, as the underdog's Bounty.
 	 */
-	income: (
+	income?: (
 		warband: Warband,
 		game: GameSystem,
 		result: BattleRecord['result'] | null,
@@ -743,6 +783,16 @@ export interface Injuries {
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryEffects;
 	/** A result a fighter can keep, by its id; null where the game has none of that id. */
 	result(id: string): InjuryResult | null;
+	/** What a fighter that dies leaves its bought wargear to, such as Wyrdcry's roll to recover it; without it, all of it is lost. */
+	salvage?: { label: string };
+	/**
+	 * Whether a result marked [Injury] lasts for good or for a while, rolled
+	 * for when it comes, such as Black Death City's permanent on a 1: the two
+	 * answers. Without it, every result a fighter keeps stays.
+	 */
+	duration?: { permanent: string; temporary: string };
+	/** How a temporary injury taken before this aftermath heals in it: the page's title, the rule in a sentence, and the answer that heals it. */
+	recover?: { label: string; note: string; heals: string };
 }
 
 export interface InjuryTable {
@@ -810,6 +860,8 @@ export interface StartRoll {
 export interface Counter {
 	key: string;
 	label: string;
+	/** Fighters carrying one of these keywords never gain it, such as Black Death City's Black Rot for the Undead; without it, the aftermath's `excluded`. */
+	excluded?: string[];
 }
 
 /** A rule a game gives every fighter with a keyword, such as Wyrdcry's Rush. */
@@ -1115,6 +1167,10 @@ export interface FighterInstance {
 	advances?: Advance[];
 	/** The ids of the injury results the fighter keeps, in the order they came. */
 	injuries?: string[];
+	/** Those of `injuries` that heal in a later aftermath, where the game's `duration` tells them apart. */
+	temporary?: string[];
+	/** The rank the fighter was recruited at, where ranks follow a counter such as Black Death City's experience; set by the first aftermath that counts it. */
+	fromRank?: number;
 	/** Why the fighter sits out; missing where it does not. */
 	away?: AwayReason;
 	/** Whether it leads the warband in place of the leader it was recruited with, carrying the LEADER keyword. */

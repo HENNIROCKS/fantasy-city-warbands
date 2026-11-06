@@ -3,7 +3,7 @@
  * stores ids; costs and names are looked up from its faction.
  */
 
-import { pickedStats, recruitCost, type ActiveEffect } from './effects';
+import { LEADER, pickedStats, recruitCost, type ActiveEffect } from './effects';
 import type { Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
 
 /** Where a faction's rules come from, as the app labels it, in the order factions are listed. */
@@ -209,7 +209,10 @@ export function withFighter(warband: Warband, fighterId: string, faction: Factio
 	const type = faction.fighters.find((f) => f.id === fighterId);
 	const tally = type ? game.campaign?.recruited?.(type) : undefined;
 	const recruit = { ...createFighter(fighterId), ...(tally && Object.keys(tally).length ? { tally } : {}) };
-	return { ...warband, fighters: inRankOrder([...warband.fighters, recruit], faction, game) };
+	/* A leader recruited where a fighter took the lead in its place, as Black Death City's Champion assuming command, ends that. */
+	const ends = !!game.succession?.replaces && !!type?.keywords.includes(LEADER);
+	const fighters = ends ? warband.fighters.map(({ leader: _leader, ...f }) => f) : warband.fighters;
+	return { ...warband, fighters: inRankOrder([...fighters, recruit], faction, game) };
 }
 
 /**

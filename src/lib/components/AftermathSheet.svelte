@@ -11,7 +11,10 @@
 		extraMarksOf,
 		fallenLeader,
 		goldLeft,
+		healKey,
+		healingOf,
 		heirsOf,
+		rolledAt,
 		hireFees,
 		levelsEarned,
 		markReason,
@@ -48,7 +51,7 @@
 	import { activeEffects, recruitCost } from '$lib/core/effects';
 	import { newExcess, validate } from '$lib/core/validate';
 	import { withFighter } from '$lib/core/warband';
-	import type { Aftermath, Encounter, Faction, FindGain, GameSystem, Warband } from '$lib/core/types';
+	import type { Aftermath, Encounter, Faction, FighterInstance, FindGain, GameSystem, Warband } from '$lib/core/types';
 
 	/*
 	 * Ending a battle in pages over the deck, as a level of renown is spent: the
@@ -56,10 +59,11 @@
 	 * of action; one page for each of them that rolls for injuries; who takes
 	 * the lead, where the leader dies; the
 	 * single-use pieces used up, where a fighter carries any; the
-	 * roll each fighter makes for renown; the search party and its encounters,
+	 * roll each fighter makes for renown, or the experience it earns; the
+	 * temporary injuries that heal, where a fighter has any; the search party and its encounters,
 	 * where the game sends one out, with a page for each fighter an encounter
 	 * sends to the injury table and, where the leader is lost there, one for
-	 * its successor; then the shards and the income, the finds counted in. The dice are rolled at the table and the result tapped
+	 * its successor; then the shards and the income, the finds counted in, where the game has any. The dice are rolled at the table and the result tapped
 	 * here. Apply on the last page writes it all at once; Keep playing on the
 	 * first drops the answers and goes back to the battle. Each page is the back
 	 * of a card, as a fighter's back is written on, with its answers at its foot.
@@ -138,19 +142,28 @@
 	const carrying = $derived(singleUseOf(warband, faction));
 
 	/* Pages come and go as fighters are taken out of action or brought back; a page is held by its key, not its place. */
+	/* Who came into the battle with a temporary injury that may heal now – one that dies in it heals nothing. */
+	const healing = $derived(
+		injuries?.recover ? healingOf(warband).filter(({ instance }) => !diesOf(draft, game, faction, instance)) : []
+	);
+
 	const pages = $derived([
 		'battle',
 		...(injuries ? ['out', ...rolling.map((r) => r.page)] : []),
 		...(fallenInBattle ? ['leader'] : []),
 		...(carrying.length ? ['items'] : []),
-		'renown',
+		rules.experience ? 'experience' : 'renown',
+		...(healing.length ? ['recover'] : []),
 		...(rules.explore ? ['explore', ...exploreRolling.map((r) => r.page)] : []),
 		...(fallen && !fallenInBattle ? ['leader'] : []),
-		'income'
+		...(rules.income ? ['income'] : [])
 	]);
 	let page = $state('battle');
 	const at = $derived(Math.max(0, pages.indexOf(page)));
 	const current = $derived(pages[at]);
+	/* The last page writes the aftermath, whichever it is. */
+	const last = $derived(at === pages.length - 1);
+	const rollLabel = $derived(rules.roll?.label ?? '');
 	const roller = $derived([...rolling, ...exploreRolling].find((r) => r.page === current) ?? null);
 
 	const step = (by: number) => (page = pages[Math.min(pages.length - 1, Math.max(0, at + by))]);
@@ -161,6 +174,7 @@
 		else draft.injuries[key] = id;
 		delete draft.recovered[key];
 		delete draft.surgeon[key];
+		delete draft.temporary[key];
 	}
 
 	function setSurgeon(instanceId: string, answer: SurgeonAnswer) {
@@ -279,6 +293,7 @@
 		row.tookPart = !row.tookPart;
 		if (!row.tookPart) {
 			row.levels = 0;
+			row.earned = 0;
 			draft.marked = draft.marked.filter((id) => id !== row.instanceId);
 			delete hits[row.instanceId];
 		}
@@ -295,6 +310,18 @@
 		now[roll] = !now[roll];
 		hits[row.instanceId] = now;
 		row.levels = now.filter(Boolean).length;
+	}
+
+	/* What a fighter stands at before it earns: its counter as its injury result leaves it, with Heroic Escape's experience. */
+	function standing(instance: FighterInstance, counter: string): number {
+		const type = faction.fighters.find((f) => f.id === instance.fighterId);
+		const rolled = rolledAt(draft, instance, battleAt(instance));
+		const hurt = injuries && type && rolled ? injuries.apply(instance, type, faction, rolled) : instance;
+		return hurt.tally?.[counter] ?? 0;
+	}
+
+	function toggleHealed(key: string) {
+		draft.healed = draft.healed.includes(key) ? draft.healed.filter((k) => k !== key) : [...draft.healed, key];
 	}
 
 	/* A second tap while the write is still running would write the battle twice. */
@@ -418,9 +445,9 @@
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<BattleResult bind:end={draft}>
-						{#if draft.underdog}
+						{#if draft.underdog && rules.roll}
 							<p class="hint">
-								Underdog, {draft.underdog.behind} behind: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}{#if draft.underdog.picked.length}{' '}·
+								Underdog, {draft.underdog.behind} behind: +{draft.underdog.roll} on every {rollLabel.toLowerCase()}{#if draft.underdog.picked.length}{' '}·
 									{draft.underdog.picked.map((b) => b.name).join(', ')}{/if}.
 							</p>
 						{/if}
@@ -520,12 +547,14 @@
 												<p class="unfold-text">A new leader cannot be chosen in this game, so {nameOf(id)} stays on the roster, marked Dead.</p>
 											{:else if dies}
 												<p class="caption">Equipment</p>
-												{#if bought.length}
+												{#if bought.length && injuries?.salvage}
 													<div class="toggles stacked">
 														<button class="toggle" aria-pressed={draft.recovered[key] ?? false} onclick={() => (draft.recovered[key] = !draft.recovered[key])}>
-															Recovered on a 3+ – {bought.join(', ')} to the stash
+															{injuries.salvage.label} – {bought.join(', ')} to the stash
 														</button>
 													</div>
+												{:else if bought.length}
+													<p class="unfold-text">All of it is lost: {bought.join(', ')}. {nameOf(id)} leaves the roster.</p>
 												{:else}
 													<p class="unfold-text">Nothing bought to recover; {nameOf(id)} leaves the roster.</p>
 												{/if}
@@ -540,6 +569,18 @@
 												<p class="unfold-text">Marked as missing the next battle, until that battle ends.</p>
 											{:else if outcome === 'renown'}
 												<p class="unfold-text">One more level of renown, to spend after Apply.</p>
+											{/if}
+											{#if injuries?.duration && resolution.result.type === 'injury' && !resolution.note}
+												<!-- Rolled for as the injury comes: permanent until the answer says otherwise. -->
+												<p class="caption" id="duration-{key}">Permanent or temporary</p>
+												<div class="results" role="group" aria-labelledby="duration-{key}">
+													<button class="segment" aria-pressed={!draft.temporary[key]} onclick={() => (draft.temporary[key] = false)}>
+														{injuries.duration.permanent}
+													</button>
+													<button class="segment" aria-pressed={draft.temporary[key] === true} onclick={() => (draft.temporary[key] = true)}>
+														{injuries.duration.temporary}
+													</button>
+												</div>
 											{/if}
 										</div>
 									{/if}
@@ -571,7 +612,9 @@
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<section>
-						<p class="note">{nameOf(fallen.instanceId)} is dead. A {keyword} takes the LEADER keyword – only the keyword, not the abilities of the leader's own type.</p>
+						<p class="note">
+							{nameOf(fallen.instanceId)} is dead. {game.succession?.note ?? `A ${keyword} takes the LEADER keyword – only the keyword, not the abilities of the leader's own type.`}
+						</p>
 						{#if heirs.length}
 							<div class="toggles stacked" role="group" aria-label="New leader">
 								{#each heirs as heir (heir.instanceId)}
@@ -653,7 +696,7 @@
 					{#if extra.notes.length || draft.underdog}
 						<section>
 							{#if draft.underdog}
-								<p class="note">Underdog: +{draft.underdog.roll} on every {rules.roll.label.toLowerCase()}, counted into the score each one needs.</p>
+								<p class="note">Underdog: +{draft.underdog.roll} on every {rollLabel.toLowerCase()}, counted into the score each one needs.</p>
 							{/if}
 							{#each extra.notes as note (note)}
 								<p class="note">{note}</p>
@@ -669,7 +712,7 @@
 								<span>{row.name}</span><span class="rule"></span>
 								<span class="gain" class:none={levels === 0}>+{levels} {levels === 1 ? 'level' : 'levels'}</span>
 							</h3>
-							<div class="switches" role="group" aria-label="What adds to the {rules.roll.label.toLowerCase()} of {row.name}">
+							<div class="switches" role="group" aria-label="What adds to the {rollLabel.toLowerCase()} of {row.name}">
 								<button class="switch-row" role="switch" aria-checked={row.tookPart} onclick={() => toggleTookPart(row)}>
 									Took part<span class="track" aria-hidden="true"></span>
 								</button>
@@ -703,10 +746,10 @@
 							{/if}
 							{#if rolls}
 								<!-- The result rather than what adds to it: set off by a rule, a switch for each roll, on where it reached the score. -->
-								<div class="switches rolls" role="group" aria-label="{rules.roll.label} of {row.name}">
+								<div class="switches rolls" role="group" aria-label="{rollLabel} of {row.name}">
 									{#each Array.from({ length: rolls }, (_, n) => n) as n (n)}
 										<button class="switch-row" role="switch" aria-checked={hit(row, n)} onclick={() => toggleHit(row, n, rolls)}>
-											{rules.roll.label}{rolls > 1 ? ` ${n + 1}` : ''} · needs {scoreNeeded(row, rules, draft)}+<span class="track" aria-hidden="true"></span>
+											{rollLabel}{rolls > 1 ? ` ${n + 1}` : ''} · needs {scoreNeeded(row, rules, draft)}+<span class="track" aria-hidden="true"></span>
 										</button>
 									{/each}
 								</div>
@@ -729,6 +772,115 @@
 			<div class="foot">
 				<button class="plain" onclick={() => step(-1)}>Back</button>
 				<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
+			</div>
+		{:else if current === 'experience' && rules.experience}
+			{@const experience = rules.experience}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">{experience.label}</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">{experience.note}</p>
+					</section>
+					{#each draft.rows as row (row.instanceId)}
+						{@const instance = warband.fighters.find((f) => f.instanceId === row.instanceId)}
+						{@const dies = instance ? diesOf(draft, game, faction, instance) : false}
+						{@const before = instance ? standing(instance, experience.counter) : 0}
+						{@const line = instance && !dies ? (experience.line?.(instance, before, before + row.earned) ?? null) : null}
+						{@const besides =
+							instance && !dies
+								? (experience.besides?.(instance, injuryOf(draft, game, faction, instance)?.result.id ?? null, draft.successor === row.instanceId || !!instance.leader) ?? [])
+								: []}
+						<section>
+							<h3 class="heading">
+								<span>{row.name}</span><span class="rule"></span>
+								<span class="gain" class:none={row.earned === 0}>+{row.earned} {experience.short}</span>
+							</h3>
+							{#if dies}
+								<p class="hint">Killed – earns nothing.</p>
+							{:else}
+								<div class="switches" role="group" aria-label="Whether {row.name} took part">
+									<button class="switch-row" role="switch" aria-checked={row.tookPart} onclick={() => toggleTookPart(row)}>
+										Took part<span class="track" aria-hidden="true"></span>
+									</button>
+								</div>
+								{#if row.tookPart}
+									<div class="counter">
+										<span class="label" id="earned-{row.instanceId}">{experience.label} earned</span>
+										<div class="stepper" role="group" aria-labelledby="earned-{row.instanceId}">
+											<button
+												class="segment"
+												aria-label="Less {experience.label.toLowerCase()} for {row.name}"
+												disabled={row.earned <= 0}
+												onclick={() => (row.earned -= 1)}>−</button
+											>
+											<output class="figure">{row.earned}</output>
+											<button class="segment" aria-label="More {experience.label.toLowerCase()} for {row.name}" onclick={() => (row.earned += 1)}>+</button>
+										</div>
+									</div>
+								{/if}
+								{#each besides as note (note)}
+									<p class="hint">{note}</p>
+								{/each}
+								{#if line}
+									<p class="hint">{line}</p>
+								{/if}
+							{/if}
+						</section>
+					{/each}
+					{#if draft.excluded.length || sittingOut.length}
+						<section>
+							{#if draft.excluded.length}
+								<p class="hint">Never earn {experience.label.toLowerCase()}: {draft.excluded.join(', ')}</p>
+							{/if}
+							{#if sittingOut.length}
+								<p class="hint">Sitting this one out: {sittingOut.join(', ')}</p>
+							{/if}
+						</section>
+					{/if}
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				{#if last}
+					<button class="add" disabled={busy} onclick={apply} use:focusOnMount>Apply</button>
+				{:else}
+					<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
+				{/if}
+			</div>
+		{:else if current === 'recover' && injuries?.recover}
+			{@const recover = injuries.recover}
+			<div class="scroll">
+				<h2 class="name" id="aftermath-title">{recover.label}</h2>
+				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
+				<div class="parchment">
+					<section>
+						<p class="note">{recover.note}</p>
+					</section>
+					{#each healing as { instance, injuries: held } (instance.instanceId)}
+						<section>
+							<h3 class="heading"><span>{nameOf(instance.instanceId)}</span><span class="rule"></span></h3>
+							<div class="switches" role="group" aria-label="Temporary injuries of {nameOf(instance.instanceId)}">
+								{#each held as injury (injury)}
+									{@const key = healKey(instance.instanceId, injury)}
+									<button class="switch-row" role="switch" aria-checked={draft.healed.includes(key)} onclick={() => toggleHealed(key)}>
+										{injuries.result(injury)?.name ?? injury} · {recover.heals}<span class="track" aria-hidden="true"></span>
+									</button>
+								{/each}
+							</div>
+						</section>
+					{/each}
+				</div>
+			</div>
+
+			<div class="foot">
+				<button class="plain" onclick={() => step(-1)}>Back</button>
+				{#if last}
+					<button class="add" disabled={busy} onclick={apply} use:focusOnMount>Apply</button>
+				{:else}
+					<button class="add" onclick={() => step(1)} use:focusOnMount>Next</button>
+				{/if}
 			</div>
 		{:else if current === 'explore' && rules.explore}
 			<div class="scroll">

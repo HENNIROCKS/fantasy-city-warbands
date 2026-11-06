@@ -33,7 +33,7 @@
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadTuckBox, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
-	import type { Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
+	import type { Counter, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
@@ -196,7 +196,7 @@
 		const reminders = [
 			...(underdog && !system.game.underdog?.text
 				? [
-						{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.` },
+						{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll?.label ?? 'roll').toLowerCase()} in the aftermath.` },
 						...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
 					]
 				: []),
@@ -338,19 +338,19 @@
 
 	/**
 	 * What the back may correct of the fighter's campaign, as the game keeps it.
-	 * A fighter that never rolls for levels gains none, as Wyrdcry's BEAST and
-	 * THRALL: it gets no section, or only the counters a file brought it, to take down.
+	 * A counter the fighter never gains – experience for Wyrdcry's BEAST and
+	 * THRALL, Black Rot for Black Death City's Undead – is shown only where it
+	 * holds some, to take down; with none left, the back has no section.
 	 */
 	function campaignOf(fighter: FighterInstance): BackCampaign | null {
 		const game = system?.game;
 		if (!game?.campaign) return null;
 		const card = cards.find((c) => c.kind === 'fighter' && c.instanceId === fighter.instanceId);
 		const keywords = card?.kind === 'fighter' ? card.keywordIds : [];
-		const earns = !game.aftermath?.excluded.some((k) => keywords.includes(k));
-		const counters = game.campaign.fighter
-			.filter((c) => earns || (fighter.tally?.[c.key] ?? 0) > 0)
-			.map((c) => ({ ...c, raise: earns }));
-		if (!earns && !counters.length) return null;
+		/* A counter the fighter never gains, as experience for a BEAST, is shown only where it holds some, and not raised. */
+		const gains = (c: Counter) => !(c.excluded ?? game.aftermath?.excluded ?? []).some((k) => keywords.includes(k));
+		const counters = game.campaign.fighter.filter((c) => gains(c) || (fighter.tally?.[c.key] ?? 0) > 0).map((c) => ({ ...c, raise: gains(c) }));
+		if (!counters.length) return null;
 		return {
 			counters,
 			levels: game.advancement?.counter ?? null
@@ -1187,7 +1187,7 @@
 						{#if underdog}
 							<p class="mb-3 text-zinc-400">
 								{underdog.behind} behind: {underdog.allowed}
-								{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll.label ?? 'roll').toLowerCase()} in the aftermath.
+								{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll?.label ?? 'roll').toLowerCase()} in the aftermath.
 							</p>
 							<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
 								{#each rules.bonuses as bonus (bonus.id)}
