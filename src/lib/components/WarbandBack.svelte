@@ -52,6 +52,9 @@
 		draft.stashOut = [...draft.stashOut, { index, sold, ...(silver === undefined ? {} : { silver }) }];
 	}
 
+	/* The results of a roll to tap, six to a row as a d6 has them; the last row is filled up with empty cells. */
+	const ROW = 6;
+
 	/* A piece sold at a rolled price: the result the roll came to, taken back with a second tap. */
 	function setSilver(index: number, silver: number) {
 		draft.stashOut = draft.stashOut.map((out) => (out.index === index ? { ...out, silver: out.silver === silver ? null : silver } : out));
@@ -236,9 +239,12 @@
 							{#if out}
 								<button class="remove" onclick={() => stashBack(i)}>Undo</button>
 								{#if out.silver !== undefined && results.length}
-									<div class="toggles results" role="group" aria-label="What {wargearName(id)} sold for">
+									<div class="results" role="group" aria-label="What {wargearName(id)} sold for">
 										{#each results as result (result)}
-											<button class="toggle" aria-pressed={out.silver === result} onclick={() => setSilver(i, result)}>{result}</button>
+											<button class="segment" aria-pressed={out.silver === result} onclick={() => setSilver(i, result)}>{result}</button>
+										{/each}
+										{#each { length: (ROW - (results.length % ROW)) % ROW }, n (n)}
+											<span class="filler" aria-hidden="true"></span>
 										{/each}
 									</div>
 								{/if}
@@ -395,16 +401,39 @@
 		flex-wrap: wrap;
 	}
 
+	/* One pill as the result's segments are, broken into rows: a frame around, lines between the cells. */
 	li.rolling .results {
 		flex: 1 0 100%;
-		padding-bottom: calc(4 * var(--u));
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		margin-bottom: calc(16 * var(--u));
+		border: 1px solid var(--card-green);
+		border-radius: var(--card-button-radius);
+		overflow: hidden;
 	}
 
-	/* Every result the same width, whether it has one digit or two. */
-	li.rolling .results .toggle {
-		min-width: 48px;
+	li.rolling .results .segment,
+	li.rolling .results .filler {
+		min-width: 0;
+		margin: 0;
 		padding-inline: 0;
+		border: 0;
+		border-radius: 0;
+		border-right: 1px solid var(--card-green);
+		border-bottom: 1px solid var(--card-green);
 		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	li.rolling .results .filler {
+		background: var(--card-field);
+	}
+
+	li.rolling .results > :nth-child(6n) {
+		border-right: 0;
+	}
+
+	li.rolling .results > :nth-last-child(-n + 6) {
+		border-bottom: 0;
 	}
 
 	li.removed .line,
