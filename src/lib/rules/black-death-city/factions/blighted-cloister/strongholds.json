@@ -1,0 +1,26 @@
+{
+	"strongholds": [
+		{ "id": "fortified-keep", "name": "Fortified Keep", "rules": [
+			{ "name": "Martial Training", "text": "In step 3 of the aftermath sequence you can pick up to 3 friendly Knight fighters to take part in martial training. Each of those fighters earns d6 bonus experience." },
+			{ "name": "Search the City", "text": "In step 4 of the aftermath sequence, if you won the battle, you gain 1 exploration re-roll." }
+		] },
+		{ "id": "secluded-scriptorium", "name": "Secluded Scriptorium", "rules": [
+			{ "name": "Blasphemous Study", "text": "In step 6 of the aftermath sequence, you can pick 1 of the following: Scry Ancient Scrolls – roll a dice for each Wizard in your warband and record an ongoing tally on your Warband Roster; each time the tally exceeds a multiple of 20, you can pick a Wizard in your warband to earn enough experience to receive their next advancement. Brew Concoctions – roll a dice for each Wizard in your warband; for each roll of 5+, you can add 1 Vial of Poison to your stash." }
+		] },
+		{ "id": "unholy-altar", "name": "Unholy Altar", "rules": [
+			{ "name": "Demonic Communion", "text": "In step 6 of the aftermath sequence, roll 3d6 if you won the battle, 2d6 if you lost: 2 Damnation – your leader is killed, and you can add a Demonic Rotspawn to your warband for 0 silver; it bears the name of your former leader. 3–8 Silence – no effect. 9–12 Minor Boon – your leader earns 5 bonus experience. 13–15 Demonic Ally – you can add a Rot Demon or a Rotling to your warband for 0 silver. 16+ Major Boon – your leader earns 20 bonus experience." }
+		] },
+		{ "id": "street-pulpit", "name": "Street Pulpit", "rules": [
+			{ "name": "Venerate Living Saints", "text": "Each time a Dreg Cultist in this warband gains a level of Black Rot, they earn 5 bonus experience." },
+			{ "name": "Canonise the Fallen", "text": "Each time a fighter in this warband is killed, every Dreg Cultist in this warband earns 10 additional bonus experience in step 3 of the aftermath sequence." }
+		] }
+	],
+	"upgrades": [
+		{ "id": "hospice", "name": "Hospice", "rules": [{ "name": "Nurture Sickness", "text": "In step six of the aftermath sequence, you can pick 1 friendly fighter with any temporary injuries. Remove 1 of their temporary injuries, they gain 1 level of Black Rot." }] },
+		{ "id": "herbalists-garden", "name": "Herbalist's Garden", "gives": [{ "wargear": "healing-tonic", "count": 1 }], "rules": [{ "name": "Medicinal Remedies", "text": "In step six of the aftermath sequence, you receive 1 Healing Tonic." }] },
+		{ "id": "ritual-chamber", "name": "Ritual Chamber", "rules": [{ "name": "Unholy Pacts", "text": "In step 3 of the aftermath sequence you can pick 1 friendly Demon to earn d6 bonus experience." }] },
+		{ "id": "bell-tower", "name": "Bell Tower", "rules": [{ "name": "The Bell Tolls", "text": "Once per battle, when you activate your Leader, you can say the Bell Tower tolls. If you do so, friendly fighters gain the Unshakeable rule until the end of the round: this fighter ignores the Fear special rule and all rules that would make them scatter (eg. the Scare weapon trait)." }] },
+		{ "id": "flykeeper", "name": "Flykeeper", "rules": [{ "name": "Hive-spawn", "text": "In step 6 of the aftermath sequence, you can roll a dice. On a 5+, you can recruit 1 Bloat Fly to your warband for 0 silver." }] },
+		{ "id": "alms-box", "name": "Alms Box", "rules": [{ "name": "Congregation Collection", "text": "When you collect income from your stronghold, if you lost the battle, you receive an additional 3d6 silver." }] }
+	]
+}

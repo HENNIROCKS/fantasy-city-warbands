@@ -3,6 +3,7 @@
 		"id": "old-dogs",
 		"name": "Old Dogs",
 		"who": "Mercenary Leaders and Champions only",
+		"keywords": ["mercenary"],
 		"skills": [
 			{ "id": "rallying-cry", "name": "Rallying Cry", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Rallying Cry [Bonus Action]:** This fighter heals 1 damage. In addition, at the end of the round, if this fighter is still on the battlefield, the commanding player does not need to take a Flee test for their warband." },
 			{ "id": "point-blank-shot", "name": "Point Blank Shot", "text": "While this fighter is engaged in melee, they can attempt to make a Ranged Attack action. To do so, they take an Initiative test. If passed they can make a Ranged Attack action but cannot use a *Heavy* weapon. The Ranged Attack action must target a fighter they are engaged in melee with. If failed, the action immediately ends." },

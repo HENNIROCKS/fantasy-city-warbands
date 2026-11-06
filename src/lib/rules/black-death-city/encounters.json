@@ -1,0 +1,244 @@
+{
+	"note": "Explore the City (Playtest v1.10, pp. 147–150): the exploration table (d66) and the finds it leads to. An action is `gold` – a number or dice such as `d6x5` –, `table` – a roll on the Curiosities or Relics table or one of `tables` below –, `blackRot` and `experience` – levels or points a fighter gains, below 0 taken away –, `injury_roll`, `wargear`, `holding`, `recruit`, `remove`, or `party`: what falls on each fighter of the scouting party that carries one of `keywords` and none of `except`, by the d6 each rolls, or all alike without `dice`. `byHand` marks what the app does not keep.",
+	"tables": [
+		{
+			"id": "hallowed-ground",
+			"name": "Hallowed Ground",
+			"dice": "d6",
+			"rows": [
+				{ "roll": "1–2", "name": "Alms Box", "text": "You find 6d6 silver.", "do": [{ "gold": "6d6" }] },
+				{ "roll": "3–5", "name": "Reliquary", "text": "You find 2d6 silver. In addition, roll once on the Curiosity table.", "do": [{ "gold": "2d6" }, { "table": "curiosities" }] },
+				{ "roll": "6", "name": "Saint's Tomb", "text": "You find d6x5 silver. In addition, roll once on the Relics table.", "do": [{ "gold": "d6x5" }, { "table": "relics" }] }
+			]
+		}
+	],
+	"encounters": [
+		{
+			"roll": "11–13",
+			"group": "11–16",
+			"name": "Danger Lies Ahead…",
+			"text": "Down a darkened alleyway, you spy shadows ahead. Perhaps it is a rival warband also searching this part of the City, perhaps something worse. You must decide how to proceed.\n\n**Confront them Head On:** Roll a dice for each fighter in the scouting party and total the score. If the total is 15 or more, you drive off the assailants and are victorious: each fighter earns 5 experience. Otherwise you are defeated: roll a dice for each fighter, and on a 1–2 make an injury roll for them.\n\n**Attempt to Sneak Past:** Roll a dice. If the roll is equal to or greater than the number of fighters in the scouting party, you sneak past and roll on the Curiosity table. Otherwise you are detected: roll a dice for each fighter, and on a 1 make an injury roll for them.\n\n**Turn Back:** The scouting party returns empty handed.",
+			"ask": {
+				"label": "Pick one",
+				"options": [
+					{ "label": "Head on, 15 or more – victorious", "do": [{ "party": { "dice": null, "results": [{ "on": "", "do": [{ "experience": 5 }] }] } }] },
+					{
+						"label": "Head on, under 15 – defeated",
+						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–2", "do": [{ "injury_roll": true }] }, { "on": "3+", "do": [] }] } }]
+					},
+					{ "label": "Sneak past – got by", "do": [{ "table": "curiosities" }] },
+					{
+						"label": "Sneak past – detected",
+						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1", "do": [{ "injury_roll": true }] }, { "on": "2+", "do": [] }] } }]
+					},
+					{ "label": "Turn back", "do": [] }
+				]
+			}
+		},
+		{
+			"roll": "14",
+			"group": "11–16",
+			"name": "Dead-end",
+			"text": "The trail goes cold. You find nothing of note this night. The scouting party returns empty handed.",
+			"do": []
+		},
+		{
+			"roll": "15–16",
+			"group": "11–16",
+			"name": "Crossroads",
+			"text": "Divide the scouting party into 2 groups as evenly as possible. Then make a new exploration roll for each group, treating each group as its own scouting party. You can use exploration re-rolls with either group unless they are granted for a specific fighter. Any further rolls of Crossroads are ignored: the scouting party returns empty handed instead.",
+			"byHand": true
+		},
+		{
+			"roll": "21–36",
+			"group": "21–36",
+			"name": "A Curious Find",
+			"text": "As you pass through the husk of a burnt-out ruin, a glimmer in the dark catches your eye. Roll on the Curiosity table.",
+			"do": [{ "table": "curiosities" }]
+		},
+		{
+			"roll": "41",
+			"group": "41–46",
+			"name": "Swarm of Rats",
+			"text": "A distant thrum of chittering grows louder by the second. **Battle the Swarm:** roll once on the table below for each fighter in the scouting party.\n\n**Brethren to the Verminkin:** Verminkin warbands ignore this result and re-roll the exploration roll instead.",
+			"do": [
+				{
+					"party": {
+						"dice": "d6",
+						"results": [
+							{ "on": "1", "do": [{ "injury_roll": true }] },
+							{ "on": "2–3", "do": [{ "blackRot": 1 }] },
+							{ "on": "4+", "do": [{ "experience": 10 }] }
+						]
+					}
+				}
+			]
+		},
+		{
+			"roll": "42–43",
+			"group": "41–46",
+			"name": "A Shallow Grave",
+			"text": "You find a recently dug grave in the courtyard of an old manor house. There may be something of value buried below.\n\n**Exhume the Grave:** Roll a d6. Add 1 to the result if the scouting party includes any Priests. 1–2 Rotten Remains: each fighter in the scouting party gains 1 level of Black Rot. 3–5 Buried Silver: you find d6x5 silver. 6+ Grave Offerings: you find 2d6x5 silver and roll once on the Curiosity table.\n\n**Turn Back:** The scouting party returns empty handed.",
+			"ask": {
+				"label": "Pick one",
+				"options": [
+					{ "label": "Exhume, 1–2 – Rotten Remains", "do": [{ "party": { "dice": null, "results": [{ "on": "", "do": [{ "blackRot": 1 }] }] } }] },
+					{ "label": "Exhume, 3–5 – Buried Silver", "do": [{ "gold": "d6x5" }] },
+					{ "label": "Exhume, 6+ – Grave Offerings", "do": [{ "gold": "2d6x5" }, { "table": "curiosities" }] },
+					{ "label": "Turn back", "do": [] }
+				]
+			}
+		},
+		{
+			"roll": "44",
+			"group": "41–46",
+			"name": "Quiet Night",
+			"text": "You search this district high and low, but on this night the City is quiet and you find nothing of note. The scouting party returns empty handed.",
+			"do": []
+		},
+		{
+			"roll": "45–46",
+			"group": "41–46",
+			"name": "Leech Pools",
+			"text": "You descend a set of cobblestone steps down to one of the City's many canals. Here the waters teem with thousands of writhing leeches.\n\n**Bathe:** You can remove 1 level of Black Rot from each fighter in the scouting party.\n\n**Harvest:** Roll a dice for each non-Beast fighter in the scouting party. For each 4+, you receive 1 Jar of Canal Leeches.",
+			"ask": {
+				"label": "Pick one",
+				"options": [
+					{ "label": "Bathe", "do": [{ "party": { "dice": null, "results": [{ "on": "", "do": [{ "blackRot": -1 }] }] } }] },
+					{
+						"label": "Harvest",
+						"do": [{ "party": { "dice": "d6", "except": ["beast"], "results": [{ "on": "1–3", "do": [] }, { "on": "4+", "do": [{ "wargear": "jar-of-canal-leeches" }] }] } }]
+					}
+				]
+			}
+		},
+		{
+			"roll": "51–52",
+			"group": "51–56",
+			"name": "The Belfry",
+			"text": "Amidst the rubble and ruins, an old belfry stands in defiance. You can pick 1 non-Beast fighter in the scouting party to scale the belfry. If you do so, roll a dice. On a 1 the fighter falls: make an injury roll for them. On a 2+, add their Initiative value to the dice roll to create a climbing score. You receive each result that the climbing score equals or exceeds: 6+ Gargoyle Eyes, you receive d6x2 silver. 8+ Vantage Point, you can make an additional exploration roll for the scouting party; any further rolls of The Belfry are ignored and the scouting party returns empty handed instead. 10+ The Top, roll on the Curiosity table.",
+			"who": { "from": "party", "except": ["beast"], "note": "The fighter who scales the belfry." },
+			"ask": {
+				"label": "Roll a dice and add the fighter's Initiative",
+				"options": [
+					{ "label": "Rolled 1 – falls", "do": [{ "injury_roll": true }] },
+					{ "label": "Climbing score under 6", "do": [] },
+					{ "label": "Climbing score 6+", "do": [{ "gold": "d6x2" }] },
+					{ "label": "Climbing score 8+", "do": [{ "gold": "d6x2" }], "byHand": true },
+					{ "label": "Climbing score 10+", "do": [{ "gold": "d6x2" }, { "table": "curiosities" }], "byHand": true }
+				]
+			}
+		},
+		{
+			"roll": "53–54",
+			"group": "51–56",
+			"name": "A Hidden Stash",
+			"text": "Hidden between the floorboards of a two-storied town house, you discover a stash of valuables left behind by its former occupants. You find 2d6x5 silver. In addition, roll on the Curiosity table.",
+			"do": [{ "gold": "2d6x5" }, { "table": "curiosities" }]
+		},
+		{
+			"roll": "55–56",
+			"group": "51–56",
+			"name": "Secluded Holding",
+			"text": "Down a twisting side street flanked by ruined towers that cast long shadows, you come across a building that has thus far escaped the ravages of war and plague. Roll once on the Holdings table. You can take control of that holding. Re-roll results of Ruined Hovel until you get a different result.",
+			"do": [{ "holding": true }]
+		},
+		{
+			"roll": "61",
+			"group": "61–66",
+			"name": "Hunted in Darkness…",
+			"text": "Put the fighters in the scouting party in an order of your choosing, and then begin rolling a dice for each fighter one at a time, in order. If you roll a 1 for a fighter they are lost in the dark and you stop rolling dice: the fighter is killed.",
+			"who": { "from": "party", "note": "The fighter who rolled the 1." },
+			"ask": {
+				"label": "Roll a dice for each fighter in order",
+				"options": [
+					{ "label": "No 1 rolled", "do": [] },
+					{ "label": "A 1 rolled – lost in the dark", "do": [{ "remove": true }] }
+				]
+			}
+		},
+		{
+			"roll": "62–64",
+			"group": "61–66",
+			"name": "A Treasure Horde",
+			"text": "You find a latched trapdoor hidden beneath the debris of a ruined house. After breaking the lock, you discover a large stash of silver coins in the compartment below. For each non-Beast fighter in the scouting party, you find d6x5 silver.",
+			"do": [
+				{
+					"party": {
+						"dice": "d6",
+						"except": ["beast"],
+						"results": [
+							{ "on": "1", "do": [{ "gold": 5 }] },
+							{ "on": "2", "do": [{ "gold": 10 }] },
+							{ "on": "3", "do": [{ "gold": 15 }] },
+							{ "on": "4", "do": [{ "gold": 20 }] },
+							{ "on": "5", "do": [{ "gold": 25 }] },
+							{ "on": "6", "do": [{ "gold": 30 }] }
+						]
+					}
+				}
+			]
+		},
+		{
+			"roll": "65",
+			"group": "61–66",
+			"name": "Hallowed Ground",
+			"text": "Hidden amongst the ruins you discover a small chapel untouched by the Black Rot. Roll a dice on the table to see what you find. Then pick 1 of the options.\n\n**Take Sanctuary (Guild Mercenaries only):** Roll a dice for each fighter in the scouting party. On a 4+ you can remove 1 injury or 1 level of Black Rot from that fighter.\n\n**Exhume Graves (Death Covens only):** Roll a dice for each fighter in the scouting party. If you roll any 6s, you can recruit a Skeleton Warrior or Zombie to your warband for 0 silver.\n\n**Desecrate:** Leaders or Champions in the scouting party earn 10 experience. Each other fighter in the scouting party earns d6 experience.",
+			"do": [{ "table": "hallowed-ground" }],
+			"ask": {
+				"label": "Pick one",
+				"options": [
+					{
+						"label": "Take Sanctuary",
+						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–3", "do": [] }, { "on": "4+", "do": [{ "blackRot": -1 }] }] } }],
+						"byHand": true
+					},
+					{ "label": "Exhume Graves, a 6 rolled", "do": [{ "recruit": { "keyword": "thrall", "below": 41, "ids": ["skeleton-warrior", "zombie"], "free": true } }] },
+					{ "label": "Exhume Graves, no 6", "do": [] },
+					{
+						"label": "Desecrate",
+						"do": [
+							{ "party": { "dice": null, "keywords": ["leader", "champion"], "results": [{ "on": "", "do": [{ "experience": 10 }] }] } },
+							{
+								"party": {
+									"dice": "d6",
+									"except": ["leader", "champion"],
+									"results": [
+										{ "on": "1", "do": [{ "experience": 1 }] },
+										{ "on": "2", "do": [{ "experience": 2 }] },
+										{ "on": "3", "do": [{ "experience": 3 }] },
+										{ "on": "4", "do": [{ "experience": 4 }] },
+										{ "on": "5", "do": [{ "experience": 5 }] },
+										{ "on": "6", "do": [{ "experience": 6 }] }
+									]
+								}
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"roll": "66",
+			"group": "61–66",
+			"name": "Into the Catacombs…",
+			"text": "After searching extensively through the ruins you at last discover what you have been seeking: a hidden stairwell leading down to the catacombs below. Start rolling dice, one at a time, and keep a total of the score. Stop when you roll a 1, or the total is 10 or more (whichever happens first), then consult the table.\n\n**Leader's Intuition:** If your scouting party includes your warband's Leader, you can re-roll the first roll of 1.",
+			"ask": {
+				"label": "The score where the rolling stopped",
+				"options": [
+					{
+						"label": "1 – Beset by Ghouls",
+						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–3", "do": [{ "injury_roll": true }] }, { "on": "4+", "do": [{ "experience": 10 }] }] } }]
+					},
+					{
+						"label": "2 – Stagnant Water",
+						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–3", "do": [{ "blackRot": 1 }] }, { "on": "4+", "do": [] }] } }]
+					},
+					{ "label": "3–5 – Dead End", "do": [] },
+					{ "label": "6–9 – Lesser Tomb", "do": [{ "gold": "d6x5" }, { "table": "curiosities" }] },
+					{ "label": "10+ – Grand Tomb", "do": [{ "gold": "2d6x5" }, { "table": "relics" }] }
+				]
+			}
+		}
+	]
+}

@@ -3,6 +3,7 @@
 		"id": "dark-aristocracy",
 		"name": "Dark Aristocracy",
 		"who": "Undead Aristocrat Leaders and Champions only",
+		"keywords": ["undead", "aristocrat"],
 		"skills": [
 			{ "id": "cloud-of-bats", "name": "Cloud of Bats", "text": "Once per battle, this fighter can use the following bonus action:\n\n**Cloud of Bats [Bonus Action]:** Remove the fighter from the battlefield, set them up again anywhere on the battlefield, wholly within 9\" horizontally of their previous location. They cannot be set up engaged in melee." },
 			{ "id": "mesmeric-gaze", "name": "Mesmeric Gaze", "text": "Once per battle, when this fighter makes a Melee Attack action, it can attempt to *mesmerise* the defending fighter. If they do so, the commanding players each roll a dice and add their fighter’s Willpower value to the score. If this fighter’s total exceeds the defending fighter’s total, they are *mesmerised* for that action. While they are mesmerised, subtract 1 from the Attacks value of their melee weapons (off-hand attacks are not affected)." },

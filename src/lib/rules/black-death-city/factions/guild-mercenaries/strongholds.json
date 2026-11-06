@@ -1,0 +1,28 @@
+{
+	"strongholds": [
+		{ "id": "guild-barracks", "name": "Guild Barracks", "rules": [
+			{ "name": "Combat Drills", "text": "In step 3 of the Aftermath sequence you can pick up to 3 friendly Henchmen to train. Each of those fighters earns d6 bonus experience." },
+			{ "name": "Eager to Prove", "text": "In step 6 of the aftermath sequence, roll a dice. On a 6, a Guild Recruit arrives at the Guild Barracks. You can recruit a Guild Recruit to your warband for 0 silver." }
+		] },
+		{ "id": "dilapidated-manor", "name": "Dilapidated Manor", "rules": [
+			{ "name": "Vintage Wines", "text": "When this holding is first added to a warband roster, it has 2d6 bottles of vintage wine. Make a note on your warband roster. Each time you collect income from this holding, after rolling the dice, you can choose to sell 1 bottle of vintage wine. If you do so, reduce the count by 1 and re-roll one of the dice. You must accept the second result." },
+			{ "name": "Add to the Collection", "text": "Each time your warband ransacks a holding, roll a dice. On a 4+ they find d3 bottles of vintage wine." }
+		] },
+		{ "id": "chapter-house", "name": "Chapter House", "rules": [
+			{ "name": "Atonement for Sin", "text": "If your warband lost the battle, in step 3 of the Aftermath sequence, make a Willpower test for each Witch Hunter and Priest in your warband. If they pass, they earn 5 bonus experience." },
+			{ "name": "Holy Relics", "text": "Keep a tally of how many enemy Undead and Demon Champions and Leaders are taken down in battle against your warband. Each time the tally reaches a multiple of 10, the Witch Hunters' Guild rewards you with a holy relic, you can roll once on the Relic table." }
+		] },
+		{ "id": "hidden-library", "name": "Hidden Library", "rules": [
+			{ "name": "Sorcerous Study", "text": "Each battle, before you determine prepared spells, you can pick 1 friendly Wizard in your warband. Instead of randomly determining the spell they have prepared from a Spell Lore, you can pick." },
+			{ "name": "Master the Arcane", "text": "Each battle, keep a tally of how many spells each friendly Wizard critically casts. In step 3 of the aftermath sequence, each friendly Wizard earns 5 bonus experience for each spell they critically cast in the battle." }
+		] }
+	],
+	"upgrades": [
+		{ "id": "prayer-room", "name": "Prayer Room", "rules": [{ "name": "Communion with the Saints", "text": "Your warband can include 0-2 Guild Clerics. In addition, each battle, you can ignore the first miscast by a friendly Priest." }] },
+		{ "id": "apothecary", "name": "Apothecary", "gives": [{ "wargear": "healing-tonic", "count": 1 }], "rules": [{ "name": "The Apothecary's Potion", "text": "In step six of the aftermath sequence, you receive 1 Healing Tonic." }] },
+		{ "id": "kennels", "name": "Kennels", "rules": [{ "name": "Raised Canine", "text": "In step 6 of the aftermath sequence, you can roll a dice. On a 5+, you can recruit 1 Hunting Dog to your warband for 0 silver." }] },
+		{ "id": "gunsmiths-workshop", "name": "Gunsmith's Workshop", "rules": [{ "name": "Maintained Firearms", "text": "Each battle, you can ignore the first misfire by a friendly fighter." }] },
+		{ "id": "chirurgeons-practice", "name": "Chirurgeon's Practice", "rules": [{ "name": "Tend the Wounded", "text": "If your warband includes a Plague Doctor, they can use their 'Sawbones' special rule twice each aftermath sequence." }] },
+		{ "id": "armourer", "name": "Armourer", "rules": [{ "name": "Heavy Infantry", "text": "Up to 3 Henchman in your warband can be equipped with Full-plate Armour." }] }
+	]
+}

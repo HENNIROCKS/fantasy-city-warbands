@@ -3,6 +3,7 @@
 		"id": "masterful-schemes",
 		"name": "Masterful Schemes",
 		"who": "Verminkin Leaders and Champions only",
+		"keywords": ["verminkin"],
 		"skills": [
 			{ "id": "purveyor-of-poisons", "name": "Purveyor of Poisons", "text": "This fighter’s melee weapons gain the *Poison* weapon trait. If a weapon already has the *Poison* weapon trait, improve the Rend value of that weapon by 1 instead." },
 			{ "id": "dirty-fighter", "name": "Dirty Fighter", "text": "Subtract 1 from parry rolls made by enemy fighters against attacks made by this fighter. In addition, each time an enemy fighter fails such a parry roll, that enemy fighter suffers 1 damage." },

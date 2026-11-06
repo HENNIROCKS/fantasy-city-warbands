@@ -1,0 +1,26 @@
+{
+	"strongholds": [
+		{ "id": "opulent-manor", "name": "Opulent Manor", "rules": [
+			{ "name": "Banquet of Blood", "text": "In step 3 of the Aftermath sequence pick up to 3 friendly Vampyre fighters to sit at the table. Each of those fighters earns d6 bonus experience. If you won the battle, each of those fighters earns 2d6 bonus experience instead." }
+		] },
+		{ "id": "embalmers-hall", "name": "Embalmer's Hall", "rules": [
+			{ "name": "Necromantic Study", "text": "In each Aftermath sequence, pick 1 of the following: Read Forbidden Scrolls – in step 3, your Leader gains 5 bonus experience; Create a Zombie – in step 6, roll a dice. On a 5+, your Leader has successfully created a Zombie from one of the hall's corpses. You can recruit a Zombie to your warband for 0 silver." }
+		] },
+		{ "id": "woodland-estate", "name": "Woodland Estate", "rules": [
+			{ "name": "Trophy Room", "text": "Each time a Beast or Brute that was taken down by your Leader is killed, your Leader earns 10 bonus experience." },
+			{ "name": "A Howl in the Night", "text": "In step 6 of the Aftermath sequence, roll a dice. On a 6, a Dire Wolf emerges from of the forest. You can recruit a Dire Wolf to your warband for 0 silver." }
+		] },
+		{ "id": "ancient-barrows", "name": "Ancient Barrows", "rules": [
+			{ "name": "Barrow Offering", "text": "In step 6 of the aftermath sequence, roll a dice. On a 6, mortals from the City have left an offering. Roll once on the Curiosities table." },
+			{ "name": "Immortal Slumber", "text": "If your Leader is 'Laid to Rest', they are not removed from your warband. Instead they miss the next d3 battles as they slumber. You can pick a Champion to assume command until they return." }
+		] }
+	],
+	"upgrades": [
+		{ "id": "blackrose-orchard", "name": "Blackrose Orchard", "rules": [{ "name": "Dark Harvest", "text": "In step six of the aftermath sequence, roll a dice. On a 5+, you receive 1 Blackrose Balm." }] },
+		{ "id": "ossuary", "name": "Ossuary", "rules": [{ "name": "Ossified Remains", "text": "Reduce the cost of recruiting Skeleton fighters to your warband by 10 silver." }] },
+		{ "id": "exhumed-crypt", "name": "Exhumed Crypt", "rules": [{ "name": "Treasure of the Crypt", "text": "When this upgrade is picked, you can roll once on the Relics table." }] },
+		{ "id": "household-poisoner", "name": "Household Poisoner", "gives": [{ "wargear": "vial-of-poison", "count": 1 }], "rules": [{ "name": "A Night's Work", "text": "In step six of the aftermath sequence, you receive 1 Vial of Poison." }] },
+		{ "id": "gargoyles-tower", "name": "Gargoyle's Tower", "rules": [{ "name": "Circle the Skies Above", "text": "If a friendly Gargoyle starts the battle in reserve, instead of making a reinforcement roll for them, you can say they are circling the skies above. If you do so, they arrive in the Start of Round step of the next round, before any reinforcement rolls are made. They can be set up anywhere on the battlefield more than 9\" away from all enemy fighters." }] },
+		{ "id": "necromancers-mausoleum", "name": "Necromancer's Mausoleum", "rules": [{ "name": "Nexus of Dark Magic", "text": "Each battle, you can ignore the first miscast by a friendly Wizard." }] }
+	]
+}

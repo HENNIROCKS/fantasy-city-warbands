@@ -1,0 +1,106 @@
+{
+	"note": "The Relics Table (d66) and its relics (Playtest v1.10, pp. 159–166), named and numbered as their entries print them: the table lists Talisman of Protection at 46 and no 21–22. A relic counts in the warband rating at its price, as step seven has it (p. 152). `who`: leaders – a Leader or Champion; ranged – a fighter with a ranged weapon on its lists; casters – a Wizard or Priest; a wargear id – a fighter that may take that piece.",
+	"table": [
+		{ "roll": "11–12", "wargear": "saint-tricksters-charm" },
+		{ "roll": "13–14", "wargear": "enchanted-coin-purse" },
+		{ "roll": "15–16", "wargear": "von-zikmund-pocketwatch" },
+		{ "roll": "21–22", "wargear": "ring-of-roses" },
+		{ "roll": "23–24", "wargear": "pilgrims-eye" },
+		{ "roll": "25–26", "wargear": "saint-restorias-charm" },
+		{ "roll": "31–32", "wargear": "dwarven-whetstone" },
+		{ "roll": "33–34", "wargear": "blackrose-candle" },
+		{ "roll": "35–36", "wargear": "peculiar-flask" },
+		{ "roll": "41", "wargear": "deepwood-boots" },
+		{ "roll": "42", "wargear": "saint-fortunas-charm" },
+		{ "roll": "43", "wargear": "banner-of-lost-souls" },
+		{ "roll": "44", "wargear": "golden-newt" },
+		{ "roll": "45", "wargear": "shield-of-thorns" },
+		{ "roll": "46", "wargear": "iron-ward" },
+		{ "roll": "51", "wargear": "heirloom-duelling-pistol" },
+		{ "roll": "52", "wargear": "poison-quiver-and-bow" },
+		{ "roll": "53", "wargear": "repeater-crossbow" },
+		{ "roll": "54", "wargear": "poison-needle" },
+		{ "roll": "55", "wargear": "dwarven-axe" },
+		{ "roll": "56", "wargear": "nobles-rapier" },
+		{ "roll": "61", "wargear": "black-flail" },
+		{ "roll": "62", "wargear": "headsmans-axe" },
+		{ "roll": "63", "wargear": "halberd-of-the-city" },
+		{ "roll": "64–66", "wargear": "legendary-blade" }
+	],
+	"wargear": [
+		{ "id": "saint-tricksters-charm", "name": "Saint Trickster's Charm", "kind": "item", "cost": 15, "text": "*Item, Relic*\n\nAt the end of this fighter's activation, if they do not hold treasure and are engaged in melee with an enemy fighter that does, you can roll a dice. On a 4+, that enemy fighter is no longer holding that treasure, this fighter is holding it instead." },
+		{ "id": "enchanted-coin-purse", "name": "Enchanted Coin Purse", "kind": "item", "cost": 15, "text": "*Item, Relic*\n\nIn step 3 of the Aftermath sequence, if this fighter took part in the battle, their warband earns an additional 2d6 silver." },
+		{ "id": "von-zikmund-pocketwatch", "name": "Von Zikmund Pocketwatch", "kind": "item", "cost": 20, "text": "*Item, Relic*\n\nYou can re-roll reinforcement rolls made for this fighter." },
+		{ "id": "ring-of-roses", "name": "Ring of Roses", "kind": "item", "cost": 25, "text": "*Item, Relic*\n\nThis fighter cannot be Poisoned. In addition, in step 7 of each aftermath sequence, you can remove 1 level of Black Rot from this fighter." },
+		{ "id": "pilgrims-eye", "name": "Pilgrim's Eye", "kind": "item", "cost": 25, "text": "*Item, Relic*\n\nThis item grants 1 exploration re-roll (tens dice only) if this fighter is included in the scouting party.\n\nIf the re-rolled dice is a 1, the item shatters." },
+		{ "id": "saint-restorias-charm", "name": "Saint Restoria's Charm", "kind": "item", "cost": 25, "text": "*Item, Relic*\n\nOnce per battle, while this fighter is not engaged in melee, they can use this item to make the following bonus action:\n\n**Hold Charm [Bonus Action]:** Heal this fighter d6 life." },
+		{ "id": "dwarven-whetstone", "name": "Dwarven Whetstone", "kind": "item", "cost": 30, "stash": true, "text": "*Stash Item, Relic*\n\nAt the start of each battle, pick a melee weapon a friendly fighter is armed with and roll a dice. On a 1, the whetstone has worn down, remove the Dwarven Whetstone from your stash. On a 2+, increase the Rend value of that weapon for the rest of the battle." },
+		{ "id": "blackrose-candle", "name": "Blackrose Candle", "kind": "item", "cost": 30, "stash": true, "text": "*Stash Item, Relic*\n\nYou can use this item in step 6 of the aftermath sequence. Pick a friendly fighter that has an injury and roll a dice. On a 2+ they no longer have that injury." },
+		{ "id": "peculiar-flask", "name": "Peculiar Flask", "kind": "item", "cost": 20, "text": "*Item, Relic*\n\nThe first time this fighter activates each battle, roll a dice to determine which Wondrous Tonic the flask holds: 1 Tonic of Speed, 2 Tonic of Strength, 3 Tonic of Steady Aim, 4 Tonic of Fortitude, 5 Tonic of Mind, 6 Tonic of Levitation." },
+		{ "id": "deepwood-boots", "name": "Deepwood Boots", "kind": "item", "cost": 15, "effects": [{ "stat": "move", "bonus": 1 }], "text": "*Item, Relic*\n\nAdd 1\" to this fighter's Move value." },
+		{ "id": "saint-fortunas-charm", "name": "Saint Fortuna's Charm", "kind": "item", "cost": 25, "text": "*Item, Relic*\n\nEach time this fighter makes a ranged attack or a melee attack, you can re-roll 1 attack dice." },
+		{ "id": "banner-of-lost-souls", "name": "Banner of Lost Souls", "kind": "item", "cost": 40, "held": true, "text": "*Held Item, Relic*\n\n**[Action]** Once per battle, while the bearer is not engaged in melee, they can use this held item as an action. If they do so, roll a dice. On a 1, nothing happens. On a 2+, pick a friendly fighter that is taken down. Set up that friendly fighter within 1\" of this fighter, not engaged in melee. That fighter is healed d3 life." },
+		{ "id": "golden-newt", "name": "Golden Newt", "kind": "item", "cost": 35, "who": "casters", "text": "*Item, Relic*\n\nOnly *Wizards* and *Priests* can be equipped with this item.\n\nOnce per battle, when this fighter makes an Arcane Action to Cast a Spell, they can use the Golden Newt. If they do so, they are considered to have drawn power." },
+		{ "id": "shield-of-thorns", "name": "Shield of Thorns", "kind": "item", "cost": 20, "held": true, "effects": [{ "stat": "armour", "bonus": -1 }], "text": "*Held Item, Relic*\n\nImprove this fighter's Armour value by 1, to a maximum of 2+. (For example, 6+ becomes 5+).\n\nIn addition, each time this fighter makes an armour roll of a natural 6 against a melee attack, the attacking fighters suffers 1 damage." },
+		{ "id": "iron-ward", "name": "Iron Ward", "kind": "item", "cost": 50, "effects": [{ "stat": "armour", "bonus": -1 }], "text": "*Item, Relic*\n\nAdd 1 to the fighter's Armour value (to a maximum of 2+)." },
+		{ "id": "heirloom-duelling-pistol", "name": "Heirloom Duelling Pistol", "kind": "ranged", "cost": 30, "who": "blackpowder-pistol", "profile": { "range": "16\"", "attacks": "1", "rend": "-1", "damage": "2/d6+2" }, "traits": ["reload"], "text": "*Ranged Weapon, Relic*\n\nAny fighter that can be equipped with a blackpowder pistol can be equipped with a Heirloom Duelling Pistol." },
+		{ "id": "poison-quiver-and-bow", "name": "Poison Quiver & Bow", "kind": "ranged", "cost": 35, "who": "ranged", "profile": { "range": "16\"", "attacks": "1", "rend": "–", "damage": "1/d6" }, "traits": ["poison", "two-handed"], "text": "*Ranged Weapon, Relic*\n\nAny fighter that can be equipped with a ranged weapon can be equipped with a Poison Quiver & Bow." },
+		{ "id": "repeater-crossbow", "name": "Repeater Crossbow", "kind": "ranged", "cost": 40, "who": "ranged", "profile": { "range": "20\"", "attacks": "3", "rend": "-1", "damage": "1/d3+1" }, "traits": ["two-handed", "volley"], "text": "*Ranged Weapon, Relic*\n\nAny fighter that can be equipped with a ranged weapon can be equipped with a Repeater Crossbow." },
+		{ "id": "poison-needle", "name": "Poison Needle", "kind": "melee", "cost": 25, "who": "leaders", "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3" }, "traits": ["off-hand", "poison"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Poison Needle." },
+		{ "id": "dwarven-axe", "name": "Dwarven Axe", "kind": "melee", "cost": 30, "who": "leaders", "profile": { "attacks": "3", "rend": "-2", "damage": "1/d3+1" }, "traits": ["off-hand"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Dwarven Axe." },
+		{ "id": "nobles-rapier", "name": "Noble's Rapier", "kind": "melee", "cost": 40, "who": "leaders", "profile": { "attacks": "4", "rend": "-1", "damage": "1/d3" }, "traits": ["guard", "off-hand"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Noble's Rapier." },
+		{ "id": "black-flail", "name": "Black Flail", "kind": "melee", "cost": 45, "who": "leaders", "profile": { "attacks": "3", "rend": "-1", "damage": "2/d3+2" }, "traits": ["bludgeon", "two-handed", "unwieldy", "wrap"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Black Flail." },
+		{ "id": "headsmans-axe", "name": "Headsman's Axe", "kind": "melee", "cost": 60, "who": "leaders", "profile": { "attacks": "3", "rend": "-2", "damage": "2/d6+2" }, "traits": ["two-handed", "unwieldy"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Headsman's Axe." },
+		{ "id": "halberd-of-the-city", "name": "Halberd of the City", "kind": "melee", "cost": 50, "who": "leaders", "profile": { "attacks": "3", "rend": "-1", "damage": "1/d3+1" }, "traits": ["brace", "guard", "polearm", "two-handed"], "text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Halberd of the City." }
+	],
+	"legendaryBlade": {
+		"cost": 80,
+		"profile": { "attacks": "3", "rend": "-1", "damage": "2/d3+1" },
+		"traits": ["arcane"],
+		"text": "*Melee Weapon, Relic*\n\nAny Leader or Champion can be equipped with a Legendary Blade. Its two properties were rolled when it was found.",
+		"tables": [
+			{
+				"id": "saints",
+				"name": "Blades of the Saints",
+				"factions": ["guild-mercenaries"],
+				"prefixes": [
+					{ "roll": 1, "name": "The Hallowed", "traits": ["guard"], "text": "It has the Guard weapon trait." },
+					{ "roll": 2, "name": "The Quicksilver", "attacks": 4, "text": "Increase the Attacks value to 4." },
+					{ "roll": 3, "name": "The Argent", "rend": 1, "text": "Increase the Rend value by 1." },
+					{ "roll": 4, "name": "The Righteous", "critical": 1, "text": "Increase the Critical Damage value by 1." },
+					{ "roll": 5, "name": "The Pious", "rule": { "name": "Pious", "text": "A fighter cannot be poisoned while they are equipped with this weapon." }, "text": "Pious: a fighter cannot be poisoned while they are equipped with this weapon." },
+					{ "roll": 6, "name": "The Saint-blessed", "rule": { "name": "Saint-blessed", "text": "Each time a fighter equipped with this weapon activates, they can heal 1 life." }, "text": "Saint-blessed: each time a fighter equipped with this weapon activates, they can heal 1 life." }
+				],
+				"suffixes": [
+					{ "roll": 1, "name": "Defender", "traits": ["brace"], "text": "It has the Brace weapon trait." },
+					{ "roll": 2, "name": "Smiter", "traits": ["bludgeon"], "text": "It has the Bludgeon weapon trait." },
+					{ "roll": 3, "name": "Greatblade", "traits": ["two-handed", "unwieldy"], "damage": 1, "critical": 1, "text": "It has the Two-handed and Unwieldy weapon traits. Increase the Damage and Critical Damage values by 1." },
+					{ "roll": 4, "name": "Exorcism", "rule": { "name": "Exorcism", "text": "You can re-roll attack rolls of a natural 1 for attacks that target an *Undead*." }, "text": "Exorcism: you can re-roll attack rolls of a natural 1 for attacks that target an Undead." },
+					{ "roll": 5, "name": "Demonsbane", "rule": { "name": "Demonsbane", "text": "You can re-roll attack rolls of a natural 1 for attacks that target a *Demon*." }, "text": "Demonsbane: you can re-roll attack rolls of a natural 1 for attacks that target a Demon." },
+					{ "roll": 6, "name": "Martyr", "rule": { "name": "Martyr", "text": "If a fighter equipped with this weapon is taken down during a melee attack action, they are not taken down until the action ends and can continue to make attacks and parry." }, "text": "Martyr: if the bearer is taken down during a melee attack action, they are not taken down until the action ends and can continue to make attacks and parry." }
+				]
+			},
+			{
+				"id": "ruination",
+				"name": "Blades of Ruination",
+				"factions": ["verminkin", "death-covens", "blighted-cloister"],
+				"prefixes": [
+					{ "roll": 1, "name": "The Spectral", "traits": ["wrap"], "text": "It has the Wrap weapon trait." },
+					{ "roll": 2, "name": "The Accursed", "traits": ["poison"], "text": "It has the Poison weapon trait." },
+					{ "roll": 3, "name": "The Unholy", "rend": 1, "text": "Increase the Rend value by 1." },
+					{ "roll": 4, "name": "The Frenzied", "rule": { "name": "Frenzied", "text": "Add 3 to charge rolls for fighters equipped with this weapon." }, "text": "Frenzied: add 3 to charge rolls for fighters equipped with this weapon." },
+					{ "roll": 5, "name": "The Shrouded", "rule": { "name": "Shrouded", "text": "Subtract 1 from melee attack rolls that target a fighter equipped with this weapon." }, "text": "Shrouded: subtract 1 from melee attack rolls that target a fighter equipped with this weapon." },
+					{ "roll": 6, "name": "The Plaguewrought", "rule": { "name": "Plaguewrought", "text": "When making injury rolls for a fighter taken down with this weapon, they gain 1 level of Black Rot in addition to the injury roll." }, "text": "Plaguewrought: a fighter taken down with this weapon gains 1 level of Black Rot besides its injury roll." }
+				],
+				"suffixes": [
+					{ "roll": 1, "name": "Mace", "traits": ["bludgeon"], "text": "It has the Bludgeon weapon trait." },
+					{ "roll": 2, "name": "Reaper", "attacks": 4, "text": "Increase the Attacks value to 4." },
+					{ "roll": 3, "name": "Greatblade", "traits": ["two-handed", "unwieldy"], "damage": 1, "critical": 1, "text": "It has the Two-handed and Unwieldy weapon traits. Increase the Damage and Critical Damage values by 1." },
+					{ "roll": 4, "name": "Blasphemy", "critical": 1, "text": "Increase the Critical Damage value by 1." },
+					{ "roll": 5, "name": "Witchslayer", "rule": { "name": "Witchslayer", "text": "You can re-roll attack rolls of a natural 1 for attacks that target a *Wizard* or *Priest*." }, "text": "Witchslayer: you can re-roll attack rolls of a natural 1 for attacks that target a Wizard or Priest." },
+					{ "roll": 6, "name": "Soul-drinker", "rule": { "name": "Soul-drinker", "text": "Each time an attack made with this weapon scores a critical hit, the fighter equipped with this weapon heals 1 life." }, "text": "Soul-drinker: each time an attack made with this weapon scores a critical hit, the bearer heals 1 life." }
+				]
+			}
+		]
+	}
+}

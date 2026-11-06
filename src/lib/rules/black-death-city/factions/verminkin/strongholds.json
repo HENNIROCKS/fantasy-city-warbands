@@ -1,0 +1,26 @@
+{
+	"strongholds": [
+		{ "id": "desecrated-chapel", "name": "Desecrated Chapel", "rules": [
+			{ "name": "Prayers of Plague", "text": "Each battle, before you determine prepared spells, you can pick 1 friendly Priest in your warband. Instead of randomly determining the spell they have prepared from a Spell Lore, you can pick." },
+			{ "name": "Vector of Plague", "text": "Each battle, a friendly fighter gains a level of Black Rot, they earn 5 bonus experience." }
+		] },
+		{ "id": "hidden-vantage", "name": "Hidden Vantage", "rules": [
+			{ "name": "Run the Roofs", "text": "During deployment, if the scenario instructs you to set up fighters near an entry point (for example, wholly within 6\" of an entry point) you can pick up to d3 of those fighters to instead be set up on the roofs. If you do so, these fighters can be set up anywhere on the battlefield that is wholly within 12\" horizontally of the centre of the battlefield, is more than 9\" from all enemy fighters, and is 3\" or more vertically above the battlefield floor." }
+		] },
+		{ "id": "rickety-workshop", "name": "Rickety Workshop", "rules": [
+			{ "name": "Mad Tinkerers", "text": "Before each battle begins, you can pick 1 friendly Sparkseer. That fighter starts the battle with 3 engineering points instead of d3." },
+			{ "name": "Patch 'em Up", "text": "When making an injury roll for a friendly Contraption, you can roll twice and pick either result." }
+		] },
+		{ "id": "fortified-warren", "name": "Fortified Warren", "rules": [
+			{ "name": "Fighting Pits", "text": "In step 6 of the aftermath sequence, you can pick 2 friendly Champion or Henchmen fighters that were not taken down in the battle to fight in the pits. Pick 1 of the fighters to command and let your opponent command the other. The 2 fighters are placed engaged in melee. Roll-off and start alternating melee attack actions starting with the winner. The fighters cannot make any other actions or moves. Alternate making melee attack actions until 1 fighter is taken down. That fighter suffers an injury as normal. The other fighter is the winner and earns 10 bonus experience." }
+		] }
+	],
+	"upgrades": [
+		{ "id": "captured-poisoner", "name": "Captured Poisoner", "gives": [{ "wargear": "vial-of-poison", "count": 1 }], "rules": [{ "name": "Lethal Concoctions", "text": "In step six of the aftermath sequence, you receive 1 Vial of Poison." }] },
+		{ "id": "breeding-pens", "name": "Breeding Pens", "rules": [{ "name": "Raised Rat", "text": "In step 6 of the aftermath sequence, you can roll a dice. On a 5+, you can recruit 1 Giant Rat to your warband for 0 silver." }] },
+		{ "id": "warlocks-den", "name": "Warlock's Den", "rules": [{ "name": "Arcane Rivalry", "text": "Your warband can include 0-2 Verminkin Warlocks. In addition, once per battle, when a friendly Verminkin Warlock activates while they are within 6\" of another friendly Verminkin Warlock, they can attempt to one-up the other. If they do so, you can re-roll casting rolls for them that activation." }] },
+		{ "id": "splicer", "name": "Splicer", "rules": [{ "name": "Stitch and Splice", "text": "In step 6 of the aftermath sequence, for each friendly non-Beast fighter that was killed in the same aftermath sequence you can pick 1 of the following: Stitched-limbs – pick a friendly Rat Mutant, remove an injury from it (temporary or permanent); Spliced-brains – pick a friendly Rat Mutant, it earns 5 bonus experience." }] },
+		{ "id": "rooftop-ratways", "name": "Rooftop Ratways", "rules": [{ "name": "Scour the City", "text": "Each aftermath sequence, you gain 1 exploration re-roll." }] },
+		{ "id": "smugglers-den", "name": "Smuggler's Den", "rules": [{ "name": "Black Market Wares", "text": "In step 6 of the aftermath sequence, roll a dice. On a 4+, you can roll once on the Curiosity table." }] }
+	]
+}
