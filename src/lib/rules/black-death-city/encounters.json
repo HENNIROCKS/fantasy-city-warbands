@@ -1,5 +1,5 @@
 {
-	"note": "Explore the City (Playtest v1.10, pp. 147–150): the exploration table (d66) and the finds it leads to. An action is `gold` – a number or dice such as `d6x5` –, `table` – a roll on the Curiosities or Relics table or one of `tables` below –, `blackRot` and `experience` – levels or points a fighter gains, below 0 taken away –, `injury_roll`, `wargear`, `holding`, `recruit`, `remove`, or `party`: what falls on each fighter of the scouting party that carries one of `keywords` and none of `except`, by the d6 each rolls, or all alike without `dice`. `byHand` marks what the app does not keep.",
+	"note": "Explore the City (Playtest v1.10, pp. 147–150): the exploration table (d66) and the finds it leads to. An action is `gold` – a number or dice such as `d6x5` –, `table` – a roll on the Curiosities or Relics table or one of `tables` below –, `blackRot` and `experience` – levels or points a fighter gains, below 0 taken away –, `injury_roll`, `wargear`, `holding` – rolled again on a holding of `except` –, `recruit`, `remove`, or `party`: what falls on each fighter of the scouting party that carries one of `keywords` and none of `except`, by the d6 each rolls, or all alike without `dice`. `byHand` marks what the app does not keep.",
 	"tables": [
 		{
 			"id": "hallowed-ground",
@@ -141,7 +141,7 @@
 			"group": "51–56",
 			"name": "Secluded Holding",
 			"text": "Down a twisting side street flanked by ruined towers that cast long shadows, you come across a building that has thus far escaped the ravages of war and plague. Roll once on the Holdings table. You can take control of that holding. Re-roll results of Ruined Hovel until you get a different result.",
-			"do": [{ "holding": true }]
+			"do": [{ "holding": { "except": ["ruined-hovel"] } }]
 		},
 		{
 			"roll": "61",

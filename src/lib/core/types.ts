@@ -620,6 +620,10 @@ export interface Holdings {
 	/** The table a new holding is rolled on, as the rules print it. */
 	dice: string;
 	table: Holding[];
+	/** The holding a ransacked one becomes, by id: Black Death City's Ruined Hovel. */
+	ruined: string;
+	/** What the income brings for the treasure claimed in the battle, as the rules print it; none where it brings nothing. */
+	treasure?: { label: string; roll: string };
 	/** The warband's stronghold as its origin gives it, with the level and income its battles give it; null where it has none. */
 	stronghold(warband: Warband, faction: Faction, battles?: number): { name: string; rules: Rule[]; level: number; income: string } | null;
 	/** The upgrades the warband's faction offers its stronghold. */
@@ -643,7 +647,7 @@ export interface Holding {
 	text?: string;
 	/** The income rolled at the table each time it is collected: `d6x5`, `10`. */
 	income?: string;
-	/** What it brings once, when it is ransacked; it then becomes the game's first holding, a Ruined Hovel. */
+	/** What it brings once, when it is ransacked; it then becomes the game's `ruined` holding. */
 	ransack?: string;
 	rules: Rule[];
 	/** Pieces into the stash with each income: a number, or a roll such as `d3`. */
@@ -679,7 +683,7 @@ export type FindAmount = number | { roll: string; values: number[] };
  * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster. `counter` adds to
  * (or, below 0, takes from) one of the fighter's campaign counters, such as
  * Black Rot; `holding` is a holding of the game's table the warband may take
- * control of; `party` is a gain for each fighter of the party. `recruit` adds a
+ * control of, rolled again on any of `except`; `party` is a gain for each fighter of the party. `recruit` adds a
  * fighter of a type picked – carrying `keyword`, costing less than `below`, and where `ids` is set one of those,
  * for nothing where `free`, its characteristics set as `set` says –, `next`
  * what the warband's next battle brings.
@@ -701,7 +705,7 @@ export type FindGain =
 	| { recruit: { keyword: string; below: number; ids?: string[]; free?: boolean; set?: Record<string, number> } }
 	| { next: Omit<NextBattle, 'source'> }
 	| { counter: { key: string; amount: number } }
-	| { holding: true }
+	| { holding: { except: string[] } }
 	| { party: PartyGain };
 
 /**

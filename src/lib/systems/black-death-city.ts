@@ -145,6 +145,9 @@ export const game: GameSystem = {
 		max: holdingData.max,
 		dice: 'D66',
 		table: holdingData.holdings.map((h) => ({ ...h, rules: h.rules ?? [] })) as Holding[],
+		/* A ransacked holding becomes a Ruined Hovel; each treasure claimed brings d3x5 (p. 152). */
+		ruined: 'ruined-hovel',
+		treasure: { label: 'Treasure claimed', roll: 'd3x5 each' },
 		stronghold: (warband, faction, battles = warband.history?.length ?? 0) => {
 			const origin = warband.picks.origin?.[0];
 			const name = originStronghold.get(`${faction.id}/${origin}`);

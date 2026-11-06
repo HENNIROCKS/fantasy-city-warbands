@@ -115,7 +115,7 @@ export function incomeOf(warband: Warband, game: GameSystem, faction: Faction, h
 			if (holding.ransack) return [{ key: `holding:${place}`, label: `${holding.name}, ransacked`, roll: holding.ransack, kind: 'ransack', place, holding }];
 			return holding.income ? [{ key: `holding:${place}`, label: holding.name, roll: holding.income, kind: 'income', place, holding }] : [];
 		}),
-		{ key: 'treasure', label: 'Treasure claimed', roll: 'd3x5 each', kind: 'treasure' }
+		...(rules.treasure ? [{ key: 'treasure', label: rules.treasure.label, roll: rules.treasure.roll, kind: 'treasure' as const }] : [])
 	];
 }
 
@@ -146,7 +146,6 @@ export function applyHoldings(
 	const rules = game.holdings;
 	if (!rules) return warband;
 	const { held } = holdingsAfter(before, game, result, seize, found);
-	const ruined = rules.table[0]?.id;
 	const stash = [...(warband.stash ?? [])];
 	const holdings = held.flatMap(({ id, place }): string[] => {
 		const holding = holdingOf(game, id);
@@ -157,7 +156,7 @@ export function applyHoldings(
 		}
 		const tabled = holding.table?.[(collect.tabled[place] ?? 0) - 1];
 		if (tabled) stash.push(tabled);
-		if (holding.ransack) return ruined ? [ruined] : [];
+		if (holding.ransack) return [rules.ruined];
 		if (holding.turns && collect.turned.includes(place)) return holding.turns.into ? [holding.turns.into] : [];
 		return [id];
 	});

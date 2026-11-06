@@ -463,7 +463,7 @@
 						{/each}
 					</div>
 				{:else if 'holding' in gain}
-					{@const holdingTable = holdings?.table.filter((h) => h.id !== holdings.table[0].id) ?? []}
+					{@const holdingTable = holdings?.table.filter((h) => !gain.holding.except.includes(h.id)) ?? []}
 					{@const full = after.ids.length - (earned.found?.holdings.length ?? 0) >= (holdings?.max ?? 0)}
 					<p class="caption" id="holding-{answer.roll}-{at}">Holding · {holdings?.dice}</p>
 					{#if full && !answer.picks[at]}
@@ -1099,7 +1099,7 @@
 				<p class="page-count">Aftermath · {at + 1} of {pages.length}</p>
 				<div class="parchment">
 					<section>
-						<p class="note">Roll each income at the table and enter what it comes to. A ransacked holding becomes a Ruined Hovel.</p>
+						<p class="note">Roll each income at the table and enter what it comes to. A ransacked holding becomes a {holdingOf(game, holdings.ruined)?.name ?? holdings.ruined}.</p>
 					</section>
 					{#each sources as source (source.key)}
 						{@const silver = draft.collect.silver[source.key] ?? 0}

@@ -59,7 +59,7 @@ function gainsOf(actions: RawAction[]): FindGain[] {
 		if ('experience' in action) return { counter: { key: EXPERIENCE, amount: Number(action.experience) } };
 		if ('injury_roll' in action) return { injuryRoll: {} };
 		if ('wargear' in action) return { wargear: String(action.wargear) };
-		if ('holding' in action) return { holding: true };
+		if ('holding' in action) return { holding: { except: (action.holding as { except?: string[] }).except ?? [] } };
 		if ('remove' in action) return { remove: true };
 		if ('recruit' in action) return { recruit: action.recruit as { keyword: string; below: number; ids?: string[]; free?: boolean } };
 		if ('party' in action) {
