@@ -14,9 +14,10 @@
 import { stateOf, type BattleState } from './battle';
 import { carriedIds, heldUses } from './card';
 import { LEADER, activeEffects, recruitCost } from './effects';
-import { encountersOf, findsOf, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type FighterFind, type Finds } from './explore';
+import { encountersOf, findsOf, hasEffect, noExploration, partyOf, type EncounterAnswer, type ExploreAnswer, type FighterFind, type Finds } from './explore';
+import { applyHoldings, noCollecting, noSeizing, type CollectAnswer, type SeizeAnswer } from './holdings';
 import { battleRecord, startBattleEnd, type BattleEnd } from './history';
-import { canLead, disbandedAfter, leaderOf } from './leader';
+import { canLead, disbandedAfter, keywordsOf, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { purse, warbandCost } from './validate';
 import { standingRaised, type UnderdogState } from './underdog';
@@ -79,6 +80,10 @@ export interface AftermathDraft extends BattleEnd {
 	shards: number;
 	/** Who went to explore, the encounters they ran into and what they found, where the game sends a search party out. */
 	explore: ExploreAnswer;
+	/** Who took which holding, and the stronghold's upgrade, where the game has holdings. */
+	seize: SeizeAnswer;
+	/** The income, what the holdings turn into, and the downtime's leeching, where the game has holdings. */
+	collect: CollectAnswer;
 }
 
 /** A fighter as the aftermath needs it: its name, and the keywords it carries, as the rules write them. */
@@ -136,6 +141,8 @@ export function startAftermath(
 		successor: null,
 		shards: 0,
 		explore: noExploration(),
+		seize: noSeizing(),
+		collect: noCollecting(),
 	};
 }
 
@@ -316,7 +323,11 @@ export const healKey = (instanceId: string, injury: string) => `${instanceId}:${
 
 /** The fighters that came into the battle with a temporary injury, each with those injuries, in the warband's order. */
 export function healingOf(warband: Warband): { instance: FighterInstance; injuries: string[] }[] {
-	return warband.fighters.flatMap((instance) => (instance.away !== 'dead' && instance.temporary?.length ? [{ instance, injuries: instance.temporary }] : []));
+	return warband.fighters.flatMap((instance) => {
+		/* Only those it still has: one taken off on the back of its card heals nothing. */
+		const injuries = (instance.temporary ?? []).filter((id) => instance.injuries?.includes(id));
+		return instance.away !== 'dead' && injuries.length ? [{ instance, injuries }] : [];
+	});
 }
 
 /** Who took part and was not taken out of action, by instance id. */
@@ -371,16 +382,29 @@ export function levelsEarned(row: AftermathRow, marks: string[]): number {
  * The search party as it stands – who goes, how many encounters it may
  * resolve and why, and the encounters that stand – where the game sends one
  * out; null where it does not. Who took part and was not taken out of action
- * goes first, as the renown page leaves them.
+ * goes first, as the renown page leaves them. A fighter that earns no
+ * experience has no row and goes by its keywords, as a Beast or a Thrall.
  */
 export function explorationOf(
 	warband: Warband,
 	game: GameSystem,
+	faction: Faction,
 	draft: AftermathDraft
 ): { party: string[]; most: number; why: string | null; encounters: EncounterAnswer[] } | null {
 	const explore = game.aftermath?.explore;
 	if (!explore) return null;
-	const candidates = draft.rows.map((r) => ({ instanceId: r.instanceId, keywordIds: r.keywordIds, tookPart: r.tookPart, out: draft.out.includes(r.instanceId) }));
+	const candidates = warband.fighters
+		.filter((f) => !f.away)
+		.map((f) => {
+			const row = draft.rows.find((r) => r.instanceId === f.instanceId);
+			const type = faction.fighters.find((t) => t.id === f.fighterId);
+			return {
+				instanceId: f.instanceId,
+				keywordIds: row?.keywordIds ?? (type ? keywordsOf(f, type, game) : []),
+				tookPart: row?.tookPart ?? true,
+				out: draft.out.includes(f.instanceId)
+			};
+		});
 	const party = partyOf(explore, draft.explore, candidates);
 	const { count, why } = explore.most(warband, party);
 	return { party, most: count, why, encounters: encountersOf(draft.explore, party, count) };
@@ -389,14 +413,40 @@ export function explorationOf(
 /** What the search party found, as answered; null where the game sends none out. */
 export function foundOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): Finds | null {
 	const explore = game.aftermath?.explore;
-	const exploration = explorationOf(warband, game, draft);
+	const exploration = explorationOf(warband, game, faction, draft);
 	if (!explore || !exploration) return null;
-	return findsOf(explore, exploration.encounters, exploration.party, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency);
+	const instanceOf = (id: string) => warband.fighters.find((f) => f.instanceId === id);
+	const keywords = (id: string) => {
+		const instance = instanceOf(id);
+		const type = faction.fighters.find((f) => f.id === instance?.fighterId);
+		return instance && type ? keywordsOf(instance, type, game) : [];
+	};
+	const finds = findsOf(explore, exploration.encounters, exploration.party, (id) => faction.wargear.find((w) => w.id === id)?.name ?? id, game.currency, keywords);
+	/* What a counter does to the fighter it falls on: a fighter the game gives none of drops it, one it kills leaves the roster. */
+	const running = new Map<string, number>();
+	const experience = game.aftermath?.experience?.counter;
+	for (const find of finds.fighters) {
+		const instance = instanceOf(find.instanceId);
+		const type = faction.fighters.find((f) => f.id === instance?.fighterId);
+		if (!instance || !type) continue;
+		find.counters = find.counters.filter(({ key, amount }) => {
+			const held = (instance.tally?.[key] ?? 0) + (running.get(`${find.instanceId}:${key}`) ?? 0);
+			if (key === experience && keywords(find.instanceId).some((k) => game.aftermath?.excluded.includes(k))) return false;
+			if (amount < 0 && held <= 0) return false;
+			const outcome = amount > 0 ? game.injuries?.counter?.(instance, type, key, held + amount) : undefined;
+			if (outcome && !outcome.counts) return false;
+			if (outcome?.dies) find.remove = true;
+			running.set(`${find.instanceId}:${key}`, (running.get(`${find.instanceId}:${key}`) ?? 0) + amount);
+			return true;
+		});
+	}
+	finds.fighters = finds.fighters.filter(hasEffect);
+	return finds;
 }
 
 /** The pieces of the stash given up on the exploration roll, such as an Ornate Key, that the stash still holds. */
-export function spentOf(warband: Warband, game: GameSystem, draft: AftermathDraft): string[] {
-	const exploration = explorationOf(warband, game, draft);
+export function spentOf(warband: Warband, game: GameSystem, faction: Faction, draft: AftermathDraft): string[] {
+	const exploration = explorationOf(warband, game, faction, draft);
 	const aids = exploration && game.aftermath?.explore ? game.aftermath.explore.aids(warband, exploration.party) : [];
 	return draft.explore.spent.filter((id) => aids.some((a) => a.spend === id));
 }
@@ -417,7 +467,7 @@ export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, d
 	const earned = rules.income
 		? rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog))
 		: { tally, gold: purse(warband, game), lines: [] };
-	const spent = spentOf(warband, game, draft);
+	const spent = spentOf(warband, game, faction, draft);
 	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) - spent.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
 	return { ...earned, gold: earned.gold + kept, found };
 }
@@ -438,6 +488,11 @@ function withFind(fighter: FighterInstance, find: FighterFind, rules: Aftermath)
 	}
 	for (const id of find.injuries) if (!held.includes(id)) held.push(id);
 	if (find.heal.length || find.injuries.length) next = { ...next, injuries: held };
+	if (find.counters.length) {
+		const tally = { ...next.tally };
+		for (const { key, amount } of find.counters) tally[key] = Math.max(0, (tally[key] ?? 0) + amount);
+		next = { ...next, tally };
+	}
 	return find.levels > 0 ? rules.gainLevels(next, find.levels) : next;
 }
 
@@ -478,7 +533,7 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 	const effects = activeEffects(warband, faction);
 	/* A piece given up on the exploration roll leaves the stash, one copy each. */
 	const stash = [...(warband.stash ?? [])];
-	for (const id of spentOf(warband, game, draft)) {
+	for (const id of spentOf(warband, game, faction, draft)) {
 		const at = stash.indexOf(id);
 		if (at >= 0) stash.splice(at, 1);
 	}
@@ -602,5 +657,6 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 			fighters: applied.fighters.map((f) => (known.has(f.instanceId) || !advances.length ? f : { ...f, advances: [...(f.advances ?? []), ...advances] }))
 		};
 	}
+	applied = applyHoldings(applied, game, faction, warband, draft.result, !!record, draft.seize, draft.collect, earned.found?.holdings);
 	return disbandedAfter(applied, faction, game, leaderOf(warband, faction));
 }

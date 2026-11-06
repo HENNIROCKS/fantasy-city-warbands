@@ -24,6 +24,17 @@ export interface StashOut {
 	index: number;
 	/** Sold for `saleOf()`; otherwise thrown away for nothing. */
 	sold: boolean;
+	/** What a piece sold at a rolled price brought, as tapped in; missing for one sold at its price. */
+	silver?: number;
+}
+
+/** The figures a roll such as `2d6x5` can come to: the lowest, the highest, and the step between them. */
+export function rollRange(roll: string): { min: number; max: number; step: number } | null {
+	const match = /^(\d*)d(\d+)(?:x(\d+))?$/.exec(roll);
+	if (!match) return null;
+	const dice = Number(match[1] || 1);
+	const times = Number(match[3] || 1);
+	return { min: dice * times, max: dice * Number(match[2]) * times, step: times };
 }
 
 /** The battle being entered and not yet added. */
@@ -79,10 +90,16 @@ export function saleOf(id: string, faction: Faction, game: GameSystem): number {
 	return piece.cost > 0 && game.salePrice ? game.salePrice(piece.cost) : 0;
 }
 
+/** The roll a piece's price is made by when sold, such as `d6x5`; null where it sells at a price or not at all. */
+export function saleRollOf(id: string, faction: Faction): string | null {
+	const piece = faction.wargear.find((w) => w.id === id);
+	return piece && !piece.unique && piece.saleRoll && rollRange(piece.saleRoll) ? piece.saleRoll : null;
+}
+
 /** What the draft brings into the gold left: what is added, and what is sold. */
 export function goldIn(stash: string[], draft: WarbandBackDraft, faction: Faction, game: GameSystem): number {
 	const added = draft.goldAdded.reduce((sum, amount) => sum + amount, 0);
-	const sold = draft.stashOut.reduce((sum, { index, sold }) => sum + (sold ? saleOf(stash[index] ?? '', faction, game) : 0), 0);
+	const sold = draft.stashOut.reduce((sum, { index, sold, silver }) => sum + (sold ? (silver ?? saleOf(stash[index] ?? '', faction, game)) : 0), 0);
 	return added + sold;
 }
 

@@ -99,7 +99,7 @@
 		onend?: () => void;
 		/** Drops the battle after asking, without a result or an aftermath. */
 		oncancelbattle?: () => void;
-		/** How many of the fighters' levels are open, and what a level is called: `Renown`. */
+		/** How many of the fighters' levels are open, and what the button that spends them says: `Spend renown`. */
 		levelsOpen?: number;
 		levelLabel?: string;
 		/** Opens the sheet that spends them. */
@@ -334,7 +334,7 @@
 					{/if}
 					{#if levelsOpen > 0}
 						{#if battle || !closed}<hr />{/if}
-						<button onclick={() => onlevels?.()}>Spend {levelLabel.toLowerCase()} ({levelsOpen})</button>
+						<button onclick={() => onlevels?.()}>{levelLabel} ({levelsOpen})</button>
 					{/if}
 					{#if battle}
 						<hr />

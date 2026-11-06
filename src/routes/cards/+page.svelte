@@ -23,7 +23,7 @@
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
 	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
-	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide } from '$lib/core/underdog';
+	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide, type UnderdogState } from '$lib/core/underdog';
 	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues, takesFleeTest } from '$lib/core/scenario';
 	import { applyGroups, arrive, groupRule, groupSide, groupsFor, inReserve, moveFighter, reinforcementTable, resetGroups, swapFighters, toggleStart } from '$lib/core/groups';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
@@ -33,7 +33,7 @@
 	import { dismiss } from '$lib/core/manage';
 	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadTuckBox, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
-	import type { Counter, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
+	import type { Advancement, Counter, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
 	import { newId } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
@@ -192,14 +192,12 @@
 		}));
 		const roster = listed.length ? [...own.roster, { title: hiring?.label ?? null, entries: listed }] : own.roster;
 		/* The underdog's bonuses stand on the warband's card while the battle lasts, as reminders for the table;
-		   where the game gives the underdog no bonus, it stands in the box of the battle's setup instead. */
+		   where the game says what being the underdog means, that stands in the box of the battle's setup instead. */
 		const reminders = [
 			...(underdog && !system.game.underdog?.text
-				? [
-						{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll?.label ?? 'roll').toLowerCase()} in the aftermath.` },
-						...underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text }))
-					]
+				? [{ label: 'Underdog', text: `${underdog.behind} behind – +${underdog.roll} on every ${(system.game.aftermath?.roll?.label ?? 'roll').toLowerCase()} in the aftermath.` }]
 				: []),
+			...(underdog ? underdog.picked.map((b) => ({ label: `(Underdog) ${b.name}`, text: b.text })) : []),
 			/* What the last exploring left for this battle stands there too; a help for the next exploration is asked in the aftermath instead. */
 			...(w.next ?? []).filter((n) => !n.explore).map((n) => ({ label: `(Next battle) ${n.source}`, text: n.text }))
 		];
@@ -353,7 +351,8 @@
 		if (!counters.length) return null;
 		return {
 			counters,
-			levels: game.advancement?.counter ?? null
+			levels: game.advancement?.counter ?? null,
+			...(game.advancement?.floor ? { floor: game.advancement.floor } : {})
 		};
 	}
 
@@ -379,11 +378,15 @@
 		const open = advancement.open(now, profile);
 		return {
 			label: advancement.label,
+			spend: spendLabel(advancement),
 			next: open[0] ? { level: open[0], offer: advancement.offer(now, profile, faction, open[0], warband) } : null,
 			waiting: open.length,
 			spent: values.advances.map((a, i) => ({ level: a.level, text: advancement.describe(now, profile, faction, i, warband!) }))
 		};
 	});
+
+	/* What the button that spends open levels says, as the game words it: `Spend renown`, `Advancement rolls`. */
+	const spendLabel = (advancement: Advancement) => advancement.spend ?? `Spend ${advancement.label.toLowerCase()}`;
 
 	/* What the name field on a fighter's back offers while it is blank, as the builder words it. */
 	const backPlaceholder = $derived.by(() => {
@@ -441,12 +444,14 @@
 	   the builder takes the fighter back at its full price. A dead leader gets
 	   no section: it leaves as another takes the lead, which its Equipment
 	   section says. */
+	const dismissVerb = $derived(system?.game.dismissLabel ?? 'Dismiss');
 	const backDismissal = $derived.by((): BackDismissal | null => {
 		if (!warband || !system?.game.campaign || !faction || !editingId || editingId === warband.id) return null;
 		const instance = warband.fighters.find((f) => f.instanceId === editingId);
 		if (!instance || deadLeader(instance) || warband.disbanded) return null;
 		const moved = draft.wargear.join() !== instance.wargear.join();
 		return {
+			label: dismissVerb,
 			carried: instance.wargear.map(wargearName),
 			blocked: battle
 				? IN_BATTLE
@@ -1092,7 +1097,7 @@
 				onend={endBattle}
 				oncancelbattle={askCancel}
 				levelsOpen={levels.length}
-				levelLabel={system.game.advancement?.label ?? ''}
+				levelLabel={system.game.advancement ? spendLabel(system.game.advancement) : ''}
 				healthLabel={system.game.stats.find((s) => s.key === system.game.health)?.label ?? ''}
 				onlevels={() => (spending = true)}
 				onunderdog={(system.game.underdog || system.game.scenarios) && settingUp(battle) ? openUnderdog : undefined}
@@ -1167,7 +1172,7 @@
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="underdog-title">
 			<h2 id="underdog-title">{scenarios ? 'Before the battle' : 'Underdog'}</h2>
 			{#if rules}
-				<p class="count">Your {rules.figure} {rules.reputation(warband)}{#if rules.bonuses.length}{' '}· {rules.gap} behind for each bonus{/if}</p>
+				<p class="count">Your {rules.figure} {rules.reputation(warband)}{#if rules.bonuses.length}{' '}· {rules.bonusGap ?? rules.gap} behind for each bonus{/if}</p>
 			{/if}
 			<!-- With the scenario asked as well, the sheet runs longer than the screen and scrolls as one. -->
 			<div class={scenarios ? 'max-h-[60dvh] overflow-y-auto' : ''}>
@@ -1183,31 +1188,34 @@
 						oninput={(e) => enterOpponent(e.currentTarget.value)}
 						use:focusOnMount
 					/>
-					{#if rules.bonuses.length}
+					{#snippet bonusList(state: UnderdogState)}
+						<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
+							{#each rules.bonuses as bonus (bonus.id)}
+								{@const on = state.picked.some((b) => b.id === bonus.id)}
+								{@const blocked = bonusBlocked(rules, warband!, battle, bonus)}
+								<button
+									type="button"
+									class="choice"
+									aria-pressed={on}
+									disabled={blocked !== null}
+									onclick={() => setBattle(toggleBonus(rules, warband!, battle, bonus))}
+								>
+									<span class="block font-semibold">{#if bonus.roll}{bonus.roll} · {/if}{bonus.name}</span>
+									<span class="block text-zinc-400"><RichText text={bonus.text} /></span>
+									{#if blocked}
+										<span class="block font-semibold" style="color: var(--ui-warn-text)">{blocked}</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					{/snippet}
+					{#if rules.bonuses.length && !rules.ties}
 						{#if underdog}
 							<p class="mb-3 text-zinc-400">
 								{underdog.behind} behind: {underdog.allowed}
 								{underdog.allowed === 1 ? 'bonus' : 'bonuses'}, and +{underdog.roll} on every {(system.game.aftermath?.roll?.label ?? 'roll').toLowerCase()} in the aftermath.
 							</p>
-							<div class="max-h-[50dvh] space-y-2 overflow-y-auto">
-								{#each rules.bonuses as bonus (bonus.id)}
-									{@const on = underdog.picked.some((b) => b.id === bonus.id)}
-									{@const blocked = bonusBlocked(rules, warband, battle, bonus)}
-									<button
-										type="button"
-										class="choice"
-										aria-pressed={on}
-										disabled={blocked !== null}
-										onclick={() => setBattle(toggleBonus(rules, warband!, battle, bonus))}
-									>
-										<span class="block font-semibold">{bonus.name}</span>
-										<span class="block text-zinc-400"><RichText text={bonus.text} /></span>
-										{#if blocked}
-											<span class="block font-semibold" style="color: var(--ui-warn-text)">{blocked}</span>
-										{/if}
-									</button>
-								{/each}
-							</div>
+							{@render bonusList(underdog)}
 						{:else if opponentText !== null}
 							<p class="mb-3 text-zinc-400">Not the underdog: {rules.gap} or more behind makes it one.</p>
 						{/if}
@@ -1226,6 +1234,11 @@
 								<button type="button" class="choice" aria-pressed={won === true} onclick={() => setBattle(keepGroups(setTieWon(battle, rules, warband!, won === true ? null : true)))}>Won · you are the underdog</button>
 								<button type="button" class="choice" aria-pressed={won === false} onclick={() => setBattle(keepGroups(setTieWon(battle, rules, warband!, won === false ? null : false)))}>Lost · your opponent is</button>
 							</div>
+						{/if}
+						{#if underdog && underdog.allowed > 0}
+							<!-- Where the bonuses are rolled for, as Black Death City's: the dice are tapped as they show. -->
+							<p class="mb-3 text-zinc-400">{underdog.behind} behind: {underdog.allowed} {underdog.allowed === 1 ? 'roll' : 'rolls'}. {rules.bonusNote ?? ''}</p>
+							{@render bonusList(underdog)}
 						{/if}
 					{/if}
 				{/if}
@@ -1532,14 +1545,14 @@
 {#if dismissing}
 	<div class="sheet-backdrop">
 		<div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="dismiss-title">
-			<h2 id="dismiss-title">Dismiss {dismissing.name}?</h2>
+			<h2 id="dismiss-title">{dismissVerb} {dismissing.name}?</h2>
 			<p class="notice">{dismissNotes.join(' ')}</p>
 			{#if dismissError}
 				<p class="notice danger">This browser refused to save it – nothing was changed.</p>
 			{/if}
 			<div class="sheet-actions">
 				<button type="button" class="btn" onclick={keepFighter} use:focusOnMount>Keep</button>
-				<button type="button" class="btn danger" disabled={dismissBusy} onclick={confirmDismiss}>Dismiss</button>
+				<button type="button" class="btn danger" disabled={dismissBusy} onclick={confirmDismiss}>{dismissVerb}</button>
 			</div>
 		</div>
 	</div>

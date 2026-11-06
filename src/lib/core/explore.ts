@@ -7,7 +7,7 @@
  * another answer, drops what was answered under it.
  */
 
-import type { Encounter, Explore, FindAmount, FindGain, FindTable, NextBattle } from './types';
+import type { Encounter, Explore, FindAmount, FindGain, FindTable, NextBattle, PartyGain } from './types';
 
 /** One encounter and what was answered under it. */
 export interface EncounterAnswer {
@@ -42,18 +42,51 @@ export interface PartyCandidate {
 	out: boolean;
 }
 
+/** The place of the party's `slots` a fighter fills: the first whose keywords it carries; null where it fills none or the game has none. */
+export function slotOf(explore: Explore, keywordIds: string[]): number | null {
+	const at = (explore.party.slots ?? []).findIndex((s) => s.keywords.some((k) => keywordIds.includes(k)));
+	return at < 0 ? null : at;
+}
+
 /** Why a fighter cannot join the search party, in a few words; null where it can. */
 export function partyBlocked(explore: Explore, fighter: PartyCandidate): string | null {
 	if (!fighter.tookPart) return 'Sat it out';
 	if (fighter.out) return 'Out of action';
 	const barred = explore.party.excluded.find((k) => fighter.keywordIds.includes(k));
-	return barred ? barred.toUpperCase() : null;
+	if (barred) return barred.toUpperCase();
+	return explore.party.slots && slotOf(explore, fighter.keywordIds) === null ? 'Cannot go' : null;
+}
+
+/** Why one more fighter cannot join the party as it is, such as `3 Henchmen at most`; null where there is room. Slots count by the keywords the party's fighters carry. */
+export function partyFull(explore: Explore, party: string[], keywordsOf: (id: string) => string[], keywordIds: string[]): string | null {
+	if (party.length >= explore.party.size) return `${explore.party.size} at most`;
+	const at = slotOf(explore, keywordIds);
+	const slot = at === null ? undefined : explore.party.slots![at];
+	if (!slot) return null;
+	return party.filter((id) => slotOf(explore, keywordsOf(id)) === at).length >= slot.max ? `${slot.max} ${slot.label} at most` : null;
+}
+
+/** What the party still lacks of its slots, a line each: `1 Leader or Champion`; none where it is complete or the game has no slots. */
+export function partyLacks(explore: Explore, party: string[], keywordsOf: (id: string) => string[]): string[] {
+	return (explore.party.slots ?? []).flatMap((slot, at) => {
+		const lacking = slot.min - party.filter((id) => slotOf(explore, keywordsOf(id)) === at).length;
+		return lacking > 0 ? [`${lacking} ${lacking === 1 ? (slot.single ?? slot.label) : slot.label}`] : [];
+	});
 }
 
 /** The search party as it stands: as tapped, or the first of those who may go, and never one the battle now keeps back. */
 export function partyOf(explore: Explore, answer: ExploreAnswer, fighters: PartyCandidate[]): string[] {
-	const may = fighters.filter((f) => partyBlocked(explore, f) === null).map((f) => f.instanceId);
-	return answer.party ? answer.party.filter((id) => may.includes(id)) : may.slice(0, explore.party.size);
+	const may = fighters.filter((f) => partyBlocked(explore, f) === null);
+	if (answer.party) return answer.party.filter((id) => may.some((f) => f.instanceId === id));
+	const party: PartyCandidate[] = [];
+	for (const f of may) {
+		if (party.length >= explore.party.size) break;
+		const at = slotOf(explore, f.keywordIds);
+		const slot = at === null ? undefined : explore.party.slots![at];
+		if (slot && party.filter((p) => slotOf(explore, p.keywordIds) === at).length >= slot.max) continue;
+		party.push(f);
+	}
+	return party.map((f) => f.instanceId);
 }
 
 /** Taps a fighter in or out of the search party. */
@@ -78,8 +111,10 @@ export interface Finds {
 	lines: { gain: string; why: string }[];
 	/** What is still to be rolled, a line each: `Lesser Loot Table – roll 2D6`. */
 	open: string[];
-	/** What falls on a fighter the encounters picked, one entry for each encounter. */
+	/** What falls on a fighter, by encounter: the one it picked, and each of the party it asks. */
 	fighters: FighterFind[];
+	/** Holdings the warband may take control of, by id on the game's table. */
+	holdings: string[];
 	/** Fighters joining the warband, by the type picked. */
 	recruits: { fighterId: string; free: boolean; set: Record<string, number>; source: string }[];
 	/** What the next battle brings. */
@@ -101,6 +136,8 @@ export interface FighterFind {
 	heal: string[];
 	remove: boolean;
 	stats: { key: string; bonus: number }[];
+	/** Campaign counters it adds to, such as Black Rot or experience; below 0, takes from. */
+	counters: { key: string; amount: number }[];
 	/** A roll on the injury table it makes, with the results read as others; null where it makes none. */
 	roll: { treat: Record<string, string> } | null;
 }
@@ -110,12 +147,24 @@ function timesOf(gain: FindGain, count: number): FindGain {
 	if ('shards' in gain && typeof gain.shards === 'number') return { shards: gain.shards * count };
 	if ('gold' in gain && typeof gain.gold === 'number') return { gold: gain.gold * count };
 	if ('stat' in gain) return { stat: { ...gain.stat, bonus: gain.stat.bonus * count } };
+	if ('counter' in gain) return { counter: { ...gain.counter, amount: gain.counter.amount * count } };
 	return gain;
 }
 
 /** Whether a gain falls on the fighter the encounter picks. */
 export const onFighter = (gain: FindGain) =>
-	'injuryRoll' in gain || 'levels' in gain || 'injury' in gain || 'heal' in gain || 'remove' in gain || 'stat' in gain || 'each' in gain;
+	'injuryRoll' in gain || 'levels' in gain || 'injury' in gain || 'heal' in gain || 'remove' in gain || 'stat' in gain || 'counter' in gain || 'each' in gain;
+
+/** Whether a fighter with these keywords is one the party gain falls on. */
+export const partyMatches = (party: PartyGain, keywordIds: string[]) =>
+	(!party.keywords || party.keywords.some((k) => keywordIds.includes(k))) && !(party.except ?? []).some((k) => keywordIds.includes(k));
+
+/** Whether anything falls on the fighter. */
+export const hasEffect = (find: FighterFind) =>
+	!!(find.roll || find.levels || find.injuries.length || find.heal.length || find.remove || find.stats.length || find.counters.length);
+
+/** Where the result tapped for one fighter of the party under a party gain is held. */
+export const partyPath = (at: string, instanceId: string) => `${at}@${instanceId}`;
 
 /** Where a gain sits under a given one. */
 export const pathOf = (parent: string, index: number) => `${parent}.${index}`;
@@ -202,17 +251,29 @@ export function uniquesPicked(explore: Explore, encounters: EncounterAnswer[]): 
  * table by the row tapped and what that row brings in turn. A count or a row
  * not yet tapped brings nothing and is named among what is still to roll.
  * `name` gives a wargear id its name, `currency` the gold its unit. A fighter
- * picked from the search party that has left it is picked no more.
+ * picked from the search party that has left it is picked no more. A party
+ * gain falls on each fighter of the party it names – by `keywordsOf` – by the
+ * result tapped for it; what falls on one fighter is one entry of `fighters`.
  */
-export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: string[], name: (id: string) => string, currency: string): Finds {
-	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [], fighters: [], recruits: [], next: [] };
+export function findsOf(
+	explore: Explore,
+	encounters: EncounterAnswer[],
+	party: string[],
+	name: (id: string) => string,
+	currency: string,
+	keywordsOf: (id: string) => string[] = () => []
+): Finds {
+	const finds: Finds = { gold: 0, shards: 0, tally: {}, stash: [], lines: [], open: [], fighters: [], holdings: [], recruits: [], next: [] };
 	for (const answer of encounters) {
 		const encounter = encounterOf(explore, answer);
 		const source = encounter?.name ?? '';
 		const picked = answer.fighter && !(encounter?.who?.from === 'party' && !party.includes(answer.fighter)) ? answer.fighter : null;
-		const on: FighterFind | null = picked
-			? { instanceId: picked, source, levels: 0, injuries: [], heal: [], remove: false, stats: [], roll: null }
-			: null;
+		const falls = new Map<string, FighterFind>();
+		const fallsOn = (instanceId: string): FighterFind => {
+			if (!falls.has(instanceId)) falls.set(instanceId, { instanceId, source, levels: 0, injuries: [], heal: [], remove: false, stats: [], counters: [], roll: null });
+			return falls.get(instanceId)!;
+		};
+		const on: FighterFind | null = picked ? fallsOn(picked) : null;
 		if (needsFighter(explore, answer) && !on) finds.open.push(`${source} – pick the fighter`);
 		const count = (amount: FindAmount, at: string, what: string): number | null => {
 			if (typeof amount === 'number') return amount;
@@ -220,7 +281,7 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 			if (value === undefined) finds.open.push(`${what} – roll ${amount.roll}`);
 			return value ?? null;
 		};
-		const walk = (gains: FindGain[], path: string, source: string) =>
+		const walk = (gains: FindGain[], path: string, source: string, on: FighterFind | null) =>
 			gains.forEach((gain, i) => {
 				const at = pathOf(path, i);
 				if ('gold' in gain) {
@@ -248,7 +309,7 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 				} else if ('table' in gain) {
 					const table = tableOf(explore, gain.table);
 					const row = table?.rows.find((r) => r.roll === answer.picks[at]);
-					if (row) walk(row.gains, at, row.name);
+					if (row) walk(row.gains, at, row.name, on);
 					else if (table) finds.open.push(`${source}: ${table.name} – roll ${table.dice}`);
 				} else if ('unique' in gain) {
 					const id = answer.picks[at];
@@ -260,6 +321,21 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 					const fighterId = answer.picks[recruitPath(at)];
 					if (fighterId) finds.recruits.push({ fighterId, free: !!gain.recruit.free, set: gain.recruit.set ?? {}, source });
 					else finds.open.push(`${source} – pick the fighter who joins`);
+				} else if ('holding' in gain) {
+					const id = answer.picks[at];
+					if (id) {
+						finds.holdings.push(id);
+						finds.lines.push({ gain: 'A holding', why: `– ${source}, taken` });
+					}
+				} else if ('party' in gain) {
+					let rolled = true;
+					for (const id of party.filter((p) => partyMatches(gain.party, keywordsOf(p)))) {
+						const key = partyPath(at, id);
+						const result = gain.party.dice === null ? gain.party.results[0] : gain.party.results.find((r) => r.on === answer.picks[key]);
+						if (result) walk(result.gains, key, source, fallsOn(id));
+						else rolled = false;
+					}
+					if (!rolled) finds.open.push(`${source} – roll ${gain.party.dice} for each fighter`);
 				} else if ('next' in gain) {
 					finds.next.push({ ...gain.next, source });
 					finds.lines.push({ gain: gain.next.explore ? 'Next exploration' : 'Next battle', why: `– ${source}: ${gain.next.text}` });
@@ -269,6 +345,7 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 					else if ('injury' in gain) on.injuries.push(gain.injury);
 					else if ('remove' in gain) on.remove = true;
 					else if ('stat' in gain) on.stats.push(gain.stat);
+					else if ('counter' in gain) on.counters.push(gain.counter);
 					else if ('heal' in gain) {
 						const id = answer.picks[`${at}:heal`];
 						if (id) on.heal.push(id);
@@ -278,14 +355,14 @@ export function findsOf(explore: Explore, encounters: EncounterAnswer[], party: 
 						if (counts.every((c) => c === undefined)) finds.open.push(`${source} – count the dice`);
 						gain.each.results.forEach((r, n) => {
 							const c = counts[n] ?? 0;
-							if (c) walk(r.gains.map((g) => timesOf(g, c)), `${at}#${n}`, source);
+							if (c) walk(r.gains.map((g) => timesOf(g, c)), `${at}#${n}`, source, on);
 						});
 					}
 				}
 			});
-		for (const { path, gains } of gainsOf(explore, answer)) walk(gains, path, source);
+		for (const { path, gains } of gainsOf(explore, answer)) walk(gains, path, source, on);
 		if (encounter?.ask && answer.option === null) finds.open.push(`${encounter.name} – ${encounter.ask.label.toLowerCase()}`);
-		if (on && (on.roll || on.levels || on.injuries.length || on.heal.length || on.remove || on.stats.length)) finds.fighters.push(on);
+		for (const hit of falls.values()) if (hasEffect(hit)) finds.fighters.push(hit);
 	}
 	return finds;
 }

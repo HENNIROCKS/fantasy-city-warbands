@@ -54,6 +54,8 @@
 		carried: string[];
 		/** Why the fighter cannot be dismissed now, or null when it can. */
 		blocked: string | null;
+		/** What the game calls it: `Dismiss`, `Retire`. */
+		label: string;
 	}
 
 	/** What the game's campaign lets the back correct by hand; null where it keeps none. */
@@ -62,12 +64,16 @@
 		counters: { key: string; label: string; raise: boolean }[];
 		/** The counter the levels are counted in, which never goes below a level spent; null where none. */
 		levels: string | null;
+		/** The figure of that counter a level spent stands at, where it is not the level itself, such as the experience a rank starts at. */
+		floor?: (level: number) => number;
 	}
 
 	/** The levels of the fighter on this back, worked out by the page from the draft. */
 	export interface BackRenown {
 		/** What a level is called: `Renown`. */
 		label: string;
+		/** What the button that spends the open levels says, before their count: `Spend renown`. */
+		spend: string;
 		/** The first level still open, and what it can be spent on. */
 		next: { level: OpenLevel; offer: LevelOffer } | null;
 		/** Every level still open, `next` included. */
@@ -152,7 +158,7 @@
 
 	/* No level spent is taken away; one taken back with Undo frees the counter again. */
 	const spentTo = $derived(Math.max(0, ...draft.advances.map((a) => a.level)));
-	const floorOf = (key: string) => (key === campaign?.levels ? spentTo : 0);
+	const floorOf = (key: string) => (key === campaign?.levels ? (campaign.floor?.(spentTo) ?? spentTo) : 0);
 
 	/* The back has a second page for spending a level, as in the Warband Deck: it
 	   takes the card's place rather than opening a sheet over it, so the choice
@@ -403,7 +409,7 @@
 						</ul>
 					{/if}
 					{#if renown?.next}
-						<button class="add" onclick={() => showSpending(true)}>Spend {renown.label.toLowerCase()} ({renown.waiting})</button>
+						<button class="add" onclick={() => showSpending(true)}>{renown.spend} ({renown.waiting})</button>
 					{/if}
 				</section>
 			{/if}
@@ -509,7 +515,7 @@
 				<!-- As the Warband Deck has it, last on the back: asked once more in a
 				     sheet and written at once, not with Done. -->
 				<section>
-					<h3 class="heading"><span>Dismiss</span><span class="rule"></span></h3>
+					<h3 class="heading"><span>{dismissal.label}</span><span class="rule"></span></h3>
 					{#if dismissal.blocked}
 						<p class="hint">{dismissal.blocked}</p>
 					{:else}
@@ -521,7 +527,7 @@
 							</div>
 						{/if}
 						<button class="dismiss" onclick={() => ondismiss(dismissal.carried.map((_, i) => i).filter((i) => !leaves.includes(i)))}
-							>Dismiss {name}</button
+							>{dismissal.label} {name}</button
 						>
 					{/if}
 				</section>

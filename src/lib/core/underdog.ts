@@ -22,7 +22,7 @@ export interface UnderdogState {
 
 /** How many bonuses a warband `behind` its opponent picks: one for each full gap, as many as there are at most. */
 export function bonusesFor(rules: Underdog, behind: number): number {
-	return Math.min(rules.bonuses.length, Math.max(0, Math.floor(behind / rules.gap)));
+	return Math.min(rules.bonuses.length, Math.max(0, Math.floor(behind / (rules.bonusGap ?? rules.gap))));
 }
 
 /** Whether a warband `behind` its opponent is the underdog: far enough behind, or level and the winner of the roll-off where the game rolls off. */

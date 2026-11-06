@@ -3,7 +3,7 @@
 	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
 	import { RESULT_LABELS, displayDate, newestFirst, opponent } from '$lib/core/history';
 	import { findsOf } from '$lib/core/finds';
-	import { goldIn, saleOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
+	import { goldIn, rollRange, saleOf, saleRollOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
 	import { fighterName } from '$lib/core/warband';
 	import type { BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 	import { purse, warbandCost } from '$lib/core/validate';
@@ -47,8 +47,13 @@
 		goldInput = '';
 	}
 
-	function stashOut(index: number, sold: boolean) {
-		draft.stashOut = [...draft.stashOut, { index, sold }];
+	function stashOut(index: number, sold: boolean, silver?: number) {
+		draft.stashOut = [...draft.stashOut, { index, sold, ...(silver === undefined ? {} : { silver }) }];
+	}
+
+	/* A piece sold at a rolled price: what the roll came to, a step at a time between the lowest and the highest it can. */
+	function setSilver(index: number, silver: number) {
+		draft.stashOut = draft.stashOut.map((out) => (out.index === index ? { ...out, silver } : out));
 	}
 
 	function stashBack(index: number) {
@@ -214,16 +219,27 @@
 					{#each stash as id, i (i)}
 						{@const out = draft.stashOut.find((o) => o.index === i)}
 						{@const sale = saleOf(id, faction, game)}
+						{@const roll = saleRollOf(id, faction)}
+						{@const range = roll ? rollRange(roll) : null}
 						<li class:gone={out}>
 							<span class="line">
 								<span class="piece">{wargearName(id)}</span>
-								{#if out}<span class="why">{out.sold ? `Sold for ${sale} ${game.currency}` : 'Thrown away'}</span>{/if}
+								{#if out}<span class="why">{out.sold ? `Sold for ${out.silver ?? sale} ${game.currency}` : 'Thrown away'}</span>{/if}
 							</span>
 							{#if out}
+								{#if out.silver !== undefined && range}
+									<div class="stepper" role="group" aria-label="What {wargearName(id)} sold for">
+										<button class="segment" aria-label="Sold for less" disabled={out.silver <= range.min} onclick={() => setSilver(i, out.silver! - range.step)}>−</button>
+										<output class="figure">{out.silver}</output>
+										<button class="segment" aria-label="Sold for more" disabled={out.silver >= range.max} onclick={() => setSilver(i, out.silver! + range.step)}>+</button>
+									</div>
+								{/if}
 								<button class="remove" onclick={() => stashBack(i)}>Undo</button>
 							{:else if !blocked}
 								{#if sale}
 									<button class="remove" onclick={() => stashOut(i, true)}>Sell {sale} {game.currency}</button>
+								{:else if roll && range}
+									<button class="remove" onclick={() => stashOut(i, true, range.min)}>Sell {roll.toUpperCase().replace('X', ' × ')} {game.currency}</button>
 								{/if}
 								<button class="remove" onclick={() => stashOut(i, false)}>Discard</button>
 							{/if}

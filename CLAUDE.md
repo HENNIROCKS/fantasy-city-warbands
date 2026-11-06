@@ -129,7 +129,7 @@ des Site-Repos, von Hand übertragen; ebenso Thief und Beastman, die beiden
 **Black Death City** ist von Hand aus dem Playtest v1.10 übertragen
 (`_works/Rulebooks/Black Death City Playtest v1.10.pdf` mit Spickzettel und
 Roster-Bögen hinten; die High-Res-Fassung daneben hat dieselben Seiten ohne
-sie). Das Kampagnenkapitel (S. 133–166) ist in der App noch nicht gebaut.
+sie). Das Kampagnenkapitel (S. 133–166) ist gebaut: Aftermath, Explore the City, Holdings, Funde und Downtime. Was die App dort nicht führt, trägt in `encounters.json` und den Daten `byHand`.
 Werte **an der PDF-Seite ablesen, nicht am extrahierten Text** – die
 Spaltenextraktion verschiebt Profile. Widersprechen sich Fighters List und
 Fighter Scroll, gilt die Scroll; der Widerspruch kommt in die `DEVIATIONS.md`.

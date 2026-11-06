@@ -5,14 +5,18 @@
  */
 
 import { activeEffects } from '$lib/core/effects';
-import type { BattleRoll, Faction, Fighter, FighterChoice, GameSystem, Rule, Scenario, Source, StartRoll, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
+import type { BattleRoll, Faction, Fighter, FighterChoice, GameSystem, Rule, Scenario, Source, StartRoll, Holding, StrongholdUpgrade, UnderdogBonus, Wargear, Warband, WeaponAdjustment } from '$lib/core/types';
 import { fighterCost } from '$lib/core/warband';
 
 import weaponTraits from '$lib/rules/black-death-city/weapon-traits.json';
 import veteranSkills from '$lib/rules/black-death-city/skills.json';
 import scenarios from '$lib/rules/black-death-city/scenarios.json';
-import ranks from '$lib/rules/black-death-city/ranks.json';
+import underdogBonuses from '$lib/rules/black-death-city/underdog.json';
+import holdingData from '$lib/rules/black-death-city/holdings.json';
 import { BLACK_ROT, injuries, injuryExperience } from './black-death-city-injuries';
+import { blackDeathCityAdvancement, rankOf, type SkillTable } from './black-death-city-advancement';
+import { foundFor } from './black-death-city-finds';
+import { blackDeathCityExplore, type SourcedRule } from './black-death-city-explore';
 
 export const game: GameSystem = {
 	id: 'black-death-city',
@@ -67,6 +71,12 @@ export const game: GameSystem = {
 		{ keyword: 'beast', label: 'Beasts', limit: { min: 0, max: 3 } }
 	],
 	costLabel: 'Silver',
+	/* Wargear sold from the stash brings half its cost, rounded down as the
+	   sentence has it – the box beneath says rounded up (p. 152). A relic sells
+	   for its price; a curiosity's is rolled at the table. */
+	salePrice: (cost) => Math.floor(cost / 2),
+	/* Fighters leave the roster in the downtime as "Retire Fighters" (p. 151). */
+	dismissLabel: 'Retire',
 	/* Damage carries the critical damage behind a slash, as Wyrdcry's does: `1/d6`. */
 	weaponStats: [
 		{ key: 'range', label: 'Range' },
@@ -77,9 +87,9 @@ export const game: GameSystem = {
 	universal: [],
 	carry,
 	weaponAdjustments: adjust,
-	/* Experience, Black Rot and the warband rating. Of the campaign chapter
-	   (pp. 133–166), the injuries, experience and ranks of the aftermath are
-	   built, and the recovery of temporary injuries from its downtime. */
+	/* Experience, Black Rot and the warband rating. The campaign chapter
+	   (pp. 133–166) is built as the aftermath: injuries, experience and ranks,
+	   exploring the city, holdings and income, and its downtime. */
 	campaign: {
 		warband: [],
 		fighter: [
@@ -103,7 +113,7 @@ export const game: GameSystem = {
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
 	},
-	/* Steps 2 and 3 of the aftermath sequence: injuries, then experience (pp. 144–146). */
+	/* Steps 2 to 4 of the aftermath sequence: injuries, experience, then the search party's exploration (pp. 144–150). */
 	aftermath: {
 		experience: {
 			counter: 'experience',
@@ -125,9 +135,35 @@ export const game: GameSystem = {
 		marked: null,
 		/* Thralls and Beasts never earn experience (p. 146). */
 		excluded: ['thrall', 'beast'],
-		gainLevels: (fighter) => fighter
+		gainLevels: (fighter) => fighter,
+		explore: blackDeathCityExplore(exploreRules)
 	},
 	injuries,
+	/* Holdings and the stronghold: steps 1, 5 and 6 of the aftermath (pp. 137–143, 151–152). */
+	holdings: {
+		label: 'Holdings',
+		max: holdingData.max,
+		dice: 'D66',
+		table: holdingData.holdings.map((h) => ({ ...h, rules: h.rules ?? [] })) as Holding[],
+		stronghold: (warband, faction, battles = warband.history?.length ?? 0) => {
+			const origin = warband.picks.origin?.[0];
+			const name = originStronghold.get(`${faction.id}/${origin}`);
+			const found = strongholds.get(faction.id)?.strongholds.find((s) => s.name === name);
+			if (!found) return null;
+			const level = [...holdingData.stronghold.levels].reverse().find((l) => battles >= l.from)!;
+			return { name: found.name, rules: found.rules, level: level.level, income: level.income };
+		},
+		upgrades: (faction) => strongholds.get(faction.id)?.upgrades ?? [],
+		levelAt: (battles) => holdingData.stronghold.levels.find((l) => l.from > 0 && l.from === battles)?.level ?? null,
+		leech: {
+			wargear: 'jar-of-canal-leeches',
+			counter: BLACK_ROT,
+			label: 'Leech fighters',
+			note: 'Use a Jar of Canal Leeches on a fighter and roll a dice: on a 4+, it loses a level of Black Rot. Each fighter can be leeched once.'
+		}
+	},
+	/* An advancement roll for each rank gained, spent on the back of the card (p. 146). */
+	advancement: blackDeathCityAdvancement({ stats: () => game.stats, skills: (faction) => skillTables.get(faction.id) ?? [] }),
 	/* Death of a Leader: a Champion assumes command until a new Leader is recruited (p. 145). */
 	succession: {
 		keyword: 'champion',
@@ -138,12 +174,15 @@ export const game: GameSystem = {
 		rule: { name: 'The Burden of Command', text: 'This fighter earns d6 bonus experience in step 3 of the aftermath sequence.' }
 	},
 	/* The warband with the lesser rating is the underdog, a roll-off settling
-	   equal ratings; it brings no bonus, but the rounds and the scenarios ask
-	   for it (pp. 17–18). */
+	   equal ratings; the rounds and the scenarios ask for it (pp. 17–18). In a
+	   campaign, every 100 behind rolls once on the Underdog Bonus table, 5
+	   times at most (p. 136). */
 	underdog: {
 		gap: 1,
+		bonusGap: 100,
+		bonusNote: 'Roll a dice for each and tap what they show: a 1 brings nothing, and a result rolled twice counts once.',
 		roll: 0,
-		bonuses: [],
+		bonuses: underdogBonuses.bonuses as UnderdogBonus[],
 		reputation: (warband) => rating(warband),
 		figure: 'rating',
 		ties: true,
@@ -152,6 +191,39 @@ export const game: GameSystem = {
 	/* Every battle is fought to one of six scenarios, each with its own twists (pp. 35–48). */
 	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[], reinforcements: scenarios.reinforcements, reserve: scenarios.reserve }
 };
+
+/**
+ * The rules that may grant the scouting party an exploration re-roll, each
+ * with what it comes from: the abilities, skills and wargear of the fighters
+ * that go, the warband's holdings, its stronghold and the upgrades it took.
+ */
+function exploreRules(warband: Warband, party: string[]): SourcedRule[] {
+	const faction = factions.find((f) => f.id === warband.factionId);
+	if (!faction) return [];
+	const rules: SourcedRule[] = [];
+	for (const id of party) {
+		const instance = warband.fighters.find((f) => f.instanceId === id);
+		const type = faction.fighters.find((f) => f.id === instance?.fighterId);
+		if (!instance || !type) continue;
+		const source = instance.name.trim() || type.name;
+		const own = [...type.rules, ...(game.advancement?.effects(instance, type, faction).rules ?? [])];
+		rules.push(...own.map((rule) => ({ source, rule })));
+		for (const piece of instance.wargear) {
+			const found = faction.wargear.find((w) => w.id === piece);
+			if (found) rules.push({ source, rule: { name: found.name, text: found.text ?? '' } });
+		}
+	}
+	for (const id of warband.holdings ?? []) {
+		const holding = holdingData.holdings.find((h) => h.id === id);
+		rules.push(...(holding?.rules ?? []).map((rule) => ({ source: holding!.name, rule })));
+	}
+	const stronghold = game.holdings?.stronghold(warband, faction);
+	rules.push(...(stronghold?.rules ?? []).map((rule) => ({ source: stronghold!.name, rule })));
+	for (const upgrade of strongholds.get(faction.id)?.upgrades ?? []) {
+		if ((warband.upgrades ?? []).includes(upgrade.id)) rules.push(...upgrade.rules.map((rule) => ({ source: upgrade.name, rule })));
+	}
+	return rules;
+}
 
 /** The rulebook's limit for every faction; the group minimums set the smallest warband. */
 const SIZE = { min: 0, max: 15 };
@@ -201,12 +273,17 @@ interface RawChoice extends Omit<FighterChoice, 'source' | 'prompt' | 'options'>
 }
 
 /** A skill table (p. 51 and each faction's skills page): who may pick from it, as printed, and its skills. */
-interface RawSkillTable {
-	id: string;
-	name: string;
+interface RawSkillTable extends SkillTable {
 	who: string;
-	skills: { id: string; name: string; text: string }[];
 }
+
+/** Each faction's strongholds and upgrades, by faction id. */
+const strongholds = new Map<string, { strongholds: { id: string; name: string; rules: Rule[] }[]; upgrades: StrongholdUpgrade[] }>();
+/** The stronghold each origin begins with, by `faction/origin`. */
+const originStronghold = new Map<string, string>();
+
+/** Each faction's skill tables, the Veteran Skills first, by faction id, for the advancement roll's Fated. */
+const skillTables = new Map<string, SkillTable[]>();
 
 /** A spell lore: its spells by the d6 roll that prepares them, each with its keyword, `Attack Spell`. */
 interface RawLore {
@@ -343,13 +420,10 @@ interface RawOrigin {
 	name: string;
 	text: string;
 	leader: string;
+	/** The stronghold it begins the campaign with, by name. */
+	stronghold: string;
 	limits?: { fighter: string; limit: { min: number; max: number | null } }[];
 	ungrouped?: string[];
-}
-
-/** The rank a fighter's experience gives it, 1 to 20 (p. 146). */
-export function rankOf(experience: number): number {
-	return ranks.ranks.filter((from) => experience >= from).length;
 }
 
 /** Each fighter's starting experience, keyed `faction/fighter`; a fighter that starts with none is null. */
@@ -384,13 +458,36 @@ function rating(warband: Warband): number {
 function build(
 	meta: RawFaction,
 	fighters: RawFighter[],
-	wargear: RawWargear[],
+	raw: RawWargear[],
 	lists: Record<string, string[]>,
 	origins: RawOrigin[],
 	abilities: RawAbility[],
 	skills: RawSkillTable[],
-	lores: RawLore[]
+	lores: RawLore[],
+	keep: { strongholds: { id: string; name: string; rules: Rule[] }[]; upgrades: StrongholdUpgrade[] }
 ): Faction {
+	strongholds.set(meta.id, keep);
+	for (const o of origins) originStronghold.set(`${meta.id}/${o.id}`, o.stronghold);
+	/* What the campaign finds joins the faction's wargear, never bought; a piece
+	   the faction has already, as the Guild's Noble's Rapier, is found as well. */
+	const found = foundFor(meta.id);
+	const foundIds = new Set(found.map((f) => f.id));
+	const own = new Set(raw.map((w) => w.id));
+	const wargear: RawWargear[] = [
+		...raw.map((w) => (foundIds.has(w.id) ? { ...w, foundOnly: true as const } : w)),
+		...found.filter((f) => !own.has(f.id)).map(({ bearer: _bearer, special: _special, ...w }) => w)
+	];
+	const special = new Map(found.map((f) => [f.id, f.special ?? []]));
+	/* Who may carry a found piece, from the wargear its lists offer and its keywords. */
+	const bears = (f: RawFighter, listed: string[]) => (piece: (typeof found)[number]) => {
+		const { bearer } = piece;
+		if (bearer === 'none' || !f.wargear_lists.length) return false;
+		if (bearer === 'any') return true;
+		if (bearer === 'leaders') return f.keywords.includes('leader') || f.keywords.includes('champion');
+		if (bearer === 'casters') return f.keywords.includes('wizard') || f.keywords.includes('priest');
+		if (bearer === 'ranged') return listed.some((id) => raw.find((w) => w.id === id)?.kind === 'ranged');
+		return listed.includes(bearer.wargear);
+	};
 	rows.set(meta.id, new Map(wargear.map((w) => [w.id, w])));
 	const ability = new Map(abilities.map((a) => [a.id, a]));
 	/* An id the faction's abilities do not hold is a slip in the data. */
@@ -401,6 +498,7 @@ function build(
 			return { name: a.name, text: a.text, ...(a.type ? { type: a.type } : {}) };
 		});
 	const tables = new Map([...veteranSkills, ...skills].map((t) => [t.id, t]));
+	skillTables.set(meta.id, [...tables.values()]);
 	const lore = new Map(lores.map((l) => [l.id, l]));
 	/* Skills fall under No Duplicates (p. 51); signature spells do not. An id
 	   the faction's tables or lores do not hold is a slip in the data, and so
@@ -468,7 +566,10 @@ function build(
 			profile: f.profile,
 			rules: rulesOf(f),
 			...(f.description ? { fluff: f.description } : {}),
-			wargear: [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))],
+			wargear: (() => {
+				const listed = [...new Set(f.wargear_lists.flatMap((list) => lists[list] ?? []))];
+				return [...listed, ...found.filter(bears(f, listed)).map((piece) => piece.id).filter((id) => !listed.includes(id))];
+			})(),
 			gear: f.gear,
 			...(f.choices?.length ? { choices: choicesOf(f) } : {}),
 			...(f.prepares?.length ? { beforeBattle: preparesOf(f) } : {})
@@ -477,7 +578,7 @@ function build(
 		   is a limit every game may have, so it goes in. */
 		wargear: wargear.map(({ traits, held: _held, ...w }) => {
 			const rare = traits?.find((t) => t.startsWith('rare:'))?.split('-')[1];
-			return { ...w, rules: (traits ?? []).flatMap(traitRule), ...(rare ? { rare: Number(rare) } : {}) };
+			return { ...w, rules: [...(traits ?? []).flatMap(traitRule), ...(special.get(w.id) ?? [])], ...(rare ? { rare: Number(rare) } : {}) };
 		})
 	};
 }
@@ -502,6 +603,7 @@ export const factions: Faction[] = folders.map((folder) =>
 		file<RawOrigin[]>(folder, 'origins'),
 		file<RawAbility[]>(folder, 'abilities'),
 		file<RawSkillTable[]>(folder, 'skills'),
-		file<RawLore[]>(folder, 'spells')
+		file<RawLore[]>(folder, 'spells'),
+		file<{ strongholds: { id: string; name: string; rules: Rule[] }[]; upgrades: StrongholdUpgrade[] }>(folder, 'strongholds')
 	)
 );

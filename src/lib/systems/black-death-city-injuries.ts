@@ -117,7 +117,11 @@ function effects(instance: FighterInstance, fighter: Fighter): InjuryEffects {
 	for (const raw of held(instance)) {
 		const temporary = instance.temporary?.includes(raw.id);
 		found.rules.push({ name: temporary ? `${raw.name} (temporary)` : raw.name, text: raw.text, type: 'injury' });
-		const figure = (stat: string) => fighter.profile[stat];
+		/* Halved from the figure the advances leave, not the profile's. */
+		const figure = (stat: string) => {
+			const base = fighter.profile[stat];
+			return typeof base === 'number' ? base + (instance.advances ?? []).reduce((sum, a) => sum + (a.stat === stat ? (a.bonus ?? 0) : 0), 0) : base;
+		};
 		if (raw.halve) {
 			const value = figure(raw.halve);
 			if (typeof value === 'number') found.stats.push({ stat: raw.halve, bonus: Math.ceil(value / 2) - value, source: raw.name });
@@ -133,6 +137,9 @@ function table(_instance: FighterInstance, fighter: Fighter): InjuryTable {
 }
 
 export const injuries: Injuries = {
+	/* Black Rot spares Beasts, Demons and the Undead and kills at its fourth level (p. 144). */
+	counter: (_instance, fighter, key, total) =>
+		key === BLACK_ROT ? { counts: !immuneToBlackRot(fighter), dies: total >= data.blackRot.kills } : { counts: true, dies: false },
 	table,
 	exempt: () => null,
 	resolve,

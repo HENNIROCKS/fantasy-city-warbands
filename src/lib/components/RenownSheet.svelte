@@ -10,7 +10,8 @@
 	/*
 	 * A level of a fighter's to spend, as the Wyrdcry Warband Deck asks it after
 	 * a battle: a characteristic, or for a hero a heroic talent, each with the
-	 * reason where it cannot be taken. The sheet is the back of the fighter's
+	 * reason where it cannot be taken – where a roll decides it, as Black Death
+	 * City's advancement roll, after the roll is tapped. The sheet is the back of the fighter's
 	 * card, set as its back sets a level to spend; a talent is picked in the box
 	 * it opens into, a characteristic at the foot. Spending writes at once;
 	 * Decide later keeps the level open for the Battle menu.
@@ -36,17 +37,26 @@
 		onclose: () => void;
 	} = $props();
 
-	const anyStat = $derived(offer.stats.some((s) => s.blocked === null));
-	const anyRule = $derived(offer.rules.some((g) => g.options.some((o) => o.blocked === null)));
-
 	/* What is picked belongs to the level it was picked for: the sheet stays while
 	   the next level comes in. */
 	const at = $derived(`${name}:${level.level}`);
+
+	/* Where a roll decides what the level is spent on, it is tapped first, and
+	   only what its result gives is offered. */
+	let rolled = $state<{ at: string; roll: string } | null>(null);
+	const result = $derived(offer.roll && rolled?.at === at ? (offer.roll.results.find((r) => r.roll === rolled!.roll) ?? null) : null);
+	const shown = $derived<LevelOffer>(
+		offer.roll ? { ...offer, stats: result ? offer.stats.filter((s) => result.stats.includes(s.stat)) : [], rules: result?.rules ? offer.rules : [] } : offer
+	);
+	const waitingForRoll = $derived(!!offer.roll && !result);
+
+	const anyStat = $derived(shown.stats.some((s) => s.blocked === null));
+	const anyRule = $derived(shown.rules.some((g) => g.options.some((o) => o.blocked === null)));
 	let tab = $state<{ at: string; rules: boolean }>({ at: '', rules: false });
 	/* A level that asks only for a talent opens on them; one that asks for no talent has none. */
-	const onRules = $derived(offer.rules.length > 0 && (offer.stats.length === 0 || (tab.at === at && tab.rules)));
+	const onRules = $derived(shown.rules.length > 0 && (shown.stats.length === 0 || (tab.at === at && tab.rules)));
 	let picked = $state<{ at: string; stat: string } | null>(null);
-	const stat = $derived(offer.stats.find((s) => s.stat === (picked?.at === at ? picked.stat : null) && s.blocked === null) ?? null);
+	const stat = $derived(shown.stats.find((s) => s.stat === (picked?.at === at ? picked.stat : null) && s.blocked === null) ?? null);
 
 	/* A second tap while the write is still running would spend the same level twice. */
 	let busy = $state(false);
@@ -75,20 +85,36 @@
 				<section>
 					<p class="note">{level.note}</p>
 
-					{#if offer.rules.length && offer.stats.length}
+					{#if offer.roll}
+						<p class="caption" id="level-roll">{offer.roll.label}</p>
+						<div class="toggles stacked" role="group" aria-labelledby="level-roll">
+							{#each offer.roll.results as option (option.roll)}
+								<button class="toggle" aria-pressed={result?.roll === option.roll} onclick={() => (rolled = result?.roll === option.roll ? null : { at, roll: option.roll })}>
+									{option.roll} · {option.name}
+								</button>
+							{/each}
+						</div>
+						{#if result}<p class="hint">{result.text}</p>{/if}
+					{/if}
+
+					{#if waitingForRoll}
+						<!-- Nothing to pick until the roll is tapped. -->
+					{:else if shown.rules.length && shown.stats.length}
 						<div class="tabs" role="group" aria-label="What to spend the level on">
 							<button aria-pressed={!onRules} class:on={!onRules} onclick={() => (tab = { at, rules: false })}>Characteristics</button>
 							<button aria-pressed={onRules} class:on={onRules} onclick={() => (tab = { at, rules: true })}>{offer.rulesLabel}</button>
 						</div>
 					{/if}
 
-					{#if onRules}
+					{#if waitingForRoll}
+						<!-- As above. -->
+					{:else if onRules}
 						{#key at}
-							<LevelPicker {offer} onpick={confirm} />
+							<LevelPicker offer={shown} onpick={confirm} />
 						{/key}
 					{:else}
 						<div class="options">
-							{#each offer.stats as option (option.stat)}
+							{#each shown.stats as option (option.stat)}
 								<button
 									class="option"
 									aria-pressed={stat?.stat === option.stat}
@@ -113,7 +139,9 @@
 
 		<div class="foot">
 			<button class="plain" onclick={onclose} use:focusOnMount>Decide later</button>
-			{#if !anyStat && !anyRule}
+			{#if waitingForRoll}
+				<button class="add" disabled>Tap the roll</button>
+			{:else if !anyStat && !anyRule}
 				<button class="add" disabled={busy} onclick={() => confirm(null)}>Use up this level</button>
 			{:else if !onRules && anyStat}
 				<button class="add" disabled={!stat || busy} onclick={() => stat && confirm({ stat: stat.stat, bonus: stat.bonus })}>

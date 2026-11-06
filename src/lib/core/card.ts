@@ -462,7 +462,9 @@ export function fighterCard(
 	).filter((s) => s.entries.length);
 
 	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
-	const statLayers = fighter ? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats]) : new Map<string, StatLayer[]>();
+	const statLayers = fighter
+		? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats], game.advancement?.label ?? 'Renown')
+		: new Map<string, StatLayer[]>();
 	/* What the last exploring left for this battle, such as the Mad Prophet's Bravery, on every fighter. */
 	for (const n of next) if (n.stat && n.stat.bonus) statLayers.get(n.stat.key)?.push({ kind: 'battle', source: n.source, amount: n.stat.bonus });
 	const statConditions = conditionsOf(carried.map((c) => c.wargear));
@@ -534,7 +536,9 @@ function layersOf(
 	fighter: Fighter,
 	faction: Faction,
 	effects: ActiveEffect[],
-	rules: AdvanceEffects['stats']
+	rules: AdvanceEffects['stats'],
+	/** What a level is called, to name the levels' layers: `Renown`, `Rank`. */
+	level: string
 ): Map<string, StatLayer[]> {
 	const map = new Map<string, StatLayer[]>();
 	for (const [key, value] of Object.entries(fighter.profile)) {
@@ -568,7 +572,7 @@ function layersOf(
 		add(advance.stat, {
 			kind: 'permanent',
 			/* A level of 0 is a change outside renown: one an encounter made, or one the warband file holds without saying why. */
-			source: advance.level > 0 ? `Renown ${advance.level}` : (advance.source ?? 'Warband file'),
+			source: advance.level > 0 ? `${level} ${advance.level}` : (advance.source ?? 'Warband file'),
 			amount: advance.bonus ?? 0
 		});
 	}

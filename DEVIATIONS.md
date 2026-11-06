@@ -37,6 +37,9 @@ Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the A
 - [ ] Rotling: its Demonic Rot Strike has Rend –, as its scroll prints it, where the Cloister's melee table prints -1
 - [ ] Will of the Saints casts critically on 10+, where the Lore of the Saints prints [1o+]
 - [ ] Rotling: as a Beast and a Demon, it rolls on the Beast Injury Table, as the Playtest v1.03 named it, where v1.10 names both tables (p. 145)
+- [ ] Selling wargear brings half its cost rounded down, as the sentence says, where the box beneath prints 50% rounded up (p. 152)
+- [ ] Relics: named and numbered as their entries print them – 21–22 Ring of Roses, which the Relics table leaves out, and 46 Iron Ward, which it calls Talisman of Protection; 16 on the Curiosities table is the Broken Von Zikmund Pocketwatch, which the table calls Gilded Brass Pocket Watch (pp. 153–161)
+- [ ] Relics count in the warband rating at their price, as step seven says (p. 152), where the Relics page says they do not (p. 159)
 - [ ] Barrow Lord and Barrow Champion: as Skeletons, they roll on the Skeleton & Thrall Injury Table, as printed, though they earn experience as no Thrall does (p. 145)
 
 ### Open upstream
@@ -44,5 +47,4 @@ Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the A
 - [ ] Blighted Cloister: Blessed Rabble has the same leader as Priesthood of Sorcerers
 - [ ] Blighted Cloister: Demonic Strength names the Rot-Colossal's Demonic Rot Blade, where it carries a Great Demonic Rot Blade; the app shows it as printed (Playtest v1.10)
 - [ ] Death Covens: the Dire Wolf's Trackers asks for a Hunting Dog in the scouting party (Playtest v1.10)
-- [ ] Selling wargear: half the cost rounded down, where the line beneath prints 50% rounded up (Playtest v1.10)
 - [ ] Street of Death, Heavy Downpour: the sentence on when the rain ends breaks off; the app shows it as printed

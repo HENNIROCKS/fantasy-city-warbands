@@ -127,6 +127,8 @@ export interface GameSystem {
 	costLabel: string;
 	/** What a piece of the stash sells for, from its price. Without it, a piece only leaves the stash thrown away. */
 	salePrice?: (cost: number) => number;
+	/** What taking a fighter off the roster is called on the back of its card, as Black Death City's `Retire`; without it, `Dismiss`. */
+	dismissLabel?: string;
 	/** The columns of the fighter card's weapon table after the name, in order; keys of `Wargear.profile`. */
 	weaponStats: { key: string; label: string }[];
 	/** Abilities every fighter carrying `keyword` has, `any` for all of them. */
@@ -187,6 +189,8 @@ export interface GameSystem {
 	advancement?: Advancement;
 	/** What a fighter taken out of action rolls on afterwards, and what the result does. Without it, no injuries. */
 	injuries?: Injuries;
+	/** The places a warband controls besides its stronghold, and what they bring in. Without it, no holdings. */
+	holdings?: Holdings;
 	/**
 	 * Who takes the LEADER keyword once the warband's leader is dead or gone,
 	 * as Wyrdcry's HERO: the keyword a fighter must carry, and what the game
@@ -295,6 +299,10 @@ export interface GameSystem {
  */
 export interface Underdog {
 	gap: number;
+	/** How far behind each bonus is, where it is not `gap`: Black Death City's underdog is any warband behind, its bonuses come every 100. */
+	bonusGap?: number;
+	/** How the bonuses are come by, in a sentence above them, where they are rolled for rather than picked. */
+	bonusNote?: string;
 	roll: number;
 	/** Empty where being the underdog brings no bonus to pick. */
 	bonuses: UnderdogBonus[];
@@ -313,6 +321,8 @@ export interface Underdog {
 export interface UnderdogBonus {
 	id: string;
 	name: string;
+	/** The result on the table that brings it, where the bonuses are rolled for: `3`. */
+	roll?: string;
 	text: string;
 	/**
 	 * What the app counts: `free-hire` takes the whole fee off one hire, `standing`
@@ -596,6 +606,64 @@ export interface Aftermath {
 	};
 }
 
+/**
+ * A game's holdings, as Black Death City's: the places a warband controls
+ * besides its stronghold, won after a battle, bringing income, ransacked or
+ * granting rules; and its stronghold, which gains levels with the battles
+ * fought and an upgrade at each.
+ */
+export interface Holdings {
+	/** What they are called: `Holdings`. */
+	label: string;
+	/** How many a warband controls at most, its stronghold aside. */
+	max: number;
+	/** The table a new holding is rolled on, as the rules print it. */
+	dice: string;
+	table: Holding[];
+	/** The warband's stronghold as its origin gives it, with the level and income its battles give it; null where it has none. */
+	stronghold(warband: Warband, faction: Faction, battles?: number): { name: string; rules: Rule[]; level: number; income: string } | null;
+	/** The upgrades the warband's faction offers its stronghold. */
+	upgrades(faction: Faction): StrongholdUpgrade[];
+	/** The level a stronghold reaches with the battle that makes `battles`, where it gains one; null where it does not. */
+	levelAt(battles: number): number | null;
+	/**
+	 * What the downtime uses a piece of the stash on, such as a Jar of Canal
+	 * Leeches to take a level of Black Rot off a fighter on a 4+: the piece, the
+	 * fighter's counter, and the roll in a sentence.
+	 */
+	leech?: { wargear: string; counter: string; label: string; note: string };
+}
+
+/** A holding on the game's table: what it brings with each income, or once when ransacked, and its rules. */
+export interface Holding {
+	id: string;
+	/** The rolls it covers: `11–16`, `41`. */
+	roll: string;
+	name: string;
+	text?: string;
+	/** The income rolled at the table each time it is collected: `d6x5`, `10`. */
+	income?: string;
+	/** What it brings once, when it is ransacked; it then becomes the game's first holding, a Ruined Hovel. */
+	ransack?: string;
+	rules: Rule[];
+	/** Pieces into the stash with each income: a number, or a roll such as `d3`. */
+	gives?: { wargear: string; count: number | string }[];
+	/** What it becomes after the income on a roll: another holding by id, or none. */
+	turns?: { on: string; into: string | null; rule: string };
+	/** A d6 rolled with each income, each result a piece into the stash by wargear id, `''` for nothing. */
+	table?: string[];
+	/** A table it lets the warband roll on with its income or ransack, such as the Curiosities. */
+	finds?: string;
+}
+
+/** A stronghold upgrade a faction offers, and what it brings in each aftermath's downtime. */
+export interface StrongholdUpgrade {
+	id: string;
+	name: string;
+	rules: Rule[];
+	gives?: { wargear: string; count: number }[];
+}
+
 /** A count a find brings: fixed, or a roll made at the table and tapped, such as `D3 × 10` for 10, 20 or 30. */
 export type FindAmount = number | { roll: string; values: number[] };
 
@@ -608,8 +676,11 @@ export type FindAmount = number | { roll: string; values: number[] };
  * as Captured as Dead –, levels, a result of the injury table it keeps, one of
  * its [injury] results taken away, its leaving the warband, a characteristic
  * changed for good; `each` counts the dice of a roll that show each result,
- * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster. `recruit` adds a
- * fighter of a type picked – carrying `keyword`, costing less than `below`,
+ * such as the 1s and the 4+ of Wyrdcry's Wyrdstone Cluster. `counter` adds to
+ * (or, below 0, takes from) one of the fighter's campaign counters, such as
+ * Black Rot; `holding` is a holding of the game's table the warband may take
+ * control of; `party` is a gain for each fighter of the party. `recruit` adds a
+ * fighter of a type picked – carrying `keyword`, costing less than `below`, and where `ids` is set one of those,
  * for nothing where `free`, its characteristics set as `set` says –, `next`
  * what the warband's next battle brings.
  */
@@ -627,8 +698,24 @@ export type FindGain =
 	| { remove: true }
 	| { stat: { key: string; bonus: number } }
 	| { each: { dice: number; results: { on: string; label: string; gains: FindGain[] }[] } }
-	| { recruit: { keyword: string; below: number; free?: boolean; set?: Record<string, number> } }
-	| { next: Omit<NextBattle, 'source'> };
+	| { recruit: { keyword: string; below: number; ids?: string[]; free?: boolean; set?: Record<string, number> } }
+	| { next: Omit<NextBattle, 'source'> }
+	| { counter: { key: string; amount: number } }
+	| { holding: true }
+	| { party: PartyGain };
+
+/**
+ * What falls on each fighter of the search party that carries one of
+ * `keywords` and none of `except`, whatever the party's size: where `dice` is
+ * set, each rolls it and the result tapped for it, by its `on` label, decides
+ * its gains; without `dice`, the one result applies to all.
+ */
+export interface PartyGain {
+	dice: string | null;
+	keywords?: string[];
+	except?: string[];
+	results: { on: string; label: string; gains: FindGain[] }[];
+}
 
 /**
  * What an encounter leaves for the warband's next battle, such as Wyrdcry's
@@ -667,7 +754,7 @@ export interface Encounter {
 	 * warband, carrying `keyword` and, where `injured`, an [injury] result;
 	 * `note` says who picks, such as the opponent.
 	 */
-	who?: { from: 'party' | 'warband'; keyword?: string; injured?: boolean; note?: string };
+	who?: { from: 'party' | 'warband'; keyword?: string; except?: string[]; injured?: boolean; note?: string };
 	/** What it brings whatever is answered. */
 	gains: FindGain[];
 	/** Where it asks, what is asked – `Roll a D6` – and its answers, one tapped. */
@@ -690,8 +777,13 @@ export interface Explore {
 	label: string;
 	encounters: Encounter[];
 	tables: FindTable[];
-	/** Who may go: at most `size` fighters, none carrying one of the `excluded` keywords. */
-	party: { size: number; excluded: string[] };
+	/**
+	 * Who may go: at most `size` fighters, none carrying one of the `excluded`
+	 * keywords. `slots` says how many it takes of each keyword, such as Black
+	 * Death City's one Leader or Champion and one to three Henchmen; a fighter
+	 * carrying none of them may not go.
+	 */
+	party: { size: number; excluded: string[]; slots?: { label: string; single?: string; keywords: string[]; min: number; max: number }[] };
 	/** How many encounters the party, by instance id, may resolve, and what lets it resolve more than one, such as Wyrdcry's Scout. */
 	most: (warband: Warband, party: string[]) => { count: number; why: string | null };
 	/** What helps the party's exploration roll, a line each; `spend`, a piece of the stash given up once used, such as an Ornate Key. */
@@ -705,6 +797,10 @@ export interface Explore {
 export interface Advancement {
 	/** What a level is called: `Renown`. */
 	label: string;
+	/** What the button that spends the open levels says, before their count: `Advancement rolls`. Without it, `Spend` and the label. */
+	spend?: string;
+	/** The lowest figure the counter can be corrected to once `level` is spent, such as the experience a rank starts at; without it, the level itself. */
+	floor?(level: number): number;
 	/** The fighter's campaign counter the levels are counted in: `renown`. */
 	counter: string;
 	/** The fighter's levels earned and not yet spent, lowest first. */
@@ -743,6 +839,12 @@ export interface LevelOffer {
 	rulesLabel: string;
 	/** What limits the rules, in a sentence above them; null where nothing. */
 	rulesNote: string | null;
+	/**
+	 * A roll that decides what the level may be spent on, such as Black Death
+	 * City's advancement roll: tapped first, each result naming the
+	 * characteristics it allows and whether the rules are open as well.
+	 */
+	roll?: { label: string; results: { roll: string; name: string; text: string; stats: string[]; rules: boolean }[] };
 }
 
 export interface LevelRule {
@@ -783,6 +885,13 @@ export interface Injuries {
 	effects(instance: FighterInstance, fighter: Fighter, faction: Faction): InjuryEffects;
 	/** A result a fighter can keep, by its id; null where the game has none of that id. */
 	result(id: string): InjuryResult | null;
+	/**
+	 * What a campaign counter an encounter adds does to the fighter, as its new
+	 * `total`: whether it counts at all – Black Death City's Demons take no Black
+	 * Rot – and whether it kills, as the fourth level of Black Rot does. Without
+	 * it, every counter counts.
+	 */
+	counter?: (instance: FighterInstance, fighter: Fighter, key: string, total: number) => { counts: boolean; dies: boolean };
 	/** What a fighter that dies leaves its bought wargear to, such as Wyrdcry's roll to recover it; without it, all of it is lost. */
 	salvage?: { label: string };
 	/**
@@ -993,6 +1102,8 @@ export interface Wargear {
 	foundOnly?: true;
 	/** What it sells for in place of the game's `salePrice`, such as a ring sold for 20 gc. */
 	sale?: number;
+	/** What it sells for where the price is rolled at the table, such as `2d6x5` for one of Black Death City's curiosities; the roll is tapped in when it is sold. */
+	saleRoll?: string;
 }
 
 /** What using a single-use piece does to its bearer for the rest of the battle, such as Crimson Shade's Move and Fight. */
@@ -1256,6 +1367,10 @@ export interface Warband {
 	disbanded?: true;
 	/** The game's own counters, keyed as its `campaign` declares them. A missing key reads as 0. */
 	tally?: Record<string, number>;
+	/** The holdings it controls besides its stronghold, by id on the game's `holdings` table, in the order taken. */
+	holdings?: string[];
+	/** The stronghold upgrades it picked, by id, in the order picked. */
+	upgrades?: string[];
 	/**
 	 * When its content last changed, ISO 8601. Travels with an export, so an
 	 * import can tell which of two states is newer. Missing on a warband not
