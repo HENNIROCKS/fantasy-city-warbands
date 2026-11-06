@@ -3,7 +3,7 @@
 	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
 	import { RESULT_LABELS, displayDate, newestFirst, opponent } from '$lib/core/history';
 	import { findsOf } from '$lib/core/finds';
-	import { goldIn, rollRange, saleOf, saleRollOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
+	import { goldIn, rollValues, saleOf, saleRollOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
 	import { fighterName } from '$lib/core/warband';
 	import type { BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
 	import { purse, warbandCost } from '$lib/core/validate';
@@ -47,13 +47,14 @@
 		goldInput = '';
 	}
 
-	function stashOut(index: number, sold: boolean, silver?: number) {
+	/* `silver` null is a piece sold at a roll that is yet to be tapped in. */
+	function stashOut(index: number, sold: boolean, silver?: number | null) {
 		draft.stashOut = [...draft.stashOut, { index, sold, ...(silver === undefined ? {} : { silver }) }];
 	}
 
-	/* A piece sold at a rolled price: what the roll came to, a step at a time between the lowest and the highest it can. */
+	/* A piece sold at a rolled price: the result the roll came to, taken back with a second tap. */
 	function setSilver(index: number, silver: number) {
-		draft.stashOut = draft.stashOut.map((out) => (out.index === index ? { ...out, silver } : out));
+		draft.stashOut = draft.stashOut.map((out) => (out.index === index ? { ...out, silver: out.silver === silver ? null : silver } : out));
 	}
 
 	function stashBack(index: number) {
@@ -220,26 +221,32 @@
 						{@const out = draft.stashOut.find((o) => o.index === i)}
 						{@const sale = saleOf(id, faction, game)}
 						{@const roll = saleRollOf(id, faction)}
-						{@const range = roll ? rollRange(roll) : null}
-						<li class:gone={out}>
+						{@const results = roll ? rollValues(roll) : []}
+						<li class:gone={out} class:rolling={out && out.silver !== undefined}>
 							<span class="line">
 								<span class="piece">{wargearName(id)}</span>
-								{#if out}<span class="why">{out.sold ? `Sold for ${out.silver ?? sale} ${game.currency}` : 'Thrown away'}</span>{/if}
+								{#if out}
+									{#if out.sold && out.silver === null}
+										<span class="why pending">Tap what the dice came to</span>
+									{:else}
+										<span class="why">{out.sold ? `Sold for ${out.silver ?? sale} ${game.currency}` : 'Thrown away'}</span>
+									{/if}
+								{/if}
 							</span>
 							{#if out}
-								{#if out.silver !== undefined && range}
-									<div class="stepper" role="group" aria-label="What {wargearName(id)} sold for">
-										<button class="segment" aria-label="Sold for less" disabled={out.silver <= range.min} onclick={() => setSilver(i, out.silver! - range.step)}>−</button>
-										<output class="figure">{out.silver}</output>
-										<button class="segment" aria-label="Sold for more" disabled={out.silver >= range.max} onclick={() => setSilver(i, out.silver! + range.step)}>+</button>
+								<button class="remove" onclick={() => stashBack(i)}>Undo</button>
+								{#if out.silver !== undefined && results.length}
+									<div class="toggles results" role="group" aria-label="What {wargearName(id)} sold for">
+										{#each results as result (result)}
+											<button class="toggle" aria-pressed={out.silver === result} onclick={() => setSilver(i, result)}>{result}</button>
+										{/each}
 									</div>
 								{/if}
-								<button class="remove" onclick={() => stashBack(i)}>Undo</button>
 							{:else if !blocked}
 								{#if sale}
-									<button class="remove" onclick={() => stashOut(i, true)}>Sell {sale} {game.currency}</button>
-								{:else if roll && range}
-									<button class="remove" onclick={() => stashOut(i, true, range.min)}>Sell {roll.toUpperCase().replace('X', ' × ')} {game.currency}</button>
+									<button class="remove quiet" onclick={() => stashOut(i, true)}>Sell {sale} {game.currency}</button>
+								{:else if roll && results.length}
+									<button class="remove quiet" onclick={() => stashOut(i, true, null)}>Sell {roll.toUpperCase().replace('X', ' × ')} {game.currency}</button>
 								{/if}
 								<button class="remove" onclick={() => stashOut(i, false)}>Discard</button>
 							{/if}
@@ -383,9 +390,31 @@
 		font-variant-numeric: lining-nums tabular-nums;
 	}
 
+	/* The results to tap in take a row of their own under the piece. */
+	li.rolling {
+		flex-wrap: wrap;
+	}
+
+	li.rolling .results {
+		flex: 1 0 100%;
+		padding-bottom: calc(4 * var(--u));
+	}
+
+	/* Every result the same width, whether it has one digit or two. */
+	li.rolling .results .toggle {
+		min-width: 48px;
+		padding-inline: 0;
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
 	li.removed .line,
 	li.gone .line {
 		color: var(--card-ink-muted);
+	}
+
+	/* A roll not yet tapped in is an open point, and Done waits for it. */
+	li.gone .why.pending {
+		color: var(--card-link);
 	}
 
 	/* A piece leaving the stash is struck out; what becomes of it is not. */

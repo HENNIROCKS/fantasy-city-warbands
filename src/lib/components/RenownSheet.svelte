@@ -1,11 +1,26 @@
 <script lang="ts" module>
+	import type { LevelOffer } from '$lib/core/types';
+
 	/** What a level is spent on: a characteristic, a rule with the weapon it was taken for, or nothing where nothing is left. */
 	export type LevelPick = { stat: string; bonus: number } | { rule: string; option?: string } | null;
+
+	/**
+	 * What a level offers once its roll is tapped, `rolled` being the result's roll or null: only what the
+	 * result allows, and nothing while `waiting` for the roll. An offer without a roll is shown as it is.
+	 */
+	export function rolledOffer(offer: LevelOffer, rolled: string | null) {
+		const result = offer.roll && rolled !== null ? (offer.roll.results.find((r) => r.roll === rolled) ?? null) : null;
+		const shown: LevelOffer = offer.roll
+			? { ...offer, stats: result ? offer.stats.filter((s) => result.stats.includes(s.stat)) : [], rules: result?.rules ? offer.rules : [] }
+			: offer;
+		return { result, shown, waiting: !!offer.roll && !result };
+	}
 </script>
 
 <script lang="ts">
 	import LevelPicker from '$lib/components/LevelPicker.svelte';
-	import type { LevelOffer, OpenLevel } from '$lib/core/types';
+	import LevelRoll from '$lib/components/LevelRoll.svelte';
+	import type { OpenLevel } from '$lib/core/types';
 
 	/*
 	 * A level of a fighter's to spend, as the Wyrdcry Warband Deck asks it after
@@ -44,11 +59,10 @@
 	/* Where a roll decides what the level is spent on, it is tapped first, and
 	   only what its result gives is offered. */
 	let rolled = $state<{ at: string; roll: string } | null>(null);
-	const result = $derived(offer.roll && rolled?.at === at ? (offer.roll.results.find((r) => r.roll === rolled!.roll) ?? null) : null);
-	const shown = $derived<LevelOffer>(
-		offer.roll ? { ...offer, stats: result ? offer.stats.filter((s) => result.stats.includes(s.stat)) : [], rules: result?.rules ? offer.rules : [] } : offer
-	);
-	const waitingForRoll = $derived(!!offer.roll && !result);
+	const view = $derived(rolledOffer(offer, rolled?.at === at ? rolled.roll : null));
+	const result = $derived(view.result);
+	const shown = $derived(view.shown);
+	const waitingForRoll = $derived(view.waiting);
 
 	const anyStat = $derived(shown.stats.some((s) => s.blocked === null));
 	const anyRule = $derived(shown.rules.some((g) => g.options.some((o) => o.blocked === null)));
@@ -86,15 +100,7 @@
 					<p class="note">{level.note}</p>
 
 					{#if offer.roll}
-						<p class="caption" id="level-roll">{offer.roll.label}</p>
-						<div class="toggles stacked" role="group" aria-labelledby="level-roll">
-							{#each offer.roll.results as option (option.roll)}
-								<button class="toggle" aria-pressed={result?.roll === option.roll} onclick={() => (rolled = result?.roll === option.roll ? null : { at, roll: option.roll })}>
-									{option.roll} · {option.name}
-								</button>
-							{/each}
-						</div>
-						{#if result}<p class="hint">{result.text}</p>{/if}
+						<LevelRoll roll={offer.roll} picked={result?.roll ?? null} onpick={(roll) => (rolled = result?.roll === roll ? null : { at, roll })} />
 					{/if}
 
 					{#if waitingForRoll}

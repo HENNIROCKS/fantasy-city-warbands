@@ -23,7 +23,8 @@ their equipment, and their experience. The stash does not count.
 **The back of the warband card.** Name, colour, fluff and notes. You can also
 add silver, sell or throw away what lies in the stash, and add or strike
 battles. Wargear sells for half its cost and a relic for its price. A
-curiosity sells for a roll: tap **Sell**, then set what the dice came to.
+curiosity sells for a roll: tap **Sell**, then tap what the dice came to.
+**Done** waits until you have.
 
 **The stash on the front.** The warband card lists the silver left and what
 lies in the stash. Tap **View** beside **Stash** to get there.

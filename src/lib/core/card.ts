@@ -505,9 +505,9 @@ export function fighterCard(
 		   rather than into one, where the game keeps a campaign. */
 		campaign: [
 			{ key: 'cost', label: game.costLabel, value: String(fighterCost(instance, faction, effects)) },
-			/* A counter the fighter never gains, as Black Rot for the Undead, only where it holds some. */
+			/* A counter the fighter never gains, as Black Rot for the Undead or experience for a Thrall, only where it holds some. */
 			...(game.campaign?.fighter
-				.filter((c) => !c.excluded?.some((k) => keywords.includes(k)) || (instance.tally?.[c.key] ?? 0) > 0)
+				.filter((c) => !(c.excluded ?? game.aftermath?.excluded ?? []).some((k) => keywords.includes(k)) || (instance.tally?.[c.key] ?? 0) > 0)
 				.map((c) => ({ key: c.key, label: c.label, value: String(instance.tally?.[c.key] ?? 0) })) ?? [])
 		],
 		weapons,

@@ -1126,6 +1126,11 @@
 	color: var(--card-link);
 }
 
+/* A line's own action that is no loss, beside the one that is: plain ink, the red stays on the loss. */
+.card.back .remove.quiet {
+	color: var(--card-ink);
+}
+
 .card.back .remove:disabled {
 	color: var(--card-ink-muted);
 }

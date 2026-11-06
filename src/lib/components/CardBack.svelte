@@ -92,6 +92,8 @@
 <script lang="ts">
 	import { tick, untrack } from 'svelte';
 	import LevelPicker from '$lib/components/LevelPicker.svelte';
+	import LevelRoll from '$lib/components/LevelRoll.svelte';
+	import { rolledOffer } from '$lib/components/RenownSheet.svelte';
 	import { AWAY_LABELS } from '$lib/core/card';
 	import { grow } from '$lib/grow';
 	import { imageFieldMask } from '$lib/image-field-mask';
@@ -169,15 +171,20 @@
 	let campaignSection: HTMLElement | undefined = $state();
 
 	const next = $derived(spending ? (renown?.next ?? null) : null);
+	/* Where a roll decides what the level is spent on, it is tapped first, per level, and only what its result gives is offered. */
+	let rolled = $state<{ level: number; roll: string } | null>(null);
+	const view = $derived(next ? rolledOffer(next.offer, rolled?.level === next.level.level ? rolled.roll : null) : null);
+	const shown = $derived(view?.shown ?? null);
 	/* A level that asks only for a talent opens on them; one that asks for no talent has none. */
-	const onRules = $derived(!!next && next.offer.rules.length > 0 && (next.offer.stats.length === 0 || talking));
+	const onRules = $derived(!!shown && shown.rules.length > 0 && (shown.stats.length === 0 || talking));
 	const open = $derived(
-		next ? next.offer.stats.some((s) => s.blocked === null) || next.offer.rules.some((g) => g.options.some((o) => o.blocked === null)) : false
+		shown ? shown.stats.some((s) => s.blocked === null) || shown.rules.some((g) => g.options.some((o) => o.blocked === null)) : false
 	);
 
 	async function showSpending(on: boolean) {
 		spending = on;
 		talking = false;
+		rolled = null;
 		await tick();
 		/* The page swapped under a finger that was halfway down the card. */
 		(on ? article : campaignSection)?.scrollIntoView({ block: 'start' });
@@ -189,6 +196,7 @@
 		const { level } = next.level;
 		draft.advances = [...draft.advances, { level, ...pick }];
 		talking = false;
+		rolled = null;
 		await tick();
 		if (renown?.next?.level.level !== level) showSpending(false);
 	}
@@ -196,6 +204,7 @@
 	/** Only the last: the choices after a level were offered on the figures it left. */
 	function undoLast() {
 		draft.advances = draft.advances.slice(0, -1);
+		rolled = null;
 	}
 
 	let photoInput: HTMLInputElement | undefined = $state();
@@ -265,25 +274,39 @@
 <article class="card back" bind:this={article}>
 	<h2 class="name">{name}</h2>
 
-	{#if next && renown}
+	{#if next && shown && view && renown}
 		<div class="parchment">
 			<section>
 				<button class="back-link" onclick={() => showSpending(false)}>‹ Back</button>
 				<h3 class="heading"><span>{renown.label} {next.level.level}</span><span class="rule"></span></h3>
 				<p class="note">{next.level.note}</p>
 
-				{#if next.offer.rules.length && next.offer.stats.length}
+				{#if next.offer.roll}
+					<LevelRoll
+						roll={next.offer.roll}
+						picked={view.result?.roll ?? null}
+						onpick={(roll) => (rolled = view.result?.roll === roll ? null : { level: next.level.level, roll })}
+					/>
+				{/if}
+
+				{#if view.waiting}
+					<!-- Nothing to pick until the roll is tapped. -->
+				{:else if shown.rules.length && shown.stats.length}
 					<div class="tabs" role="group" aria-label="What to spend the level on">
 						<button aria-pressed={!talking} class:on={!talking} onclick={() => (talking = false)}>Characteristics</button>
 						<button aria-pressed={talking} class:on={talking} onclick={() => (talking = true)}>{next.offer.rulesLabel}</button>
 					</div>
 				{/if}
 
-				{#if onRules}
-					<LevelPicker offer={next.offer} onpick={choose} />
+				{#if view.waiting}
+					<!-- As above. -->
+				{:else if onRules}
+					{#key next.level.level}
+						<LevelPicker offer={shown} onpick={choose} />
+					{/key}
 				{:else}
 					<div class="options">
-						{#each next.offer.stats as option (option.stat)}
+						{#each shown.stats as option (option.stat)}
 							<button class="option" disabled={option.blocked !== null} onclick={() => choose({ stat: option.stat, bonus: option.bonus })}>
 								<span class="line">
 									{option.label}
@@ -293,7 +316,7 @@
 							</button>
 						{/each}
 					</div>
-					{#if next.offer.rules.length && !next.offer.stats.some((s) => s.blocked === null)}
+					{#if shown.rules.length && !shown.stats.some((s) => s.blocked === null)}
 						<p class="note">No characteristic can be raised – choose under {next.offer.rulesLabel}.</p>
 					{/if}
 					{#if !open}
@@ -339,7 +362,7 @@
 							value={stored.crop.zoom}
 							oninput={(e) => recrop((c) => zoomCrop(c, e.currentTarget.valueAsNumber))}
 						/>
-						<button type="button" class="remove" onclick={() => recrop(() => ({ ...CENTRE }))}>Reset</button>
+						<button type="button" class="remove quiet" onclick={() => recrop(() => ({ ...CENTRE }))}>Reset</button>
 					</div>
 					<div class="photo-actions">
 						<button type="button" class="add" onclick={() => photoInput?.click()}>Replace photo</button>

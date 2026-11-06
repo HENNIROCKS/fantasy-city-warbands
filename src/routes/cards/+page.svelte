@@ -31,7 +31,7 @@
 	import { recordBattle, startBattleEnd, today, type BattleEnd } from '$lib/core/history';
 	import { deadLeaders, mayLead, takeLead } from '$lib/core/leader';
 	import { dismiss } from '$lib/core/manage';
-	import { applyBack, emptyPending, type WarbandBackDraft } from '$lib/core/stash';
+	import { applyBack, emptyPending, openSales, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadTuckBox, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
 	import type { Advancement, Counter, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
 	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
@@ -536,6 +536,7 @@
 	const backBlocked = $derived.by(() => {
 		if (!warband || !system || !faction || editingId !== warband.id) return false;
 		const draft = { ...($state.snapshot(warbandDraft) as WarbandBackDraft), pending: emptyPending('') };
+		if (openSales(draft)) return true;
 		const after = applyBack($state.snapshot(warband) as Warband, system.game, faction, draft);
 		return newExcess(validate(warband, system.game, faction), after, system.game, faction) !== null;
 	});

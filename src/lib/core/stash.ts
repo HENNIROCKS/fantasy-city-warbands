@@ -24,8 +24,8 @@ export interface StashOut {
 	index: number;
 	/** Sold for `saleOf()`; otherwise thrown away for nothing. */
 	sold: boolean;
-	/** What a piece sold at a rolled price brought, as tapped in; missing for one sold at its price. */
-	silver?: number;
+	/** What a piece sold at a rolled price brought, as tapped in, null until it is; missing for one sold at its price. */
+	silver?: number | null;
 }
 
 /** The figures a roll such as `2d6x5` can come to: the lowest, the highest, and the step between them. */
@@ -35,6 +35,13 @@ export function rollRange(roll: string): { min: number; max: number; step: numbe
 	const dice = Number(match[1] || 1);
 	const times = Number(match[3] || 1);
 	return { min: dice * times, max: dice * Number(match[2]) * times, step: times };
+}
+
+/** Every figure a roll such as `2d6x5` can come to, the lowest first. */
+export function rollValues(roll: string): number[] {
+	const range = rollRange(roll);
+	if (!range) return [];
+	return Array.from({ length: (range.max - range.min) / range.step + 1 }, (_, i) => range.min + i * range.step);
 }
 
 /** The battle being entered and not yet added. */
@@ -96,11 +103,19 @@ export function saleRollOf(id: string, faction: Faction): string | null {
 	return piece && !piece.unique && piece.saleRoll && rollRange(piece.saleRoll) ? piece.saleRoll : null;
 }
 
-/** What the draft brings into the gold left: what is added, and what is sold. */
+/** What the draft brings into the gold left: what is added, and what is sold – a roll not yet tapped in brings nothing. */
 export function goldIn(stash: string[], draft: WarbandBackDraft, faction: Faction, game: GameSystem): number {
 	const added = draft.goldAdded.reduce((sum, amount) => sum + amount, 0);
-	const sold = draft.stashOut.reduce((sum, { index, sold, silver }) => sum + (sold ? (silver ?? saleOf(stash[index] ?? '', faction, game)) : 0), 0);
+	const sold = draft.stashOut.reduce(
+		(sum, { index, sold, silver }) => sum + (sold ? (silver === null ? 0 : (silver ?? saleOf(stash[index] ?? '', faction, game))) : 0),
+		0
+	);
 	return added + sold;
+}
+
+/** How many pieces are sold at a roll that has not been tapped in: Done waits for them. */
+export function openSales(draft: WarbandBackDraft): number {
+	return draft.stashOut.filter((out) => out.sold && out.silver === null).length;
 }
 
 export function toRecord(pending: PendingBattle): BattleRecord | null {

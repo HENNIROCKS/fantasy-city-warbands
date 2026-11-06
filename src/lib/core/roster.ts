@@ -89,13 +89,14 @@ function entries(card: FighterCardData, kind: string): CardEntry[] {
 }
 
 /** `split` is the place among the weapon values of the one whose `a/b` fills two columns, -1 for none. */
-function toFighter(card: FighterCardData, split: number, marks?: string): RosterFighter {
+function toFighter(card: FighterCardData, split: number, counters: string[], marks?: string): RosterFighter {
 	return {
 		name: card.name,
 		type: card.subtitle,
 		stats: card.stats.map((s) => s.value),
 		cost: card.campaign.find((v) => v.key === 'cost')?.value ?? '',
-		campaign: card.campaign.filter((v) => v.key !== 'cost' && v.key !== marks).map((v) => v.value),
+		/* One value per counter column, empty where the card leaves the counter out, so the cost stays under its own heading. */
+		campaign: counters.map((key) => card.campaign.find((v) => v.key === key)?.value ?? ''),
 		marked: Number(card.campaign.find((v) => v.key === marks)?.value ?? 0),
 		keywords: card.keywords.join(', '),
 		abilities: entries(card, 'fighter').map((e) => e.label),
@@ -168,6 +169,7 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 	const card: WarbandCardData = warbandCard(warband, faction, game);
 	const fighters = warband.fighters.map((f) => fighterCard(f, faction, game, warband.picks));
 	const split = game.roster.split ? game.weaponStats.findIndex((s) => s.key === game.roster.split) : -1;
+	const counters = game.campaign?.fighter.filter((c) => c.key !== game.roster.marks?.key).map((c) => c.key) ?? [];
 
 	return {
 		title: game.roster.title,
@@ -199,7 +201,7 @@ export function toRoster(warband: Warband, faction: Faction, game: GameSystem): 
 			? faction.choices.map((c) => ({ label: c.name, value: c.options.filter((o) => warband.picks[c.id]?.includes(o.id)).map((o) => o.name).join(', ') }))
 			: [],
 		notes: game.roster.choices ? (warband.notes?.trim() ?? '') : '',
-		fighters: fighters.map((f) => toFighter(f, split, game.roster.marks?.key)),
+		fighters: fighters.map((f) => toFighter(f, split, counters, game.roster.marks?.key)),
 		rules: collectRules(fighters)
 	};
 }
