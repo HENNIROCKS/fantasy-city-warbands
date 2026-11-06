@@ -38,7 +38,11 @@ export interface GroupLimit {
 	limit: Span;
 }
 
-/** A change one of the game's rules makes to a weapon's column, and the rule, shown with the weapon. */
+/**
+ * A change one of the game's rules makes to a weapon's column, and the rule,
+ * shown with the weapon. With `amount: 0` it adds only the rule, which the card
+ * then does not mark as included.
+ */
 export interface WeaponAdjustment {
 	stat: string;
 	amount: number;

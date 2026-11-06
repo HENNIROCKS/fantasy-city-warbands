@@ -299,7 +299,7 @@ export function fighterCard(
 				.map((r): CardEntry => {
 					const off = stripped.find((s) => s.rule === r.name);
 					if (off) return { label: r.name, text: `Not in this battle: ${off.source}.` };
-					return { label: r.name, text: r.text, ...(adjusted.some((a) => a.rule.name === r.name) ? { note: 'Already included.' } : {}) };
+					return { label: r.name, text: r.text, ...(adjusted.some((a) => a.rule.name === r.name && a.amount) ? { note: 'Already included.' } : {}) };
 				})
 				.sort((a, b) => a.label.localeCompare(b.label));
 			const name = times(wargear.name, count);

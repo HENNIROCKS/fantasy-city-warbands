@@ -1,6 +1,6 @@
 /**
  * Black Death City, from the ruleset under `src/lib/rules/black-death-city/`,
- * transcribed from the Black Death City Playtest v1.03. Every folder under
+ * transcribed from the Black Death City Playtest v1.10. Every folder under
  * `factions/` is one faction.
  */
 
@@ -16,7 +16,7 @@ export const game: GameSystem = {
 	id: 'black-death-city',
 	name: 'Black Death City',
 	logo: 'logo-bdc.svg',
-	edition: 'Playtest v1.03',
+	edition: 'Playtest v1.10',
 	author: 'Sam Pearson',
 	currency: 'silver',
 	moneyLabel: 'Silver',
@@ -75,8 +75,8 @@ export const game: GameSystem = {
 	universal: [],
 	carry,
 	weaponAdjustments: adjust,
-	/* Experience and the warband rating are all the playtest counts so far; its
-	   campaign chapter is still to come. */
+	/* Experience and the warband rating are what the app counts so far; the
+	   playtest's campaign chapter is not built yet. */
 	campaign: {
 		warband: [],
 		fighter: [{ key: 'experience', label: 'Experience' }],
@@ -197,10 +197,10 @@ function traitRule(id: string): Rule[] {
  * What a fighter may carry, from the rulebook's Carrying Limit (p. 13), its
  * Held Items box (p. 15) and the Two-handed trait: two melee weapons, one
  * ranged, one set of armour, two items. A Held Item takes a melee slot instead
- * of an item slot. One two-handed weapon at most, melee or ranged. Neither a
- * Held Item nor Full-Plate goes with a two-handed ranged weapon, though
- * Full-Plate does with a Brace of Pistols. A Held Item beside a two-handed melee
- * weapon is allowed and costs that weapon an attack, which `adjust` gives the card.
+ * of an item slot. One two-handed weapon at most, melee or ranged. A Held Item
+ * goes with no two-handed weapon but a Polearm, which then gains Unwieldy, as
+ * `adjust` gives the card. Full-Plate goes with no two-handed ranged weapon
+ * but a Brace of Pistols.
  * Wargear the scroll says the fighter is equipped with fills its slot too: the
  * Rat-Mutant's claw is one of its two melee weapons.
  */
@@ -218,6 +218,9 @@ function slotOf(w: RawWargear): Slot {
 
 const twoHanded = (w: RawWargear) => !!w.traits?.includes('two-handed');
 const twoHandedRanged = (w: RawWargear) => w.kind === 'ranged' && twoHanded(w);
+const polearm = (w: RawWargear) => !!w.traits?.includes('polearm');
+/* What a Held Item cannot go with. */
+const twoHandedNoPolearm = (w: RawWargear) => twoHanded(w) && !polearm(w);
 /* Full-Plate goes by the same id in every faction. */
 const fullPlate = (w: RawWargear) => w.id === 'full-plate';
 const pistols = (w: RawWargear) => w.id === 'brace-of-pistols';
@@ -228,6 +231,8 @@ const SLOT_FULL: Record<Slot, string> = {
 	armour: 'Already wearing armour',
 	item: 'No item slot free'
 };
+
+const HELD_MESSAGE = 'A fighter cannot be equipped with a Held Item and a two-handed weapon, unless the weapon is a Polearm';
 
 /** Why the fighter cannot take `w` beside what it already holds, or null when it can. */
 function refuse(held: RawWargear[], w: RawWargear): { message: string; short: string } | null {
@@ -243,16 +248,14 @@ function refuse(held: RawWargear[], w: RawWargear): { message: string; short: st
 	if (twoHanded(w) && held.some(twoHanded)) {
 		return { message: 'A fighter can only be equipped with 1 two-handed weapon', short: 'One two-handed only' };
 	}
-	if (twoHandedRanged(w)) {
-		if (held.some((h) => h.held)) {
-			return { message: 'A fighter cannot be equipped with a Held Item and a two-handed ranged weapon', short: 'Not with a Held Item' };
-		}
-		if (!pistols(w) && held.some(fullPlate)) {
-			return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not in Full-Plate' };
-		}
+	if (twoHandedNoPolearm(w) && held.some((h) => h.held)) {
+		return { message: HELD_MESSAGE, short: 'Not with a Held Item' };
 	}
-	if (w.held && held.some(twoHandedRanged)) {
-		return { message: 'A fighter cannot be equipped with a Held Item and a two-handed ranged weapon', short: 'Not with two-handed ranged' };
+	if (w.held && held.some(twoHandedNoPolearm)) {
+		return { message: HELD_MESSAGE, short: 'Not with two-handed' };
+	}
+	if (twoHandedRanged(w) && !pistols(w) && held.some(fullPlate)) {
+		return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not in Full-Plate' };
 	}
 	if (fullPlate(w) && held.some((h) => twoHandedRanged(h) && !pistols(h))) {
 		return { message: 'A fighter in Full-Plate cannot be equipped with two-handed ranged weapons, except a Brace of Pistols', short: 'Not with two-handed ranged' };
@@ -260,22 +263,19 @@ function refuse(held: RawWargear[], w: RawWargear): { message: string; short: st
 	return null;
 }
 
-/* The Held Items box's wording (p. 15). */
-const HELD_TWO_HANDED: WeaponAdjustment = {
+/* Unwieldy as the Polearm trait gives it (p. 30); it changes a roll, not a column. */
+const POLEARM_UNWIELDY: WeaponAdjustment = {
 	stat: 'attacks',
-	amount: -1,
-	rule: {
-		name: 'Held Item',
-		text: "A fighter can be equipped with a held item and a two-handed melee weapon (eg. a Spear and Shield), however, subtract 1 from the Attacks value of the fighter's two-handed melee weapons."
-	}
+	amount: 0,
+	rule: { name: 'Unwieldy', text: `${trait.get('unwieldy')!.text} A Polearm gains it beside a Held Item.` }
 };
 
-/** A two-handed melee weapon beside a Held Item loses an attack. */
+/** A Polearm beside a Held Item gains Unwieldy. */
 function adjust(weapon: Wargear, _count: number, carried: Wargear[], faction: Faction): WeaponAdjustment[] {
 	const of = rows.get(faction.id);
 	const raw = of?.get(weapon.id);
-	if (!raw || raw.kind !== 'melee' || !twoHanded(raw)) return [];
-	return carried.some((c) => of!.get(c.id)?.held) ? [HELD_TWO_HANDED] : [];
+	if (!raw || !polearm(raw)) return [];
+	return carried.some((c) => of!.get(c.id)?.held) ? [POLEARM_UNWIELDY] : [];
 }
 
 function carry(fighter: Fighter, faction: Faction, wargear: string[]) {
