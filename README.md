@@ -18,9 +18,9 @@ version. In Wyrdcry, ending a battle brings renown, favour and income, rolls
 injuries and loot and adds it to the warband's history, and renown is spent on a
 characteristic and a heroic talent. It imports the Warband Deck's and the
 Warband Builder's files. In Black Death City it asks for each recruit's
-starting experience roll and counts the warband rating, and ending a battle
-rolls injuries, counts experience and ranks and heals temporary injuries; the
-rest of that game's campaign is still to come.
+starting experience roll and counts the warband rating, and runs its
+campaign: injuries, experience and ranks, holdings and the stronghold,
+exploring the city, income and the downtime.
 
 ## What it does
 
@@ -83,7 +83,8 @@ rest of that game's campaign is still to come.
   rules, with the characteristic, the keyword or the bar on reactions it brings
 - Turn a fighter's card over to write on it, add a photo (without one the card
   shows the fighter's initials), move equipment to
-  and from the stash, correct its campaign, spend renown or dismiss it – see
+  and from the stash, correct its campaign, spend renown or advancement
+  rolls, or dismiss or retire it – see
   [Between battles in Black Death City](docs/black-death-city/between-battles.md)
   and [in Wyrdcry](docs/wyrdcry/between-battles.md)
 - Turn the warband card over to name it, pick its colour, set favour, add gold,
@@ -110,8 +111,10 @@ rest of that game's campaign is still to come.
   [The aftermath](docs/wyrdcry/aftermath.md)
 - End a Black Death City battle in a few pages: result, injuries on the table
   each fighter rolls on, permanent or temporary, Black Rot, a champion who
-  assumes command, the experience each fighter earns with its rank, and the
-  temporary injuries that heal – see
+  assumes command, the experience each fighter earns with its rank, holdings
+  seized and lost, the stronghold's upgrade, Explore the City with its
+  curiosities and relics, the income, the temporary injuries that heal and
+  the downtime's leeching – see
   [The aftermath in Black Death City](docs/black-death-city/aftermath.md)
 - Spend each level of renown on a characteristic, a heroic talent or a
   legendary ability, after the battle or from the Battle menu

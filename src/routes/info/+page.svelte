@@ -55,7 +55,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s aftermath brings injuries and experience; still to come there are the rest of the scenarios and of the campaign.'
+				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s campaign runs from the aftermath to the downtime; where an encounter brings something the app does not keep, it says to note it by hand.'
 		},
 		{
 			question: 'Which rules does the app follow?',

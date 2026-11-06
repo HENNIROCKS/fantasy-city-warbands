@@ -10,15 +10,20 @@ keeps your Origin's limits for you.
   takes the place of its initials; the fluff starts with the line the fighter's scroll quotes, ready to rewrite
 - move equipment to the stash and back
 - correct the fighter's experience and Black Rot
-- dismiss the fighter, once the warband has a battle in its history. Nothing is
+- spend an advancement roll for each new rank: tap **Advancement rolls**,
+  tap what the dice shows, then pick what it gives – a characteristic, or on
+  a 6 a skill or a signature spell. The **Battle** menu under the warband card
+  offers the same.
+- retire the fighter, once the warband has a battle in its history. Nothing is
   paid back.
 
 **The warband rating** stands on the warband card: what your fighters cost with
 their equipment, and their experience. The stash does not count.
 
 **The back of the warband card.** Name, colour, fluff and notes. You can also
-add silver, throw away what lies in the stash, and add or strike battles. Selling
-from the stash is not in the app yet.
+add silver, sell or throw away what lies in the stash, and add or strike
+battles. Wargear sells for half its cost and a relic for its price. A
+curiosity sells for a roll: tap **Sell**, then set what the dice came to.
 
 **The stash on the front.** The warband card lists the silver left and what
 lies in the stash. Tap **View** beside **Stash** to get there.
