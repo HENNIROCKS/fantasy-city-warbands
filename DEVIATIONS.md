@@ -30,7 +30,7 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 
 ## Black Death City
 
-Transcribed from the Playtest v1.03, where the Fighters List, the scrolls, the Armoury lists and the tables do not always agree.
+Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the Armoury lists and the tables do not always agree.
 
 - [ ] Wargear costs what the Armoury list says, where an item page prints another price: Cloister Demonic Familiar 30s (item page 20s)
 - [ ] Wargear is named as the Armoury list names it: Lantern/Torch (item page: Torchlight/Lantern)
@@ -40,6 +40,6 @@ Transcribed from the Playtest v1.03, where the Fighters List, the scrolls, the A
 ### Open upstream
 
 - [ ] Blighted Cloister: Blessed Rabble has the same leader as Priesthood of Sorcerers
-- [ ] Selling from the stash: the playtest has no campaign chapter yet, so a piece only leaves the stash thrown away
+- [ ] Death Covens: the Dire Wolf's Trackers asks for a Hunting Dog in the scouting party (Playtest v1.10)
+- [ ] Selling wargear: half the cost rounded down, where the line beneath prints 50% rounded up (Playtest v1.10)
 - [ ] Street of Death, Heavy Downpour: the sentence on when the rain ends breaks off; the app shows it as printed
-- [ ] Scenarios: the scenario table, Battle for the Tower, Coin Purse and Heirloom point to pg xx; the exploration roll and the relic table are not in the playtest yet

@@ -44,8 +44,9 @@ campaign.
   and each piece unfolds to its profile, rules or text before it is bought
 - Keep a Black Death City fighter within its carrying limit: two melee
   weapons with Held Items among them, one ranged, one set of armour, two
-  items, one two-handed weapon, Full-Plate and Held Items not with a
-  two-handed ranged weapon, and Rare 0-x across the warband
+  items, one two-handed weapon, a Held Item with no two-handed weapon but a
+  Polearm, Full-Plate with no two-handed ranged weapon but a Brace of
+  Pistols, and Rare 0-x across the warband
 - Make the choice a fighter brings on recruitment: an Eshin Sorcerer's spell, a
   Mercenary Champion's Fight or Shoot, the Mutation Table row rolled at the
   table, a Misbegotten's bloodline mutation at its price, a Black Death City
@@ -74,8 +75,8 @@ campaign.
   you write your own – its profile, its cost – in Wyrdcry beside its renown –
   its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. A weapon's Attacks
-  count in Black Death City's Held Item beside a two-handed melee weapon, and
-  in Wyrdcry's Dual Wielding. In Wyrdcry a
+  count in Wyrdcry's Dual Wielding, and a Black Death City Polearm beside a
+  Held Item shows the Unwieldy it gains. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
   armour, and tapped it says how it adds up and what a situation can still
   change, marked with a star. An injury the fighter keeps stands among its
@@ -128,7 +129,7 @@ campaign.
 
 | Game | Rules the data follows |
 | --- | --- |
-| Black Death City | Playtest v1.03 |
+| Black Death City | Playtest v1.10 |
 | Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net, its playtest factions included |
 | Mordheim | eventually |
 | Necropolis | eventually |
@@ -222,7 +223,7 @@ first and publishes it to GitHub Pages.
   Book 1.0 and the factions at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is by
   Johan Markström; the rules belong to the Wyrdcry project.
 - **Black Death City** – transcribed by hand from the Black Death City
-  Playtest v1.03 by Sam Pearson. Where the playtest contradicts itself, the
+  Playtest v1.10 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.
 
 Where the app reads a game differently from its page or its data, or settles a
