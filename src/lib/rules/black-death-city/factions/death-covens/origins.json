@@ -19,9 +19,9 @@
 	{
 		"id": "the-hunt-descends",
 		"name": "The Hunt Descends",
-		"text": "You must recruit a Lycanfell Noble to lead your warband. You begin the campaign with the Grand Pavilion stronghold. Your warband can include any number of Dire Wolves (they do not count towards your Beasts limit).",
+		"text": "You must recruit a Lycanfell Noble to lead your warband. You begin the campaign with the Woodland Estate stronghold. Your warband can include any number of Dire Wolves (they do not count towards your Beasts limit).",
 		"leader": "lycanfell-noble",
-		"stronghold": "Grand Pavilion",
+		"stronghold": "Woodland Estate",
 		"limits": [
 			{ "fighter": "dire-wolf", "limit": { "min": 0, "max": null } }
 		],

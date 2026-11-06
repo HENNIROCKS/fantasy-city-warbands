@@ -160,15 +160,28 @@
 		]
 	},
 	{
+		"id": "manservant",
+		"name": "Manservant",
+		"description": "“Yes, m'lord?”",
+		"cost": 45,
+		"starting_experience": "20+d6",
+		"limit": { "min": 0, "max": 3 },
+		"keywords": ["henchman", "demi-human"],
+		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
+		"abilities": [],
+		"wargear_lists": ["main"],
+		"gear": []
+	},
+	{
 		"id": "skeleton-warrior",
 		"name": "Skeleton Warrior",
 		"cost": 40,
 		"starting_experience": "0",
 		"limit": { "min": 0, "max": null },
 		"keywords": ["henchman", "undead", "skeleton", "thrall"],
-		"profile": { "move": 4, "blade": 4, "bow": 6, "armour": 6, "initiative": 3, "willpower": 2, "life": 4 },
+		"profile": { "move": 4, "blade": 4, "bow": 4, "armour": 6, "initiative": 3, "willpower": 2, "life": 4 },
 		"abilities": ["unshakeable"],
-		"wargear_lists": ["main"],
+		"wargear_lists": ["main", "skeleton-warrior"],
 		"gear": []
 	},
 	{

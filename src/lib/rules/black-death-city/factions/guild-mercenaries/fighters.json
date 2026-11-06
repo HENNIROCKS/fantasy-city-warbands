@@ -19,16 +19,16 @@
 		"id": "noble",
 		"name": "Noble",
 		"description": "“I didn't come this far to die a beggar!”",
-		"cost": 120,
+		"cost": 150,
 		"starting_experience": "60+d6",
 		"limit": { "min": 0, "max": null },
 		"keywords": ["leader", "mercenary", "human", "aristocrat"],
 		"profile": { "move": 5, "blade": 3, "bow": 4, "armour": 6, "initiative": 4, "willpower": 3, "life": 5 },
-		"abilities": ["trained-duellist"],
+		"abilities": ["seasoned-warrior"],
 		"wargear_lists": ["main", "champion"],
-		"gear": [],
+		"gear": ["nobles-rapier"],
 		"choices": [
-			{ "source": "trained-duellist", "pick": 1, "skills": ["old-dogs", "veteran"], "given": ["duellist"] }
+			{ "source": "seasoned-warrior", "pick": 1, "skills": ["old-dogs", "veteran"] }
 		]
 	},
 	{
@@ -120,7 +120,7 @@
 		"description": "“There's no saving this leg. We'll have to amputate it.”",
 		"cost": 65,
 		"starting_experience": "40+d6",
-		"limit": { "min": 0, "max": null },
+		"limit": { "min": 0, "max": 1 },
 		"keywords": ["champion", "mercenary", "human"],
 		"profile": { "move": 5, "blade": 4, "bow": 5, "armour": 6, "initiative": 3, "willpower": 3, "life": 4 },
 		"abilities": ["patch-you-up", "sawbones"],

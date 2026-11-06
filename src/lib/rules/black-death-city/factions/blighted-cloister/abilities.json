@@ -7,5 +7,6 @@
 	{ "id": "ram-horns", "name": "Ram Horns", "text": "After this fighter finishes a Charge Move, pick 1 enemy fighter engaged in melee with them to be the target. The target is hit by 2 attacks as follows: Rend -1, Damage 1." },
 	{ "id": "demonic-spellcraft", "name": "Demonic Spellcraft", "text": "This fighter knows the **Demonic Lore of Rot**. When they are recruited, pick 1 spell from it to be their signature spell. In addition, at the start of each battle they prepare 1 random spell from it." },
 	{ "id": "demonic-wards", "name": "Demonic Wards", "text": "This fighter ignores Rend when making armour rolls." },
-	{ "id": "fear", "name": "Fear", "text": "This fighter *causes fear*. Enemy fighters that start their activation engaged in melee with a fighter that causes fear must pass a Willpower test. If they fail, their activation immediately ends.\n\nEnemy fighters that also cause fear can ignore this rule." }
+	{ "id": "fear", "name": "Fear", "text": "This fighter *causes fear*. Enemy fighters that start their activation engaged in melee with a fighter that causes fear must pass a Willpower test. If they fail, their activation immediately ends.\n\nEnemy fighters that also cause fear can ignore this rule." },
+	{ "id": "demonic-strength", "name": "Demonic Strength", "text": "This fighter ignores the *Unwieldy* weapon trait on its Demonic Rot Blade." }
 ]

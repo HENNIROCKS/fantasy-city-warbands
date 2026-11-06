@@ -60,6 +60,11 @@
 		"text": "If a fighter suffers damage from a critical hit made with this weapon they become *poisoned*. While a fighter is *poisoned*, each time they are activated they suffer 1 damage. If a fighter is healed, or has 1 life remaining, they are no longer poisoned.\n\n*Demons* and *Undead* fighters cannot become poisoned."
 	},
 	{
+		"id": "polearm",
+		"name": "Polearm",
+		"text": "Fighters equipped with this weapon can still be equipped with Held Items (eg. Shields). If they do so, this weapon gains the *Unwieldy* weapon trait."
+	},
+	{
 		"id": "rare",
 		"name": "Rare",
 		"text": "This trait limits the number of fighters in a warband that can be equipped with this type of weapon at the same time. For example, if a weapon has the Rare 0-1 trait, only 1 fighter in a warband can be equipped with a weapon of this type at any one time."

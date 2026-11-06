@@ -12,5 +12,5 @@
 	{ "id": "veteran-in-life", "name": "Veteran in Life", "text": "When this fighter is recruited, pick 1 skill for them." },
 	{ "id": "vampyric-bite", "name": "Vampyric Bite", "text": "Each time an enemy suffers 1 or more damage from a melee attack made by this fighter, heal this fighter 1 life point." },
 	{ "id": "sniff-em-out", "name": "Sniff 'em Out", "text": "Enemy fighters that are hidden are not hidden while they are within 9\" of this fighter." },
-	{ "id": "trackers", "name": "Trackers", "text": "Each aftermath sequence, when you search the city. If your search party includes any Dire Wolves, you can re-roll the exploration roll." }
+	{ "id": "trackers", "name": "Trackers", "text": "When exploring the city. If your scouting party includes a Hunting Dog, you gain 1 exploration re-roll (units dice only)." }
 ]

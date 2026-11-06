@@ -170,7 +170,7 @@
 		"limit": { "min": 0, "max": null },
 		"keywords": ["brute", "cloister", "demon"],
 		"profile": { "move": 5, "blade": 4, "bow": 6, "armour": 5, "initiative": 4, "willpower": 4, "life": 10 },
-		"abilities": ["demonic-wards", "fear"],
+		"abilities": ["demonic-wards", "fear", "demonic-strength"],
 		"wargear_lists": [],
 		"gear": ["great-demonic-rot-blade"]
 	},
