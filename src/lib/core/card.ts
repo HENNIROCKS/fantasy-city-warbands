@@ -316,6 +316,14 @@ export function fighterCard(
 	const holds = (weapon: Wargear, name: string) =>
 		(weapon.rules ?? []).some((r) => r.name === name) || uses.some(({ piece, on }) => on === weapon.id && piece.used?.weapon?.rule.name === name);
 
+	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
+	const statLayers = fighter
+		? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats], game.advancement?.label ?? 'Renown')
+		: new Map<string, StatLayer[]>();
+	/* What the last exploring left for this battle, such as the Mad Prophet's Bravery, on every fighter. */
+	for (const n of next) if (n.stat && n.stat.bonus) statLayers.get(n.stat.key)?.push({ kind: 'battle', source: n.source, amount: n.stat.bonus });
+	const countedIn = (name: string) => [...statLayers.values()].some((layers) => layers.some((l) => l.kind === 'equipment' && l.source === name));
+
 	const items = carried
 		.filter(({ wargear }) => wargear.kind === 'armour' || wargear.kind === 'item')
 		.map(({ wargear, count }): CardItem => {
@@ -326,7 +334,8 @@ export function fighterCard(
 				name: wargear.name,
 				count,
 				text: wargear.text ?? '',
-				/* What it does whenever it is carried is in the figures already, and its text says so. */
+				/* What it does whenever it is carried is in the figures already, and its text says so – unless
+				   it changes none, as Full-plate on a profile at 4+ already or boots on a Move of 2d6". */
 				...(wargear.text
 					? {
 							explanation: {
@@ -335,7 +344,7 @@ export function fighterCard(
 									{
 										label: wargear.singleUse ? 'Single use' : wargear.kind === 'armour' ? 'Armour' : 'Item',
 										text: wargear.text,
-										...(wargear.effects?.length || wargear.sets?.length ? { note: 'Already included.' } : {})
+										...(countedIn(wargear.name) ? { note: 'Already included.' } : {})
 									}
 								]
 							}
@@ -461,12 +470,6 @@ export function fighterCard(
 		] satisfies CardSection[]
 	).filter((s) => s.entries.length);
 
-	const profile = fighter ? profileOf(instance, fighter, effects) : undefined;
-	const statLayers = fighter
-		? layersOf(instance, fighter, faction, effects, [...advanced.stats, ...injured.stats], game.advancement?.label ?? 'Renown')
-		: new Map<string, StatLayer[]>();
-	/* What the last exploring left for this battle, such as the Mad Prophet's Bravery, on every fighter. */
-	for (const n of next) if (n.stat && n.stat.bonus) statLayers.get(n.stat.key)?.push({ kind: 'battle', source: n.source, amount: n.stat.bonus });
 	const statConditions = conditionsOf(carried.map((c) => c.wargear));
 
 	return {
