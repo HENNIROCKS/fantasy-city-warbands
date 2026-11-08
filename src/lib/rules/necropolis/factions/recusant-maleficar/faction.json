@@ -1,0 +1,12 @@
+{
+	"id": "recusant-maleficar",
+	"name": "Recusant Maleficar",
+	"origin": "official",
+	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
+	"author": "Peter Vigors",
+	"rules": [
+		{ "name": "Covenant", "text": "The leader of your gathering must be a Lich and may initially only take spells from the necromancy list. Spells of other types can be gained as normal during a campaign." },
+		{ "name": "Path Erudite (Leader)", "text": "Your leader gains this trait in addition to any others. Each time this leader rolls mana dice for spellcasting, on any rolls of 9–10 do not discard that mana dice from the gathering’s mana pool." },
+		{ "name": "Apprentice (Husk)", "text": "1 model may be chosen to have this trait or a trait from the Wretched Undead trait list. This model knows 1 spell that is also known by the gathering’s leader. When spellcasting they use the gathering’s mana pool as normal. This model suffers arcane backlash on a channelling roll of 1–2. This trait cannot be taken by a leader and only one model in the gathering may have it." }
+	]
+}

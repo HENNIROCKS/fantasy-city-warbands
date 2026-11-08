@@ -1,8 +1,9 @@
 # Fantasy City Warbands (Early)
 
 Build a warband for a skirmish game set in a fantasy city, play its battles
-from a deck of cards and carry it through a campaign. Two games so far:
-[Black Death City](https://www.blackdeathcity.com/) and [Wyrdcry](https://wyrdcry.net).
+from a deck of cards and carry it through a campaign. Three games so far:
+[Black Death City](https://www.blackdeathcity.com/), [Necropolis](https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/)
+and [Wyrdcry](https://wyrdcry.net).
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
@@ -136,6 +137,7 @@ exploring the city, income and the downtime.
 | Game | Rules the data follows |
 | --- | --- |
 | Black Death City | Playtest v1.10 |
+| Necropolis | Rulebook v0.9 |
 | Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net, its playtest factions included |
 
 What the app reads from the rules so far: profiles, costs, limits, the

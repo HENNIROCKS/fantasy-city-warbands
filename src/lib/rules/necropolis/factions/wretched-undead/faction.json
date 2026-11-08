@@ -1,0 +1,10 @@
+{
+	"id": "wretched-undead",
+	"name": "Wretched Undead",
+	"origin": "official",
+	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
+	"author": "Peter Vigors",
+	"rules": [
+		{ "name": "Wretched Undead", "text": "Choose two traits from the Wretched Undead trait list and assign each to a model in your gathering. You may give both traits to the same model, but no trait can be taken more than once by a single model, nor can you give a trait to a model if it would exceed the number of traits allowed for that model type." }
+	]
+}

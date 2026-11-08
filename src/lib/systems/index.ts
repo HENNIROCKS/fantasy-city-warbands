@@ -2,6 +2,7 @@ import type { Faction, GameSystem, Warband } from "$lib/core/types";
 import { upgrade } from "$lib/core/warband";
 
 import * as blackDeathCity from "./black-death-city";
+import * as necropolis from "./necropolis";
 import * as wyrdcry from "./wyrdcry";
 
 export interface System {
@@ -12,6 +13,7 @@ export interface System {
 /** Every game the app can build a warband for, by its id. */
 export const systems: Record<string, System> = {
   [blackDeathCity.game.id]: blackDeathCity,
+  [necropolis.game.id]: necropolis,
   [wyrdcry.game.id]: wyrdcry,
 };
 

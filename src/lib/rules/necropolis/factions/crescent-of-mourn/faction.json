@@ -1,0 +1,13 @@
+{
+	"id": "crescent-of-mourn",
+	"name": "The Crescent of Mourn",
+	"keyword": "plasm",
+	"origin": "official",
+	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
+	"author": "Peter Vigors",
+	"rules": [
+		{ "name": "Covenant", "text": "Your gathering may only contain models with the Plasm keyword." },
+		{ "name": "Moonlight Flit (Leader, Plasm)", "text": "Your leader gains this trait in addition to any others. After an enemy attack action and any subsequent pushes have been resolved against your leader you may push your leader up to 2″." },
+		{ "name": "Mournful Curse (Plasm)", "text": "1 model may be chosen to have this trait or a trait from the Wretched Undead trait list. When this model is Shattered every model within 3″ suffers 2 damage." }
+	]
+}
