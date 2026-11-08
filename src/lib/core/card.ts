@@ -529,8 +529,8 @@ export function fighterCard(
 /**
  * How each numeric characteristic is made up, as the Warband Deck's card has it:
  * the profile, what the fighter's own pick, the warband's picks, its levels, its
- * talents and its injuries add, then what its bought wargear adds whenever it is carried. Wargear on the profile is not
- * counted: the profile already carries it. Wargear that replaces a characteristic,
+ * talents and its injuries add, then what its wargear adds whenever it is carried –
+ * what it carries from the start as what it bought. Wargear that replaces a characteristic,
  * such as Black Death City's armour, comes right after the profile, as what it
  * takes off or puts on, so that everything else adds to the new figure.
  */
