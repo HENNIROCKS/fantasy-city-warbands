@@ -48,3 +48,14 @@ Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the A
 - [ ] Blighted Cloister: Demonic Strength names the Rot-Colossal's Demonic Rot Blade, where it carries a Great Demonic Rot Blade; the app shows it as printed (Playtest v1.10)
 - [ ] Death Covens: the Dire Wolf's Trackers asks for a Hunting Dog in the scouting party (Playtest v1.10)
 - [ ] Street of Death, Heavy Downpour: the sentence on when the rain ends breaks off; the app shows it as printed
+
+## Necropolis
+
+Transcribed from the Rulebook v0.9, a draft that still carries placeholders and examples that do not add up.
+
+- [ ] Minions carry the keyword Minion, which the rulebook uses only as a heading, so that the app can count them apart from the leader (pp. 32–35)
+- [ ] Aberrant Husk: Brutal applies whatever keyword it chooses, as a rule of its own, where it stands under Plasm after "in addition they have" (p. 32)
+
+### Open upstream
+
+- [ ] Example Gathering: The Mire Walker, a Lich with a Heavy Polearm, costs 15 obols, where the Lich costs 0 and the Heavy Polearm 20; the app takes the costs of pp. 29 and 37 (p. 18)

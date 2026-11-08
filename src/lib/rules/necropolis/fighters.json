@@ -1,0 +1,163 @@
+[
+	{
+		"id": "lich",
+		"name": "Lich",
+		"description": "A rotten necromancer, an ancient lich, a phantasmal sorcerer.",
+		"cost": 0,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["leader"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": 7, "hp": 15 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
+			{ "name": "Mana and spells", "text": "Divide 4 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 3 additional spells. Choose 1 Basic Leader Trait." },
+			{ "name": "Caster", "text": "A lich cannot wear heavy armour or carry a shield." }
+		]
+	},
+	{
+		"id": "revenant",
+		"name": "Revenant",
+		"description": "A desiccated knight, a barrow monarch, a spectral martyr.",
+		"cost": 0,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["leader"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 3, "violence": 6, "ranged": 7, "hp": 17 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
+			{ "name": "Mana and spells", "text": "Divide 3 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 1 additional spell. Choose 1 Basic Leader Trait." },
+			{ "name": "Ancient Skill", "text": "During this model’s attack action if any dice rolled is an unmodified 10 that dice is considered a critical hit, critical hits do an additional +1 damage. E.g. if a model with a blade (Damage 1/3) scores a glance (1 damage), a hit (3 damage) and a critical hit (3+1 damage) that attack action would do 8 damage." },
+			{ "name": "Fighter", "text": "A revenant can never gain more than 4 spells (including summon) and 4 mana points." }
+		]
+	},
+	{
+		"id": "ascended-undead",
+		"name": "Ascended Undead",
+		"description": "An imposing pontiff of sewn corpses, a multi limbed skeletal sorcerer-monarch, spectral death incarnate.",
+		"cost": 225,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["leader", "colossal"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 3, "move": 3, "violence": 5, "ranged": 6, "hp": 25 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
+			{ "name": "Mana and spells", "text": "Divide 5 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 3 additional spells. Choose 1 Basic Leader Trait." },
+			{ "name": "Colossal", "text": "This model can only take weapons from the Colossal Weapons list." },
+			{ "name": "Threatening Aura", "text": "This model may take the Lurk action for 0 AP cost once per turn." }
+		]
+	},
+	{
+		"id": "husk",
+		"name": "Husk",
+		"description": "A golem of blood, an ossified horror, a spectre of a scorned lover.",
+		"cost": 50,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["minion", "husk"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": 7, "hp": 10 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." }
+		]
+	},
+	{
+		"id": "aberrant-husk",
+		"name": "Aberrant Husk",
+		"description": "A towering corpse, a great knight entombed in armour, a huge ghostly executioner.",
+		"cost": 90,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["minion", "husk"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 3, "violence": 6, "ranged": 7, "hp": 12 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." },
+			{ "name": "Brutal", "text": "When this model performs an attack action, add +1 to the damage total." }
+		]
+	},
+	{
+		"id": "familiar",
+		"name": "Familiar",
+		"description": "A dark swarm of bats, a skull faced crow, a poltergeist.",
+		"cost": 40,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["minion", "fly", "beast", "familiar"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 4, "violence": 9, "ranged": null, "hp": 6 },
+		"rules": [
+			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." },
+			{ "name": "Restrictions", "text": "Familiar can only take claws and fangs as a weapon. Familiar cannot wear armour or carry a shield." },
+			{ "name": "Unique", "text": "Each gathering may only take 1 familiar." },
+			{ "name": "Soul Link", "text": "If a familiar moves or is pushed across or into base contact with a mana token, the Gathering receives additional mana dice of that type for its mana pool. The token is then removed." }
+		]
+	},
+	{
+		"id": "necromantic-remnant",
+		"name": "Necromantic Remnant",
+		"description": "A bone construct centipede, a herald homunculus, a wisp knight.",
+		"cost": 35,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["minion", "beast", "husk", "remnant"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 3, "violence": 9, "ranged": 9, "hp": 6 },
+		"rules": [
+			{ "name": "Restrictions", "text": "Necromantic Remnant cannot take 2h weapons apart from claws and fangs." },
+			{ "name": "Plasm", "text": "If this model chooses the *Plasm* keyword it gains the *fly* keyword and −1 HP." }
+		]
+	},
+	{
+		"id": "small-beast",
+		"name": "Small Beast",
+		"description": "The remains of a wolf, a twisting mass of bones.",
+		"cost": 60,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["minion", "beast"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
+		"rules": [
+			{ "name": "Restrictions", "text": "Small beast can only take claws and fangs as a weapon. Small beast cannot carry a shield or wear heavy armour." },
+			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword and −2 HP." }
+		]
+	},
+	{
+		"id": "large-beast",
+		"name": "Large Beast",
+		"description": "A patchwork beast, a tide of six dozen skulls.",
+		"cost": 80,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["minion", "beast"],
+		"affinities": ["blood", "bone"],
+		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": null, "hp": 15 },
+		"rules": [
+			{ "name": "Restrictions", "text": "Large Beast can only take Claws and Fangs or Large Claws as a weapon. Large Beast cannot carry a Shield." },
+			{ "name": "Unique", "text": "Each gathering may only take 1 Large Beast." }
+		]
+	},
+	{
+		"id": "gigantic-horror",
+		"name": "Gigantic Horror",
+		"description": "A rotten chimeric horror, the skeleton of a giant knight, a screaming mass of souls.",
+		"cost": 190,
+		"limit": { "min": 0, "max": 1 },
+		"keywords": ["minion", "colossal"],
+		"affinities": ["blood", "bone", "plasm"],
+		"profile": { "ap": 3, "move": 3, "violence": 7, "ranged": 7, "hp": 25 },
+		"rules": [
+			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword, −2 HP and cannot wear heavy armour." },
+			{ "name": "Colossal", "text": "This model can only take weapons from the Colossal Weapons list." },
+			{ "name": "Unique", "text": "Each gathering may only take 1 Gigantic Horror." },
+			{ "name": "Threatening Aura", "text": "This model may take the Lurk action for 0 AP cost once per turn." }
+		]
+	},
+	{
+		"id": "flying-beast",
+		"name": "Flying Beast",
+		"description": "A fell bat, a skeletal winged horror.",
+		"cost": 70,
+		"limit": { "min": 0, "max": null },
+		"keywords": ["minion", "beast", "fly"],
+		"affinities": ["blood", "bone"],
+		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
+		"rules": [
+			{ "name": "Restrictions", "text": "Flying beast can only take claws and fangs as a weapon. Flying Beast cannot wear armour or carry a shield." }
+		]
+	}
+]

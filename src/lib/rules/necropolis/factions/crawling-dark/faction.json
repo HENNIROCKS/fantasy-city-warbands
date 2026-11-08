@@ -1,6 +1,7 @@
 {
 	"id": "crawling-dark",
 	"name": "Crawling-Dark",
+	"models": ["leader", "beast", "remnant"],
 	"origin": "official",
 	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
 	"author": "Peter Vigors",

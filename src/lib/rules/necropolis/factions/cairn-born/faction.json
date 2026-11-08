@@ -1,7 +1,7 @@
 {
 	"id": "cairn-born",
 	"name": "Cairn-born",
-	"keyword": "bone",
+	"models": ["bone"],
 	"origin": "official",
 	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
 	"author": "Peter Vigors",

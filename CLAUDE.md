@@ -95,6 +95,9 @@ Link zwischen Routen läuft deshalb über `resolve()`, nie über ein hartes `/`.
 - `src/lib/systems/<spiel>-*.ts` – was nur ein Spiel kann und sein System
   einbindet, etwa `wyrdcry-file.ts` (Import aus Deck und Builder) und
   `wyrdcry-renown.ts`. Als Spiel lädt `systems/index.ts` nur `<spiel>.ts`.
+- `src/lib/rules/<spiel>/fighters.json` – wo alle Fraktionen eines Spiels eine
+  Liste teilen (Necropolis' Leader und Minions); die `faction.json` sagt, welche
+  Kämpfer sie nimmt.
 - `src/lib/rules/<spiel>/factions/<fraktion>/` – die Daten, ein Ordner je
   Fraktion. Ein neuer Ordner wird ohne weiteren Code geladen.
 
