@@ -177,10 +177,13 @@
 		line-height: 1.2;
 	}
 
-	/* White as the start screen draws it, near enough the paper of the type. */
+	/* White as the start screen draws it, near enough the paper of the type. A
+	   logo nearly square meets the height, a wide wordmark the width. */
 	.logo {
 		display: block;
-		width: 42%;
+		width: 64%;
+		max-height: 26cqw;
+		object-fit: contain;
 		margin: 28px auto 0;
 		filter: brightness(0) invert(1);
 	}
