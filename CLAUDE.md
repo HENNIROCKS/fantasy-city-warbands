@@ -116,8 +116,8 @@ dessen Daten eingefroren sind; sein Repo ist seit 12.10.2026 ein öffentliches
 Archiv, nur lesend. Eine Korrektur gehört hierher, nicht ins Deck.
 Einzige Laufzeitquelle ist dieser Bestand – kein Sync aus dem Site-Repo
 `~/Sites/wyrdcry`. Ob sich das Regelwerk bewegt hat, zeigt der Skill
-`wyrdcry-rules-watch`; übertragen wird von Hand. Eine Bravery-Verbesserung ist
-ein negativer Bonus: Bravery ist ein Wurfziel.
+`fantasy-city-rules-watch`; übertragen wird von Hand. Eine
+Bravery-Verbesserung ist ein negativer Bonus: Bravery ist ein Wurfziel.
 Die App folgt Wyrdcry 1.0, die PDFs liegen unter `_works/Rulebooks/`. Die
 Kernregeln – Deckung, Moral, Universal Abilities und Reactions, Waffenregeln –
 folgen dem Rulebook 1.0.1; Kampagne, Renown, Heroic Talents, Lasting Injuries,
