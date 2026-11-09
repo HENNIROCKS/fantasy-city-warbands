@@ -29,7 +29,8 @@
 	/** Each game's own site and where its rules come from, by game id. */
 	const SITES: Record<string, string> = {
 		wyrdcry: 'https://wyrdcry.net',
-		'black-death-city': 'https://www.blackdeathcity.com/'
+		'black-death-city': 'https://www.blackdeathcity.com/',
+		necropolis: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/'
 	};
 
 	/** The games, by name. */

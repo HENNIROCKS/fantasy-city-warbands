@@ -8,7 +8,8 @@ and [Wyrdcry](https://wyrdcry.net).
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
 Unofficial fan project. No connection to Sam Pearson and Black Death City,
-Games Workshop, or Johan Markström and the Wyrdcry project.
+Games Workshop, Peter Vigors and Necropolis, or Johan Markström and the
+Wyrdcry project.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
