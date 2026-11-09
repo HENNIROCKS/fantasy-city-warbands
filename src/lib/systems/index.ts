@@ -15,12 +15,6 @@ export const systems: Record<string, System> = {
   [wyrdcry.game.id]: wyrdcry,
 };
 
-/** Games that are meant to come but have no data yet: shown, but not selectable. */
-export const planned: { id: string; name: string; author: string }[] = [
-  { id: "mordheim", name: "Mordheim", author: "Tuomas Pirinen" },
-  { id: "necropolis", name: "Necropolis", author: "Peter Vigors" },
-];
-
 /** The warband in the ids its game's data uses now; see `Wargear.replaces`. */
 export function upgraded(warband: Warband): Warband {
   const system = systems[warband.game];

@@ -3,13 +3,11 @@
 Build a warband for a skirmish game set in a fantasy city, play its battles
 from a deck of cards and carry it through a campaign. Two games so far:
 [Black Death City](https://www.blackdeathcity.com/) and [Wyrdcry](https://wyrdcry.net).
-Mordheim and Necropolis will follow eventually.
 
 <https://hennirocks.github.io/fantasy-city-warbands/>
 
 Unofficial fan project. No connection to Sam Pearson and Black Death City,
-Games Workshop, Peter Vigors and Necropolis, or Johan Markström and the
-Wyrdcry project.
+Games Workshop, or Johan Markström and the Wyrdcry project.
 
 **Status: early.** The app builds a warband, lets you change it later and shows
 it as a deck of cards that counts damage in a battle. It exports a warband as
@@ -139,8 +137,6 @@ exploring the city, income and the downtime.
 | --- | --- |
 | Black Death City | Playtest v1.10 |
 | Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net, its playtest factions included |
-| Mordheim | eventually |
-| Necropolis | eventually |
 
 What the app reads from the rules so far: profiles, costs, limits, the
 wargear each fighter may take and how much of it at once, the warband's

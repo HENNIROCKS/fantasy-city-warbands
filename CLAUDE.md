@@ -1,8 +1,7 @@
 # CLAUDE.md – Fantasy City Warbands
 
 Eine SvelteKit-App, mit der man eine Bande für ein Skirmish-Spiel in einer
-Fantasy-Stadt baut und umbaut: Black Death City und Wyrdcry, Mordheim und
-Necropolis irgendwann.
+Fantasy-Stadt baut und umbaut: Black Death City und Wyrdcry.
 Was die App kann und wie sie deployt wird, steht in der `README.md`.
 
 Sie löst das Wyrdcry Warband Deck (Archiv auf GitHub, `HENNIROCKS/wyrdcry-warband-deck`)

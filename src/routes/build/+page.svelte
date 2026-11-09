@@ -33,7 +33,7 @@
 		withPicks,
 		withWargear
 	} from '$lib/core/warband';
-	import { planned, systems, upgraded } from '$lib/systems';
+	import { systems, upgraded } from '$lib/systems';
 
 	/*
 	 * One page for all five steps, the step held in the URL so the back gesture
@@ -137,9 +137,9 @@
 	/* Empty while a warband is read, so it does not show as a new one first. */
 	const heading = $derived(id && loadedId !== id ? '' : warband?.name.trim() || faction?.name || 'New warband');
 
-	/** Every game for step 1, those still to come among them, A to Z. */
-	const tiles = [
-		...Object.values(systems).map((s) => ({
+	/** Every game for step 1, A to Z. */
+	const tiles = Object.values(systems)
+		.map((s) => ({
 			id: s.game.id,
 			name: s.game.name,
 			author: s.game.author,
@@ -148,12 +148,9 @@
 				`${s.factions.length} faction${s.factions.length === 1 ? '' : 's'}`,
 				`${s.game.budget} ${s.game.currencyName ?? s.game.currency}`
 			],
-			built: coverage(s.game, s.factions),
-			available: true
-		})),
-		/* A game still to come shows its ring with every area open, faint with the disabled tile. */
-		...planned.map((p) => ({ id: p.id, name: p.name, author: p.author, details: ['eventually'], built: areas.map(() => false), available: false }))
-	].sort((a, b) => a.name.localeCompare(b.name));
+			built: coverage(s.game, s.factions)
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	/** One of `count` equal pieces of a ring from radius 8 to 20 around 22,22, the first starting at twelve o'clock. */
 	function slice(i: number, count: number): string {
@@ -452,7 +449,6 @@
 					<button
 						type="button"
 						class="choice flex items-center gap-3 px-4 py-5"
-						disabled={!tile.available}
 						onclick={() => pickGame(tile.id)}
 					>
 						<span class="min-w-0 flex-1">

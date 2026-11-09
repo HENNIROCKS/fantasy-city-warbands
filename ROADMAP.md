@@ -32,8 +32,6 @@
 - [x] 📈 Black Death City's aftermath: injuries permanent or temporary, Black Rot, a champion assuming command, experience and ranks, recuperating
 - [x] 📈 Black Death City's campaign: advancement rolls, the underdog's bonuses, holdings and the stronghold, Explore the City, curiosities and relics, income, leeching, retiring a fighter
 - [ ] 📄 The roster per game, as each game's own sheet has it
-- [ ] 📚 Mordheim
-- [ ] 📚 Necropolis
 
 ## Ideas
 

@@ -3,7 +3,7 @@
 	import type { Snippet } from 'svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
-	import { planned, systems } from '$lib/systems';
+	import { systems } from '$lib/systems';
 	import { loadSound, loadTuckBox, saveSound, saveTuckBox } from '$lib/core/storage.svelte';
 	import { theme } from '$lib/theme.svelte';
 
@@ -29,21 +29,18 @@
 	/** Each game's own site and where its rules come from, by game id. */
 	const SITES: Record<string, string> = {
 		wyrdcry: 'https://wyrdcry.net',
-		'black-death-city': 'https://www.blackdeathcity.com/',
-		mordheim: 'https://mordheimer.net/',
-		necropolis: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/'
+		'black-death-city': 'https://www.blackdeathcity.com/'
 	};
 
-	/** Playable games and those still to come in one list, by name. */
-	const games = [
-		...Object.values(systems).map((s) => ({
+	/** The games, by name. */
+	const games = Object.values(systems)
+		.map((s) => ({
 			id: s.game.id,
 			name: s.game.name,
 			author: s.game.author,
 			edition: s.game.edition
-		})),
-		...planned.map((g) => ({ ...g, edition: 'eventually' }))
-	].sort((a, b) => a.name.localeCompare(b.name));
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	/** The domain alone, as the label of a game's link. */
 	const domain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
