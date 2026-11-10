@@ -402,7 +402,8 @@ export function fighterCard(
 	   profile is known, since only that says what it carries. */
 	const unarmed = game.unarmed;
 	if (unarmed && fighter && !carried.some(({ wargear }) => wargear.kind === 'melee') && !keywords.some((k) => unarmed.except.includes(k))) {
-		weapons.push({ name: unarmed.weapon.name, values: game.weaponStats.map((s) => unarmed.weapon.profile?.[s.key] ?? '–') });
+		const weapon = unarmed.instead?.find((i) => keywords.includes(i.keyword))?.weapon ?? unarmed.weapon;
+		weapons.push({ name: weapon.name, values: game.weaponStats.map((s) => weapon.profile?.[s.key] ?? '–') });
 	}
 
 	/* A pick that only raises a characteristic is in the profile above, and the

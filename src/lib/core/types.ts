@@ -144,9 +144,10 @@ export interface GameSystem {
 	/**
 	 * The profile a fighter fights with that carries no melee weapon, as
 	 * Wyrdcry's Unarmed, and the keywords of fighters that never do – a BEAST
-	 * fights with what is on its profile.
+	 * fights with what is on its profile. A fighter with a keyword of `instead`
+	 * fights with that profile in its place, as Necropolis' colossal models do.
 	 */
-	unarmed?: { weapon: Wargear; except: string[] };
+	unarmed?: { weapon: Wargear; except: string[]; instead?: { keyword: string; weapon: Wargear }[] };
 	/**
 	 * What keeps a fighter from carrying its wargear, one entry per piece it may
 	 * not have, in the order it carries them. Each piece is held against those

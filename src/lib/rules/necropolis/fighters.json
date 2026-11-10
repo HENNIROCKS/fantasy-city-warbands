@@ -8,6 +8,8 @@
 		"keywords": ["leader"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": 7, "hp": 15 },
+		"wargear_lists": ["Melee Weapons", "Ranged Weapons", "Armour", "Miscellaneous Equipment"],
+		"wargear_except": ["heavy-armour", "shield", "great-shield"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
 			{ "name": "Mana and spells", "text": "Divide 4 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 3 additional spells. Choose 1 Basic Leader Trait." },
@@ -23,6 +25,7 @@
 		"keywords": ["leader"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 3, "violence": 6, "ranged": 7, "hp": 17 },
+		"wargear_lists": ["Melee Weapons", "Ranged Weapons", "Armour", "Miscellaneous Equipment"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
 			{ "name": "Mana and spells", "text": "Divide 3 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 1 additional spell. Choose 1 Basic Leader Trait." },
@@ -39,6 +42,7 @@
 		"keywords": ["leader", "colossal"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 3, "move": 3, "violence": 5, "ranged": 6, "hp": 25 },
+		"wargear_lists": ["Colossal Melee Weapons", "Colossal Ranged Weapons", "Armour", "Miscellaneous Equipment"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "Choose Blood, Bone or Plasm as the leader’s keyword. **Bone:** the leader improves their violence by 1. **Blood:** the leader gains +2 max hp. **Plasm:** the leader gains the fly keyword and −2hp and cannot wear heavy armour." },
 			{ "name": "Mana and spells", "text": "Divide 5 mana points between Blood/Bone/Plasm. Gain the Summon spell and choose 3 additional spells. Choose 1 Basic Leader Trait." },
@@ -55,6 +59,7 @@
 		"keywords": ["minion", "husk"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": 7, "hp": 10 },
+		"wargear_lists": ["Melee Weapons", "Ranged Weapons", "Armour", "Miscellaneous Equipment"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." }
 		]
@@ -68,6 +73,7 @@
 		"keywords": ["minion", "husk"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 3, "violence": 6, "ranged": 7, "hp": 12 },
+		"wargear_lists": ["Melee Weapons", "Ranged Weapons", "Armour", "Miscellaneous Equipment"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." },
 			{ "name": "Brutal", "text": "When this model performs an attack action, add +1 to the damage total." }
@@ -82,6 +88,8 @@
 		"keywords": ["minion", "fly", "beast", "familiar"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 4, "violence": 9, "ranged": null, "hp": 6 },
+		"wargear_lists": ["Miscellaneous Equipment"],
+		"wargear_also": ["claws-and-fangs"],
 		"rules": [
 			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." },
 			{ "name": "Restrictions", "text": "Familiar can only take claws and fangs as a weapon. Familiar cannot wear armour or carry a shield." },
@@ -98,6 +106,8 @@
 		"keywords": ["minion", "beast", "husk", "remnant"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 3, "violence": 9, "ranged": 9, "hp": 6 },
+		"wargear_lists": ["Melee Weapons", "Ranged Weapons", "Armour", "Miscellaneous Equipment"],
+		"wargear_except": ["heavy-polearm", "great-weapon", "dual-hand-weapons", "large-claws", "sling", "bow", "crossbow"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Necromantic Remnant cannot take 2h weapons apart from claws and fangs." },
 			{ "name": "Plasm", "text": "If this model chooses the *Plasm* keyword it gains the *fly* keyword and −1 HP." }
@@ -112,6 +122,8 @@
 		"keywords": ["minion", "beast"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
+		"wargear_lists": ["Miscellaneous Equipment"],
+		"wargear_also": ["claws-and-fangs", "light-armour"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Small beast can only take claws and fangs as a weapon. Small beast cannot carry a shield or wear heavy armour." },
 			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword and −2 HP." }
@@ -126,6 +138,9 @@
 		"keywords": ["minion", "beast"],
 		"affinities": ["blood", "bone"],
 		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": null, "hp": 15 },
+		"wargear_lists": ["Armour", "Miscellaneous Equipment"],
+		"wargear_also": ["claws-and-fangs", "large-claws"],
+		"wargear_except": ["shield", "great-shield"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Large Beast can only take Claws and Fangs or Large Claws as a weapon. Large Beast cannot carry a Shield." },
 			{ "name": "Unique", "text": "Each gathering may only take 1 Large Beast." }
@@ -140,6 +155,7 @@
 		"keywords": ["minion", "colossal"],
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 3, "move": 3, "violence": 7, "ranged": 7, "hp": 25 },
+		"wargear_lists": ["Colossal Melee Weapons", "Colossal Ranged Weapons", "Armour", "Miscellaneous Equipment"],
 		"rules": [
 			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword, −2 HP and cannot wear heavy armour." },
 			{ "name": "Colossal", "text": "This model can only take weapons from the Colossal Weapons list." },
@@ -156,6 +172,8 @@
 		"keywords": ["minion", "beast", "fly"],
 		"affinities": ["blood", "bone"],
 		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
+		"wargear_lists": ["Miscellaneous Equipment"],
+		"wargear_also": ["claws-and-fangs"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Flying beast can only take claws and fangs as a weapon. Flying Beast cannot wear armour or carry a shield." }
 		]

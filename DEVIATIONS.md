@@ -55,6 +55,9 @@ Transcribed from the Rulebook v0.9, a draft that still carries placeholders and 
 
 - [ ] Minions carry the keyword Minion, which the rulebook uses only as a heading, so that the app can count them apart from the leader (pp. 32–35)
 - [ ] Aberrant Husk: Brutal applies whatever keyword it chooses, as a rule of its own, where it stands under Plasm after "in addition they have" (p. 32)
+- [ ] Improvised Weapon: shown on every model without a melee weapon, where the rulebook gives it to a model that bought no weapon at all, so a model with only a ranged weapon has it too (p. 36)
+- [ ] Wardart and Throwing Axe count as Miscellaneous Equipment, as p. 41 lists them, so a model takes one beside its weapons, also a Beast or a colossal model whose entry allows only claws and fangs or colossal weapons (pp. 30, 33–36, 41)
+- [ ] A shield cannot be taken beside a two-handed weapon, also by a leader whose second weapon is one-handed and could use it while switched to that one (pp. 36, 40)
 
 ### Open upstream
 

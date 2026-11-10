@@ -1,0 +1,8 @@
+{
+	"Melee Weapons": ["blade", "axe", "bludgeon", "light-polearm", "heavy-polearm", "great-weapon", "dual-hand-weapons", "claws-and-fangs", "large-claws"],
+	"Ranged Weapons": ["sling", "bow", "crossbow"],
+	"Colossal Melee Weapons": ["massive-hand-weapon", "colossal-weapon", "dual-massive-weapons", "massive-claws"],
+	"Colossal Ranged Weapons": ["massive-ranged-weapon"],
+	"Armour": ["light-armour", "heavy-armour", "shield", "great-shield"],
+	"Miscellaneous Equipment": ["wardart", "throwing-axe-or-mallet", "rope-and-hook", "banner", "musical-instrument"]
+}
