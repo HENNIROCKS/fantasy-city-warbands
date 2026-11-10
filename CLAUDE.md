@@ -31,15 +31,16 @@ weiter von Gedrucktem ab, wandert sie als `[x]` darüber, sonst wird sie
 gelöscht; die Antwort steht in der Vault-Notiz. Ist nichts offen, entfällt die
 Überschrift.
 
-Was bei Black Death City oder Wyrdcry unter „Open upstream“ steht, und jede
-Lesart `[ ]`, die nur der Autor klären kann, steht zugleich als Frage in
-`_works/bdc-questions-<datum>.txt` bzw. `_works/wyrdcry-questions-<datum>.txt`
+Was bei Black Death City, Necropolis oder Wyrdcry unter „Open upstream“ steht,
+und jede Lesart `[ ]`, die nur der Autor klären kann, steht zugleich als Frage in
+`_works/bdc-questions-<datum>.txt`, `_works/necropolis-questions-<datum>.txt`
+bzw. `_works/wyrdcry-questions-<datum>.txt`
 – ein Post für den Discord des Autors des Spiels: englisch, einfache Sprache,
 keine Anrede, kein Begleittext, keine Ausrufezeichen, keine Gedankenstriche,
 unter 2000 Zeichen. Je Frage eine nummerierte Zeile mit der Quelle (Seite,
 Datei) in Klammern, gegliedert bei Black Death City nach den Teilen des Playtests:
-Scenarios, Armoury, Magic, Campaign und Factions, bei Wyrdcry nach Rulebook, Campaign
-Book, Daten und Fraktionen. Kommt eine Frage dazu oder
+Scenarios, Armoury, Magic, Campaign und Factions, bei Necropolis unter Rulebook,
+bei Wyrdcry nach Rulebook, Campaign Book, Daten und Fraktionen. Kommt eine Frage dazu oder
 fällt eine weg, weil der Autor geantwortet hat und die Zeile abgehakt ist,
 entsteht eine neue Datei mit dem Datum des Tages, und die vorige geht per
 `trash` in den Papierkorb; ist keine Frage mehr offen, liegt keine Datei dort.
@@ -137,6 +138,14 @@ City, Holdings, Funde und Downtime. Was die App dort nicht führt, trägt in
 Werte **an der PDF-Seite ablesen, nicht am extrahierten Text** – die
 Spaltenextraktion verschiebt Profile. Widersprechen sich Fighters List und
 Fighter Scroll, gilt die Scroll; der Widerspruch kommt in die `DEVIATIONS.md`.
+
+**Necropolis** ist von Hand aus dem Rulebook v0.9 übertragen
+(`_works/Rulebooks/Necropolis Rulebook v0.9.pdf`), einem Entwurf mit
+Platzhaltern und Beispielen, die nicht aufgehen; die App nennt die Version,
+seine Lücken stehen in der `DEVIATIONS.md`. Leader, Minions, Armaments, Zauber
+und Traits teilen alle Covenants (`rules/necropolis/*.json`), die
+`faction.json` filtert sie über Keywords. Werte wie bei Black Death City an der
+PDF-Seite ablesen.
 
 ## Grundsatz der Prüfung
 
