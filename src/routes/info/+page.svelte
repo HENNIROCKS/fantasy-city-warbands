@@ -61,9 +61,6 @@
 		}
 	];
 
-	/* Where the colours and form elements come from. */
-	const CARD_CREATOR = 'https://hennirocks.github.io/warcry-card-creator-2026/';
-
 	const linkClass =
 		'flex min-h-11 items-center justify-center gap-2 rounded border border-zinc-700 bg-zinc-800 px-4 font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700';
 </script>
@@ -268,7 +265,7 @@
 				<li><a class={linkClass} href="{REPO}/blob/main/ROADMAP.md" target="_blank" rel="noopener">{@render github()}What is planned</a></li>
 				<li><a class={linkClass} href="{REPO}/blob/main/DEVIATIONS.md" target="_blank" rel="noopener">{@render github()}Where the app reads the rules its own way</a></li>
 				<li><a class={linkClass} href={REPO} target="_blank" rel="noopener">{@render github()}Source code</a></li>
-				<li><a class={linkClass} href={CARD_CREATOR} target="_blank" rel="noopener">{@render external()}Warcry Card Creator 2026</a></li>
+				<li><a class={linkClass} href="https://tabletop.hennirocks.de" target="_blank" rel="noopener">{@render external()}@hendrik_tabletop</a></li>
 			</ul>
 		</section>
 	</section>
