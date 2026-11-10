@@ -228,14 +228,17 @@ first and publishes it to GitHub Pages.
 
 ## Where the rules come from
 
+- **Black Death City** – transcribed by hand from the Black Death City
+  Playtest v1.10 by Sam Pearson. Where the playtest contradicts itself, the
+  fighter's own scroll wins over the fighter list.
+- **Necropolis** – transcribed by hand from the Necropolis Rulebook v0.9 by
+  Peter Vigors, a draft with placeholders and examples that do not add up
+  yet; its gaps are listed in DEVIATIONS.md.
 - **Wyrdcry** – kept by hand in the shape of the
   [Wyrdcry Warband Deck](https://github.com/HENNIROCKS/wyrdcry-warband-deck)'s
   ruleset, and following Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign
   Book 1.0 and the factions at [wyrdcry.net](https://wyrdcry.net). Wyrdcry is by
   Johan Markström; the rules belong to the Wyrdcry project.
-- **Black Death City** – transcribed by hand from the Black Death City
-  Playtest v1.10 by Sam Pearson. Where the playtest contradicts itself, the
-  fighter's own scroll wins over the fighter list.
 
 Where the app reads a game differently from its page or its data, or settles a
 contradiction one way, [`DEVIATIONS.md`](DEVIATIONS.md) says so.
