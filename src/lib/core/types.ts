@@ -1145,6 +1145,8 @@ export interface FighterChoiceOption {
 	title?: string;
 	/** What it adds to how many another choice of the same fighter picks, by that choice's `id`: Necropolis' Studious, one more spell. */
 	raises?: { choice: string; by: number };
+	/** What picking it adds to the warband's purse when it is built, not to its deployment limit: Necropolis' Miserly, 50 obols. */
+	purse?: number;
 }
 
 /** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */
@@ -1159,6 +1161,8 @@ export interface FighterChoice {
 	pick: number;
 	/** Whether it may be left open, picking fewer than `pick` or none, as a Misbegotten may go without a bloodline mutation. */
 	optional?: true;
+	/** Whether one option may be picked several times, each pick one of `pick`: Necropolis' mana points divided between three schools. */
+	repeat?: true;
 	/**
 	 * Whether an option one fighter has is barred to every other fighter of the
 	 * warband, as Black Death City's No Duplicates for skills; `validate` reports a second.
@@ -1277,7 +1281,7 @@ export interface FighterInstance {
 	name: string;
 	/** Wargear ids; an id may appear more than once. */
 	wargear: string[];
-	/** The option ids picked under the fighter's own `choice`. Missing in a warband saved before there were any. */
+	/** The option ids picked under the fighter's own `choice`, an id once for each time a `repeat` choice's option is picked. Missing in a warband saved before there were any. */
 	picks?: string[];
 	/** The player's own background text, shown at the head of the fighter's card. */
 	fluff?: string;
@@ -1363,7 +1367,8 @@ export interface Warband {
 	/**
 	 * The whole purse: what the warband is worth together with what it has left
 	 * to spend, as the Warband Builder counts it. Missing reads as the game's
-	 * `budget`, which a warband not yet in a campaign has.
+	 * `budget` and what its picks' `purse` adds, which a warband not yet in a
+	 * campaign has.
 	 */
 	gold?: number;
 	/** Wargear ids held by the warband rather than a fighter; an id may appear more than once. */

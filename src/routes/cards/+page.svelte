@@ -34,8 +34,8 @@
 	import { applyBack, emptyPending, openSales, type WarbandBackDraft } from '$lib/core/stash';
 	import { loadBattle, loadPhotos, loadSound, loadTuckBox, loadWarband, savePhoto, saveBattle, saveWarband } from '$lib/core/storage.svelte';
 	import type { Advancement, Counter, Faction, Fighter, FighterInstance, Warband } from '$lib/core/types';
-	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
-	import { newId } from '$lib/core/warband';
+	import { newExcess, validate, warbandCost } from '$lib/core/validate';
+	import { newId, purse } from '$lib/core/warband';
 	import { photoLayout, type PhotoView, type StoredPhoto } from '$lib/photo';
 	import { shareLink } from '$lib/share';
 	import { startScreenGone } from '$lib/start-screen';
@@ -734,7 +734,7 @@
 	const halving = $derived(warband && hiring && !battle?.hired.some((h) => h.halved) ? hiring.halving(warband) : null);
 	const sum = (fees: number[]) => fees.reduce((total, fee) => total + fee, 0);
 	/* The gold left to hire with: the purse, less what the warband is worth and what is hired already. */
-	const goldFree = $derived(warband && system && faction ? purse(warband, system.game) - warbandCost(warband, faction) - sum(hiredFees) : 0);
+	const goldFree = $derived(warband && system && faction ? purse(warband, system.game, faction) - warbandCost(warband, faction) - sum(hiredFees) : 0);
 
 	/* Each one the faction may hire, the official ones ahead of the homebrew and each source's together: hired already with its fee, or what
 	   hiring it adds to the fees and whether the gold holds it – more than its own fee where Well-connected's half

@@ -19,9 +19,9 @@ import { applyHoldings, noCollecting, noSeizing, type CollectAnswer, type SeizeA
 import { battleRecord, startBattleEnd, type BattleEnd } from './history';
 import { canLead, disbandedAfter, keywordsOf, leaderOf } from './leader';
 import { priceOf } from './stash';
-import { purse, warbandCost } from './validate';
+import { warbandCost } from './validate';
 import { standingRaised, type UnderdogState } from './underdog';
-import { profileOf, withFighter } from './warband';
+import { profileOf, purse, withFighter } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
@@ -310,7 +310,7 @@ export function goldLeft(warband: Warband, game: GameSystem, faction: Faction, d
 		return (f.instanceId === key ? 0 : feeOf(draft, game, faction, f)) + (explore && explore.key !== key ? feeOf(draft, game, faction, f, explore) : 0);
 	};
 	const spent = warband.fighters.reduce((sum, f) => sum + fees(f), hireFees(draft));
-	return purse(warband, game) - warbandCost(warband, faction) - spent;
+	return purse(warband, game, faction) - warbandCost(warband, faction) - spent;
 }
 
 /** The score a row's roll needs on the die: the game's target, less 1 for each modifier that holds and what the underdog adds. */
@@ -466,7 +466,7 @@ export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, d
 	const raised = found ? { ...warband, tally } : warband;
 	const earned = rules.income
 		? rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog))
-		: { tally, gold: purse(warband, game), lines: [] };
+		: { tally, gold: purse(warband, game, faction), lines: [] };
 	const spent = spentOf(warband, game, faction, draft);
 	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) - spent.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
 	return { ...earned, gold: earned.gold + kept, found };

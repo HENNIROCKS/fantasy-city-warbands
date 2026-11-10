@@ -13,8 +13,7 @@
 import type { Faction, GameSystem, Warband } from './types';
 import { activeEffects } from './effects';
 import { disbandedAfter, leaderOf } from './leader';
-import { purse } from './validate';
-import { fighterCost } from './warband';
+import { fighterCost, purse } from './warband';
 import { priceOf } from './stash';
 
 /**
@@ -29,7 +28,7 @@ export function dismiss(warband: Warband, faction: Faction, game: GameSystem, in
 	const leaving = fighterCost(instance, faction, activeEffects(warband, faction)) - kept.reduce((sum, id) => sum + priceOf(id, faction), 0);
 	const left: Warband = {
 		...warband,
-		gold: purse(warband, game) - leaving,
+		gold: purse(warband, game, faction) - leaving,
 		...(kept.length || warband.stash ? { stash: [...(warband.stash ?? []), ...kept] } : {}),
 		fighters: warband.fighters.filter((f) => f !== instance)
 	};

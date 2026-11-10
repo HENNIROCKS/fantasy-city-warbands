@@ -18,7 +18,7 @@
 	import { buy, copied, findsOf, leftOf, search, searchers, targetOf } from '$lib/core/finds';
 	import { loadWarband, requestPersistence, saveWarband } from '$lib/core/storage.svelte';
 	import type { Faction, FighterInstance, Issue, Warband } from '$lib/core/types';
-	import { newExcess, purse, validate, warbandCost } from '$lib/core/validate';
+	import { newExcess, validate, warbandCost } from '$lib/core/validate';
 	import {
 		ORIGIN_LABEL,
 		createWarband,
@@ -26,6 +26,7 @@
 		fighterName,
 		fighterSections,
 		fighterType,
+		purse,
 		roleOf,
 		withFighter,
 		withFighterPicks,
@@ -133,7 +134,7 @@
 	const faction = $derived(system?.factions.find((f) => f.id === warband?.factionId) ?? null);
 	const issues = $derived(warband && system && faction ? validate(warband, system.game, faction) : []);
 	const cost = $derived(warband && faction ? warbandCost(warband, faction) : 0);
-	const gold = $derived(warband && system ? purse(warband, system.game) : (system?.game.budget ?? 0));
+	const gold = $derived(warband && system && faction ? purse(warband, system.game, faction) : (system?.game.budget ?? 0));
 	/* Empty while a warband is read, so it does not show as a new one first. */
 	const heading = $derived(id && loadedId !== id ? '' : warband?.name.trim() || faction?.name || 'New warband');
 
@@ -305,12 +306,13 @@
 
 	/**
 	 * What taking a fighter out would break, such as the GOBLINs an ORC leaves
-	 * behind. Only a faction's ratios can be broken by fewer fighters. A limit
-	 * the warband breaks already, as an import may, does not stop it: taking
-	 * fighters out is how it is put right.
+	 * behind. Only a faction's ratios, and the purse a fighter's pick adds, can
+	 * be broken by fewer fighters. A limit the warband breaks already, as an
+	 * import may, does not stop it: taking fighters out is how it is put right.
 	 */
 	function removeBlockedBy(instanceId: string): Issue | null {
-		if (!warband || !faction?.ratios?.length) return null;
+		const adds = faction?.fighters.some((f) => f.choices?.some((c) => c.options.some((o) => o.purse)));
+		if (!warband || !(faction?.ratios?.length || adds)) return null;
 		const block = blockedBy({ ...warband, fighters: warband.fighters.filter((f) => f.instanceId !== instanceId) });
 		return block && !issues.some((i) => i.kind === 'excess' && i.code === block.code) ? block : null;
 	}

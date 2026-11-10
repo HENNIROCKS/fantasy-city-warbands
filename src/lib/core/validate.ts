@@ -13,7 +13,7 @@
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
-import { chosenOptions, fighterCost, fighterName, offeredOptions, pickOf } from './warband';
+import { chosenOptions, fighterCost, fighterName, offeredOptions, pickOf, purse } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -58,11 +58,6 @@ export function warbandCost(warband: Warband, faction: Faction): number {
 	return total;
 }
 
-/** The whole purse the warband's cost is held against. */
-export function purse(warband: Warband, game: GameSystem): number {
-	return warband.gold ?? game.budget;
-}
-
 export function validate(warband: Warband, game: GameSystem, faction: Faction): Issue[] {
 	if (warband.game !== game.id || warband.factionId !== faction.id || faction.game !== game.id) {
 		const message = `${warband.factionId} is not a faction of ${game.name}.`;
@@ -74,7 +69,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	const effects = activeEffects(warband, faction);
 
 	const cost = warbandCost(warband, faction);
-	const gold = purse(warband, game);
+	const gold = purse(warband, game, faction);
 	if (cost > gold) {
 		issues.push({
 			code: 'over-budget',
@@ -156,14 +151,17 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 
 		const picked = instance.picks ?? [];
 		const offered = new Set(offeredOptions(fighter).map((o) => o.id));
-		/* A pick no choice offers, or one picked twice, is one too many for the first choice. */
-		const stray = picked.some((id, i) => !offered.has(id) || picked.indexOf(id) !== i);
+		/* An option of a `repeat` choice may stand in the picks as often as it is picked. */
+		const repeated = new Set((fighter.choices ?? []).filter((c) => c.repeat).flatMap((c) => c.options.map((o) => o.id)));
+		/* A pick no choice offers, or one picked twice outside a `repeat` choice, is one too many for the first choice. */
+		const stray = picked.some((id, i) => !offered.has(id) || (picked.indexOf(id) !== i && !repeated.has(id)));
 		for (const [i, choice] of (fighter.choices ?? []).entries()) {
 			const options = new Set(choice.options.map((o) => o.id));
-			const valid = new Set(picked.filter((id) => options.has(id) && !choice.given?.includes(id)));
+			const valid = picked.filter((id) => options.has(id) && !choice.given?.includes(id));
+			const count = choice.repeat ? valid.length : new Set(valid).size;
 			const pick = pickOf(choice, instance, fighter);
-			const tooMany = valid.size > pick || (i === 0 && stray);
-			if (tooMany || (valid.size < pick && !choice.optional)) {
+			const tooMany = count > pick || (i === 0 && stray);
+			if (tooMany || (count < pick && !choice.optional)) {
 				issues.push({
 					code: 'fighter-choice',
 					kind: tooMany ? 'excess' : 'missing',

@@ -71,6 +71,20 @@ export function pickOf(choice: FighterChoice, instance: FighterInstance, fighter
 }
 
 /**
+ * The whole purse the warband's cost is held against: its `gold` once it has
+ * any, else the game's budget and what its fighters' picks add, such as
+ * Necropolis' Miserly.
+ */
+export function purse(warband: Warband, game: GameSystem, faction: Faction): number {
+	if (warband.gold !== undefined) return warband.gold;
+	const fighters = new Map(faction.fighters.map((f) => [f.id, f]));
+	return warband.fighters.reduce((sum, instance) => {
+		const fighter = fighters.get(instance.fighterId);
+		return fighter ? chosenOptions(instance, fighter).reduce((n, o) => n + (o.purse ?? 0), sum) : sum;
+	}, game.budget);
+}
+
+/**
  * The fighter's profile with what its own picks add, such as Fight +1 from
  * Martial Discipline, and what the warband's add, such as Huntsmen's Shoot +1.
  */

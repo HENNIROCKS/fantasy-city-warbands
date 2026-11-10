@@ -187,6 +187,8 @@ interface RawFighter {
 	keywords: string[];
 	/** Blood, Bone or Plasm, as many of them as the model may choose from. */
 	affinities: string[];
+	/** How many mana points it divides between Blood, Bone and Plasm, for a model that casts. */
+	mana?: number;
 	/** How many spells it chooses besides Summon, for a model that casts. */
 	spells?: number;
 	profile: Record<string, number | null>;
@@ -253,6 +255,21 @@ interface RawSpell {
 const SUMMON = 'summon';
 const MANA_RULE = 'Mana and spells';
 
+const SCHOOLS = ['Blood', 'Bone', 'Plasm'];
+
+/** The mana points a caster divides between the three schools, each school as often as it likes (p. 29–31). */
+function manaOf(f: RawFighter & { mana: number }): FighterChoice {
+	return {
+		id: 'mana',
+		source: MANA_RULE,
+		prompt: `Divide ${f.mana} mana ${f.mana === 1 ? 'point' : 'points'} between Blood, Bone and Plasm.`,
+		pick: f.mana,
+		repeat: true,
+		options: SCHOOLS.map((name) => ({ id: `mana-${name.toLowerCase()}`, name, text: '' })),
+		noun: { one: 'mana point', many: 'mana points' }
+	};
+}
+
 /** The spells a caster chooses from the schools it may learn, by school, and the one it knows already. */
 function spellsOf(f: RawFighter & { spells: number }, schools: string[] | undefined): FighterChoice {
 	const options = (spells as RawSpell[])
@@ -288,8 +305,9 @@ function leaderTraitOf(f: RawFighter): FighterChoice {
 }
 
 function fighter(f: RawFighter, elements: string[], schools: string[] | undefined): Fighter {
-	const { description, affinities: _affinities, spells: _spells, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
+	const { description, affinities: _affinities, mana: _mana, spells: _spells, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
 	const choices = [affinityOf(f, elements)];
+	if (f.mana !== undefined) choices.push(manaOf({ ...f, mana: f.mana }));
 	if (f.spells !== undefined) choices.push(spellsOf({ ...f, spells: f.spells }, schools));
 	if (f.keywords.includes('leader')) choices.push(leaderTraitOf(f));
 	return { ...rest, fluff: description, wargear: offered(f), gear: [], choices };

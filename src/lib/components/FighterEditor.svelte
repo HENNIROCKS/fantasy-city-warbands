@@ -240,6 +240,17 @@
 		document.getElementById(optionId(id))?.focus();
 	}
 
+	/* One mana point more or less under a `repeat` choice; a minus takes out the last one picked of that option. */
+	async function step(id: string, by: 1 | -1) {
+		const picks = instance.picks ?? [];
+		instance.picks = by > 0 ? [...picks, id] : picks.filter((_, i) => i !== picks.lastIndexOf(id));
+		await tick();
+		/* The button just tapped may be locked now: the other of the row takes the focus. */
+		const tapped = document.getElementById(`${optionId(id)}-${by > 0 ? 'up' : 'down'}`) as HTMLButtonElement | null;
+		const other = document.getElementById(`${optionId(id)}-${by > 0 ? 'down' : 'up'}`) as HTMLButtonElement | null;
+		(tapped && !tapped.disabled ? tapped : other)?.focus();
+	}
+
 	/* Not rolled: back to the row it was asked about. */
 	async function notRolled(id: string) {
 		asking = null;
@@ -366,7 +377,7 @@
 				{/if}
 				<!-- A characteristic needs no explaining, so two fit a row; a spell or a
 				     row of a table is a paragraph, read before it is picked. -->
-				<div class="grid gap-2 {choice.options.every((o) => !o.text) ? 'grid-cols-2' : ''}">
+				<div class="grid gap-2 {choice.options.every((o) => !o.text) && !choice.repeat ? 'grid-cols-2' : ''}">
 					{#each choice.options as option, i (option.id)}
 						<!-- Where the options come from several tables, each table under its name. -->
 						{#if option.group && option.group !== choice.options[i - 1]?.group}
@@ -385,6 +396,31 @@
 									<button type="button" class="btn" onclick={() => notRolled(option.id)}>Not rolled</button>
 									<button type="button" class="btn" onclick={() => choose(option.id, choice)} use:focusOnMount>Take it</button>
 								</div>
+							</div>
+						{:else if choice.repeat}
+							{@const count = picks.filter((p) => p === option.id).length}
+							<!-- A point more only while the choice has room, a point less while the option has one. -->
+							<div class="flex items-center justify-between gap-2">
+								<span class="font-semibold">{option.name}</span>
+								<span class="flex items-center gap-2">
+									<button
+										type="button"
+										id="{optionId(option.id)}-down"
+										class="btn"
+										aria-label="One {option.name} point less"
+										disabled={closed || settled || !count}
+										onclick={() => step(option.id, -1)}>−</button
+									>
+									<span class="w-6 text-center font-semibold" aria-live="polite">{count}</span>
+									<button
+										type="button"
+										id="{optionId(option.id)}-up"
+										class="btn"
+										aria-label="One {option.name} point more"
+										disabled={closed || settled || mine.length >= pick}
+										onclick={() => step(option.id, 1)}>+</button
+									>
+								</span>
 							</div>
 						{:else}
 							<!-- What the fighter has from recruitment stands pressed, and is not one of its picks. -->

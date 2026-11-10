@@ -5,7 +5,6 @@
  */
 
 import type { ChoiceEffect, Faction, FactionCounter, Fighter, FighterChoice, GameSystem, Hire, Hireling, Source, StatCondition, UnderdogBonus, Wargear, WargearUse, Warband, WeaponAdjustment } from '$lib/core/types';
-import { purse } from '$lib/core/validate';
 import { advancement } from './wyrdcry-renown';
 import { explore } from './wyrdcry-explore';
 import { shardRolls, wyrdcryInjuries } from './wyrdcry-injuries';
@@ -276,7 +275,7 @@ function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'lo
 	const bounty = tier !== held ? ` as ${tier.label} (Bounty)` : '';
 	return {
 		tally: { ...warband.tally, favour: before + favour },
-		gold: purse(warband, game) + gold,
+		gold: (warband.gold ?? game.budget) + gold,
 		lines: [
 			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${held.label}${rises ? ' (a rise in standing)' : ''}${licked}` },
 			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}${bounty}` }

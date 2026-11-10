@@ -16,8 +16,7 @@
 
 import { findsOf } from './finds';
 import type { BattleRecord, Faction, GameSystem, Warband } from './types';
-import { purse } from './validate';
-import { newId } from './warband';
+import { newId, purse } from './warband';
 
 export interface StashOut {
 	/** The piece's place in the stash as stored, which nothing moves until Done. */
@@ -154,7 +153,7 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 		...(notes ? { notes } : {}),
 		...(draft.colour || warband.colour !== undefined ? { colour: draft.colour } : {}),
 		...(Object.keys(counted).length || warband.tally ? { tally: counted } : {}),
-		...(changed ? { gold: purse(warband, game) + goldIn(stash, draft, faction, game) - removed + taken } : {}),
+		...(changed ? { gold: purse(warband, game, faction) + goldIn(stash, draft, faction, game) - removed + taken } : {}),
 		...(gone.size || draft.stashIn.length ? { stash: [...stash.filter((_, i) => !gone.has(i)), ...draft.stashIn] } : {}),
 		...(history.length || warband.history ? { history } : {}),
 		...(finds ? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } } : {}),

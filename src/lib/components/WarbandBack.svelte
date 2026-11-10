@@ -4,9 +4,9 @@
 	import { RESULT_LABELS, displayDate, newestFirst, opponent } from '$lib/core/history';
 	import { findsOf } from '$lib/core/finds';
 	import { goldIn, rollValues, saleOf, saleRollOf, toRecord, type WarbandBackDraft } from '$lib/core/stash';
-	import { fighterName } from '$lib/core/warband';
+	import { fighterName, purse } from '$lib/core/warband';
 	import type { BattleRecord, Faction, GameSystem, Warband } from '$lib/core/types';
-	import { purse, warbandCost } from '$lib/core/validate';
+	import { warbandCost } from '$lib/core/validate';
 
 	/*
 	 * The back of the warband card, turned over to be written on, in the order
@@ -34,7 +34,7 @@
 	} = $props();
 
 	const stash = $derived(warband.stash ?? []);
-	const left = $derived(purse(warband, game) - warbandCost(warband, faction));
+	const left = $derived(purse(warband, game, faction) - warbandCost(warband, faction));
 	const gained = $derived(goldIn(stash, draft, faction, game));
 
 	/* Gold typed in, added to the draft with Add. */

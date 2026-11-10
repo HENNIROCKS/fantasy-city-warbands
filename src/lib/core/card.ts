@@ -10,8 +10,8 @@ import type { AdvanceEffects, AwayReason, Faction, Fighter, FighterChoiceOption,
 import { LEADER, activeEffects, pickedStats, reaches, type ActiveEffect } from './effects';
 import { keywordsOf } from './leader';
 import { RESULT_LABELS, displayDate, newestFirst, opponent, results, tally } from './history';
-import { purse, warbandCost } from './validate';
-import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf } from './warband';
+import { warbandCost } from './validate';
+import { chosenOptions, fighterCost, fighterSections, fighterType, formatStat, profileOf, purse } from './warband';
 
 /** Why a fighter sits out, as its card's band and the back of its card say it. */
 export const AWAY_LABELS: Record<AwayReason, string> = {
@@ -416,9 +416,20 @@ export function fighterCard(
 		...(fighter?.choices ?? []).flatMap((c) => (c.source && c.options.some((o) => raises(o) && options.includes(o)) ? [c.source] : [])),
 		...options.filter(raises).map((o) => o.name)
 	];
+	/* The options of a choice picked several times stand as one line with their counts, `Blood 2, Bone 1`. */
+	const repeated = (fighter?.choices ?? []).filter((c) => c.repeat);
+	const tallies = repeated.flatMap((c) => {
+		const text = c.options.flatMap((o) => {
+			const n = (instance.picks ?? []).filter((p) => p === o.id).length;
+			return n ? [`${o.name} ${n}`] : [];
+		});
+		const noun = c.noun?.many ?? 'picks';
+		return text.length ? [{ name: noun[0].toUpperCase() + noun.slice(1), text: text.join(', '), type: undefined }] : [];
+	});
 	const standing = [
 		...(fighter?.rules ?? []),
-		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
+		...tallies,
+		...options.filter((o) => !raises(o) && !repeated.some((c) => c.options.includes(o))).map((o) => ({ name: o.name, text: o.text, type: o.type })),
 		...advanced.rules,
 		...injured.rules,
 		...(instance.leader && game.succession?.rule ? [game.succession.rule] : [])
@@ -714,7 +725,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 	/* As on the Warband Deck's card: the gold left, then the weapons ahead of the
 	   rest, each in the order the warband stores them; an id the faction does not
 	   know stands there as itself. */
-	const left = Math.max(0, purse(warband, game) - cost);
+	const left = Math.max(0, purse(warband, game, faction) - cost);
 	const pieces = (warband.stash ?? []).map((id) => faction.wargear.find((w) => w.id === id) ?? { name: id, kind: 'item' });
 	const weapon = (p: { kind: string }) => p.kind === 'melee' || p.kind === 'ranged';
 	const stash = [
