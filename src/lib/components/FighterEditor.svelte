@@ -358,7 +358,7 @@
 			<!-- A pick with a price is paid for once the warband has fought, as its wargear is. -->
 			{@const settled = !!paid && choice.options.some((o) => o.cost)}
 			<section>
-				<p class="sublabel">{choice.source ?? choice.roll ?? 'Choose'} · {mine.length} / {choice.pick}</p>
+				<p class="sublabel">{choice.source ?? choice.roll ?? (choice.pick ? 'Choose' : 'Given')}{choice.pick ? ` · ${mine.length} / ${choice.pick}` : ''}</p>
 				<div class="mb-2 text-zinc-400"><RichText text={choice.prompt} /></div>
 				{#if settled && !closed}
 					<p class="mb-2 text-zinc-400">Paid for: it stays as picked.</p>

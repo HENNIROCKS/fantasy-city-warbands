@@ -178,8 +178,11 @@ export function formatStat(def: StatDef, value: number | string | null | undefin
  */
 export function neverCarried(fighter: Fighter, faction: Faction, game: GameSystem): Map<string, string> {
 	const never = new Map<string, string>();
+	/* What the Covenant or the game gives it, such as a keyword, counts as carried. */
+	const given = (fighter.choices ?? []).flatMap((c) => (c.given ?? []).flatMap((id) => c.options.find((o) => o.id === id)?.keywords ?? []));
+	const holding = given.length ? { ...fighter, keywords: [...fighter.keywords, ...given] } : fighter;
 	for (const id of fighter.wargear) {
-		const refused = game.carry?.(fighter, faction, [id])[0];
+		const refused = game.carry?.(holding, faction, [id])[0];
 		if (refused) never.set(id, refused.short);
 	}
 	return never;

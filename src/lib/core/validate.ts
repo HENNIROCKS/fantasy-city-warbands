@@ -133,9 +133,12 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			}
 		}
 
-		/* What a pick brings, a mutation's weapon, is held like the profile's own gear. */
-		const brought = chosenOptions(instance, fighter).flatMap((o) => o.gear ?? []);
-		const holding = brought.length ? { ...fighter, gear: [...fighter.gear, ...brought] } : fighter;
+		/* What a pick brings, a mutation's weapon or a keyword, is held like the profile's own. */
+		const chosen = chosenOptions(instance, fighter);
+		const brought = chosen.flatMap((o) => o.gear ?? []);
+		const gained = chosen.flatMap((o) => o.keywords ?? []).filter((k) => !fighter.keywords.includes(k));
+		const holding =
+			brought.length || gained.length ? { ...fighter, gear: [...fighter.gear, ...brought], keywords: [...fighter.keywords, ...gained] } : fighter;
 		for (const refused of game.carry?.(holding, faction, instance.wargear) ?? []) {
 			issues.push({ code: 'wargear-carry', kind: 'excess', ...refused, instanceId: instance.instanceId });
 		}
@@ -157,7 +160,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		const stray = picked.some((id, i) => !offered.has(id) || picked.indexOf(id) !== i);
 		for (const [i, choice] of (fighter.choices ?? []).entries()) {
 			const options = new Set(choice.options.map((o) => o.id));
-			const valid = new Set(picked.filter((id) => options.has(id)));
+			const valid = new Set(picked.filter((id) => options.has(id) && !choice.given?.includes(id)));
 			const tooMany = valid.size > choice.pick || (i === 0 && stray);
 			if (tooMany || (valid.size < choice.pick && !choice.optional)) {
 				issues.push({

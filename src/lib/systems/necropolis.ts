@@ -6,7 +6,7 @@
  * as far as the Covenant and the model allow.
  */
 
-import type { Faction, Fighter, GameSystem, Rule, Source, Wargear } from '$lib/core/types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, Wargear } from '$lib/core/types';
 
 import fighterData from '$lib/rules/necropolis/fighters.json';
 import wargearData from '$lib/rules/necropolis/wargear.json';
@@ -40,6 +40,29 @@ const piece = (id: string) => wargearOf(rows.get(id) ?? fail(`Necropolis wargear
    one with the Colossal Improvised Weapon (pp. 36, 38). */
 const IMPROVISED = 'improvised-weapon';
 const COLOSSAL_IMPROVISED = 'colossal-improvised-weapon';
+
+/* Blood, Bone or Plasm (pp. 29–35): a model takes one as its keyword, and a
+   Covenant naming some of them in its `models` allows only those. */
+const ELEMENTS = ['blood', 'bone', 'plasm'];
+const AFFINITY_RULE = 'Blood, Bone or Plasm';
+const HEAVY_ARMOUR = 'heavy-armour';
+
+/* What an element adds to the profile, by fighter id; Violence is a roll
+   target, so improving it by 1 is −1. A model missing here, or an element
+   missing for it, brings only its keyword. */
+const RAISED: Record<string, Record<string, Record<string, number>>> = {
+	lich: { blood: { hp: 2 }, bone: { violence: -1 }, plasm: { hp: -2 } },
+	revenant: { blood: { hp: 2 }, bone: { violence: -1 }, plasm: { hp: -2 } },
+	'ascended-undead': { blood: { hp: 2 }, bone: { violence: -1 }, plasm: { hp: -2 } },
+	husk: { blood: { hp: 2 }, bone: { violence: -1 }, plasm: { hp: -2 } },
+	'aberrant-husk': { blood: { hp: 2 }, bone: { violence: -1 }, plasm: { hp: -2 } },
+	'necromantic-remnant': { plasm: { hp: -1 } },
+	'small-beast': { plasm: { hp: -2 } },
+	'gigantic-horror': { plasm: { hp: -2 } }
+};
+
+/** The models that may not wear heavy armour once they are Plasm. */
+const PLASM_UNARMOURED = new Set(['lich', 'revenant', 'ascended-undead', 'husk', 'aberrant-husk', 'gigantic-horror']);
 
 export const game: GameSystem = {
 	id: 'necropolis',
@@ -86,9 +109,11 @@ export const game: GameSystem = {
 	},
 	carry: (fighter, _faction, wargear) => {
 		const limit = fighter.keywords.includes('leader') ? 2 : 1;
+		const unarmoured = fighter.keywords.includes('plasm') && PLASM_UNARMOURED.has(fighter.id);
 		const known = (ids: string[]) => ids.flatMap((id) => rows.get(id) ?? []);
 		return wargear.flatMap((id, i) => {
 			const w = rows.get(id);
+			if (w && unarmoured && id === HEAVY_ARMOUR) return [{ message: `${w.name}: A Plasm ${fighter.name} may not wear heavy armour.`, short: 'Not for Plasm' }];
 			const refused = w && refuse(known([...fighter.gear, ...wargear.slice(0, i)]), w, limit);
 			return refused ? [{ message: `${w.name}: ${refused.message}.`, short: refused.short }] : [];
 		});
@@ -99,7 +124,8 @@ export const game: GameSystem = {
  * What a model may carry (pp. 36, 40, 41): 2 weapons for a leader and 1 for a
  * minion, 1 type of armour, 1 shield, which goes with no weapon that takes 2
  * hands, and 1 piece of Miscellaneous Equipment, a Wardart or a Throwing Axe
- * included.
+ * included. A Plasm leader, Husk or Gigantic Horror wears no heavy armour
+ * (pp. 29, 32, 35).
  */
 type Slot = 'weapon' | 'armour' | 'shield' | 'misc';
 
@@ -135,7 +161,11 @@ interface RawFaction {
 	origin: 'official';
 	author: string;
 	source?: Source;
-	/** A model joins only with one of these keywords, carried or to choose; any where missing. */
+	/**
+	 * A model joins only with one of these keywords, carried or to choose; any
+	 * where missing. Naming Blood, Bone or Plasm, it also limits the model's
+	 * choice to those.
+	 */
 	models?: string[];
 	/** The leaders the Covenant allows, by fighter id; any where missing. */
 	leaders?: string[];
@@ -183,9 +213,29 @@ function allows(meta: RawFaction, f: RawFighter): boolean {
 	return !meta.leaders || !f.keywords.includes('leader') || meta.leaders.includes(f.id);
 }
 
-function fighter(f: RawFighter): Fighter {
+/** Blood, Bone or Plasm as the model's choice, of those the Covenant allows; one allowed is given. */
+function affinityOf(f: RawFighter, elements: string[]): FighterChoice {
+	const options = f.affinities
+		.filter((a) => elements.includes(a))
+		.map((id) => ({
+			id,
+			name: id[0].toUpperCase() + id.slice(1),
+			text: '',
+			...(RAISED[f.id]?.[id] ? { bonus: RAISED[f.id][id] } : {}),
+			keywords: id === 'plasm' && !f.keywords.includes('fly') ? [id, 'fly'] : [id]
+		}));
+	if (!options.length) fail(`Necropolis ${f.id}: none of ${elements.join(', ')} to choose`);
+	/* Where a rule of the model's own explains the elements, the choice comes out of it. */
+	const source = f.rules.some((r) => r.name === AFFINITY_RULE) ? { source: AFFINITY_RULE } : {};
+	const shared = { ...source, options, noun: { one: 'keyword', many: 'keywords' } };
+	return options.length === 1
+		? { ...shared, prompt: 'The Covenant gives the model its keyword.', pick: 0, given: [options[0].id] }
+		: { ...shared, prompt: 'Choose Blood, Bone or Plasm as the model’s keyword.', pick: 1 };
+}
+
+function fighter(f: RawFighter, elements: string[]): Fighter {
 	const { description, affinities: _affinities, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
-	return { ...rest, fluff: description, wargear: offered(f), gear: [] };
+	return { ...rest, fluff: description, wargear: offered(f), gear: [], choices: [affinityOf(f, elements)] };
 }
 
 /** Every Covenant has the same armaments; the Improvised Weapons are no purchase. */
@@ -195,13 +245,16 @@ const armaments: Wargear[] = [...rows.values()].filter((w) => w.id !== IMPROVISE
 const files = import.meta.glob('/src/lib/rules/necropolis/factions/*/faction.json', { eager: true, import: 'default' });
 
 export const factions: Faction[] = Object.values(files).map((data) => {
-	const { models: _models, leaders: _leaders, ...meta } = data as RawFaction;
+	const raw = data as RawFaction;
+	const { models: _models, leaders: _leaders, ...meta } = raw;
+	const named = ELEMENTS.filter((e) => raw.models?.includes(e));
+	const elements = named.length ? named : ELEMENTS;
 	return {
 		...meta,
 		game: game.id,
 		size: { min: 1, max: null },
 		choices: [],
-		fighters: roster.filter((f) => allows(data as RawFaction, f)).map(fighter),
+		fighters: roster.filter((f) => allows(raw, f)).map((f) => fighter(f, elements)),
 		wargear: armaments
 	};
 });

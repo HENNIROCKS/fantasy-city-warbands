@@ -91,7 +91,6 @@
 		"wargear_lists": ["Miscellaneous Equipment"],
 		"wargear_also": ["claws-and-fangs"],
 		"rules": [
-			{ "name": "Blood, Bone or Plasm", "text": "The miniature gains the skill matching their chosen keyword. **Bone:** improves Violence by 1. **Blood:** improves HP by 2. **Plasm:** gains the fly keyword, −2 hp and may not wear heavy armour." },
 			{ "name": "Restrictions", "text": "Familiar can only take claws and fangs as a weapon. Familiar cannot wear armour or carry a shield." },
 			{ "name": "Unique", "text": "Each gathering may only take 1 familiar." },
 			{ "name": "Soul Link", "text": "If a familiar moves or is pushed across or into base contact with a mana token, the Gathering receives additional mana dice of that type for its mana pool. The token is then removed." }

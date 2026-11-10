@@ -152,7 +152,8 @@ export interface GameSystem {
 	 * What keeps a fighter from carrying its wargear, one entry per piece it may
 	 * not have, in the order it carries them. Each piece is held against those
 	 * before it and the fighter's own `gear` – with what its picks bring, such as
-	 * a mutation's weapon – so the last one taken is the one refused. Without
+	 * a mutation's weapon – so the last one taken is the one refused. The
+	 * fighter carries the keywords its picks give, as Necropolis' Plasm. Without
 	 * it, a fighter carries whatever it is offered.
 	 */
 	carry?: (fighter: Fighter, faction: Faction, wargear: string[]) => { message: string; short: string }[];

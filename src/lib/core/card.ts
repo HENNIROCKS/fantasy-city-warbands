@@ -406,11 +406,16 @@ export function fighterCard(
 		weapons.push({ name: weapon.name, values: game.weaponStats.map((s) => weapon.profile?.[s.key] ?? '–') });
 	}
 
-	/* A pick that only raises a characteristic is in the profile above, and the
-	   rule it comes out of says so. Any other pick – a spell, a mutation, even
-	   one that raises a characteristic as well – is a rule of the fighter's own. */
-	const raises = (o: FighterChoiceOption) => o.bonus && !o.text;
-	const raised = (fighter?.choices ?? []).flatMap((c) => (c.source && c.options.some((o) => raises(o) && options.includes(o)) ? [c.source] : []));
+	/* A pick that only raises a characteristic or gives a keyword is in the
+	   profile or the keywords above, and the rule it comes out of says so. Any
+	   other pick – a spell, a mutation, even one that raises a characteristic
+	   as well – is a rule of the fighter's own. */
+	const raises = (o: FighterChoiceOption) => !o.text && (!!o.bonus || !!o.keywords?.length);
+	/* Such a pick is also named after a rule of the fighter's own where it has one, as Necropolis' Plasm. */
+	const raised = [
+		...(fighter?.choices ?? []).flatMap((c) => (c.source && c.options.some((o) => raises(o) && options.includes(o)) ? [c.source] : [])),
+		...options.filter(raises).map((o) => o.name)
+	];
 	const standing = [
 		...(fighter?.rules ?? []),
 		...options.filter((o) => !raises(o)).map((o) => ({ name: o.name, text: o.text, type: o.type })),
@@ -565,7 +570,7 @@ function layersOf(
 	   characteristic after the rule it comes out of, Martial Discipline. */
 	const picks = instance.picks ?? [];
 	for (const choice of fighter.choices ?? []) {
-		for (const option of choice.options.filter((o) => picks.includes(o.id))) {
+		for (const option of choice.options.filter((o) => picks.includes(o.id) || choice.given?.includes(o.id))) {
 			const by = option.text ? option.name : (choice.source ?? option.name);
 			for (const [key, bonus] of Object.entries(option.bonus ?? {})) add(key, { kind: 'permanent', source: by, amount: bonus });
 		}
