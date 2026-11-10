@@ -25,7 +25,7 @@ rise. Its fighters spend renown on heroic talents, and a characteristic says
 
 **The back of the warband card.** Name, colour, fluff and notes. You can also
 set the favour, add gold, sell or throw away what lies in the stash, and add or
-strike battles.
+strike battles. A Sack of Teeth sells at a roll: tap what the dice show.
 
 **Magic items.** Found one while exploring? It is already in the stash. Took
 one from your opponent? Tap **Add a magic item** on the back of the warband

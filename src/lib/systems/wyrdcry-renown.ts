@@ -63,8 +63,7 @@ function figure(stat: string, value: number): string {
 	return String(value);
 }
 
-/** The most heroic talents a fighter can have, and the talent groups they may come from. */
-const MAX_TALENTS = 5;
+/** The talent groups a fighter's heroic talents may come from. */
 const MAX_SPECIALIZATIONS = 2;
 /** The level from which a legendary ability can be picked. */
 const LEGENDARY_FROM = 5;
@@ -269,14 +268,13 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 
 	const held = advances.flatMap((a) => (a.rule && talentOf(a.rule) && ruleHolds(a, fighter) ? [talentOf(a.rule)!] : []));
 	const holders = legendaryHolders(warband, faction);
-	/* A faction's own talents count towards the five, not towards the talent groups. */
+	/* A faction's own talents do not count towards the talent groups. */
 	const specializations = new Set(held.filter((t) => !t.keyword).map((t) => t.specialization));
 	/* Why a talent cannot be taken on this level, the first reason that holds; null where it can. */
 	const blockedFor = (talent: Talent): string | null => {
 		if (held.some((t) => t.id === talent.id)) return 'Already taken';
 		if (talent.legendary && level.level < LEGENDARY_FROM) return `From renown ${LEGENDARY_FROM}`;
 		if (talent.legendary && holders.get(talent.id)?.some((f) => f.instanceId !== instance.instanceId)) return 'Another fighter of the warband has it';
-		if (held.length >= MAX_TALENTS) return `Already ${MAX_TALENTS} talents`;
 		if (!talent.keyword && !specializations.has(talent.specialization) && specializations.size >= MAX_SPECIALIZATIONS) return `Already ${MAX_SPECIALIZATIONS} talent groups`;
 		return null;
 	};
@@ -317,7 +315,7 @@ function offer(instance: FighterInstance, fighter: Fighter, faction: Faction, le
 		stats: offered,
 		rules: [...(abilities.length ? [{ heading: 'Magical Abilities', options: abilities }] : []), ...groups],
 		rulesLabel: 'Heroic Talents',
-		rulesNote: `Up to ${MAX_TALENTS} talents, from at most ${MAX_SPECIALIZATIONS} talent groups${own.length ? ` besides ${own[0].specialization}` : ''}. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
+		rulesNote: `From at most ${MAX_SPECIALIZATIONS} talent groups${own.length ? ` besides ${own[0].specialization}` : ''}. A legendary ability from renown ${LEGENDARY_FROM}, one fighter per warband.`
 	};
 }
 

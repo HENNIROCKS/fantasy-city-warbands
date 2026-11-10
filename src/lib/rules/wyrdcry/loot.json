@@ -10,7 +10,7 @@
         { "roll": "4", "name": "Bejewelled Dagger", "text": "Bejewelled Dagger. Can be sold for 15gc.", "gain": [{ "wargear": "loot:bejewelled-dagger" }] },
         { "roll": "5", "name": "Ornate Key", "text": "Ornate Key. Can be discarded after making an exploration roll to modify the value of an exploration die.", "gain": [{ "wargear": "loot:ornate-key" }] },
         { "roll": "6", "name": "Rusty Ostlander Sword", "text": "Rusty Ostlander Sword, notched from use.", "gain": [{ "wargear": "weapon:sword" }] },
-        { "roll": "7", "name": "Sack of Teeth", "text": "Sack of teeth. The fillings can be sold for d3x10 gold coins.", "gain": [{ "gold": "d3x10" }] },
+        { "roll": "7", "name": "Sack of Teeth", "text": "Sack of teeth. The fillings can be sold for d3x10 gold coins.", "gain": [{ "wargear": "loot:sack-of-teeth" }] },
         { "roll": "8", "name": "Half-burned Map", "text": "Waxed parchment map, half burned away. Find another to make a Mordheim Map.", "gain": [{ "wargear": "loot:half-burned-map" }] },
         { "roll": "9", "name": "Battered Cuirass", "text": "A battered Cuirass. With a little elbow grease, it'll count as light armour.", "gain": [{ "wargear": "item:light-armour" }] },
         { "roll": "10", "name": "Wyrdstone Shard", "text": "A Wyrdstone Shard, ice cold to the touch.", "gain": [{ "shards": 1 }] },
@@ -58,6 +58,12 @@
       "text": "Can be handed over to your faction for 1 Favour or sold for 20gc.",
       "sale": 20,
       "favour": 1
+    },
+    {
+      "id": "sack-of-teeth",
+      "name": "Sack of Teeth",
+      "text": "The fillings can be sold for d3x10 gold coins.",
+      "sale_roll": "d3x10"
     }
   ]
 }

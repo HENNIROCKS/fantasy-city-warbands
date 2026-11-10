@@ -22,7 +22,7 @@ playing** takes you back to the battle.
    where it asks one. With a Scout in the party you can tap two. If the
    encounter falls on one fighter, tap who. For the Wyrdstone Cluster, tap how
    many dice show each result. For each roll on a loot table, tap the result.
-   Some finds ask for one more roll, such as the gold in a Sack of Teeth. A
+   Some finds ask for one more roll, such as the shards in an Iron Lockbox. A
    magic item you already have cannot be tapped: roll again. An encounter that
    sends a fighter to the injury table adds a page for that roll after this
    one, and a leader lost there one for the new leader. For a Lone Survivor,

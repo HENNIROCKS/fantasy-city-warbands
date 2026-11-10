@@ -6,9 +6,8 @@ Where the app deliberately differs from what a game prints or ships as data, or 
 
 The data is kept in the shape of the Warband Deck's hand-kept ruleset and follows Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book 1.0 and the site repo's data. Where it differs from them:
 
-- [ ] Injuries: a second Hardened, Hatred or Horrible Scars counts as a Flesh Wound, as a repeated [Injury] does, where the rules say so only of results marked [Injury]
 - [x] Captured: the ransom named is half the fighter's own cost, without what it bought, where the rules say only "half of the fighter's recruitment cost"
-- [ ] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword and is rounded up, as Well-Connected rounds it, where the rule says only "one Hired Sword for half of their recruitment fee"
+- [x] Well-connected (Mercenaries' State Pride): the half fee goes to the dearest hired sword, the choice that saves the most, and is rounded up, where the rule leaves the choice to the player and does not say how it rounds
 - [x] Unyielding (Mercenaries' State Pride): a hired sword taken along keeps its own Bravery, where the rule raises that of "all fighters"
 - [x] Lucky Charm: common, as the Campaign Book 1.0 prints it, where the 1.0 item data has it rare
 - [ ] A leader recruited under the Campaign Book 0.9, who raised a characteristic as well as taking a talent with the first level of renown, keeps both
@@ -20,11 +19,9 @@ The data is kept in the shape of the Warband Deck's hand-kept ruleset and follow
 - [x] Crossbow and Handgun: 18", as the weapon data gives them, where the Rulebook 1.0.1's example on page 13 prints the Crossbow at 1–24"
 - [x] Blast: with the Rulebook 1.0's text, as the Blunderbuss and the Arch-Warlock's Stormcage Halberd carry it, where the Rulebook 1.0.1's Common Weapon Rules leave it out; the site explains it, and a faction's own PDF where a weapon has it
 - [x] Bejewelled Dagger: a dagger a fighter can carry, sold for 15gc, where the Campaign Book only says it can be sold
-- [ ] Sack of Teeth: the d3×10 gold coins are paid when it is found, where the Campaign Book has the fillings sold
 - [x] Wyrdstone Cluster: the Health lost for each 1 stays for the rest of the campaign, where the Campaign Book does not say for how long
-- [ ] Great Weapon: Damage 3/5 for 45gc, as the site's weapon data gives it, where the Campaign Book 1.0 prints the Warrior Priest's at 3/4 (p. 38)
-- [ ] Hired swords' characteristics and fees: as the Campaign Book 1.0 prints them, where the site's fighter data has the Freelance Knight at Fight 5, the Elf Ranger at Shoot 6, the Ogre Bodyguard at Shoot 2, the Rat Ogre at Fight 6 and Shoot 2 with Sheer Brutality not Brutal, and the Necromancer and the Warlock at 60gc (pp. 32–39)
-- [ ] Heroic talents: a fighter has at most five, as the rules 0.5 and the Warband Deck have it, the Undead's Blood of Von Carstein included, where the Campaign Book 1.0 limits only the talent groups
+- [x] Great Weapon: Damage 3/5 for 45gc, as the site's weapon data gives it, where the Campaign Book 1.0 prints the Warrior Priest's at 3/4 (p. 38)
+- [x] Hired swords' characteristics and fees: as the Campaign Book 1.0 prints them, where the site's fighter data has the Freelance Knight at Fight 5, the Elf Ranger at Shoot 6, the Ogre Bodyguard at Shoot 2, the Rat Ogre at Fight 6 and Shoot 2 with Sheer Brutality not Brutal, and the Necromancer and the Warlock at 60gc (pp. 32–39)
 - [ ] Playtest factions and hired swords: the Beastmen Raiders and the Elf Rangers hire none, where the site does not say whom they may hire
 - [ ] Playtest factions and racial limits: no characteristic of a BEASTMAN, ELF or WAR HOUND in a playtest faction can be raised with renown, as the Campaign Book 1.0 prints none for them (p. 11); the Shadow Warriors' homebrew limits for the ELF are not used
 

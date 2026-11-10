@@ -698,7 +698,8 @@ for (const p of loot.pieces) {
 		text: p.text,
 		...(base?.profile ? { profile: base.profile, rules: [...(base.rules ?? []), { name: p.name, text: p.text }] } : {}),
 		foundOnly: true,
-		...('sale' in p ? { sale: p.sale } : {})
+		...('sale' in p ? { sale: p.sale } : {}),
+		...('sale_roll' in p && p.sale_roll ? { saleRoll: p.sale_roll } : {})
 	});
 }
 /** The magic items a fighter with these keywords may bear: any, except one it is barred from, as the Phylactery is from VAMPIRES. */

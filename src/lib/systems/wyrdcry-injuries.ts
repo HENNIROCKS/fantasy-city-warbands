@@ -108,18 +108,17 @@ export function wyrdcryInjuries({ abilities, keywords }: Deps): Injuries {
 	}
 
 	/**
-	 * An injury the fighter already has is a Flesh Wound instead; a fourth one
-	 * kills it. Hardened, Hatred and Horrible Scars are kept once as well, so a
-	 * second of them leaves the fighter as a Flesh Wound would. Only `[Injury]`
-	 * results count towards the limit. Nine Lives re-rolls at the table, before
-	 * the result is tapped.
+	 * An `[Injury]` the fighter already has is a Flesh Wound instead; a fourth
+	 * one kills it. A trait or Hardened is kept again: a second Hatred is
+	 * against another enemy fighter, a second Hardened improves Bravery once
+	 * more. Nine Lives re-rolls at the table, before the result is tapped.
 	 */
 	function resolve(instance: FighterInstance, fighter: Fighter, faction: Faction, id: string): InjuryResolution {
 		const found = rows(instance, fighter, faction);
 		const rolled = found?.find((r) => r.id === id);
 		if (!found || !rolled) throw new Error(`No injury result "${id}" for this fighter`);
 		const kept = held(instance);
-		if (isLasting(rolled) && kept.some((r) => r.id === rolled.id)) {
+		if (isInjury(rolled) && kept.some((r) => r.id === rolled.id)) {
 			return { result: result(HERO.find((r) => r.id === FLESH_WOUND)!), note: `Already has ${rolled.name}, which counts as a Flesh Wound.` };
 		}
 		if (isInjury(rolled) && kept.filter(isInjury).length >= LIMIT) {
