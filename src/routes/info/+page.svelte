@@ -188,6 +188,7 @@
 		<h2 id="docs-heading" class="text-lg font-semibold text-zinc-200">Docs</h2>
 		<p>Short guides to playing with the app, game by game.</p>
 		<a class={linkClass} href={resolve('/docs')}>Read the guides</a>
+		<a class={linkClass} href="{resolve('/docs')}/whats-new">What’s new</a>
 	</section>
 
 	<section class="space-y-10 border-t border-zinc-700 pt-10" aria-labelledby="about-heading">

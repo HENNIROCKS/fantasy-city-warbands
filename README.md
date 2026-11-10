@@ -162,7 +162,9 @@ in [`docs/`](docs/README.md).
 ## Roadmap
 
 What is built and what comes next is a checklist in [`ROADMAP.md`](ROADMAP.md),
-with ideas nothing is promised for at its end.
+with ideas nothing is promised for at its end. What changed for players, day
+by day, is in [`docs/whats-new.md`](docs/whats-new.md), which the app shows as
+What’s new.
 
 ## Data
 

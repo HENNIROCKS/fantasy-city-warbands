@@ -28,3 +28,22 @@ const built = new Date(Number(version));
 export const BUILD_DATE = Number.isNaN(built.getTime())
 	? null
 	: `${built.getDate()} ${MONTHS[built.getMonth()]} ${built.getFullYear()}`;
+
+/** The day a heading such as `13 Oct 2026` names, at midnight; null for any other text. */
+export function dayOf(text: string): Date | null {
+	const match = /^(\d{1,2}) ([A-Z][a-z]{2}) (\d{4})$/.exec(text.trim());
+	const month = match ? MONTHS.indexOf(match[2]) : -1;
+	return match && month >= 0 ? new Date(Number(match[3]), month, Number(match[1])) : null;
+}
+
+/* The build the update bar was dismissed for; a new deploy brings it back. */
+export const SEEN_KEY = 'fantasy-city-warbands:seen-update';
+
+/** The build the update bar was last dismissed for; null where it never was or storage is blocked. */
+export function seenBuild(): string | null {
+	try {
+		return localStorage.getItem(SEEN_KEY);
+	} catch {
+		return null;
+	}
+}

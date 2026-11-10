@@ -67,7 +67,8 @@ a limit. A new limit goes into `validate`, not into the interface.
 4. Look at it in light and dark mode.
 5. When a feature changes, change its guide in `docs/` in the same pull
    request, the README and the About page where they describe it, and tick
-   it off in `ROADMAP.md`.
+   it off in `ROADMAP.md`. What players notice – a cost, a rule, a button –
+   gets a line in `docs/whats-new.md`, with the old value where one changed.
 6. Open a pull request – fill in the PR template checklist.
 
 Interface, comments and commit messages are in English. A commit message is one

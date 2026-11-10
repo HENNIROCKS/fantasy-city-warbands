@@ -1,7 +1,8 @@
 /**
  * The guides under `docs/`, read into the build so the app shows them offline
  * and GitHub shows the same files. Only the little of Markdown they use is
- * read: headings, paragraphs, lists, bold, italic, code, links and images. A
+ * read: headings, paragraphs, lists with one level of sub-items, bold, italic,
+ * code, links and images. A
  * link to another guide becomes the path of its page in the app; an image is
  * one of the app's icons from `docs/icons/`, set into the text as markup so it
  * takes the text's colour.
@@ -20,7 +21,8 @@ export type Inline =
 export type DocBlock =
 	| { kind: 'heading'; level: number; inline: Inline[] }
 	| { kind: 'paragraph'; inline: Inline[] }
-	| { kind: 'list'; ordered: boolean; items: Inline[][] };
+	/** `under[i]` holds the items indented beneath `items[i]`, one level deep; empty where it has none. */
+	| { kind: 'list'; ordered: boolean; items: Inline[][]; under: Inline[][][] };
 
 export interface DocPage {
 	/** `''` for the guides' own start, `wyrdcry` for a game's, `wyrdcry/hired-swords` for a topic. */
@@ -91,6 +93,7 @@ function inline(file: string, text: string): Inline[] {
 }
 
 const ITEM = /^(-|\d+\.)\s+/;
+const SUB = /^\s{2,}(-|\d+\.)\s+/;
 
 function parse(file: string, source: string): { title: string; blocks: DocBlock[] } {
 	let title = '';
@@ -104,13 +107,26 @@ function parse(file: string, source: string): { title: string; blocks: DocBlock[
 			continue;
 		}
 		if (ITEM.test(lines[0])) {
-			/* A line that starts no item carries on the one before it. */
+			/* An indented item sits under the item before it; a line that starts no item carries on the one before it. */
 			const items: string[] = [];
+			const under: string[][] = [];
 			for (const line of lines) {
-				if (ITEM.test(line)) items.push(line.replace(ITEM, ''));
-				else items[items.length - 1] += ' ' + line.trim();
+				if (ITEM.test(line)) {
+					items.push(line.replace(ITEM, ''));
+					under.push([]);
+				} else if (SUB.test(line)) under[under.length - 1].push(line.replace(SUB, ''));
+				else {
+					const subs = under[under.length - 1];
+					if (subs.length) subs[subs.length - 1] += ' ' + line.trim();
+					else items[items.length - 1] += ' ' + line.trim();
+				}
 			}
-			blocks.push({ kind: 'list', ordered: /^\d/.test(lines[0]), items: items.map((item) => inline(file, item)) });
+			blocks.push({
+				kind: 'list',
+				ordered: /^\d/.test(lines[0]),
+				items: items.map((item) => inline(file, item)),
+				under: under.map((subs) => subs.map((sub) => inline(file, sub)))
+			});
 			continue;
 		}
 		blocks.push({ kind: 'paragraph', inline: inline(file, lines.map((l) => l.trim()).join(' ')) });

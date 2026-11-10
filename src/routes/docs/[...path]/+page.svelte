@@ -1,10 +1,28 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { APP_TITLE } from '$lib/app';
+	import { APP_TITLE, dayOf, seenBuild } from '$lib/app';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import type { DocBlock, Inline } from '$lib/docs';
 
 	let { data } = $props();
+
+	/*
+	 * On What's new, a day from the one the update bar was last dismissed on
+	 * is marked New – from that day, not after it, as a day can bring more
+	 * than one deploy. Never dismissed, nothing is marked: all of it new says
+	 * nothing.
+	 */
+	let since = $state<Date | null>(null);
+	onMount(() => {
+		const build = seenBuild();
+		const seen = new Date(Number(build));
+		if (build && !Number.isNaN(seen.getTime())) since = new Date(seen.getFullYear(), seen.getMonth(), seen.getDate());
+	});
+	const isNew = (tokens: Inline[]) => {
+		const day = data.page.path === 'whats-new' && since ? dayOf(tokens.map((t) => t.value).join('')) : null;
+		return !!day && day >= since!;
+	};
 
 	/** A guide's page in the app. */
 	const hrefOf = (path: string) => resolve('/docs') + (path ? `/${path}` : '');
@@ -36,6 +54,14 @@
 	{/each}
 {/snippet}
 
+{#snippet under(items: Inline[][])}
+	{#if items.length}
+		<ul class="mt-1 list-[circle] space-y-1 pl-5">
+			{#each items as item, i (i)}<li>{@render line(item)}</li>{/each}
+		</ul>
+	{/if}
+{/snippet}
+
 <svelte:head>
 	<title>{data.page.title} · Docs · {APP_TITLE}</title>
 </svelte:head>
@@ -59,7 +85,12 @@
 	{#each data.page.blocks as block, b (b)}
 		{#if block.kind === 'heading'}
 			<!-- One level below the title: a file's ## is the page's h3. -->
-			<svelte:element this={`h${Math.min(block.level + 1, 6)}`} class="pt-4 text-base font-semibold text-zinc-200">{@render line(block.inline)}</svelte:element>
+			<svelte:element this={`h${Math.min(block.level + 1, 6)}`} class="pt-4 text-base font-semibold text-zinc-200"
+				>{@render line(block.inline)}{#if isNew(block.inline)}{' '}<span
+						class="ml-1 inline-block rounded-full border px-2 align-[2px] text-xs leading-5"
+						style="background: var(--ui-sel-bg); border-color: var(--ui-sel-border); color: var(--ui-sel-text)">New</span
+					>{/if}</svelte:element
+			>
 		{:else if block.kind === 'paragraph'}
 			<p>{@render line(block.inline)}</p>
 		{:else if onward(block)}
@@ -80,11 +111,11 @@
 			</ul>
 		{:else if block.ordered}
 			<ol class="list-decimal space-y-1 pl-5">
-				{#each block.items as item, i (i)}<li>{@render line(item)}</li>{/each}
+				{#each block.items as item, i (i)}<li>{@render line(item)}{@render under(block.under[i])}</li>{/each}
 			</ol>
 		{:else}
 			<ul class="list-disc space-y-1 pl-5">
-				{#each block.items as item, i (i)}<li>{@render line(item)}</li>{/each}
+				{#each block.items as item, i (i)}<li>{@render line(item)}{@render under(block.under[i])}</li>{/each}
 			</ul>
 		{/if}
 	{/each}

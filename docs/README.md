@@ -8,6 +8,7 @@ game's books – these pages say where the app helps with them.
 - [Building a warband](building.md) – the five steps, and why a button is greyed out
 - [Buttons and icons](buttons-and-icons.md) – what the small buttons do
 - [Files and the roster](files-and-roster.md) – keep a copy, move a warband, print it, show it to an opponent
+- [What’s new](whats-new.md) – what changed in the app, a cost, a rule or a button
 
 ## Black Death City
 

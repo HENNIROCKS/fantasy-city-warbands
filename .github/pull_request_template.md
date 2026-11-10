@@ -10,6 +10,7 @@
 - [ ] Looked at in light and dark mode
 - [ ] Rules data read off the book's page; a deliberate difference added to `DEVIATIONS.md`
 - [ ] Guides in `docs/`, the README, `ROADMAP.md` and the About page follow the change
+- [ ] What players notice has a line in `docs/whats-new.md`
 - [ ] Commit messages in the imperative, one sentence without a prefix
 
 ## Screenshots (if applicable)

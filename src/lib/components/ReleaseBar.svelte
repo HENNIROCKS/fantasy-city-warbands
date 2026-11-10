@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { version } from '$app/environment';
-	import { BUILD_DATE, REPO } from '$lib/app';
-
-	/* The build the bar was dismissed for; a new deploy brings it back. */
-	const KEY = 'fantasy-city-warbands:seen-update';
+	import { resolve } from '$app/paths';
+	import { BUILD_DATE, SEEN_KEY, seenBuild } from '$lib/app';
 
 	/*
 	 * Shown only once mounted: the prerendered page cannot know what this
@@ -14,17 +12,13 @@
 	let open = $state(false);
 
 	onMount(() => {
-		try {
-			open = localStorage.getItem(KEY) !== version;
-		} catch {
-			open = true;
-		}
+		open = seenBuild() !== version;
 	});
 
 	function dismiss() {
 		open = false;
 		try {
-			localStorage.setItem(KEY, version);
+			localStorage.setItem(SEEN_KEY, version);
 		} catch {
 			/* Gone for this visit only. */
 		}
@@ -37,9 +31,7 @@
 		<div class="mx-auto flex max-w-2xl items-center gap-2 py-0.5 pr-1 pl-5">
 			<p class="min-w-0 flex-1">
 				Updated {BUILD_DATE} ·
-				<a class="underline underline-offset-2" href="{REPO}/blob/main/ROADMAP.md" target="_blank" rel="noopener"
-					>What’s new <span aria-hidden="true">↗</span></a
-				>
+				<a class="underline underline-offset-2" href="{resolve('/docs')}/whats-new">What’s new</a>
 			</p>
 			<button
 				type="button"

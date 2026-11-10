@@ -15,10 +15,21 @@ Was gebaut ist und was als nächstes drankommt, steht als Checkliste in der
 Daten. Sie ist die einzige Stelle, an der offene Punkte zum Bauen gepflegt
 werden. Abgehakte Punkte stehen oben, nie zwischen offenen. Der abgehakte
 Block beginnt mit einer Übersicht, eine Zeile je Bereich; darunter bekommt ein
-erledigter Punkt eine eigene Zeile am Ende des Blocks, damit „What’s new“ das
-Neueste zeigt. Sind es mehr als etwa zehn solcher Zeilen, gehen sie in die
+erledigter Punkt eine eigene Zeile am Ende des Blocks, damit das Neueste
+zuletzt steht. Sind es mehr als etwa zehn solcher Zeilen, gehen sie in die
 Übersichtszeilen ein. Unter „Ideas“ steht, was weder versprochen noch geplant
 ist.
+
+Was Spielende an der App bemerken – ein Preis, eine Regel, ein Button –,
+bekommt im selben Schritt eine Zeile in `docs/whats-new.md`, das die
+Update-Leiste als „What’s new“ öffnet. Je Tag eine Überschrift im Format von
+`BUILD_DATE` (`10 Nov 2026`), das Neueste oben; darunter je Spiel ein Punkt,
+alphabetisch, und darin die Änderungen als Unterpunkte, eine Fraktion als
+Präfix („Guild Mercenaries: …“). Ein geänderter Wert nennt den alten in
+Klammern („150 silver (was 120)“), abgelesen am Diff der Daten, nicht an der
+Commit-Message. Doku, Kommentare und Arbeit unter der Haube, die man beim
+Spielen nicht bemerkt, kommen nicht hinein. Die Seite markiert Tage ab dem
+Build, für den die Leiste zuletzt weggeklickt wurde, als „New“.
 
 Wo die App bewusst anders steht als das, was ein Spiel druckt oder als Daten
 mitbringt, oder einen Widerspruch darin in eine Richtung auflöst, führt
@@ -54,7 +65,7 @@ Anleitungen für Spielende stehen in `docs/`, gegliedert erst nach Spielen
 gleich gilt, liegt direkt in `docs/`. Die App liest dieselben Dateien beim
 Build ein (`src/lib/docs.ts`) und zeigt sie unter `/docs`, erreichbar über
 Settings und verlinkt aus der README. Der Renderer kennt nur Überschriften,
-Absätze, Listen, fett, kursiv, Links und Bilder; eine Liste, deren Punkte mit
+Absätze, Listen mit einer Ebene Unterpunkte, fett, kursiv, Links und Bilder; eine Liste, deren Punkte mit
 einem Link beginnen, wird zu Buttons. Bilder sind die Icons der App aus
 `docs/icons/`, Kopien der SVGs aus dem Markup: Ändert sich ein Icon in der
 App, zieht seine Datei dort mit.
