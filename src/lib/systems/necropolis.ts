@@ -77,6 +77,7 @@ export const game: GameSystem = {
 	currency: 'obols',
 	moneyLabel: 'Obols',
 	budget: 300,
+	deployment: 350,
 	stats: [
 		{ key: 'ap', label: 'AP', format: 'plain' },
 		{ key: 'move', label: 'M', format: 'inches' },

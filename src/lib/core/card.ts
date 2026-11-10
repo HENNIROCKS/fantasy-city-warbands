@@ -755,6 +755,7 @@ export function warbandCard(warband: Warband, faction: Faction, game: GameSystem
 							? String(warband.fighters.length)
 							: `${warband.fighters.length} / ${faction.size.max}`
 				},
+				...(game.deployment ? [{ key: 'deployment', label: 'Deployment', value: String(game.deployment) }] : []),
 				...values
 			],
 			[

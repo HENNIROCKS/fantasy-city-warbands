@@ -64,6 +64,8 @@ export interface GameSystem {
 	moneyLabel: string;
 	/** What a new warband has to spend. */
 	budget: number;
+	/** The most a warband may field in a battle, where the game sets one apart from the purse: Necropolis' 350 obols. Shown on the warband's card. */
+	deployment?: number;
 	/** What one of its `unique` pieces is called, where it has them: `magic item`. Taken by the warband and added to its stash. */
 	uniqueName?: string;
 	/** The game's logo, a file in `static/`, drawn in the card's paper colour where the app shows it. */
