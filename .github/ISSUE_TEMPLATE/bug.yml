@@ -57,6 +57,7 @@ body:
       label: Which game?
       options:
         - Black Death City
+        - Necropolis
         - Wyrdcry
         - Doesn't depend on the game
 
