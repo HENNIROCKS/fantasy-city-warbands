@@ -11,7 +11,7 @@
  */
 
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
-import { canLead, lostLeader, recruitedLeader } from './leader';
+import { canLead, keywordsOf, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
 import { chosenOptions, fighterCost, fighterName, offeredOptions, pickOf, purse } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
@@ -96,6 +96,8 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 	const successor = warband.fighters.find((f) => f.leader);
 	/* Who has each option of a unique choice, by its id. */
 	const held = new Map<string, string>();
+	/** How many picks the gathering holds under each choice with an `across`, by the choice's id. */
+	const acrossHeld = new Map<string, number>();
 	for (const instance of warband.fighters) {
 		const fighter = fighters.get(instance.fighterId);
 		if (!fighter) {
@@ -167,6 +169,36 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 					kind: tooMany ? 'excess' : 'missing',
 					message: `${fighter.name}: ${asked(choice, pick, tooMany)}.`,
 					short: tooMany ? `Pick ${pick} only` : 'Choice open',
+					instanceId: instance.instanceId
+				});
+			}
+		}
+
+		/* An option that asks for a keyword the fighter does not carry, as Skitter does of a Plasm model. */
+		const carried = keywordsOf(instance, fighter, game);
+		for (const option of chosenOptions(instance, fighter).filter((o) => o.only && !o.only.some((k) => carried.includes(k)))) {
+			const names = option.only!.map((k) => k[0].toUpperCase() + k.slice(1)).join(' or ');
+			issues.push({
+				code: 'option-only',
+				kind: 'excess',
+				message: `${fighter.name}: ${option.name} is only for a ${names} model.`,
+				short: `${option.name} needs ${names}`,
+				instanceId: instance.instanceId
+			});
+		}
+
+		/* The picks the gathering may give in all, counted fighter after fighter, alive. */
+		for (const choice of instance.away === 'dead' ? [] : (fighter.choices ?? []).filter((c) => c.id && c.across !== undefined)) {
+			const mine = picked.filter((id) => choice.options.some((o) => o.id === id) && !choice.given?.includes(id)).length;
+			const total = (acrossHeld.get(choice.id!) ?? 0) + mine;
+			acrossHeld.set(choice.id!, total);
+			if (mine && total > choice.across!) {
+				const noun = choice.noun ?? { one: 'option', many: 'options' };
+				issues.push({
+					code: 'across',
+					kind: 'excess',
+					message: `${fighter.name}: the gathering may give ${choice.across} ${choice.across === 1 ? noun.one : noun.many} only.`,
+					short: 'None left',
 					instanceId: instance.instanceId
 				});
 			}

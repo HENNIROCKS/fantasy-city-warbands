@@ -1147,6 +1147,8 @@ export interface FighterChoiceOption {
 	raises?: { choice: string; by: number };
 	/** What picking it adds to the warband's purse when it is built, not to its deployment limit: Necropolis' Miserly, 50 obols. */
 	purse?: number;
+	/** Keywords of which the fighter must carry one, picked ones included, to have this option: Necropolis' Skitter only for a Blood or Bone model. */
+	only?: string[];
 }
 
 /** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */
@@ -1163,6 +1165,12 @@ export interface FighterChoice {
 	optional?: true;
 	/** Whether one option may be picked several times, each pick one of `pick`: Necropolis' mana points divided between three schools. */
 	repeat?: true;
+	/**
+	 * How many picks the fighters' choices of this `id` hold together across the
+	 * warband, those given not counted, the dead not either: Necropolis' one
+	 * model with the Covenant's trait; `validate` reports the pick beyond it.
+	 */
+	across?: number;
 	/**
 	 * Whether an option one fighter has is barred to every other fighter of the
 	 * warband, as Black Death City's No Duplicates for skills; `validate` reports a second.
@@ -1407,6 +1415,8 @@ export interface Issue {
 		| 'choice'
 		| 'fighter-choice'
 		| 'duplicate-pick'
+		| 'option-only'
+		| 'across'
 		| 'start-roll'
 		| 'unknown-fighter'
 		| 'wargear-not-allowed'

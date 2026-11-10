@@ -6,8 +6,8 @@
 	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
 	"author": "Peter Vigors",
 	"rules": [
-		{ "name": "Covenant", "text": "Your gathering may only contain models with the Blood keyword." },
-		{ "name": "Chosen of the Hands (Leader, Blood)", "text": "Your leader gains this trait in addition to any others. When this gathering receives blood mana dice for its mana pool this model restores 2hp." },
-		{ "name": "March of the Hands (Blood)", "text": "1 model may be chosen to have this trait or a trait from the Wretched Undead trait list. On the first turn, before rolling for initiative, you may push this model 4″." }
-	]
+		{ "name": "Covenant", "text": "Your gathering may only contain models with the Blood keyword." }
+	],
+	"leaderTrait": { "id": "chosen-of-the-hands", "name": "Chosen of the Hands", "text": "When this gathering receives blood mana dice for its mana pool this model restores 2hp." },
+	"trait": { "id": "march-of-the-hands", "name": "March of the Hands", "only": ["blood"], "text": "On the first turn, before rolling for initiative, you may push this model 4″." }
 }

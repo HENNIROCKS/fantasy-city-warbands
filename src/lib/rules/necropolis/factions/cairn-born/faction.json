@@ -6,8 +6,8 @@
 	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
 	"author": "Peter Vigors",
 	"rules": [
-		{ "name": "Covenant", "text": "Your gathering may only contain models with the Bone keyword." },
-		{ "name": "Osseous Sacrifice (Leader, Bone)", "text": "Your leader gains this trait in addition to any others. On activation you may choose to suffer 2 damage and then Bone school spells gain +1 to any damage dealt that activation. This additional damage does not affect friendly models." },
-		{ "name": "Adamant Structure (Bone)", "text": "1 model may be chosen to have this trait or a trait from the Wretched Undead trait list. When this model ‘suffers’ damage, e.g. as a result of falling, dangerous terrain or spellcasting, that damage is reduced by 1 to a minimum of 1. This is not armour and has no effect against attacks." }
-	]
+		{ "name": "Covenant", "text": "Your gathering may only contain models with the Bone keyword." }
+	],
+	"leaderTrait": { "id": "osseous-sacrifice", "name": "Osseous Sacrifice", "text": "On activation you may choose to suffer 2 damage and then Bone school spells gain +1 to any damage dealt that activation. This additional damage does not affect friendly models." },
+	"trait": { "id": "adamant-structure", "name": "Adamant Structure", "only": ["bone"], "text": "When this model ‘suffers’ damage, e.g. as a result of falling, dangerous terrain or spellcasting, that damage is reduced by 1 to a minimum of 1. This is not armour and has no effect against attacks." }
 }

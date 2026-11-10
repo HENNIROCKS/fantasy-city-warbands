@@ -243,7 +243,8 @@ export function withFighter(warband: Warband, fighterId: string, faction: Factio
 
 /**
  * Another recruit of the fighter's type, picking and carrying what it does –
- * except a pick only one fighter may have, such as a skill, which stays open.
+ * except a pick only one fighter may have, such as a skill, or one the whole
+ * warband holds a few of, such as a Covenant's trait, which stays open.
  * Nothing it gained or lost in a campaign comes along, nor its name or texts.
  */
 export function withCopy(warband: Warband, instanceId: string, faction: Faction, game: GameSystem): Warband {
@@ -252,7 +253,7 @@ export function withCopy(warband: Warband, instanceId: string, faction: Faction,
 	const added = withFighter(warband, model.fighterId, faction, game);
 	const recruit = added.fighters.find((f) => !warband.fighters.some((g) => g.instanceId === f.instanceId))!;
 	const fighter = faction.fighters.find((f) => f.id === model.fighterId);
-	const theirs = new Set((fighter?.choices ?? []).filter((c) => c.unique).flatMap((c) => c.options.map((o) => o.id)));
+	const theirs = new Set((fighter?.choices ?? []).filter((c) => c.unique || c.across !== undefined).flatMap((c) => c.options.map((o) => o.id)));
 	const copy = { ...recruit, wargear: [...model.wargear], picks: (model.picks ?? []).filter((id) => !theirs.has(id)) };
 	return { ...added, fighters: added.fighters.map((f) => (f.instanceId === recruit.instanceId ? copy : f)) };
 }

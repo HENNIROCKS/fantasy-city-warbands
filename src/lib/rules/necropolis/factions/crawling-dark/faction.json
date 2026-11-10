@@ -6,8 +6,8 @@
 	"source": { "name": "Necropolis Rulebook v0.9", "url": "https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/" },
 	"author": "Peter Vigors",
 	"rules": [
-		{ "name": "Covenant", "text": "Your gathering may only contain models with the Leader, Beast or Remnant keyword." },
-		{ "name": "Crawling Lord (Leader)", "text": "Your leader gains this trait in addition to any others. When this leader finishes their activation they can immediately activate a friendly model within 6″ with the Beast or Remnant keyword that has not yet activated." },
-		{ "name": "Eternal Loyalty (Remnant/Beast)", "text": "1 model may be chosen to have this trait or a trait from the Wretched Undead trait list. If this model is within 3″ of a friendly leader that is the target of an attack action, this model may choose to become the target of the attack action and is immediately Shattered before any attack dice are rolled. The targeted leader takes no damage." }
-	]
+		{ "name": "Covenant", "text": "Your gathering may only contain models with the Leader, Beast or Remnant keyword." }
+	],
+	"leaderTrait": { "id": "crawling-lord", "name": "Crawling Lord", "text": "When this leader finishes their activation they can immediately activate a friendly model within 6″ with the Beast or Remnant keyword that has not yet activated." },
+	"trait": { "id": "eternal-loyalty", "name": "Eternal Loyalty", "only": ["remnant", "beast"], "text": "If this model is within 3″ of a friendly leader that is the target of an attack action, this model may choose to become the target of the attack action and is immediately Shattered before any attack dice are rolled. The targeted leader takes no damage." }
 }

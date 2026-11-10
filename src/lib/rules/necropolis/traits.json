@@ -1,0 +1,15 @@
+[
+	{ "id": "acolyte", "name": "Acolyte", "text": "This model gains the following action. **Chant** (AP 2): The gathering receives an additional mana dice of any type for its mana pool." },
+	{ "id": "balefire-body", "name": "Balefire Body", "only": ["plasm"], "text": "If this model moves or is pushed over or through an enemy model, that model suffers 1 damage. An enemy model can only suffer this damage once per move or push action." },
+	{ "id": "breaking-wheel", "name": "Breaking Wheel", "only": ["blood", "bone"], "text": "If this model moves so that its base is touching an enemy model, that model suffers 2 damage. This model then suffers 1 damage. Only 1 enemy model can suffer this damage once per move activation." },
+	{ "id": "filthy-or-shrouded", "name": "Filthy or Shrouded", "text": "If this model is targeted by an attack/spell action from over 5\" away it is deemed to be obscured (attacker receives a -1 to their violence/ranged roll) this bonus cannot stack with being obscured by terrain." },
+	{ "id": "fulminate", "name": "Fulminate", "text": "This model gains the following action. **Fulminate** (AP 1): Every model within 3\" of this model also suffers 3 damage, this model is then Shattered. This model cannot be summoned after completing this action." },
+	{ "id": "fungal-bloom", "name": "Fungal Bloom", "only": ["blood", "bone"], "text": "On activation, you may choose a single model within 3\" of this model, it suffers 1 damage." },
+	{ "id": "gnarled", "name": "Gnarled", "only": ["blood", "bone"], "text": "Once per game, when this model is targeted by an attack action, the model receives +2 armour for the duration of that action." },
+	{ "id": "grafted-or-many-limbed", "name": "Grafted or Many Limbed", "text": "On a single melee attack action per game, the model receives +1 attacks to 1 weapon it has." },
+	{ "id": "ineffable-dead", "name": "Ineffable Dead", "text": "Reduce the distance this model is pushed by 1\", to a minimum of 1\"." },
+	{ "id": "purloiner", "name": "Purloiner", "text": "After each scenario roll a d10, if this is equal or lower than this model's move characteristic, gain d10 obols." },
+	{ "id": "skitter", "name": "Skitter", "only": ["blood", "bone"], "bonus": { "move": 1 }, "text": "This model has +1 move, ignores falling damage if falling from 3\" or lower. Falling damage still applies to any model it lands in base-to-base contact with." },
+	{ "id": "sluglike-or-fleshy-amalgam", "name": "Sluglike or Fleshy Amalgam", "only": ["blood", "bone"], "text": "Movement up or down a vertical surface is counted as only half the distance in inches for this model. For example, a move of 4\" up a vertical surface would be treated as only 2\" of movement." },
+	{ "id": "voices-from-the-firmament", "name": "Voices from the Firmament", "only": ["leader"], "text": "This model gains the following action. **Speak** (AP 1): Choose a single model within 5\" and push it 1\"." }
+]

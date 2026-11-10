@@ -2,8 +2,9 @@
  * Necropolis, from the ruleset under `src/lib/rules/necropolis/`, transcribed
  * from the Necropolis Rulebook v0.9. Every folder under `factions/` is one
  * Covenant, Wretched Undead among them; all draw on the one list of leaders and
- * minions in `fighters.json` and the one list of armaments in `wargear.json`,
- * as far as the Covenant and the model allow.
+ * minions in `fighters.json`, the one list of armaments in `wargear.json`, of
+ * spells in `spells.json` and of Wretched Undead traits in `traits.json`, as far
+ * as the Covenant and the model allow.
  */
 
 import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, Wargear } from '$lib/core/types';
@@ -11,6 +12,7 @@ import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, Wargear
 import fighterData from '$lib/rules/necropolis/fighters.json';
 import leaderTraits from '$lib/rules/necropolis/leader-traits.json';
 import spells from '$lib/rules/necropolis/spells.json';
+import traits from '$lib/rules/necropolis/traits.json';
 import wargearData from '$lib/rules/necropolis/wargear.json';
 import wargearLists from '$lib/rules/necropolis/wargear-lists.json';
 
@@ -173,8 +175,22 @@ interface RawFaction {
 	leaders?: string[];
 	/** The schools whose spells a leader may choose; all where missing. */
 	schools?: string[];
-	/** The Covenant's restriction and its traits, as printed. */
+	/** The trait the Covenant gives its leader. */
+	leaderTrait?: RawTrait;
+	/** The trait it lets one model of the gathering have, in place of one from the Wretched Undead list. */
+	trait?: RawTrait;
+	/** The Covenant's restriction, as printed. */
 	rules: Faction['rules'];
+}
+
+/** A trait, from a `faction.json` or `traits.json`. */
+interface RawTrait {
+	id: string;
+	name: string;
+	text: string;
+	/** Keywords of which the model must carry one. */
+	only?: string[];
+	bonus?: Record<string, number>;
 }
 
 interface RawFighter {
@@ -304,12 +320,47 @@ function leaderTraitOf(f: RawFighter): FighterChoice {
 	};
 }
 
-function fighter(f: RawFighter, elements: string[], schools: string[] | undefined): Fighter {
+/** The trait the Covenant gives the leader on top of the others (p. 19–23). */
+function covenantTraitOf(trait: RawTrait): FighterChoice {
+	return {
+		id: 'covenant-trait',
+		prompt: 'The Covenant gives the leader this trait.',
+		pick: 0,
+		given: [trait.id],
+		options: [trait],
+		noun: { one: 'trait', many: 'traits' }
+	};
+}
+
+/**
+ * The traits a model may take (p. 17, 19–26): the Covenant's own for one model
+ * of the gathering or the Wretched Undead's, which the gathering of a Covenant
+ * takes one of and Wretched Undead two. A leader may have two besides its
+ * Basic Leader Trait, a minion one.
+ */
+function traitsOf(f: RawFighter, raw: RawFaction): FighterChoice {
+	const across = raw.trait ? 1 : 2;
+	return {
+		id: 'traits',
+		prompt: raw.trait
+			? 'One model of the gathering may have the Covenant’s trait or a Wretched Undead trait.'
+			: 'The gathering gives two Wretched Undead traits, to one model or two.',
+		pick: Math.min(f.keywords.includes('leader') ? 2 : 1, across),
+		optional: true,
+		across,
+		options: [...(raw.trait ? [{ ...raw.trait, group: raw.name }] : []), ...(traits as RawTrait[]).map((t) => ({ ...t, group: 'Wretched Undead' }))],
+		noun: { one: 'trait', many: 'traits' }
+	};
+}
+
+function fighter(f: RawFighter, raw: RawFaction, elements: string[]): Fighter {
 	const { description, affinities: _affinities, mana: _mana, spells: _spells, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
 	const choices = [affinityOf(f, elements)];
 	if (f.mana !== undefined) choices.push(manaOf({ ...f, mana: f.mana }));
-	if (f.spells !== undefined) choices.push(spellsOf({ ...f, spells: f.spells }, schools));
+	if (f.spells !== undefined) choices.push(spellsOf({ ...f, spells: f.spells }, raw.schools));
 	if (f.keywords.includes('leader')) choices.push(leaderTraitOf(f));
+	if (f.keywords.includes('leader') && raw.leaderTrait) choices.push(covenantTraitOf(raw.leaderTrait));
+	choices.push(traitsOf(f, raw));
 	return { ...rest, fluff: description, wargear: offered(f), gear: [], choices };
 }
 
@@ -321,7 +372,7 @@ const files = import.meta.glob('/src/lib/rules/necropolis/factions/*/faction.jso
 
 export const factions: Faction[] = Object.values(files).map((data) => {
 	const raw = data as RawFaction;
-	const { models: _models, leaders: _leaders, schools: _schools, ...meta } = raw;
+	const { models: _models, leaders: _leaders, schools: _schools, leaderTrait: _leaderTrait, trait: _trait, ...meta } = raw;
 	const named = ELEMENTS.filter((e) => raw.models?.includes(e));
 	const elements = named.length ? named : ELEMENTS;
 	return {
@@ -329,7 +380,7 @@ export const factions: Faction[] = Object.values(files).map((data) => {
 		game: game.id,
 		size: { min: 1, max: null },
 		choices: [],
-		fighters: roster.filter((f) => allows(raw, f)).map((f) => fighter(f, elements, raw.schools)),
+		fighters: roster.filter((f) => allows(raw, f)).map((f) => fighter(f, raw, elements)),
 		wargear: armaments
 	};
 });
