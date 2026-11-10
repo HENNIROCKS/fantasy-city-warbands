@@ -5,6 +5,7 @@
 	import { DEFAULT_COLOUR } from '$lib/colour';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import ReleaseBar from '$lib/components/ReleaseBar.svelte';
+	import { MONTHS } from '$lib/core/history';
 	import { toRoster } from '$lib/core/roster';
 	import {
 		deleteWarband,
@@ -237,7 +238,6 @@
 	}
 
 	/* Spelled out rather than left to toLocaleString, whose output differs between engines. */
-	const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	function when(iso: string): string {
 		const d = new Date(iso);
 		const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;

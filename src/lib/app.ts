@@ -1,4 +1,5 @@
 import { version } from '$app/environment';
+import { MONTHS } from '$lib/core/history';
 
 /** The app's name, as the header and the browser tab show it. */
 export const APP_NAME = 'Fantasy City Warbands';
@@ -21,7 +22,6 @@ export const REPO = 'https://github.com/HENNIROCKS/fantasy-city-warbands';
  * months cannot. Spelled out rather than left to toLocaleDateString, whose
  * month abbreviations differ between engines.
  */
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const built = new Date(Number(version));
 
 /** The day this build was made, such as `13 Oct 2026`; null where the version is not a timestamp. */

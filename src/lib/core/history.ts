@@ -73,7 +73,8 @@ export function recordBattle(warband: Warband, end: BattleEnd, at = new Date()):
 	return record ? { ...warband, history: [...(warband.history ?? []), record] } : warband;
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+/** The months as every date in the app writes them, so dates stay English like the app whatever the phone's locale. */
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 /** `2026-09-19` as `19 Sep 2026`, spelled out here rather than by the phone's locale, so it stays English like the app. */
 export function displayDate(date: string): string {
