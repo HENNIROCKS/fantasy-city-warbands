@@ -9,6 +9,8 @@
 import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, Wargear } from '$lib/core/types';
 
 import fighterData from '$lib/rules/necropolis/fighters.json';
+import leaderTraits from '$lib/rules/necropolis/leader-traits.json';
+import spells from '$lib/rules/necropolis/spells.json';
 import wargearData from '$lib/rules/necropolis/wargear.json';
 import wargearLists from '$lib/rules/necropolis/wargear-lists.json';
 
@@ -169,6 +171,8 @@ interface RawFaction {
 	models?: string[];
 	/** The leaders the Covenant allows, by fighter id; any where missing. */
 	leaders?: string[];
+	/** The schools whose spells a leader may choose; all where missing. */
+	schools?: string[];
 	/** The Covenant's restriction and its traits, as printed. */
 	rules: Faction['rules'];
 }
@@ -183,6 +187,8 @@ interface RawFighter {
 	keywords: string[];
 	/** Blood, Bone or Plasm, as many of them as the model may choose from. */
 	affinities: string[];
+	/** How many spells it chooses besides Summon, for a model that casts. */
+	spells?: number;
 	profile: Record<string, number | null>;
 	/** The armaments lists it may take from, by name in `wargear-lists.json`. */
 	wargear_lists: string[];
@@ -233,9 +239,60 @@ function affinityOf(f: RawFighter, elements: string[]): FighterChoice {
 		: { ...shared, prompt: 'Choose Blood, Bone or Plasm as the model’s keyword.', pick: 1 };
 }
 
-function fighter(f: RawFighter, elements: string[]): Fighter {
-	const { description, affinities: _affinities, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
-	return { ...rest, fluff: description, wargear: offered(f), gear: [], choices: [affinityOf(f, elements)] };
+/** A `spells.json` row. */
+interface RawSpell {
+	id: string;
+	name: string;
+	school: string;
+	ap: number;
+	channel: string;
+	text: string;
+}
+
+/** Every leader knows Summon (p. 29). */
+const SUMMON = 'summon';
+const MANA_RULE = 'Mana and spells';
+
+/** The spells a caster chooses from the schools it may learn, by school, and the one it knows already. */
+function spellsOf(f: RawFighter & { spells: number }, schools: string[] | undefined): FighterChoice {
+	const options = (spells as RawSpell[])
+		.filter((sp) => !schools || schools.includes(sp.school))
+		.map((sp) => ({
+			id: sp.id,
+			name: sp.name,
+			text: `**AP ${sp.ap} · Channel ${sp.channel}** ${sp.text}`,
+			group: sp.school[0].toUpperCase() + sp.school.slice(1)
+		}));
+	if (!options.some((o) => o.id === SUMMON)) fail(`Necropolis ${f.id}: Summon is no spell of ${schools?.join(', ')}`);
+	return {
+		id: 'spells',
+		source: f.rules.some((r) => r.name === MANA_RULE) ? MANA_RULE : undefined,
+		prompt: `Choose ${f.spells} ${f.spells === 1 ? 'spell' : 'spells'}; every leader knows Summon.`,
+		pick: f.spells,
+		given: [SUMMON],
+		options,
+		noun: { one: 'spell', many: 'spells' }
+	};
+}
+
+/** The Basic Leader Trait a leader chooses (p. 31). */
+function leaderTraitOf(f: RawFighter): FighterChoice {
+	return {
+		id: 'leader-trait',
+		source: f.rules.some((r) => r.name === MANA_RULE) ? MANA_RULE : undefined,
+		prompt: 'Choose 1 Basic Leader Trait.',
+		pick: 1,
+		options: leaderTraits as FighterChoice['options'],
+		noun: { one: 'trait', many: 'traits' }
+	};
+}
+
+function fighter(f: RawFighter, elements: string[], schools: string[] | undefined): Fighter {
+	const { description, affinities: _affinities, spells: _spells, wargear_lists: _lists, wargear_also: _also, wargear_except: _except, ...rest } = f;
+	const choices = [affinityOf(f, elements)];
+	if (f.spells !== undefined) choices.push(spellsOf({ ...f, spells: f.spells }, schools));
+	if (f.keywords.includes('leader')) choices.push(leaderTraitOf(f));
+	return { ...rest, fluff: description, wargear: offered(f), gear: [], choices };
 }
 
 /** Every Covenant has the same armaments; the Improvised Weapons are no purchase. */
@@ -246,7 +303,7 @@ const files = import.meta.glob('/src/lib/rules/necropolis/factions/*/faction.jso
 
 export const factions: Faction[] = Object.values(files).map((data) => {
 	const raw = data as RawFaction;
-	const { models: _models, leaders: _leaders, ...meta } = raw;
+	const { models: _models, leaders: _leaders, schools: _schools, ...meta } = raw;
 	const named = ELEMENTS.filter((e) => raw.models?.includes(e));
 	const elements = named.length ? named : ELEMENTS;
 	return {
@@ -254,7 +311,7 @@ export const factions: Faction[] = Object.values(files).map((data) => {
 		game: game.id,
 		size: { min: 1, max: null },
 		choices: [],
-		fighters: roster.filter((f) => allows(raw, f)).map((f) => fighter(f, elements)),
+		fighters: roster.filter((f) => allows(raw, f)).map((f) => fighter(f, elements, raw.schools)),
 		wargear: armaments
 	};
 });

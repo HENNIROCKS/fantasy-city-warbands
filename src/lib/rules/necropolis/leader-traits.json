@@ -1,0 +1,12 @@
+[
+	{ "id": "unyielding-will", "name": "Unyielding Will", "text": "Gain +2 max HP.", "bonus": { "hp": 2 } },
+	{ "id": "combatant", "name": "Combatant", "text": "Improve *violence* by 1 (e.g. +7 becomes 6+).", "bonus": { "violence": -1 } },
+	{ "id": "perceptive", "name": "Perceptive", "text": "Improve *ranged* by 1 (e.g. +7 becomes 6+).", "bonus": { "ranged": -1 } },
+	{ "id": "celerity", "name": "Celerity", "text": "Improve *move* by 1.", "bonus": { "move": 1 } },
+	{ "id": "stalwart", "name": "Stalwart", "text": "Reduce the distance this model is pushed by 1\", to a minimum of 1\"." },
+	{ "id": "sorcerous-talent", "name": "Sorcerous Talent", "text": "Choose an additional mana point of any type." },
+	{ "id": "studious", "name": "Studious", "text": "Choose an additional spell of any type.", "raises": { "choice": "spells", "by": 1 } },
+	{ "id": "regenerating-soul", "name": "Regenerating Soul", "text": "Each time this leader activates they restore 1 HP." },
+	{ "id": "spirit-syphon", "name": "Spirit Syphon", "text": "If the leader inflicts any damage with melee attack actions, they restore 2 HP at the end of their activation." },
+	{ "id": "miserly", "name": "Miserly", "text": "Receive 50 obols, note this does not increase your initial deployment limit." }
+]

@@ -2,7 +2,7 @@
 	import RichText from '$lib/components/RichText.svelte';
 	import type { ActiveEffect } from '$lib/core/effects';
 	import type { Faction, FighterChoice, FighterInstance, GameSystem, Issue, Wargear, WargearKind } from '$lib/core/types';
-	import { fighterCost, fighterName, formatStat, neverCarried, profileOf } from '$lib/core/warband';
+	import { fighterCost, fighterName, formatStat, neverCarried, pickOf, profileOf } from '$lib/core/warband';
 	import { tick } from 'svelte';
 
 	let {
@@ -224,7 +224,7 @@
 		const picks = instance.picks ?? [];
 		if (picks.includes(id)) return picks.filter((p) => p !== id);
 		const mine = pickedUnder(choice);
-		if (mine.length < choice.pick) return [...picks, id];
+		if (fighter && mine.length < pickOf(choice, instance, fighter)) return [...picks, id];
 		return [...picks.filter((p) => p !== mine[0]), id];
 	}
 
@@ -355,10 +355,11 @@
 		{#each fighter.choices ?? [] as choice, c (c)}
 			{@const picks = instance.picks ?? []}
 			{@const mine = pickedUnder(choice)}
+			{@const pick = pickOf(choice, instance, fighter)}
 			<!-- A pick with a price is paid for once the warband has fought, as its wargear is. -->
 			{@const settled = !!paid && choice.options.some((o) => o.cost)}
 			<section>
-				<p class="sublabel">{choice.source ?? choice.roll ?? (choice.pick ? 'Choose' : 'Given')}{choice.pick ? ` · ${mine.length} / ${choice.pick}` : ''}</p>
+				<p class="sublabel">{choice.source ?? choice.roll ?? (pick ? 'Choose' : 'Given')}{pick ? ` · ${mine.length} / ${pick}` : ''}</p>
 				<div class="mb-2 text-zinc-400"><RichText text={choice.prompt} /></div>
 				{#if settled && !closed}
 					<p class="mb-2 text-zinc-400">Paid for: it stays as picked.</p>
@@ -388,7 +389,9 @@
 						{:else}
 							<!-- What the fighter has from recruitment stands pressed, and is not one of its picks. -->
 							{@const given = !!choice.given?.includes(option.id)}
-							{@const block = given || picks.includes(option.id) ? null : pickBlocked(nextPicks(option.id, choice))}
+							<!-- Taking a pick out is stopped only where it leaves a choice over its count, as Studious does with its spell; a limit the warband breaks already may be worked off. -->
+							{@const probe = given ? null : pickBlocked(nextPicks(option.id, choice))}
+							{@const block = picks.includes(option.id) && probe?.code !== 'fighter-choice' ? null : probe}
 							<button
 								type="button"
 								id={optionId(option.id)}
@@ -413,8 +416,8 @@
 						{/if}
 					{/each}
 				</div>
-				{#if mine.length < choice.pick && !choice.optional}
-					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {choice.pick} to carry on.</p>
+				{#if mine.length < pick && !choice.optional}
+					<p class="mt-2 font-semibold" style="color: var(--ui-warn-text)">Pick {pick} to carry on.</p>
 				{/if}
 			</section>
 		{/each}

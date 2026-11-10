@@ -13,7 +13,7 @@
 import { LEADER, activeEffects, isGrouped, limitOf } from './effects';
 import { canLead, lostLeader, recruitedLeader } from './leader';
 import { findIssues } from './finds';
-import { chosenOptions, fighterCost, fighterName, offeredOptions } from './warband';
+import { chosenOptions, fighterCost, fighterName, offeredOptions, pickOf } from './warband';
 import type { Faction, Fighter, FighterChoice, GameSystem, Issue, Span, Warband } from './types';
 
 function describe(span: Span): string {
@@ -27,14 +27,14 @@ function describe(span: Span): string {
  * itself missing: `choose one magical ability`, or for a roll the table it is
  * rolled on.
  */
-function asked(choice: FighterChoice, tooMany: boolean): string {
-	const count = choice.pick === 1 ? 'one' : String(choice.pick);
+function asked(choice: FighterChoice, pick: number, tooMany: boolean): string {
+	const count = pick === 1 ? 'one' : String(pick);
 	if (choice.roll) {
-		const results = choice.pick === 1 ? 'result' : 'results';
-		return `enter ${tooMany ? `only ${count}` : choice.pick === 1 ? 'the' : count} ${results} rolled on the ${choice.roll}`;
+		const results = pick === 1 ? 'result' : 'results';
+		return `enter ${tooMany ? `only ${count}` : pick === 1 ? 'the' : count} ${results} rolled on the ${choice.roll}`;
 	}
 	const noun = choice.noun ?? { one: 'option', many: 'options' };
-	return `choose ${tooMany ? 'only ' : ''}${count} ${choice.pick === 1 ? noun.one : noun.many}`;
+	return `choose ${tooMany ? 'only ' : ''}${count} ${pick === 1 ? noun.one : noun.many}`;
 }
 
 /** Whether a count falls short of a span, exceeds it, or neither. */
@@ -161,13 +161,14 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 		for (const [i, choice] of (fighter.choices ?? []).entries()) {
 			const options = new Set(choice.options.map((o) => o.id));
 			const valid = new Set(picked.filter((id) => options.has(id) && !choice.given?.includes(id)));
-			const tooMany = valid.size > choice.pick || (i === 0 && stray);
-			if (tooMany || (valid.size < choice.pick && !choice.optional)) {
+			const pick = pickOf(choice, instance, fighter);
+			const tooMany = valid.size > pick || (i === 0 && stray);
+			if (tooMany || (valid.size < pick && !choice.optional)) {
 				issues.push({
 					code: 'fighter-choice',
 					kind: tooMany ? 'excess' : 'missing',
-					message: `${fighter.name}: ${asked(choice, tooMany)}.`,
-					short: tooMany ? `Pick ${choice.pick} only` : 'Choice open',
+					message: `${fighter.name}: ${asked(choice, pick, tooMany)}.`,
+					short: tooMany ? `Pick ${pick} only` : 'Choice open',
 					instanceId: instance.instanceId
 				});
 			}

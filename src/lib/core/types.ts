@@ -1143,14 +1143,19 @@ export interface FighterChoiceOption {
 	group?: string;
 	/** What the fighter is called once it has picked this, in place of its type: a hired sword's role, `River Troll`. */
 	title?: string;
+	/** What it adds to how many another choice of the same fighter picks, by that choice's `id`: Necropolis' Studious, one more spell. */
+	raises?: { choice: string; by: number };
 }
 
 /** A decision taken once for one fighter, when it is recruited: Wyrdcry's Eshin Sorcerer picks a spell. */
 export interface FighterChoice {
+	/** A fixed key, for an option of another choice to raise this one's `pick`; Necropolis' spells are `spells`. */
+	id?: string;
 	/** The sentence above the options. */
 	prompt: string;
 	/** The fighter rule the choice comes out of, by name; its card entry says the pick is already included. */
 	source?: string;
+	/** How many it takes; `pickOf` adds what the fighter's options `raise` it by. */
 	pick: number;
 	/** Whether it may be left open, picking fewer than `pick` or none, as a Misbegotten may go without a bloodline mutation. */
 	optional?: true;

@@ -4,7 +4,7 @@
  */
 
 import { LEADER, pickedStats, recruitCost, type ActiveEffect } from './effects';
-import type { Faction, Fighter, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
+import type { Faction, Fighter, FighterChoice, FighterChoiceOption, FighterInstance, GameSystem, Span, StatDef, Warband } from './types';
 
 /** Where a faction's rules come from, as the app labels it, in the order factions are listed. */
 export const ORIGIN_LABEL: Record<Faction['origin'], string> = { official: 'Official', playtest: 'Playtest', homebrew: 'Homebrew' };
@@ -59,6 +59,15 @@ export function offeredOptions(fighter: Fighter): FighterChoiceOption[] {
 export function chosenOptions(instance: FighterInstance, fighter: Fighter): FighterChoiceOption[] {
 	const picks = instance.picks ?? [];
 	return (fighter.choices ?? []).flatMap((c) => c.options.filter((o) => picks.includes(o.id) || c.given?.includes(o.id)));
+}
+
+/**
+ * How many the choice takes for this fighter: its `pick` and what the options
+ * the fighter has raise it by, such as Studious' one more spell.
+ */
+export function pickOf(choice: FighterChoice, instance: FighterInstance, fighter: Fighter): number {
+	if (!choice.id) return choice.pick;
+	return chosenOptions(instance, fighter).reduce((n, { raises }) => n + (raises && raises.choice === choice.id ? raises.by : 0), choice.pick);
 }
 
 /**
