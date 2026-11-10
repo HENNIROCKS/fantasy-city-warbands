@@ -53,11 +53,11 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s campaign runs from the aftermath to the downtime; where an encounter brings something the app does not keep, it says to note it by hand.'
+				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s campaign runs from the aftermath to the downtime; where an encounter brings something the app does not keep, it says to note it by hand. Necropolis builds a gathering so far; its battle and campaign are still to come.'
 		},
 		{
 			question: 'Which rules does the app follow?',
-			answer: `Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list. Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook 1.0.1, the Campaign Book 1.0 and the factions as wyrdcry.net has them, its playtest factions included.`
+			answer: `Black Death City ${systems['black-death-city'].game.edition}; where the playtest contradicts itself, the fighter’s own scroll wins over the fighter list. Necropolis ${systems.necropolis.game.edition}, a draft with gaps of its own, in which a gathering can be built so far. Wyrdcry ${systems.wyrdcry.game.edition}: the Rulebook 1.0.1, the Campaign Book 1.0 and the factions as wyrdcry.net has them, its playtest factions included.`
 		}
 	];
 

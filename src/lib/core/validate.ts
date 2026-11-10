@@ -181,13 +181,13 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 			issues.push({
 				code: 'option-only',
 				kind: 'excess',
-				message: `${fighter.name}: ${option.name} is only for a ${names} model.`,
+				message: `${fighter.name}: ${option.name} needs the ${names} keyword.`,
 				short: `${option.name} needs ${names}`,
 				instanceId: instance.instanceId
 			});
 		}
 
-		/* The picks the gathering may give in all, counted fighter after fighter, alive. */
+		/* The picks the warband may give in all, counted fighter after fighter, alive. */
 		for (const choice of instance.away === 'dead' ? [] : (fighter.choices ?? []).filter((c) => c.id && c.across !== undefined)) {
 			const mine = picked.filter((id) => choice.options.some((o) => o.id === id) && !choice.given?.includes(id)).length;
 			const total = (acrossHeld.get(choice.id!) ?? 0) + mine;
@@ -197,7 +197,7 @@ export function validate(warband: Warband, game: GameSystem, faction: Faction): 
 				issues.push({
 					code: 'across',
 					kind: 'excess',
-					message: `${fighter.name}: the gathering may give ${choice.across} ${choice.across === 1 ? noun.one : noun.many} only.`,
+					message: `${fighter.name}: the warband may give ${choice.across} ${choice.across === 1 ? noun.one : noun.many} only.`,
 					short: 'None left',
 					instanceId: instance.instanceId
 				});

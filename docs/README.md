@@ -16,6 +16,12 @@ A game night, from start to end: [start here](black-death-city/README.md).
 1. [The battle](black-death-city/battle.md)
 2. [Between battles](black-death-city/between-battles.md)
 
+## Necropolis
+
+Building a gathering only, so far: [start here](necropolis/README.md).
+
+1. [Building a gathering](necropolis/building.md)
+
 ## Wyrdcry
 
 A game night, from start to end: [start here](wyrdcry/README.md).

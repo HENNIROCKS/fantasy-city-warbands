@@ -58,7 +58,10 @@ Transcribed from the Rulebook v0.9, a draft that still carries placeholders and 
 - [ ] Improvised Weapon: shown on every model without a melee weapon, where the rulebook gives it to a model that bought no weapon at all, so a model with only a ranged weapon has it too (p. 36)
 - [ ] Wardart and Throwing Axe count as Miscellaneous Equipment, as p. 41 lists them, so a model takes one beside its weapons, also a Beast or a colossal model whose entry allows only claws and fangs or colossal weapons (pp. 30, 33–36, 41)
 - [ ] A shield cannot be taken beside a two-handed weapon, also by a leader whose second weapon is one-handed and could use it while switched to that one (pp. 36, 40)
+- [ ] A bracket after a trait, such as Blood/Bone, reads as "at least one of these keywords", checked against the keywords the model has with its element (pp. 19–26)
+- [ ] A Revenant's cap of 4 spells and 4 mana points is not checked, since a recruit reaches 3 spells and 4 mana points at most (p. 30)
 
 ### Open upstream
 
+- [ ] Whether the Covenant's trait for the leader counts towards the 3 traits a leader may have; the app lets a leader have the Basic Leader Trait, the Covenant's trait and one more (pp. 17, 19–23)
 - [ ] Example Gathering: The Mire Walker, a Lich with a Heavy Polearm, costs 15 obols, where the Lich costs 0 and the Heavy Polearm 20; the app takes the costs of pp. 29 and 37 (p. 18)

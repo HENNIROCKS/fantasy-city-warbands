@@ -8,8 +8,8 @@ step later.
 piece is one area of the game, filled once it is built.
 
 **Where the rules are.** At the foot of each faction a link leads to where
-its rules are written: its page on wyrdcry.net, the Black Death City site, or
-the PDF of a homebrew faction.
+its rules are written: its page on wyrdcry.net, the Black Death City site, the Necropolis
+rulebook, or the PDF of a homebrew faction.
 
 **Playtest and Homebrew.** Below the official factions come those the author
 is still testing, under **Playtest**, then those written by fans, under

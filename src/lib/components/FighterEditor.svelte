@@ -425,9 +425,9 @@
 						{:else}
 							<!-- What the fighter has from recruitment stands pressed, and is not one of its picks. -->
 							{@const given = !!choice.given?.includes(option.id)}
-							<!-- Taking a pick out is stopped only where it leaves a choice over its count, as Studious does with its spell; a limit the warband breaks already may be worked off. -->
+							<!-- Taking a pick out is stopped where it breaks a limit the warband kept: a choice over its count, as Studious does with its spell, a trait that needs the element, a purse that shrinks below what is spent. A limit it breaks already may be worked off. -->
 							{@const probe = given ? null : pickBlocked(nextPicks(option.id, choice))}
-							{@const block = picks.includes(option.id) && probe?.code !== 'fighter-choice' ? null : probe}
+							{@const block = picks.includes(option.id) && !['fighter-choice', 'option-only', 'over-budget'].includes(probe?.code ?? '') ? null : probe}
 							<button
 								type="button"
 								id={optionId(option.id)}

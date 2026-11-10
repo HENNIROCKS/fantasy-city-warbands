@@ -31,8 +31,10 @@
 - [x] 📄 Import the Warband Builder's talents: magical abilities, mutations, heroic talents and injuries onto the fighters, what does not fit into the notes
 - [x] 📈 Black Death City's aftermath: injuries permanent or temporary, Black Rot, a champion assuming command, experience and ranks, recuperating
 - [x] 📈 Black Death City's campaign: advancement rolls, the underdog's bonuses, holdings and the stronghold, Explore the City, curiosities and relics, income, leeching, retiring a fighter
+- [x] 📚 Necropolis Rulebook v0.9: the five Covenants and the Wretched Undead with their leaders, minions, armaments, elements, mana, spells and traits, and the Deployment Limit on the card
 - [ ] 📄 The roster per game, as each game's own sheet has it
-- [ ] 📚 Necropolis
+- [ ] ⚔️ Necropolis' battle: who is fielded within the Deployment Limit, then the cards
+- [ ] 📈 Necropolis' campaign
 
 ## Ideas
 
