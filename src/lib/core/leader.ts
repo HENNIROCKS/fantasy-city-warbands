@@ -6,7 +6,7 @@
  */
 
 import { LEADER, activeEffects } from './effects';
-import { chosenOptions, fighterCost, purse } from './warband';
+import { chosenOptions, fighterCost, purse, withPurse } from './warband';
 import type { Faction, Fighter, FighterInstance, GameSystem, Warband } from './types';
 
 /** Whether a fighter was recruited as the warband's leader, by its type. */
@@ -82,10 +82,10 @@ export function takeLead(warband: Warband, faction: Faction, game: GameSystem, i
 	const stash = [...(warband.stash ?? []), ...(recovered ? dead.flatMap((f) => f.wargear) : [])];
 	const kept = (f: FighterInstance) => (recovered ? fighterCost(f, faction, effects) - fighterCost({ ...f, wargear: [] }, faction, effects) : 0);
 	const spent = dead.reduce((sum, f) => sum + fighterCost(f, faction, effects) - kept(f), 0);
-	return {
+	const led: Warband = {
 		...warband,
-		...(spent ? { gold: purse(warband, game, faction) - spent } : {}),
 		...(stash.length || warband.stash ? { stash } : {}),
 		fighters: warband.fighters.filter((f) => !dead.includes(f)).map((f) => (f.instanceId === instanceId ? { ...f, leader: true as const } : f))
 	};
+	return spent ? withPurse(led, faction, purse(warband, game, faction) - spent) : led;
 }

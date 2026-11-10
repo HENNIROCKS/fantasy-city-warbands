@@ -589,8 +589,9 @@ export interface Aftermath {
 	/** What a search party may run into after the battle, such as Wyrdcry's Explore District; none where the game sends none out. */
 	explore?: Explore;
 	/**
-	 * What the result and the shards bring: the warband's counters and gold as
-	 * they become, and two lines saying how, as the back of the card shows them.
+	 * What the result and the shards bring: the warband's counters as they
+	 * become, the gold that goes into its purse, and two lines saying how, as
+	 * the back of the card shows them.
 	 * Without it, the aftermath has no income page and changes neither.
 	 * `survivors` are the fighters that took part and were not taken out of
 	 * action, by instance id, for what only they bring in; `raised`, the
@@ -1377,8 +1378,8 @@ export interface Warband {
 	/**
 	 * The whole purse: what the warband is worth together with what it has left
 	 * to spend, as the Warband Builder counts it. Missing reads as the game's
-	 * `budget` and what its picks' `purse` adds, which a warband not yet in a
-	 * campaign has.
+	 * `budget`, which a warband not yet in a campaign has. What its picks'
+	 * `purse` adds stays out of it until the warband has fought (`pickedPurse`).
 	 */
 	gold?: number;
 	/** Wargear ids held by the warband rather than a fighter; an id may appear more than once. */

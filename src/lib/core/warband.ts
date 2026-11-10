@@ -71,17 +71,27 @@ export function pickOf(choice: FighterChoice, instance: FighterInstance, fighter
 }
 
 /**
- * The whole purse the warband's cost is held against: its `gold` once it has
- * any, else the game's budget and what its fighters' picks add, such as
- * Necropolis' Miserly.
+ * What the fighters' picks add to the purse, such as Necropolis' Miserly: while
+ * the warband has not fought, so a pick taken back takes it back too. With its
+ * first battle it is part of its `gold`.
  */
-export function purse(warband: Warband, game: GameSystem, faction: Faction): number {
-	if (warband.gold !== undefined) return warband.gold;
+export function pickedPurse(warband: Warband, faction: Faction): number {
+	if (warband.history?.length) return 0;
 	const fighters = new Map(faction.fighters.map((f) => [f.id, f]));
 	return warband.fighters.reduce((sum, instance) => {
 		const fighter = fighters.get(instance.fighterId);
 		return fighter ? chosenOptions(instance, fighter).reduce((n, o) => n + (o.purse ?? 0), sum) : sum;
-	}, game.budget);
+	}, 0);
+}
+
+/** The whole purse the warband's cost is held against: its `gold`, else the game's budget, and what its picks add. */
+export function purse(warband: Warband, game: GameSystem, faction: Faction): number {
+	return (warband.gold ?? game.budget) + pickedPurse(warband, faction);
+}
+
+/** The warband with its whole purse at `total`, its `gold` written without what its picks add while they count. */
+export function withPurse(warband: Warband, faction: Faction, total: number): Warband {
+	return { ...warband, gold: total - pickedPurse(warband, faction) };
 }
 
 /**

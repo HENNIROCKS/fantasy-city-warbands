@@ -16,7 +16,7 @@
 
 import { findsOf } from './finds';
 import type { BattleRecord, Faction, GameSystem, Warband } from './types';
-import { newId, purse } from './warband';
+import { newId, pickedPurse, purse } from './warband';
 
 export interface StashOut {
 	/** The piece's place in the stash as stored, which nothing moves until Done. */
@@ -140,7 +140,9 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 	const taken = draft.stashIn.reduce((sum, id) => sum + priceOf(id, faction), 0);
 	const pending = toRecord(draft.pending);
 	const history = [...draft.history.filter((r) => !draft.removed.includes(r.id)), ...(pending ? [pending] : [])];
-	const changed = draft.goldAdded.length > 0 || gone.size > 0 || draft.stashIn.length > 0;
+	/* What the picks add stays out of the gold until a battle is added, and leaves it again with the battle struck. */
+	const picked = pickedPurse({ ...warband, history }, faction);
+	const changed = draft.goldAdded.length > 0 || gone.size > 0 || draft.stashIn.length > 0 || picked !== pickedPurse(warband, faction);
 	const { fluff: _fluff, notes: _notes, disbanded, ...rest } = warband;
 	const finds = draft.clearSearches ? findsOf(warband) : null;
 	const fluff = draft.fluff.trim();
@@ -153,7 +155,7 @@ export function applyBack(warband: Warband, game: GameSystem, faction: Faction, 
 		...(notes ? { notes } : {}),
 		...(draft.colour || warband.colour !== undefined ? { colour: draft.colour } : {}),
 		...(Object.keys(counted).length || warband.tally ? { tally: counted } : {}),
-		...(changed ? { gold: purse(warband, game, faction) + goldIn(stash, draft, faction, game) - removed + taken } : {}),
+		...(changed ? { gold: purse(warband, game, faction) + goldIn(stash, draft, faction, game) - removed + taken - picked } : {}),
 		...(gone.size || draft.stashIn.length ? { stash: [...stash.filter((_, i) => !gone.has(i)), ...draft.stashIn] } : {}),
 		...(history.length || warband.history ? { history } : {}),
 		...(finds ? { finds: { after: finds.after, searched: [], found: finds.found.filter((f) => f.bought).map((f) => ({ ...f, copies: f.bought! })) } } : {}),

@@ -262,7 +262,7 @@ function holdersOf(warband: Warband, talent: string, among: string[]): string[] 
  * for the underdog's Bounty, the highest at most. The gold goes into the purse,
  * which counts the warband's value in.
  */
-function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number, survivors: string[], raised: number) {
+function income(warband: Warband, _game: GameSystem, result: 'win' | 'draw' | 'loss' | null, shards: number, survivors: string[], raised: number) {
 	const before = warband.tally?.favour ?? 0;
 	const bootlickers = holdersOf(warband, 'bootlicker', survivors);
 	const favour = shards + (result === 'win' ? 1 : 0) + bootlickers.length;
@@ -275,7 +275,7 @@ function income(warband: Warband, game: GameSystem, result: 'win' | 'draw' | 'lo
 	const bounty = tier !== held ? ` as ${tier.label} (Bounty)` : '';
 	return {
 		tally: { ...warband.tally, favour: before + favour },
-		gold: (warband.gold ?? game.budget) + gold,
+		gold,
 		lines: [
 			{ gain: `+${favour} favour`, why: `→ ${before + favour}, ${held.label}${rises ? ' (a rise in standing)' : ''}${licked}` },
 			{ gain: `+${gold} gc`, why: `– ${tier.income} gc${shards ? ` and ${shards} × ${tier.per_shard} gc` : ''}${bounty}` }

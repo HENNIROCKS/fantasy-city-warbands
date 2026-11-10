@@ -21,7 +21,7 @@ import { canLead, disbandedAfter, keywordsOf, leaderOf } from './leader';
 import { priceOf } from './stash';
 import { warbandCost } from './validate';
 import { standingRaised, type UnderdogState } from './underdog';
-import { profileOf, purse, withFighter } from './warband';
+import { profileOf, purse, withFighter, withPurse } from './warband';
 import type { Aftermath, BattleRecord, Faction, Fighter, FighterInstance, GameSystem, InjuryResolution, Warband, Wargear } from './types';
 
 /** Whether a surgeon was paid and what the roll said, for a result that needs one: none, and the fighter dies; else the roll. */
@@ -466,10 +466,10 @@ export function earnedOf(warband: Warband, game: GameSystem, faction: Faction, d
 	const raised = found ? { ...warband, tally } : warband;
 	const earned = rules.income
 		? rules.income(raised, game, draft.result, draft.shards + (found?.shards ?? 0), survivorsOf(draft), standingRaised(draft.underdog))
-		: { tally, gold: purse(warband, game, faction), lines: [] };
+		: { tally, gold: 0, lines: [] };
 	const spent = spentOf(warband, game, faction, draft);
 	const kept = found ? found.gold + found.stash.reduce((sum, id) => sum + priceOf(id, faction), 0) - spent.reduce((sum, id) => sum + priceOf(id, faction), 0) : 0;
-	return { ...earned, gold: earned.gold + kept, found };
+	return { ...earned, gold: purse(warband, game, faction) + earned.gold + kept, found };
 }
 
 /**
@@ -631,15 +631,18 @@ export function applyAftermath(warband: Warband, game: GameSystem, faction: Fact
 		return [fighter];
 	});
 	const { finds: _finds, next: _next, ...rest } = warband;
-	let applied: Warband = {
-		...rest,
-		gold: earned.gold - spent,
-		tally: earned.tally,
-		...(stash.length || warband.stash ? { stash } : {}),
-		...(record ? { history: [...(warband.history ?? []), record] } : {}),
-		...(earned.found?.next.length ? { next: earned.found.next } : {}),
-		fighters
-	};
+	let applied: Warband = withPurse(
+		{
+			...rest,
+			tally: earned.tally,
+			...(stash.length || warband.stash ? { stash } : {}),
+			...(record ? { history: [...(warband.history ?? []), record] } : {}),
+			...(earned.found?.next.length ? { next: earned.found.next } : {}),
+			fighters
+		},
+		faction,
+		earned.gold - spent
+	);
 	/* A fighter an encounter brings joins last, its characteristics set as level-0 advances naming the encounter; one that comes for nothing raises the purse by its cost. */
 	for (const recruit of earned.found?.recruits ?? []) {
 		const type = faction.fighters.find((f) => f.id === recruit.fighterId);
