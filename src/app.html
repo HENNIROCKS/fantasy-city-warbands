@@ -34,11 +34,12 @@
 			})();
 		</script>
 		<!-- The start screen stands until the app has loaded and src/lib/start-screen.ts
-		     fades it out. Its colour is a fixed red, the same for every game. A
-		     warband opened from a scanned code goes without it. -->
+		     fades it out. Its colour is a fixed red, the same for every game. Only
+		     the start page has it: a page opened by its address, such as the docs
+		     or a warband from a scanned code, goes without. -->
 		<script>
 			(() => {
-				if (/\/view(\.html)?\/?$/.test(location.pathname)) return;
+				if (/\/(view|build|cards|docs|info|dev)(\.html)?(\/|$)/.test(location.pathname)) return;
 				const root = document.documentElement;
 				root.classList.add('start');
 				const etching = document.createElement('link');

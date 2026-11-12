@@ -119,6 +119,11 @@
 			</ul>
 		{/if}
 	{/each}
+
+	<a
+		class="block rounded bg-[#125E3C] px-8 py-4 text-center text-base font-semibold text-white transition hover:bg-[#16754A] focus-visible:bg-[#16754A]"
+		href={resolve('/')}>Back to your warbands</a
+	>
 </main>
 
 <style>
