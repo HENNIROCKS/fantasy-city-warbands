@@ -53,7 +53,7 @@
 		{
 			question: 'Does the app apply every rule?',
 			answer:
-				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s campaign runs from the aftermath to the downtime; where an encounter brings something the app does not keep, it says to note it by hand. Necropolis builds a gathering and counts who is fielded against its Deployment Limit; the rest of its battle and its campaign are still to come.'
+				'Not yet. It checks budgets, limits and what a fighter may carry, counts in what a warband’s choice changes, and runs Wyrdcry’s campaign as the Campaign Book 1.0 has it. Tap a characteristic on a card to see how it adds up. Black Death City’s campaign runs from the aftermath to the downtime; where an encounter brings something the app does not keep, it says to note it by hand. Necropolis builds a gathering, counts who is fielded against its Deployment Limit and shows its victory conditions and dread omens; the rest of its battle and its campaign are still to come.'
 		},
 		{
 			question: 'Which rules does the app follow?',

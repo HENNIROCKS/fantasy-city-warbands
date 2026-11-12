@@ -7,10 +7,11 @@
  * as the Covenant and the model allow.
  */
 
-import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Source, Wargear } from '$lib/core/types';
+import type { Faction, Fighter, FighterChoice, GameSystem, Rule, Scenario, ScenarioSection, Source, Wargear } from '$lib/core/types';
 
 import fighterData from '$lib/rules/necropolis/fighters.json';
 import leaderTraits from '$lib/rules/necropolis/leader-traits.json';
+import scenarios from '$lib/rules/necropolis/scenarios.json';
 import spells from '$lib/rules/necropolis/spells.json';
 import traits from '$lib/rules/necropolis/traits.json';
 import wargearData from '$lib/rules/necropolis/wargear.json';
@@ -111,6 +112,18 @@ export const game: GameSystem = {
 	battle: {
 		waiting: false,
 		marks: [{ key: 'benched', label: 'Not fielded', lasts: 'battle', off: true }]
+	},
+	/* The ten Victory Conditions are rolled for on a d10 (pp. 55–60); the Dread
+	   Omens (pp. 61–62) are the twist every one of them shares, taken only if
+	   both players agree. */
+	scenarios: {
+		roll: scenarios.roll,
+		label: scenarios.label,
+		twistLabel: scenarios.twistLabel,
+		twistRoll: scenarios.twistRoll,
+		twists: scenarios.twists,
+		sections: scenarios.sections as ScenarioSection[],
+		list: scenarios.scenarios as Scenario[]
 	},
 	universal: [],
 	unarmed: {

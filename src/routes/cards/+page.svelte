@@ -25,7 +25,7 @@
 	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide, type UnderdogState } from '$lib/core/underdog';
-	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues, takesFleeTest } from '$lib/core/scenario';
+	import { battleMarks, scenarioOf, scoreOf, setScenario, setTwist, setupValues, takesFleeTest, twistsOf } from '$lib/core/scenario';
 	import { applyGroups, arrive, groupRule, groupSide, groupsFor, inReserve, moveFighter, reinforcementTable, resetGroups, swapFighters, toggleStart } from '$lib/core/groups';
 	import { fighterCard, warbandCard, type DeckCard } from '$lib/core/card';
 	import { toFragment } from '$lib/core/link';
@@ -1246,7 +1246,7 @@
 					{/if}
 				{/if}
 				{#if scenarios}
-					<p class="field-label" id="scenario-roll">Scenario · {scenarios.roll}</p>
+					<p class="field-label" id="scenario-roll">{scenarios.label ?? 'Scenario'} · {scenarios.roll}</p>
 					<div class="mb-4 space-y-1.5" role="group" aria-labelledby="scenario-roll">
 						{#each scenarios.list as scenario (scenario.id)}
 							{@const on = picked?.scenario.id === scenario.id}
@@ -1256,15 +1256,18 @@
 						{/each}
 					</div>
 					{#if picked}
-						<p class="field-label" id="twist-roll">Twist · {picked.scenario.twistRoll}</p>
-						<div class="mb-4 space-y-1.5" role="group" aria-labelledby="twist-roll">
-							{#each picked.scenario.twists as twist (twist.roll)}
-								{@const on = picked.twist?.roll === twist.roll}
-								<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(keepGroups(setTwist(battle, on ? null : twist.roll)))}>
-									<span class="inline-block w-6 font-semibold">{twist.roll}</span>{twist.name}
-								</button>
-							{/each}
-						</div>
+						{@const twists = twistsOf(system.game, picked.scenario)}
+						{#if twists.list.length}
+							<p class="field-label" id="twist-roll">{scenarios.twistLabel ?? 'Twist'} · {twists.roll}</p>
+							<div class="mb-4 space-y-1.5" role="group" aria-labelledby="twist-roll">
+								{#each twists.list as twist (twist.roll)}
+									{@const on = picked.twist?.roll === twist.roll}
+									<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(keepGroups(setTwist(battle, on ? null : twist.roll)))}>
+										<span class="inline-block w-6 font-semibold">{twist.roll}</span>{twist.name}
+									</button>
+								{/each}
+							</div>
+						{/if}
 					{/if}
 				{/if}
 			</div>

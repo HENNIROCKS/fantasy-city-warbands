@@ -1,0 +1,147 @@
+{
+	"roll": "d10",
+	"label": "Victory condition",
+	"twistLabel": "Dread omen",
+	"twistRoll": "d10",
+	"sections": [
+		{
+			"phase": "before",
+			"name": "Environments",
+			"text": "Suggested board set ups for the 16\" x 16\" board, not hard rules:\n- **I. The Endless City:** place 2-3 ruins; if they can be scaled and jumped between, this is optimal.\n- **II. Hintertombs Labyrinth:** 3-5 wall sections with no climbable platforms.\n- **III. Eternal Autumn:** 2-3 trees leaving room for models to pass between.\n- **IV. The Great Wastes:** a single central terrain piece such as a ruined building, a towering beacon or a dead tree. Place any objectives within it as high as possible.\n- **V. Undead Settlement:** 3-5 buildings and fences arranged into a tight settlement.\n- **VI. Flatwater Mire:** 3-5 buildings interconnected by bridges over marshes, which count as dangerous terrain."
+		}
+	],
+	"scenarios": [
+		{
+			"id": "consult-the-seer",
+			"roll": 1,
+			"name": "Consult the Seer",
+			"page": 55,
+			"intro": "This spectral augur appears so rarely that the undead rush to record its words of import.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Place a model to represent the Seer in the centre of the board. This model cannot suffer any damage or be targeted by any spells during this scenario. The Seer moves 5\" toward a random table corner at the end of each turn, ignoring vertical movement as if it had the fly keyword (alternatively you can roll a scatter dice if you possess one). Melee attack actions targeting the Seer steal a single relic token, with the attacking model being considered to now be carrying that relic.\nIf the Seer touches the board edge as part of their movement they are immediately returned to the centre of the board." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering carrying the most relics after 5 turns wins. If models are shattered all relics carried are dropped as normal.\nThe Seer cannot be pushed, suffer damage, be the target of spell actions or be activated in the others phase." }
+			]
+		},
+		{
+			"id": "secure-the-artefacts",
+			"roll": 2,
+			"name": "Secure the Artefacts",
+			"page": 56,
+			"intro": "Caches of treasure from the age of the living still sit in the darkness of the ruins, waiting to be claimed.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Place 3 objectives: 1 in the centre of the board and 2 placed 3\" from the table edges in opposite corners.\nAny leader that ends their activation next to an objective gains a mana dice of any kind." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering with the most models in base-to-base contact with an objective is deemed to control that objective, the gathering with the most controlled objectives at the end of 5 turns wins. Players may not deploy in the corners containing objectives." }
+			]
+		},
+		{
+			"id": "strike-down-the-rival",
+			"roll": 3,
+			"name": "Strike down the Rival",
+			"page": 56,
+			"intro": "Nothing is more offensive to those who seek power than others on the same path.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Players take turns in placing 3 mana tokens of any kind each. Each token must be at least 3\" from a board edge and 3\" from any other token. If this is not possible due to terrain, place them as far away as possible from each other.\nAll mana in this scenario is swelling with unknowable power, each time a model picks up a mana token roll a d10. On a 1-2 the model suffers 1 damage, on a 3-10 the model restores 1HP." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering who causes their opponent's leader to be shattered wins and the game ends at the end of the current turn. If neither have been shattered at the end of 5 turns the gathering with their leader closer to the centre of the board wins." }
+			]
+		},
+		{
+			"id": "relic-hunters",
+			"roll": 4,
+			"name": "Relic Hunters",
+			"page": 57,
+			"intro": "A book; an ancient wine; a mote of comfort; all worth fighting for.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Alternate placing 2 relic tokens per player plus 1 additional relic in the centre of the board. Relics must be 3\" apart and 3\" from any board edge." },
+				{ "phase": "before", "name": "Deployment", "text": "After a roll off, the winning player chooses a corner and the other takes the opposite corner. Then players alternate placing a model touching both table edges then alternate placing a model that either touches a table edge and another friendly model's base or two friendly model's bases." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering carrying the most relics after 5 turns wins." }
+			]
+		},
+		{
+			"id": "ancient-horror",
+			"roll": 5,
+			"name": "Ancient Horror",
+			"page": 57,
+			"intro": "An undead weapon, a rampaging beast, bringing renown and resources to those who dare enter its dank lair.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Deploy a Gigantic Horror (NPC) of any type armed with a colossal weapon in the centre of the board. This Gigantic Horror is unusually resilient and has 5 armour.\nPlayers alternate placing 2 objectives per player plus 1 additional objective in the centre of the board. Objectives must be 3\" apart and 3\" from any board edge. Each model in the gatherings may make the following action when base to base with an objective:\n**Investigate Lair Detritus**, AP cost 1, may only be taken when base to base with an objective. Remove the objective from the board and roll on the following table:\n- **1-2. Apoplectic, scooping up anything nearby to hurl at the ravager of its lair.** The opposing player must choose a model within 3\" of the Gigantic Horror that does not have the Colossal keyword. This model is pushed up to 24\" towards the model taking this action, ignoring any terrain, both models then suffer 6 damage. If no models are within 3\" of the Gigantic Horror it moves 6\" towards the model taking the action, by the shortest route available.\n- **3-5. Desecration, the destruction of its sacred space enrages the Gigantic Horror.** Move the Gigantic Horror 6\" towards the model by the shortest route.\n- **6-9. A terrible liquid, the model gains the Eater-Water item.** *Eater-Water:* make a ranged attack action with Range: 6, reduce targets armour by 1/2 until the beginning of this unit's next activation. Discard after use.\n- **10. A jar of bile.** Gain 5+d10 obols." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering that does the most damage to the horror by the end of 5 turns wins." }
+			]
+		},
+		{
+			"id": "claim-the-mellified-corpse",
+			"roll": 6,
+			"name": "Claim the Mellified Corpse",
+			"page": 58,
+			"intro": "Perfectly preserved, unblemished flesh steeped in sweet honey; the most valuable commodity in a world without life.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Place an objective in the centre, preferably a honeyed corpse." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "Victory is achieved by claiming the corpse. To claim the corpse a player's leader model must be within 3\" of the corpse at the end of 5 turns. If both players have their leader model within 3\" of the corpse at this point; victory goes to the player with the most other models also within 3\" of the objective." }
+			]
+		},
+		{
+			"id": "the-horde",
+			"roll": 7,
+			"name": "The Horde",
+			"page": 58,
+			"intro": "A petty band of masterless dead swarms, malevolent and lost in the darkness.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "After deployment each player takes turns placing 3 NPC minions of any type with the Husk keyword, on the board (a total of 6 in a 2-player game). These minions must be at least 6\" from any player models and 2\" from each other.\nAll NPCs are armed with any 1h weapon the players agree on." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The player that causes the most models to become Shattered by the end of 5 turns." }
+			]
+		},
+		{
+			"id": "the-hidden-stash",
+			"roll": 8,
+			"name": "The Hidden Stash",
+			"page": 59,
+			"intro": "Great treasure, hidden and protected by ancient hands.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Players alternate placing 2 objectives per player plus 1 additional objective in the centre of the board. Objectives must be 3\" apart and 3\" from any board edge. Each model in the gatherings may make the Pick up Relic action when base to base with an objective to remove it and roll on the following table:\n- **1-2. Trapped chest.** The objective explodes in a shower of cinders, all models within 3\" suffer 3 damage.\n- **3-4. Disturbed rest.** You disturb the rest of an abandoned minion, place a Necromantic Remnant NPC of any type armed with an improvised weapon where the objective was.\n- **5-9. Wisps of power.** Place a mana token of any type where the objective was.\n- **10. Hidden treasure.** Gain a relic token.\nIf this is the last objective on the board being investigated, you automatically receive the 10 result." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering carrying the most relics after 5 turns wins. If models are shattered all relics carried are dropped as normal." }
+			]
+		},
+		{
+			"id": "curse-wormed-relics",
+			"roll": 9,
+			"name": "Curse-Wormed Relics",
+			"page": 59,
+			"intro": "What would you trade for ascendancy?",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "Place a relic in the centre of the board, then alternate placing 2 relic tokens per player. Relics must be 3\" apart and 3\" from any board edge.\nFor each relic carried by a model they improve their AP by 1, to a maximum of 4AP. However, each time a model with a relic activates, roll a d10: on 9+ they explode in a shower of embers and are Shattered. If the model carries 2 or more relics this roll becomes 5+." },
+				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering carrying the most relics after 5 turns wins. If a model is shattered all relics carried are dropped as normal." }
+			]
+		},
+		{
+			"id": "escort-the-relic-peddler",
+			"roll": 10,
+			"name": "Escort the Relic Peddler",
+			"page": 60,
+			"intro": "To provide protection for the peddlers of the bazaars has its benefits, as does taking the relics from their shattered body.",
+			"sections": [
+				{ "phase": "before", "name": "Objectives", "text": "The players roll off with the winner choosing whether to be the attacker or the defender. The defender then additionally deploys a Peddler model as part of their gathering. The defender may use the Summon spell on the Peddler as if they were part of their gathering, but they can only be summoned a maximum of 1\" from the caster.\n**Peddler:** AP 2, M 3, Violence 7+, Ranged 7+, HP 15." },
+				{ "phase": "before", "name": "Deployment", "text": "The defender chooses a corner and the attacker takes the 2 adjacent corners. Then players alternate placing a model touching both table edges then alternate placing a model that either touches a table edge and another friendly model's base or two friendly model's bases. The attacker may deploy freely between their 2 corners." },
+				{ "phase": "during", "name": "Victory Conditions", "text": "The defender wins if the Peddler touches both board edges of a corner on the opposite side of the board. The attacker wins if the Peddler has not achieved this by the end of 6 turns." }
+			]
+		}
+	],
+	"twists": [
+		{ "roll": 1, "name": "Magical Storm", "text": "The battlefield is whipped by a terrifying gale bringing swirling debris and ensorcelled thunder to bear on the gatherings as they try to take cover.\nAny model that is not in base contact with a terrain feature (such as a wall or vertical structure) at the end of their activations suffers 2 damage." },
+		{ "roll": 2, "name": "Sorcerous Duel Site", "text": "This place was once the site of a sorcerous battle of immense power and mana still crackles in the air.\nEach leader receives an additional mana dice of any kind at the start of the battle. In addition, arcane backlash occurs on a roll of 1-2 for the duration of the battle." },
+		{ "roll": 3, "name": "Masterless Beasts", "text": "Rotting monstrosities long separated from their master stalk this area.\nAfter players have deployed each player may set up a large beast (NPCs) of any type, armed with large claws, within 3\" of the board centre." },
+		{ "roll": 4, "name": "Swampy Mire", "text": "The ground here is sodden and those who do not struggle onwards are swallowed whole in the marshy ground.\nAny model that does not make a move action during its activation suffers 2 damage as it sinks into the ground." },
+		{ "roll": 5, "name": "Rising Murk", "text": "Dark mist rises from the earth, quickly blinding the gatherings.\nFrom the beginning of turn 3 all ranged weapons have a maximum range of 6\"." },
+		{ "roll": 6, "name": "Dust-Rot", "text": "Ancient rot hangs in the air, eroding all from existence.\nIf a model is below their maximum HP at the end of their activation, that model suffers 1 damage." },
+		{ "roll": 7, "name": "Soul Trap", "text": "No respite from existence can be found here; the defeated are quickly reformed against their will by unknown powers.\nIn the initiative step of each turn, each player may choose one of their Shattered models and place it back on the board within 3\" of their leader and restore 4 HP to it." },
+		{ "roll": 8, "name": "Scattered Treasures", "text": "Forgotten coins, discarded in the darkness.\nAlternate placing 2 relic tokens per player. Relics must be 2\" apart and as close to the centre of the board as possible. Players receive 1d10 obols for each relic token carried by their gathering at the end of the scenario." },
+		{ "roll": 9, "name": "Lost Peddler", "text": "Caught in the darkness of the battlefield is a peddler, they call out to all to come and see their wares, heedless of the danger all around.\nAfter players have deployed, set up a Peddler (NPC) of any type within 3\" of the board centre. This NPC is activated in the Others Phase as normal but can only take move actions of 3\" and may not attack, be attacked or be the target of any spells.\nEach model in the gatherings may make the following action:\n**Hastily Browse**, AP cost 1. This action can only be taken in base contact with a model with the Peddler keyword. The browsing model may gain one of the following items by paying the cost in obols (10 each):\n- **Eater-Water:** make a ranged attack action with Range: 6, reduce targets armour by 1/2 until the beginning of this unit's next activation. Discard after use.\n- **Thunderdap:** make a ranged attack action, Range: 6 Attacks: 1 Damage: 1/5 additionally every model within 3\" of the target suffers 1 damage. Discard after use.\n- **Sunburst:** make a ranged attack action with Range: 6, reduce the target's violence and ranged by 1/2 until the start of this unit's next activation. Discard after use.\n- **Stonetar:** make a ranged attack action with Range: 6, reduce the target's move by 1\"/2\" until the start of this unit's next activation. Discard after use." },
+		{ "roll": 10, "name": "Winged Nightmares", "text": "Ancient winged horrors perch atop the ruins, watching and waiting to strike.\nAfter players have deployed, each player may set up a flying beast (NPCs) of any type, armed with Claws and Fangs, within 5\" of a board corner but at least 3\" away from any other model from a gathering." }
+	]
+}

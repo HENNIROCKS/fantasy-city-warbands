@@ -15,7 +15,12 @@ export function scenarioOf(game: GameSystem, battle: BattleState | null): { scen
 	const picked = battle?.scenario;
 	const scenario = picked && game.scenarios?.list.find((s) => s.id === picked.id);
 	if (!picked || !scenario) return null;
-	return { scenario, twist: scenario.twists.find((t) => t.roll === picked.twist) ?? null };
+	return { scenario, twist: twistsOf(game, scenario).list.find((t) => t.roll === picked.twist) ?? null };
+}
+
+/** The twists a scenario is rolled for: its own, else those the game's scenarios share. */
+export function twistsOf(game: GameSystem, scenario: Scenario): { roll: string; list: Twist[] } {
+	return { roll: scenario.twistRoll ?? game.scenarios?.twistRoll ?? '', list: scenario.twists ?? game.scenarios?.twists ?? [] };
 }
 
 /** The battle without the marks the scenario picked brings, which belong to it alone. */
@@ -119,19 +124,23 @@ export function setupValues(game: GameSystem, warband: Warband, faction: Faction
 	const { scenario, twist } = picked;
 	rows.push({
 		key: 'scenario',
-		label: 'Scenario',
+		label: game.scenarios?.label ?? 'Scenario',
 		value: scenario.name,
 		explanation: {
 			title: scenario.name,
-			rules: [{ label: `Scenario ${scenario.roll}`, text: `*${scenario.intro}*` }, ...scenario.sections.map((s) => ({ label: s.name, text: s.text }))]
+			rules: [
+				{ label: `${game.scenarios?.label ?? 'Scenario'} ${scenario.roll}`, text: `*${scenario.intro}*` },
+				...[...scenario.sections, ...(game.scenarios?.sections ?? [])].map((s) => ({ label: s.name, text: s.text }))
+			]
 		}
 	});
+	const twistLabel = game.scenarios?.twistLabel ?? 'Twist';
 	if (twist) {
 		rows.push({
 			key: 'twist',
-			label: 'Twist',
+			label: twistLabel,
 			value: twist.name,
-			explanation: { title: twist.name, rules: [{ label: `Twist ${twist.roll} of ${scenario.name}`, text: twist.text }] }
+			explanation: { title: twist.name, rules: [{ label: `${twistLabel} ${twist.roll} of ${scenario.name}`, text: twist.text }] }
 		});
 	}
 	return rows;

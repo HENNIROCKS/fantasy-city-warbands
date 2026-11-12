@@ -287,6 +287,16 @@ export interface GameSystem {
 		/** What the scenario is rolled with: `d6`. */
 		roll: string;
 		list: Scenario[];
+		/** What the scenario is called where the game says otherwise: `Victory condition`. Missing: `Scenario`. */
+		label?: string;
+		/** What its twist is called: `Dread omen`. Missing: `Twist`. */
+		twistLabel?: string;
+		/** What the twist is rolled with, for the twists all scenarios share. */
+		twistRoll?: string;
+		/** The twists every scenario shares, where it brings none of its own. */
+		twists?: Twist[];
+		/** What every scenario's rules also carry, after its own sections. */
+		sections?: ScenarioSection[];
 		/** What a fighter in reserve rolls for each round from the one its group arrives in; a scenario's `groups` can bring its own or none. */
 		reinforcements?: ReinforcementTable;
 		/** The key of the `BattleMark` that puts a fighter in reserve, as the scenarios carry it. */
@@ -354,9 +364,10 @@ export interface Scenario {
 	noFleeTest?: 'underdog' | 'other';
 	intro: string;
 	sections: ScenarioSection[];
-	/** What its twist is rolled with: `d6`, `d3`. */
-	twistRoll: string;
-	twists: Twist[];
+	/** What its twist is rolled with: `d6`, `d3`. Missing where the game's scenarios share their twists. */
+	twistRoll?: string;
+	/** Missing where the game's scenarios share their twists. */
+	twists?: Twist[];
 }
 
 /**

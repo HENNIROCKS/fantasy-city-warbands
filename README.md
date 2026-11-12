@@ -96,7 +96,7 @@ are still to come.
 - Keep Wyrdcry's magic items: one to a fighter, never sold, 5 reputation each,
   and stolen on a 4+ from a bearer taken out of action
 - Track a battle on the cards: damage, states, rounds with one step back, in
-  Black Death City the underdog, the scenario and its twist, both warbands' points, treasure held and escaped with, battle groups with the reserve and its reinforcements, bloodied fighters,
+  Black Death City the underdog, the scenario and its twist (in Necropolis the victory condition and its dread omen), both warbands' points, treasure held and escaped with, battle groups with the reserve and its reinforcements, bloodied fighters,
   the flee test and the prepared spells, and
   in Wyrdcry morale, Zeal and the single-use items ticked off; end it with its
   result in the battle history, or cancel it – see [The battle in Black Death City](docs/black-death-city/battle.md)
@@ -150,7 +150,7 @@ choice and its effect on the roster, the profiles and the prices, the choice a W
 recruitment, the Greenskin Marauders' two GOBLINs per ORC, the fighters
 who count as half in a Wyrdcry warband's morale, and Wyrdcry's optional
 Underdogs, and the points a Black Death City scenario is won on. Wyrdcry's abilities and faction rules, the special rules of
-Black Death City's fighters and its scenarios and twists are shown as text; a faction rule that leaves a
+Black Death City's fighters and its scenarios and twists, and Necropolis' victory conditions and dread omens, are shown as text; a faction rule that leaves a
 fighter out, or applies only to a keyword it lacks, shows a hint on its card
 instead.
 
