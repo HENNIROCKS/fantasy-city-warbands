@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { APP_TITLE } from '$lib/app';
+	import { APP_TITLE, domain } from '$lib/app';
 	import { DEFAULT_COLOUR, PALETTE, readColour, readable } from '$lib/colour';
 	import { grow } from '$lib/grow';
 	import FactionInfo from '$lib/components/FactionInfo.svelte';
@@ -144,6 +144,7 @@
 			id: s.game.id,
 			name: s.game.name,
 			author: s.game.author,
+			site: s.game.site,
 			details: [
 				s.game.edition,
 				`${s.factions.length} faction${s.factions.length === 1 ? '' : 's'}`,
@@ -448,35 +449,44 @@
 			<p class="field-label">Pick a game</p>
 			<div class="space-y-2">
 				{#each tiles as tile (tile.id)}
-					<button
-						type="button"
-						class="choice flex items-center gap-3 px-4 py-5"
-						onclick={() => pickGame(tile.id)}
-					>
-						<span class="min-w-0 flex-1">
-							<span class="block text-base font-semibold">{tile.name}</span>
-							<span class="block text-zinc-400">by {tile.author}</span>
-							<span class="block text-zinc-400">{tile.details.join(' · ')}</span>
-						</span>
-						{#if tile.built}
-							<svg
-								class="size-9 shrink-0"
-								viewBox="0 0 44 44"
-								role="img"
-								aria-label="{tile.built.filter(Boolean).length} of {areas.length} areas built"
-							>
-								{#each tile.built as built, i (i)}
-									<path
-										d={slice(i, tile.built.length)}
-										fill={built ? 'var(--ui-text)' : 'var(--ui-surface-2)'}
-										stroke="var(--ui-surface)"
-										stroke-width="1.5"
-										stroke-linejoin="round"
-									/>
-								{/each}
-							</svg>
-						{/if}
-					</button>
+					<!-- The link is the tile's neighbour, laid over its foot: a link inside a button is not valid. -->
+					<div class="relative">
+						<button
+							type="button"
+							class="choice flex items-center gap-3 px-4 pt-5 pb-13"
+							onclick={() => pickGame(tile.id)}
+						>
+							<span class="min-w-0 flex-1">
+								<span class="block text-base font-semibold">{tile.name}</span>
+								<span class="block text-zinc-400">by {tile.author}</span>
+								<span class="block text-zinc-400">{tile.details.join(' · ')}</span>
+							</span>
+							{#if tile.built}
+								<svg
+									class="size-9 shrink-0"
+									viewBox="0 0 44 44"
+									role="img"
+									aria-label="{tile.built.filter(Boolean).length} of {areas.length} areas built"
+								>
+									{#each tile.built as built, i (i)}
+										<path
+											d={slice(i, tile.built.length)}
+											fill={built ? 'var(--ui-text)' : 'var(--ui-surface-2)'}
+											stroke="var(--ui-surface)"
+											stroke-width="1.5"
+											stroke-linejoin="round"
+										/>
+									{/each}
+								</svg>
+							{/if}
+						</button>
+						<a
+							class="absolute bottom-3 left-4 inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-1 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
+							href={tile.site}
+							target="_blank"
+							rel="noopener">{domain(tile.site)} <span aria-hidden="true">↗</span></a
+						>
+					</div>
 				{/each}
 			</div>
 		</section>

@@ -13,6 +13,9 @@ export const STAGE: string | null = 'Early';
 /** The name with its stage, for the browser tab. */
 export const APP_TITLE = STAGE ? `${APP_NAME} (${STAGE})` : APP_NAME;
 
+/** The domain alone, as the label of a game's link. */
+export const domain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+
 /** Where the app's code, roadmap and issues live. */
 export const REPO = 'https://github.com/HENNIROCKS/fantasy-city-warbands';
 

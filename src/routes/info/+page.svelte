@@ -2,7 +2,7 @@
 	import { asset, resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE } from '$lib/app';
+	import { APP_NAME, APP_TITLE, BUILD_DATE, REPO, STAGE, domain } from '$lib/app';
 	import { systems } from '$lib/systems';
 	import { loadSound, loadTuckBox, saveSound, saveTuckBox } from '$lib/core/storage.svelte';
 	import { theme } from '$lib/theme.svelte';
@@ -26,25 +26,17 @@
 		saveTuckBox(tuckBox);
 	}
 
-	/** Each game's own site and where its rules come from, by game id. */
-	const SITES: Record<string, string> = {
-		wyrdcry: 'https://wyrdcry.net',
-		'black-death-city': 'https://www.blackdeathcity.com/',
-		necropolis: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/'
-	};
-
 	/** The games, by name. */
 	const games = Object.values(systems)
 		.map((s) => ({
 			id: s.game.id,
 			name: s.game.name,
 			author: s.game.author,
+			site: s.game.site,
 			edition: s.game.edition
 		}))
 		.sort((a, b) => a.name.localeCompare(b.name));
 
-	/** The domain alone, as the label of a game's link. */
-	const domain = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 
 
 	/* Answered here rather than only in the README: whoever builds a warband on
@@ -245,14 +237,12 @@
 					<li class="rounded-md border border-zinc-700 bg-zinc-800 p-3">
 						<p class="font-semibold text-zinc-200">{game.name}</p>
 						<p class="text-zinc-400">by {game.author} · {game.edition}</p>
-						{#if SITES[game.id]}
-							<a
-								class="mt-2 inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-1 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
-								href={SITES[game.id]}
-								target="_blank"
-								rel="noopener">{domain(SITES[game.id])} <span aria-hidden="true">↗</span></a
-							>
-						{/if}
+						<a
+							class="mt-2 inline-flex items-center gap-1 rounded border border-zinc-600 px-2 py-1 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-700 focus-visible:bg-zinc-700"
+							href={game.site}
+							target="_blank"
+							rel="noopener">{domain(game.site)} <span aria-hidden="true">↗</span></a
+						>
 					</li>
 				{/each}
 			</ul>

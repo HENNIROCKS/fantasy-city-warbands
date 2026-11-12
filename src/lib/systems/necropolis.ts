@@ -75,6 +75,7 @@ export const game: GameSystem = {
 	logo: 'logo-necropolis.svg',
 	edition: 'Rulebook v0.9',
 	author: 'Peter Vigors',
+	site: 'https://drive.google.com/file/d/1o60MheZKHSKCFAGHkzloo93Uj7TRvGff/',
 	currency: 'obols',
 	moneyLabel: 'Obols',
 	budget: 300,

@@ -24,6 +24,7 @@ export const game: GameSystem = {
 	logo: 'logo-bdc.svg',
 	edition: 'Playtest v1.10',
 	author: 'Sam Pearson',
+	site: 'https://www.blackdeathcity.com/',
 	currency: 'silver',
 	moneyLabel: 'Silver',
 	budget: 1000,

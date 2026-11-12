@@ -36,6 +36,7 @@ export const game: GameSystem = {
 	logo: 'logo-wyrdcry.svg',
 	edition: 'v1.0',
 	author: 'Johan Markström',
+	site: 'https://wyrdcry.net',
 	currency: 'gc',
 	currencyName: 'gold coins',
 	moneyLabel: 'Gold',

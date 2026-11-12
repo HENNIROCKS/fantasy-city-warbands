@@ -56,6 +56,8 @@ export interface GameSystem {
 	edition: string;
 	/** Who wrote the game, as its preview names them. */
 	author: string;
+	/** Where the game's rules come from: its own site, or the file they are published as. */
+	site: string;
 	/** As printed after a cost: `gc`, `silver`. */
 	currency: string;
 	/** Spelled out where there is room, such as the game's preview: `gold coins`. Without it, `currency`. */
