@@ -25,7 +25,8 @@ bekommt im selben Schritt eine Zeile in `docs/whats-new.md`, das die
 Update-Leiste als „What’s new“ öffnet. Je Tag eine Überschrift im Format von
 `BUILD_DATE` (`10 Nov 2026`), das Neueste oben; darunter je Spiel ein Punkt,
 alphabetisch, und darin die Änderungen als Unterpunkte, eine Fraktion als
-Präfix („Guild Mercenaries: …“). Ein geänderter Wert nennt den alten in
+Präfix („Guild Mercenaries: …“). Fett steht nur der Spielname; Button- und
+Menünamen stehen als Fließtext. Ein geänderter Wert nennt den alten in
 Klammern („150 silver (was 120)“), abgelesen am Diff der Daten, nicht an der
 Commit-Message. Doku, Kommentare und Arbeit unter der Haube, die man beim
 Spielen nicht bemerkt, kommen nicht hinein. Die Seite markiert Tage ab dem
