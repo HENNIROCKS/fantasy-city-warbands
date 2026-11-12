@@ -6,7 +6,8 @@
 
 import { marked, start, withoutGroups, type BattleState, type Score } from './battle';
 import type { CardValue } from './card';
-import type { BattleMark, GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
+import { fieldedCost } from './deployment';
+import type { BattleMark, Faction, GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
 import { underdogSide } from './underdog';
 
 /** The scenario picked for the battle and its twist; null where none is picked or the game has none. */
@@ -87,12 +88,14 @@ export function setTwist(battle: BattleState | null, roll: number | null): Battl
 const SIDES = { you: 'Yes', opponent: 'No', 'roll-off': 'Roll off' } as const;
 
 /**
- * What the battle was set up with, for the box across the warband card: the
- * underdog where the game names it without bonuses, the scenario and its
- * twist, each value opening its rules. Empty where nothing is picked.
+ * What the battle was set up with, for the box across the warband card: what
+ * is fielded against the game's Deployment Limit, the underdog where the game
+ * names it without bonuses, the scenario and its twist, each value opening its
+ * rules. Empty where nothing is picked and the game sets no Deployment Limit.
  */
-export function setupValues(game: GameSystem, warband: Warband, battle: BattleState | null): CardValue[] {
+export function setupValues(game: GameSystem, warband: Warband, faction: Faction, battle: BattleState | null): CardValue[] {
 	const rows: CardValue[] = [];
+	if (game.deployment) rows.push({ key: 'fielded', label: 'Fielded', value: `${fieldedCost(game, warband, faction, battle)} / ${game.deployment}` });
 	const rules = game.underdog;
 	const side = rules?.text ? underdogSide(rules, warband, battle) : null;
 	if (rules?.text && side && battle?.underdog) {

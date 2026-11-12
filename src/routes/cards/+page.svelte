@@ -21,6 +21,7 @@
 	import Deck from '$lib/components/Deck.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import scream from '$lib/assets/sounds/wilhelm-scream.m4a';
+	import { deploymentRefusal } from '$lib/core/deployment';
 	import { adjustCounter, adjustScore, allocate, hire, isWavering, nextRound, release, rollFor, settingUp, start, stateOf, toggleActivated, toggleMark, toggleWaiting, undoRound, unuseItem, useItem, type BattleState } from '$lib/core/battle';
 	import { applyAftermath, startAftermath, usedInBattle, type AftermathDraft } from '$lib/core/aftermath';
 	import { bonusBlocked, freeHireOpen, setOpponent, setTieWon, toggleBonus, underdogOf, underdogSide, type UnderdogState } from '$lib/core/underdog';
@@ -202,7 +203,7 @@
 			...(w.next ?? []).filter((n) => !n.explore).map((n) => ({ label: `(Next battle) ${n.source}`, text: n.text }))
 		];
 		return [
-			{ ...own, roster, reminders, setup: battle ? setupValues(system.game, w, battle) : [] },
+			{ ...own, roster, reminders, setup: setupValues(system.game, w, faction, battle) },
 			...w.fighters.map((f) => {
 				const state = stateOf(battle, f.instanceId);
 				return fighterCard(f, faction, system.game, w.picks, state.used, w.next, state.rolled);
@@ -1087,6 +1088,7 @@
 				onwound={wound}
 				onactivated={(instanceId) => setBattle(toggleActivated(battle, instanceId))}
 				onwaiting={(instanceId) => setBattle(toggleWaiting(battle, instanceId))}
+				markRefusal={(instanceId, key) => (warband ? deploymentRefusal(system.game, warband, faction, battle, instanceId, key) : null)}
 				onmark={(instanceId, key) => setBattle(toggleMark(battle, instanceId, key, battleRules?.marks.find((m) => m.key === key)?.clears))}
 				onuse={(instanceId, wargear, on) => setBattle(useItem(battle, instanceId, wargear, on))}
 				onunuse={(instanceId, at) => setBattle(unuseItem(battle, instanceId, at))}

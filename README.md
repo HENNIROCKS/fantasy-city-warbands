@@ -21,8 +21,9 @@ Warband Builder's files. In Black Death City it asks for each recruit's
 starting experience roll and counts the warband rating, and runs its
 campaign: injuries, experience and ranks, holdings and the stronghold,
 exploring the city, income and the downtime. In Necropolis it builds a
-gathering – Covenant, leader, element, mana, spells and traits; its battle and
-campaign are still to come.
+gathering – Covenant, leader, element, mana, spells and traits – and counts who
+is fielded against the Deployment Limit; the rest of its battle and its campaign
+are still to come.
 
 ## What it does
 

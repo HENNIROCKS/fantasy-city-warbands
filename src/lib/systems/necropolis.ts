@@ -106,6 +106,12 @@ export const game: GameSystem = {
 		{ key: 'damage', label: 'Damage' },
 		{ key: 'hands', label: 'Hands' }
 	],
+	/* Gatherings take turns activating single models until all have, with no
+	   waiting (p. 7). A model left out of the deployment takes no part in the battle. */
+	battle: {
+		waiting: false,
+		marks: [{ key: 'benched', label: 'Not fielded', lasts: 'battle', off: true }]
+	},
 	universal: [],
 	unarmed: {
 		weapon: piece(IMPROVISED),

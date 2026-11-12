@@ -19,9 +19,10 @@ A game night, from start to end: [start here](black-death-city/README.md).
 
 ## Necropolis
 
-Building a gathering only, so far: [start here](necropolis/README.md).
+Building a gathering and the start of a battle, so far: [start here](necropolis/README.md).
 
 1. [Building a gathering](necropolis/building.md)
+2. [The battle](necropolis/battle.md)
 
 ## Wyrdcry
 

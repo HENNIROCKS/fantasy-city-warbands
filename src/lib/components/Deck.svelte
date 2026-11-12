@@ -29,6 +29,7 @@
 		onactivated,
 		onwaiting,
 		onmark,
+		markRefusal,
 		onuse,
 		onunuse,
 		oncount,
@@ -81,6 +82,8 @@
 		onactivated?: (instanceId: string) => void;
 		onwaiting?: (instanceId: string) => void;
 		onmark?: (instanceId: string, key: string) => void;
+		/** Why a mark cannot be set or taken off a fighter now, in a few words for its button; null where it can. */
+		markRefusal?: (instanceId: string, key: string) => string | null;
 		/** Ticks off a fighter's single-use piece, on the weapon picked where it picks one; offered while a battle runs. */
 		onuse?: (instanceId: string, wargear: string, on?: string) => void;
 		/** Takes a fighter's use of a piece back, by its place among the fighter's uses. */
@@ -239,7 +242,7 @@
 					.filter((m) => (!m.keyword || topFighter.keywordIds.includes(m.keyword)) && !m.except?.some((k) => topFighter.keywordIds.includes(k)))
 					.filter((m) => !(m.off || m.dropsOnOut) || !stateOf(battle, topFighter.instanceId).out || stateOf(battle, topFighter.instanceId).marks[m.key])
 					.filter((m) => !hiddenMarks.includes(m.key))
-					.map((m) => ({ key: m.key, label: m.label, on: !!stateOf(battle, topFighter.instanceId).marks[m.key] }))
+					.map((m) => ({ key: m.key, label: m.label, on: !!stateOf(battle, topFighter.instanceId).marks[m.key], refuse: markRefusal?.(topFighter.instanceId, m.key) ?? null }))
 			: []
 	);
 

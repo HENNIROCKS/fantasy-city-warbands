@@ -68,7 +68,7 @@
 		/** Whether the game lets a fighter wait. */
 		waiting?: boolean;
 		/** The marks the fighter on top can carry, and whether it does. */
-		marks?: { key: string; label: string; on: boolean }[];
+		marks?: { key: string; label: string; on: boolean; refuse?: string | null }[];
 		/** When the battle ends by the game's rules; without it, rounds go on until it is ended. */
 		rounds?: BattleRounds;
 		/** What the faction counts through the battle; the warband card counts it in place of the round. */
@@ -216,8 +216,8 @@
 						</button>
 					{/if}
 					{#each marks as mark (mark.key)}
-						<button aria-pressed={mark.on} onclick={() => onmark?.(mark.key)}>
-							<span class="tick" aria-hidden="true">{mark.on ? '✓' : ''}</span>{mark.label}
+						<button aria-pressed={mark.on} disabled={!!mark.refuse} onclick={() => onmark?.(mark.key)}>
+							<span class="tick" aria-hidden="true">{mark.on ? '✓' : ''}</span><span class:opacity-60={mark.refuse}>{mark.label}</span>{#if mark.refuse}<small class="block pl-[1.4em] text-zinc-400">{mark.refuse}</small>{/if}
 						</button>
 					{/each}
 				</MenuButton>

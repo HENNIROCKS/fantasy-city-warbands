@@ -6,6 +6,8 @@ a cost, a rule, a new button. What is still to come is on the
 
 ## 12 Nov 2026
 
+- **Necropolis**
+  - You can leave a model out of the battle: tick **Not fielded** under **State**. The warband card shows what is fielded against the Deployment Limit, and a model that would take you over it cannot be put back.
 - **Wyrdcry**
   - Freelance Knight: Move 4 (was 5).
   - Warlock: any faction can hire him, including Elf Rangers, the Beastmen Raiders and the Shadow Warriors.
