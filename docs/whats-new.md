@@ -4,6 +4,12 @@ What changed in the app, newest first. Only what you notice at the table –
 a cost, a rule, a new button. What is still to come is on the
 [roadmap](https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/ROADMAP.md).
 
+## 12 Nov 2026
+
+- **Wyrdcry**
+  - Freelance Knight: Move 4 (was 5).
+  - Warlock: any faction can hire him, including Elf Rangers, the Beastmen Raiders and the Shadow Warriors.
+
 ## 10 Nov 2026
 
 - **Necropolis**

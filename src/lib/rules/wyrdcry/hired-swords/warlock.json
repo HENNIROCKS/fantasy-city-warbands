@@ -7,7 +7,7 @@
   "source": { "name": "wyrdcry.net", "url": "https://wyrdcry.net/docs/campaigns/hired-swords/" },
   "cost": 50,
   "limit": { "min": 0, "max": 1 },
-  "may_hire": ["clan-eshin", "mercenaries", "possessed", "sisters-of-sigmar", "undead", "witch-hunters"],
+  "may_hire": [],
   "description": "Witchcraft is a crime in the Empire, but that doesn't stop magicians from finding employ with wealthy patrons. In Mordheim they barter their perilous craft for wyrdstone and a chance to uncover magical items lost in the ruins.",
   "profile": {
     "move": 5,

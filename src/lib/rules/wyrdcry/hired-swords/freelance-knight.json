@@ -10,7 +10,7 @@
   "may_hire": ["mercenaries", "sisters-of-sigmar", "witch-hunters"],
   "description": "Freelancers, or “robber knights,” are fallen nobles with little to their name but their weapons and armour. Drunk and bitter, they haunt the surrounding settlements for work, caring more for coin than honour.",
   "profile": {
-    "move": 5,
+    "move": 4,
     "fight": 4,
     "shoot": 3,
     "defense": 0,

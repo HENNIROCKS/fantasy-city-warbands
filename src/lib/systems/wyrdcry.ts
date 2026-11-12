@@ -557,6 +557,7 @@ interface RawHiredSword {
 	source?: Source;
 	cost: number;
 	limit: { min: number; max: number | null };
+	/** Empty: any faction may hire it. */
 	may_hire: string[];
 	profile: Record<string, number>;
 	keywords: string[];
@@ -1068,7 +1069,7 @@ const hirelings: Hireling[] = hiredSwords
 				...(choice ? { choices: [choice] } : {})
 			},
 			wargear: [...new Set([...h.gear, ...(choice?.options ?? []).flatMap((o) => o.gear ?? [])])].flatMap((id) => catalogue.get(id) ?? []),
-			factions: [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)],
+			factions: h.may_hire.length ? [...h.may_hire, ...addedHires.filter((f) => f.may_hire?.includes(h.id)).map((f) => f.id)] : factions.map((f) => f.id),
 			origin: h.origin,
 			...(h.source ? { source: h.source } : {}),
 			...(h.not_with ? { notWith: h.not_with } : {})
