@@ -7,13 +7,13 @@ a cost, a rule, a new button. What is still to come is on the
 ## 12 Nov 2026
 
 - **Black Death City**
-  - When you pick a game, its tile links to the game’s site.
+  - The game’s tile under Pick a game has a link to blackdeathcity.com.
 - **Necropolis**
-  - When you pick a game, its tile links to the rulebook.
+  - The game’s tile under Pick a game has a link to the rulebook.
   - You can pick one of the ten Victory Conditions and, if you play with one, a Dread Omen under Battle → Before the battle. The warband card shows both, and a tap on either opens its rules. The environments are at the end of the Victory Condition's rules.
   - You can leave a model out of the battle: tick Not fielded under State. The warband card shows what is fielded against the Deployment Limit, and a model that would take you over it cannot be put back.
 - **Wyrdcry**
-  - When you pick a game, its tile links to wyrdcry.net.
+  - The game’s tile under Pick a game has a link to wyrdcry.net.
   - Freelance Knight: Move 4 (was 5).
   - Warlock: any faction can hire him, including Elf Rangers, the Beastmen Raiders and the Shadow Warriors.
 
