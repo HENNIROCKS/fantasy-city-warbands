@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import RuleText from '$lib/components/RuleText.svelte';
-	import type { StatLayer } from '$lib/core/card';
+	import type { CardEntry, StatLayer } from '$lib/core/card';
 	import { dismiss, explanation, settle } from '$lib/explanation';
 
 	/**
@@ -13,6 +13,16 @@
 	let closing = $state(false);
 
 	const open = $derived(closing ? null : explanation());
+
+	/** The rules in order, those that share a heading in a row folded under it. */
+	const blocks = $derived(
+		(open?.rules ?? []).reduce<{ group?: string; rules: CardEntry[] }[]>((blocks, rule) => {
+			const last = blocks.at(-1);
+			if (rule.group && last?.group === rule.group) last.rules.push(rule);
+			else blocks.push({ group: rule.group, rules: [rule] });
+			return blocks;
+		}, [])
+	);
 
 	$effect(() => {
 		void page.state;
@@ -57,6 +67,14 @@
 	}}
 />
 
+{#snippet ruleBlock(rule: CardEntry)}
+	<div class="rule">
+		<p class="name">{rule.label}</p>
+		{#if rule.text}<p class="text"><RuleText text={rule.text} /></p>{/if}
+		{#if rule.note}<p class="text note"><svg class="check" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 5 9.5 10 2.5" /></svg>{rule.note}</p>{/if}
+	</div>
+{/snippet}
+
 {#if open}
 	<!-- Clicking the backdrop closes; the sheet itself swallows the click. The
 	     keyboard reaches the same thing through Escape above. -->
@@ -88,26 +106,37 @@
 				{/each}
 			</ul>
 
-			{#each open.rules ?? [] as rule, i (rule.label + i)}
-				<div class="rule">
-					<p class="name">{rule.label}</p>
-					{#if rule.text}<p class="text"><RuleText text={rule.text} /></p>{/if}
-					{#if rule.note}<p class="text note"><svg class="check" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 5 9.5 10 2.5" /></svg>{rule.note}</p>{/if}
-				</div>
-			{/each}
+			<div class="rules">
+				{#each blocks as block}
+					{#if block.group}
+						<details class="fold">
+							<summary>{block.group}</summary>
+							{#each block.rules as rule, i (rule.label + i)}
+								{@render ruleBlock(rule)}
+							{/each}
+						</details>
+					{:else}
+						{#each block.rules as rule, i (rule.label + i)}
+							{@render ruleBlock(rule)}
+						{/each}
+					{/if}
+				{/each}
+			</div>
 
 			{#if open.conditions?.length}
 				<p class="legend">Only in the right situation</p>
-				{#each open.conditions as condition, i (condition.name + i)}
-					<div class="rule">
-						<p class="name">
-							{condition.name}
-							{#if condition.source !== condition.name}<span class="from">{condition.source}</span>{/if}
-							{#if condition.amount !== undefined}<span class="amount">+{condition.amount}</span>{/if}
-						</p>
-						<p class="text"><RuleText text={condition.text} /></p>
-					</div>
-				{/each}
+				<div class="rules">
+					{#each open.conditions as condition, i (condition.name + i)}
+						<div class="rule">
+							<p class="name">
+								{condition.name}
+								{#if condition.source !== condition.name}<span class="from">{condition.source}</span>{/if}
+								{#if condition.amount !== undefined}<span class="amount">+{condition.amount}</span>{/if}
+							</p>
+							<p class="text"><RuleText text={condition.text} /></p>
+						</div>
+					{/each}
+				</div>
 			{/if}
 
 			<button class="close" onclick={close}>Close</button>
@@ -195,12 +224,6 @@
 		border-top: 1px solid var(--card-green);
 	}
 
-	/* The list ends on a rule; the first block below it needs to stand clear of
-	   that line rather than hang off it. */
-	.facts + .rule {
-		margin-top: 14px;
-	}
-
 	.facts li {
 		display: flex;
 		justify-content: space-between;
@@ -217,17 +240,56 @@
 	}
 
 	/*
-	 * On the card a wash alone sets a box off, because it lightens the texture
-	 * underneath. This sheet is flat paper, where the same wash all but
-	 * disappears – so the edge does the work here.
+	 * The rules stand between hairlines like the facts above them. A box here
+	 * would suggest something to tap, and only the groups and the button are.
 	 */
+	.rules > * {
+		border-bottom: 1px solid rgba(22, 117, 74, 0.3);
+	}
+
+	.rules > :last-child {
+		border-bottom: 0;
+	}
+
 	.rule {
-		margin-bottom: 8px;
-		margin-top: 8px;
-		padding: 10px 12px;
-		border: 1px solid rgba(22, 117, 74, 0.35);
-		border-radius: 10px;
-		background: var(--card-wash-2);
+		padding: 12px 0;
+	}
+
+	.fold > summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		min-height: 44px;
+		padding: 6px 2px;
+		list-style: none;
+		cursor: pointer;
+		font-family: 'Alegreya', serif;
+		font-size: 16px;
+		font-weight: 700;
+	}
+
+	.fold > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.fold > summary::after {
+		content: '';
+		flex: none;
+		width: 8px;
+		height: 8px;
+		margin-right: 2px;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(45deg) translate(-2px, -2px);
+	}
+
+	.fold[open] > summary::after {
+		transform: rotate(-135deg) translate(-2px, -2px);
+	}
+
+	.fold .rule {
+		padding: 4px 2px 8px;
 	}
 
 	.name {

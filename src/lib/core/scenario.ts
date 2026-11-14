@@ -7,8 +7,12 @@
 import { marked, start, withoutGroups, type BattleState, type Score } from './battle';
 import type { CardValue } from './card';
 import { fieldedCost } from './deployment';
-import type { BattleMark, Faction, GameSystem, Scenario, ScenarioScore, Twist, Warband } from './types';
+import type { BattleMark, Faction, GameSystem, Scenario, ScenarioScore, ScenarioSection, Twist, Warband } from './types';
 import { underdogSide } from './underdog';
+
+/** The headings a scenario's rules fold under, as the rulebooks print them. */
+const PHASES: Record<ScenarioSection['phase'], string> = { before: 'Before the battle', during: 'During the battle', campaign: 'Campaign' };
+const PHASE_ORDER = Object.keys(PHASES);
 
 /** The scenario picked for the battle and its twist; null where none is picked or the game has none. */
 export function scenarioOf(game: GameSystem, battle: BattleState | null): { scenario: Scenario; twist: Twist | null } | null {
@@ -130,7 +134,9 @@ export function setupValues(game: GameSystem, warband: Warband, faction: Faction
 			title: scenario.name,
 			rules: [
 				{ label: `${game.scenarios?.label ?? 'Scenario'} ${scenario.roll}`, text: `*${scenario.intro}*` },
-				...[...scenario.sections, ...(game.scenarios?.sections ?? [])].map((s) => ({ label: s.name, text: s.text }))
+				...[...scenario.sections, ...(game.scenarios?.sections ?? [])]
+					.sort((a, b) => PHASE_ORDER.indexOf(a.phase) - PHASE_ORDER.indexOf(b.phase))
+					.map((s) => ({ label: s.name, text: s.text, group: PHASES[s.phase] }))
 			]
 		}
 	});

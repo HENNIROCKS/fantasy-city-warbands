@@ -88,6 +88,8 @@ export interface CardEntry {
 	note?: string;
 	/** A faction rule that leaves this fighter out, its text a hint in the rule's place. */
 	leftOut?: true;
+	/** The heading an explanation folds it under with the entries after it that share the heading: `During the battle`. Without it, it stands open. */
+	group?: string;
 }
 
 /**
