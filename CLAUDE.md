@@ -77,8 +77,9 @@ Spielmechanik mit der App anwendet, und schreiben keine Regeln ab. Ändert sich
 eine Funktion, ändert sich ihre Seite im selben Schritt; was die Docs
 erklären, steht nicht noch einmal in den Fragen der Settings-Seite.
 
-Architektur, Entscheidungen und offene Punkte im Vault unter
-`Projekte/Fantasy City Warbands.md`.
+Architektur, Stand und offene Punkte im Vault unter
+`Projekte/Fantasy City Warbands/Übersicht.md`, die datierten Entscheidungen in
+`Projekte/Fantasy City Warbands/Changelog.md`.
 
 ## Befehle
 
@@ -184,6 +185,12 @@ im hellen Modus dunkel. Für eine neue Zink-Klasse, auch als `hover:` oder
 `focus-visible:`, die Übersetzung mitliefern – oder die Theme-Variablen
 (`--ui-*`) nutzen.
 
+Ein Kasten mit grünem Rand steht um etwas, das man antippt, oder um eine
+Tabelle von Werten. Fließtext und Abschnitte trennt eine Linie: Die Regeln einer
+Erklärung (`Explanation`) stehen zwischen Linien, und was zu einer Gruppe
+gehört, etwa die Phasen eines Szenarios, faltet sich unter einer Kopfzeile
+(`group` an `CardEntry`).
+
 Die Karten folgen dem Wyrdcry Warband Deck (Archiv auf GitHub):
 Aufbau und Bausteine (Deck, WarbandCard, FighterCard, CardBack, WarbandBack,
 BattleBar, MenuButton, ValueTable, WeaponTable, Explanation, RenownSheet,
@@ -194,7 +201,8 @@ zuerst am Deck verglichen. Abweichend vom Deck sind die Sheets über dem Deck
 nicht im Stil der App; das ist gewollt und wird nicht ans Deck angeglichen.
 Ebenso stehen die Zustände einer Schlacht in einem Band, durch „·“ getrennt,
 nicht je eines wie im Deck, und Rüstung und Items in einem Kasten unter den
-Waffen, ihr Text hinter dem Namen, nicht als Absätze.
+Waffen, ihr Text hinter dem Namen, nicht als Absätze. Die Erklärung setzt ihre
+Regeln zwischen Linien statt in Kästen und faltet Gruppen, anders als im Deck.
 
 Auf Kartenrückseiten und Sheets runden alle Buttons mit `--card-button-radius`,
 Felder und Kästen nicht. Ein Ja oder Nein ist eine `.switch-row`, eine Wahl
