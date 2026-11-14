@@ -46,3 +46,4 @@ Nothing promised, nothing planned.
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged
 - 📦 Ready-to-go warbands for each game, to start playing at once and tweak later
+- 🎨 Dual-wielding the same weapon shows its Attacks number in red, as altered stats do, and tapping it explains why, as armour and items do
