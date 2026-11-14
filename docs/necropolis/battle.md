@@ -19,7 +19,8 @@ at once.
 
 **Victory condition.** Tap **Battle → Before the battle** and tap the one you
 rolled on the d10 or agreed on. The box on the gathering's card shows its name;
-tap it for the rules, with the six environments at the end. If you and your
+tap it for the rules. They fold under Before the battle and During the battle,
+the six environments among the first. If you and your
 opponent agree to play with a Dread Omen, tap the one you rolled below it. Tap
 a pick again to take it back. The cards do not count relics, objectives or
 damage to the horror for you.

@@ -4,6 +4,19 @@ What changed in the app, newest first. Only what you notice at the table –
 a cost, a rule, a new button. What is still to come is on the
 [roadmap](https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/ROADMAP.md).
 
+## 14 Nov 2026
+
+- **Black Death City**
+  - A scenario’s rules fold under Before the battle, During the battle and Campaign, and the rules in every explanation stand between lines instead of in boxes.
+  - Scenarios score victory marks. A Deadly Encounter: the battle ends at 6 marks (was 8 points), Hold the Centre scores from the 2nd round, Draw Blood (was Death Marks), and the twists Encircle and Eager for Blood (were Outflank and Delayed Arrival).
+  - Glimmers in the Dark: the battle ends at 4 marks (was 3 escaped fighters), and the warband holding more treasure scores a mark at the end of each round. Cursed Coin deals 1 damage (was d3).
+  - No Quarter: the battle ends at 8 marks (was 10 domination marks), and quarters score from the 2nd round (was the 3rd). The Forsaken Quarter comes from the 3rd round (was the 4th), the Critical Quarter from the 2nd (was the 3rd).
+  - The Chapel: the warband holding more treasure scores a mark at the end of each round, and a piece of treasure is worth d6x5 silver (was 2d6x5). The Coin Purse leaves a treasure token near the sarcophagus if its finder cannot hold treasure.
+- **Necropolis**
+  - A victory condition’s rules fold under Before the battle and During the battle, and the rules in every explanation stand between lines instead of in boxes.
+- **Wyrdcry**
+  - The rules in every explanation, a weapon’s or an item’s, stand between lines instead of in boxes.
+
 ## 12 Nov 2026
 
 - **Black Death City**

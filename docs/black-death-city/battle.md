@@ -9,7 +9,9 @@ tap on a fighter starts it too.
 opponent's rating: the app says who is the underdog, and asks who won the
 roll-off when both ratings are equal. Then tap the scenario and the twist the
 dice show. All three stand in a box on the warband card; tap an entry to read
-its rules. You can change them until the second round.
+its rules. The rules of a scenario fold under Before the battle, During the
+battle and Campaign; tap a heading to open it. You can change them until the
+second round.
 
 **Prepared spells.** Before the battle each wizard and priest rolls a dice on
 each lore it knows. Tap **Battle → Prepared spells** and tap what the dice
@@ -49,10 +51,9 @@ show who has acted.
 out. Tap **Battle → Next round** when the round ends. Tapped by mistake? **Back
 to round …** undoes it, until you tap something new.
 
-**Points.** Where the scenario is won on points – victory points, domination
-marks, death marks – the score stands under the warband card, and the round
-moves into the Battle menu. Tap the score to count your points and your
-opponent's. Once a warband has enough and the score is not tied, it says
+**Points.** Where the scenario is won on victory marks, the score stands under
+the warband card, and the round moves into the Battle menu. Tap the score to
+count your marks and your opponent's. Once a warband has enough and the score is not tied, it says
 *Battle ends*, and at the end of the round the Battle menu offers only **End
 battle**.
 
