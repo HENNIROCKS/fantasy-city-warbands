@@ -353,6 +353,8 @@ export interface Scenario {
 	id: string;
 	/** The result on the scenario table that picks it. */
 	roll: number;
+	/** Where the table sends a result on to a second dice: `1–3`. Its place in the list is the number the rulebook gives it. */
+	reroll?: string;
 	name: string;
 	/** The page it is printed on, for questions about it. */
 	page: number;

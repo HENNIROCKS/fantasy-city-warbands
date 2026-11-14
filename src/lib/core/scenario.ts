@@ -133,7 +133,7 @@ export function setupValues(game: GameSystem, warband: Warband, faction: Faction
 		explanation: {
 			title: scenario.name,
 			rules: [
-				{ label: `${game.scenarios?.label ?? 'Scenario'} ${scenario.roll}`, text: `*${scenario.intro}*` },
+				{ label: `${game.scenarios?.label ?? 'Scenario'} ${(game.scenarios?.list.indexOf(scenario) ?? 0) + 1}`, text: `*${scenario.intro}*` },
 				...[...scenario.sections, ...(game.scenarios?.sections ?? [])]
 					.sort((a, b) => PHASE_ORDER.indexOf(a.phase) - PHASE_ORDER.indexOf(b.phase))
 					.map((s) => ({ label: s.name, text: s.text, group: PHASES[s.phase] }))

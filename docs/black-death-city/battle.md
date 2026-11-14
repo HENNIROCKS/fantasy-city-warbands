@@ -61,11 +61,10 @@ battle**.
 treasure* and *Escaped with treasure* – not for beasts and thralls. A fighter
 taken out of action drops what it holds, and a fighter out of action can be marked with neither. A fighter marked as escaped no longer holds the treasure. The dice for dropping it, for fleeing
 with it and for the cursed coin stay on the table. An escaped fighter no longer
-has to act. Where three escapes end the battle, the score under the warband
-card counts your escaped fighters from their cards; tap it to enter your
-opponent's. At three the battle ends at once: the Battle menu offers only
-**End battle**, and its sheet names how much treasure is held and how many
-fighters escaped.
+has to act. Where the warband that holds more treasure at the end of a round,
+escaped fighters included, scores a victory mark, tap the score under the
+warband card to enter it for both sides. The End battle sheet names how much
+treasure is held and how many fighters escaped.
 
 **Flee test.** Once five or more of your fighters are bloodied or out of
 action, the warband card says *Flee test*. At the end of the round the Battle

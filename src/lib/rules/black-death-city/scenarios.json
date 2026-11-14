@@ -135,29 +135,68 @@
 			]
 		},
 		{
-			"id": "street-of-death",
+			"id": "the-find",
 			"roll": 5,
-			"name": "Street of Death",
+			"name": "The Find",
 			"page": 45,
+			"score": { "label": "Victory marks", "ends": 4 },
+			"marks": [
+				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true },
+				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
+				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
+			],
+			"groups": { "count": 2, "arrives": 2 },
+			"intro": "A band of fighters have discovered a stash of treasure hidden in a ruined holding, now they must defend it from their rivals and hold out until their allies arrive.",
+			"sections": [
+				{ "phase": "before", "name": "Attacker & Defender", "text": "The players roll off, the winner is the **Attacker**, the loser is the **Defender**. Roll again in the case of a tie." },
+				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a **holding** at the centre. The holding is an area 8\" by 8\" denoted with four corner ruins or other suitable terrain features.\nOutside the holding should consist of narrow streets and ruined buildings." },
+				{ "phase": "before", "name": "Treasure", "text": "The Defender places 5 treasure tokens within 3\" of the centre of the holding." },
+				{ "phase": "before", "name": "Battle Groups", "text": "Each warband is divided into **2 battle groups**." },
+				{ "phase": "before", "name": "Deployment", "text": "The Attacker picks 1 of the entry points to be theirs. That player then randomly picks one of their battle groups and sets up the fighters from it wholly within **6\" horizontally** of their entry point.\nThe diagonally opposite entry point is the Defender's.\nThe Defender randomly picks one of their battle groups and sets up fighters from it wholly within **3\" horizontally** of the holding.\nThe other battle groups start in reserve." },
+				{ "phase": "during", "name": "Arriving Reinforcements", "text": "The Attacker's reinforcements begin arriving from the start of the **2nd round**. The Defender’s reinforcements begin arriving from the start of the **3rd round**." },
+				{ "phase": "during", "name": "Picking up Treasure", "text": "Fighters in the Defender’s warband cannot pick up treasure until the 3rd round." },
+				{ "phase": "during", "name": "Winning the Battle", "text": "**Claim Treasure:** At the end of each round, if 1 warband holds more treasure (including fighters who have escaped with treasure), they score **1 victory mark**.\nAt the end of any round, if a warband has 4 or more victory marks, the battle ends and they win.\nOtherwise, the battle ends when a warband flees, the opposing warband wins." },
+				{ "phase": "campaign", "name": "Bonus Experience", "text": "**+10 Escaping with Treasure.** Each fighter that escapes with treasure earns 10 bonus experience." }
+			],
+			"twistRoll": "d6",
+			"twists": [
+				{ "roll": 1, "name": "On Fire", "text": "A fire has started in the holding that threatens to grow rapidly.\nThe fire is *smouldering* to begin with and has no effect. From the **3rd round** onwards, a dice is rolled at the start of each round. On a 4+, the fire becomes a *blaze*. If the fire is already a blaze, it becomes an *inferno* (and no more dice are rolled for it that battle).\n**Blaze:** Each time a fighter finishes a move where they passed within the holding, they suffer d3 damage.\n**Inferno:** In addition to the ‘blaze’ effect, at the end of each round, roll a dice for each treasure token within the holding. On a 4+ it is destroyed and removed from the battlefield." },
+				{ "roll": 2, "name": "Defiant Stand", "text": "The Defender’s warband does not take flee tests this battle." },
+				{ "roll": 3, "name": "Barricaded Holdout", "text": "When setting up the battlefield, keep 3 wall pieces, each no longer than 5\", to one side.\nWhen the Defender sets up fighters in Deployment, they can roll a d3 and place that many of the wall sections on the edge of the holding." },
+				{ "roll": 4, "name": "Delayed Arrival", "text": "When making reinforcement rolls, rolls of 3 are 'No Sight, No Sound' instead of 'Arrival'.", "groups": { "reinforcements": { "roll": "d6", "results": [
+					{ "roll": "1–3", "label": "No Sight, No Sound", "arrives": false, "text": "The fighter does not arrive this round. Make another reinforcement roll for them next round." },
+					{ "roll": "4–5", "label": "Arrival", "arrives": true, "text": "Set up the fighter within 3\" horizontally of a battlefield edge connected to their entry point and more than 6\" from all enemy fighters." },
+					{ "roll": "6", "label": "Outflank", "arrives": true, "text": "Set up the fighter anywhere on the battlefield wholly within 3\" of a battlefield edge more than 6\" from all enemy fighters." }
+				] } } },
+				{ "roll": 5, "name": "Surrounded on All Sides", "text": "During deployment, the Attacker can set up fighters from both their battle groups, anywhere on the battlefield wholly within 6\" horizontally of a battlefield edge.\nDuring the battle, fighters from the Defender’s warband can pick up treasure from the 1st round." },
+				{ "roll": 6, "name": "Old Debt Collector’s House", "text": "There are 8 treasure tokens placed within 3\" of the centre of the holding, instead of 5." }
+			]
+		},
+		{
+			"id": "street-of-death",
+			"roll": 6,
+			"reroll": "1–3",
+			"name": "Street of Death",
+			"page": 47,
 			"groups": { "count": 3, "arrives": 3, "reinforcements": { "roll": "d6", "results": [
 					{ "roll": "1", "label": "Opposite edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the edge opposite the escape battlefield edge and more than 6\" from all enemy fighters." },
 					{ "roll": "2–3", "label": "Left edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the left edge and more than 6\" from all enemy fighters." },
 					{ "roll": "4–5", "label": "Right edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the right edge and more than 6\" from all enemy fighters." },
 					{ "roll": "6", "label": "Escape edge", "arrives": true, "text": "Set up the fighter wholly within 6\" horizontally of the escape battlefield edge and more than 6\" from all enemy fighters." }
-				] }, "underdog": { "count": 2, "arrives": 2 } },
+				] }, "underdog": { "count": 3, "arrives": 2 } },
 			"marks": [
 				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true }
 			],
 			"noFleeTest": "other",
-			"intro": "A notorious warrior makes their way through the darkened streets of the city, unbeknownst that they have been marked with death and in the shadows beyond blades are drawn and ready to strike!",
+			"intro": "A notorious warrior makes their way through the darkened streets of the city, unbeknownst to them, they have been marked with death and in the shadows beyond blades are drawn and ready to strike!",
 			"sections": [
 				{ "phase": "before", "name": "Ambusher & Defender", "text": "In this battle the underdog warband is the **Ambusher** and their opponent is the **Defender**." },
 				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a street (5-6\" wide) that runs through the middle. Either side of the street should be set up with dense ruins and narrow alleyways." },
-				{ "phase": "before", "name": "The Hit & Battle Groups", "text": "The players roll-off, the winner picks 1 *Leader* or *Champion* in the Defender’s warband to be the **Hit**. The Defender then rolls a dice and picks that many fighters from their warband to accompany them. They cannot pick any other *Leaders* or *Champions*.\nThe Defender then divides their remaining fighters into **2 battle groups**.\nThe Defender picks 1 end of the street to be the **escape battlefield edge**.\nThe Ambusher's warband is divided into **2 battle groups**." },
-				{ "phase": "before", "name": "Deployment", "text": "The Defender sets-up the fighter that is the Hit, and their accompanying fighters, anywhere on the street, more than 18\" from the escape battlefield edge.\nThe rest of the Defender’s fighters start the battlefield in reserve.\nThe Ambusher then randomly picks 1 of their battle groups and sets up the fighters from it anywhere on the battlefield more than 12\" from all enemy fighters.\nThe other battle groups start in reserve." },
-				{ "phase": "during", "name": "Arriving Reinforcements", "text": "The ambusher's reinforcements begin arriving from the start of the **2nd round**. The defender’s reinforcements begin arriving from the start of the **3rd round**.\nWhen reinforcements arrive, instead of making a reinforcement roll for each fighter, the player instead rolls a dice for each fighter. The dice roll corresponds to one of the battlefield edges:\n- **1** the edge opposite the escape battlefield edge\n- **2-3** the left edge\n- **4-5** the right edge\n- **6** the escape battlefield edge\nThe fighter is set up wholly within 6\" horizontally of that battlefield edge more than 6\" from all enemy fighters." },
+				{ "phase": "before", "name": "The Hit & Battle Groups", "text": "The players roll off, the winner picks 1 *Leader* or *Champion* in the Defender’s warband to be the **Hit**. The Defender then rolls a dice and picks that many fighters from their warband to accompany them. They cannot pick any other *Leaders* or *Champions*.\nThe Defender then divides their remaining fighters into **2 battle groups**.\nThe Defender picks 1 end of the street to be the **escape battlefield edge**.\nThe Ambusher's warband is divided into **3 battle groups**." },
+				{ "phase": "before", "name": "Deployment", "text": "The Defender sets up the fighter that is the Hit, and their accompanying fighters, anywhere on the street, more than 18\" from the escape battlefield edge.\nThe Defender’s battle groups start the battle in reserve.\nThe Ambusher then randomly picks 1 of their battle groups and sets up the fighters from it anywhere on the battlefield more than 12\" from all enemy fighters.\nThe other battle group starts in reserve." },
+				{ "phase": "during", "name": "Arriving Reinforcements", "text": "The Ambusher's reinforcements begin arriving from the start of the **2nd round**. The Defender’s reinforcements begin arriving from the start of the **3rd round**.\nWhen reinforcements arrive, instead of making a reinforcement roll for each fighter, the player instead rolls a dice for each fighter. The dice roll corresponds to one of the battlefield edges:\n- **1** the edge opposite the escape battlefield edge\n- **2-3** the left edge\n- **4-5** the right edge\n- **6** the escape battlefield edge\nThe fighter is set up wholly within 6\" horizontally of that battlefield edge more than 6\" from all enemy fighters." },
 				{ "phase": "during", "name": "No Easy Way Out", "text": "In this battle, the Defender’s warband does not take flee tests and cannot voluntarily flee." },
-				{ "phase": "during", "name": "Winning the Battle", "text": "**Escape the Ambushers:** If the fighter that is the Hit finishes a move within 1\" of the escape battlefield edge, and is not in engaged in melee, the battle immediately ends and the Defender wins.\nIf the fighter that is the hit is taken out of action, the battle ends immediately and the Ambushers win.\nOtherwise, if the Ambusher’s warband flees, the Defender wins." },
+				{ "phase": "during", "name": "Winning the Battle", "text": "**Escape the Ambushers:** If the fighter that is the Hit finishes a move within 1\" of the escape battlefield edge, and is not engaged in melee, the battle immediately ends and the Defender wins.\nIf the fighter that is the hit is taken out of action, the battle ends immediately and the Ambushers win.\nOtherwise, the battle ends if the Ambusher's warband flees, the Defender's warband wins." },
 				{ "phase": "campaign", "name": "Bonus Experience", "text": "**+20 To The Hit or the Hitter.** If the fighter that is the hit escapes the battlefield, they earn 20 experience points. If they are taken down by an enemy fighter, that enemy fighter earns 20 experience points." }
 			],
 			"twistRoll": "d6",
@@ -171,37 +210,33 @@
 			]
 		},
 		{
-			"id": "the-find",
+			"id": "ruined-halls",
 			"roll": 6,
-			"name": "The Find",
-			"page": 47,
-			"score": { "label": "Escaped", "ends": 3, "counts": "escaped" },
+			"reroll": "4–6",
+			"name": "Ruined Halls",
+			"page": 49,
+			"score": { "label": "Victory marks", "ends": 8 },
 			"marks": [
 				{ "key": "reserve", "label": "In reserve", "lasts": "battle", "off": true },
 				{ "key": "treasure", "label": "Holding treasure", "except": ["beast", "thrall"], "lasts": "battle", "dropsOnOut": true },
 				{ "key": "escaped", "label": "Escaped with treasure", "except": ["beast", "thrall"], "lasts": "battle", "off": true, "clears": ["treasure"] }
 			],
-			"groups": { "count": 2, "arrives": 3 },
-			"intro": "A band of fighters have discovered a stash of treasure hidden in a ruined holding, now they must defend it from their rivals and hold out until their allies arrive.",
+			"groups": { "count": 3, "arrives": 2 },
+			"intro": "Your warband has discovered a ruined estate. Its halls and chambers may still hold valuable treasures within, but to lay claim, you must first drive off any rivals.",
 			"sections": [
-				{ "phase": "before", "name": "Attacker & Defender", "text": "The players roll off, the winner is the **Attacker**, the loser is the **Defender**. Roll again in the case of a tie." },
-				{ "phase": "before", "name": "The Battlefield", "text": "The players set up the battlefield with a **holding** at the centre. The holding is an area 8\" by 8\" denoted with four corner ruins or other suitable terrain features.\nOutside the holding should consist of narrow streets and ruined buildings." },
-				{ "phase": "before", "name": "Treasure", "text": "The Defender places 5 treasure tokens within 3\" of the centre of the holding." },
-				{ "phase": "before", "name": "Battle Groups", "text": "Each warband is divided into **2 battle groups**." },
-				{ "phase": "before", "name": "Deployment", "text": "The Attacker picks 1 of the entry points to be theirs. That player then randomly picks one of their battle groups and sets up the fighters from it wholly within **6\" horizontally** of their entry point.\nThe diagonally opposite entry point is the Defender's.\nThe Defender randomly picks one of their battle groups and sets up fighters from it wholly within **3\" horizontally** of the holding.\nThe other battle groups start in reserve." },
-				{ "phase": "during", "name": "Arriving Reinforcements", "text": "Reinforcements begin arriving from the start of the **3rd round**." },
-				{ "phase": "during", "name": "Picking up Treasure", "text": "Fighters in the Defender’s warband cannot pick up treasure until the 3rd round." },
-				{ "phase": "during", "name": "Winning the Battle", "text": "**Claim Treasure:** If a warband has 3 fighters escape with treasures, the battle immediately ends and they win.\nOtherwise, the battle ends when a warband flees, the opposing warband wins." },
-				{ "phase": "campaign", "name": "Bonus Experience", "text": "**+10 Escaping with Treasure.** Each fighter that escapes with treasure earns 10 bonus experience." }
+				{ "phase": "before", "name": "The Battlefield", "text": "The battlefield features an estate of **4 halls** connected by a central courtyard.\nThe courtyard is an area 12\" by 12\" and should have a statue or fountain placed at its centre. Each hall is an area 8\" by 8\", and can be denoted with corner ruins or other suitable terrain features." },
+				{ "phase": "before", "name": "Battle Groups", "text": "Each warband is divided into **3 battle groups**." },
+				{ "phase": "before", "name": "Deployment", "text": "The players roll off. The winner picks 1 of the entry points to be theirs. That player then randomly picks one of their battle groups and sets up the fighters from it wholly within **6\" horizontally** of their entry point. The diagonally opposite entry point is their opponent’s. They do the same.\nThe other battle groups start in reserve." },
+				{ "phase": "during", "name": "Arriving Reinforcements", "text": "Reinforcements begin arriving from the start of the **2nd round**." },
+				{ "phase": "during", "name": "Searching the Halls", "text": "Each time a fighter finishes an activation inside a hall that has not yet been searched, they search it. When a fighter searches a hall, roll on the appropriate table determined by the twist." },
+				{ "phase": "during", "name": "Winning the Battle", "text": "**Claim the Halls:** From the **2nd round** onwards, at the end of a round, if a player has more friendly fighters wholly within a hall than there are enemy fighters wholly within it, they control that hall. Players score **1 victory mark** for each hall they control.\nAt the end of any round, if a warband has 8 or more victory marks, and the score is not tied, the battle ends and the warband with the most victory marks wins.\nOtherwise, the battle ends when a warband flees, the opposing warband wins." },
+				{ "phase": "campaign", "name": "Bonus Experience", "text": "**+5 Searching a Hall.** A fighter earns 5 bonus experience for each hall they search." }
 			],
-			"twistRoll": "d6",
+			"twistRoll": "d3",
 			"twists": [
-				{ "roll": 1, "name": "On Fire", "text": "A fire has started in the holding that threatens to grow rapidly.\nThe fire is *smouldering* to begin with and has no effect. At the start of each round, a dice is rolled. On a 4+, the fire becomes a *blaze*. In later rounds, if the fire is a blaze and a 4+ is rolled once more it becomes an *inferno* (and no more dice are rolled for it that battle).\n**Blaze:** Each time a fighter finishes a move where they passed within the holding, they suffer d3 damage.\n**Inferno:** In addition to the ‘blaze’ effect, at the end of each round, roll a dice for each treasure token within the holding. On a 4+ it is destroyed and removed from the battlefield." },
-				{ "roll": 2, "name": "Defiant Stand", "text": "The Defender’s warband does not take flee tests this battle." },
-				{ "roll": 3, "name": "Barricaded Holdout", "text": "When setting up the battlefield, keep 3 wall pieces, each no longer than 5\", to one side.\nWhen the Defender sets up fighters in Deployment, they can roll a d3 and place that many of the wall sections on the edge of the holding." },
-				{ "roll": 4, "name": "Delayed Arrival", "text": "Reinforcements begin arriving from the start of the 6th round, instead of the 3rd.", "groups": { "arrives": 6 } },
-				{ "roll": 5, "name": "Surrounded on All Sides", "text": "During deployment, the Attacker can set up fighters from both their battle groups, anywhere on the battlefield wholly within 6\" horizontally of a battlefield edge.\nDuring the battle, fighters from the Defender’s warband can pick up treasure from the 1st round." },
-				{ "roll": 6, "name": "Old Debt Collector’s House", "text": "There are 8 treasure tokens placed within 3\" of the centre of the holding, instead of 5." }
+				{ "roll": 1, "name": "Plague Hospice", "text": "Once a place of refuge for the sick and dying, the stench of death lingers in these forsaken ruins.\nEach time a fighter searches a hall, roll on the table below:\n- **1-3 Infested with Rot:** Make a note of each fighter that finishes an activation within this hall. In step 2 of the aftermath sequence, they gain 1 level of Black Rot in addition to any other injuries they might suffer. (A fighter can only gain 1 additional level of Black Rot in this manner.)\n- **4-5 Blackrose Balm:** The searching fighter is now holding treasure. If the searching fighter cannot hold treasure, the commanding player instead places a treasure token inside the hall. This treasure token is not worth any silver. Instead, the player who claims it receives 1 Blackrose Balm.\n- **6 Blackrose Candle:** As the 'Blackrose Balm' result (see above), however the player who claims this treasure token receives 1 Blackrose Candle instead." },
+				{ "roll": 2, "name": "Alchemist’s Estate", "text": "The former workshop of a wealthy alchemist, its chambers contain strange contraptions, dangerous traps and there are rumours of a hidden vault...\nEach time a fighter searches a hall, roll on the table below:\n- **1 Poison Trap:** Each time a fighter finishes an activation within this hall (including the fighter who searched this hall), they must pass a Willpower test else they become poisoned (see the Poison weapon trait).\n- **2 Stripped Hall:** This hall cannot be controlled.\n- **3-5 Mundane Hall:** No effect.\n- **6 Hidden Vault:** At the end of each round, a player that controls this hall scores 1 additional victory mark. In addition, in step 5 of the aftermath sequence, the winner receives 2d6x5 silver.\nThere is only one Hidden Vault. Treat any further rolls of 6 on this table as 3-5 instead." },
+				{ "roll": 3, "name": "Guild Hall", "text": "Here was the seat of one of the City’s many guilds and its halls may contain valuable records and forgotten treasures.\nEach time a fighter searches a hall, roll on the table below:\n- **1 Blackpowder Storage Room:** At the end of each round, a player that controls this hall scores 1 additional victory mark. Each time a fighter in this hall makes an attack, or is targeted by an attack, with any of the following Weapon Traits; Blast, Flame, Misfire, after the attack is resolved, test to see if the blackpowder explodes. To do so, roll 2d6. On a 10+ the blackpowder explodes. If it does so, each fighter in the hall suffers d6 damage. The hall can no longer be controlled, and no more tests are made to see if the blackpowder explodes.\n- **2 Stripped Hall:** This hall cannot be controlled.\n- **3 Mundane Hall:** No effect.\n- **4-5 Treasure Chamber:** The searching fighter is now holding treasure. If the searching fighter cannot hold treasure, the commanding player instead places a treasure token inside the hall.\n- **6 Guildmaster’s Office:** At the end of each round, a player that controls this hall scores 1 additional victory mark. In addition, in step 6 of the aftermath sequence, the winner of the battle can make 1 additional roll on the Curiosity table.\nThere is only one Guildmaster’s Office. Treat any further rolls of 6 on this table as 3 instead." }
 			]
 		}
 	]

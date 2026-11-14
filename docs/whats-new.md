@@ -12,6 +12,9 @@ a cost, a rule, a new button. What is still to come is on the
   - Glimmers in the Dark: the battle ends at 4 marks (was 3 escaped fighters), and the warband holding more treasure scores a mark at the end of each round. Cursed Coin deals 1 damage (was d3).
   - No Quarter: the battle ends at 8 marks (was 10 domination marks), and quarters score from the 2nd round (was the 3rd). The Forsaken Quarter comes from the 3rd round (was the 4th), the Critical Quarter from the 2nd (was the 3rd).
   - The Chapel: the warband holding more treasure scores a mark at the end of each round, and a piece of treasure is worth d6x5 silver (was 2d6x5). The Coin Purse leaves a treasure token near the sarcophagus if its finder cannot hold treasure.
+  - The Find: the battle ends at 4 marks (was 3 escaped fighters), and the warband holding more treasure scores a mark at the end of each round. The Attacker’s reinforcements arrive from the 2nd round, the Defender’s from the 3rd (both were the 3rd). Delayed Arrival turns a 3 on the reinforcement roll into No Sight, No Sound (was reinforcements from the 6th round). On Fire rolls from the 3rd round (was every round).
+  - Street of Death: the Ambusher’s warband is divided into 3 battle groups (was 2).
+  - Ruined Halls is a new scenario, a fight for four halls that the fighters search. On the scenario table the Find is now a 5 (was 6); a 6 sends you on to a second dice: 1–3 is Street of Death (was 5), 4–6 is Ruined Halls.
 - **Necropolis**
   - A victory condition’s rules fold under Before the battle and During the battle, and the rules in every explanation stand between lines instead of in boxes.
 - **Wyrdcry**

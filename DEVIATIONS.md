@@ -38,6 +38,7 @@ Transcribed from the Playtest v1.10, where the Fighters List, the scrolls, the A
 - [ ] Relics: named and numbered as their entries print them – 21–22 Ring of Roses, which the Relics table leaves out, and 46 Iron Ward, which it calls Talisman of Protection; 16 on the Curiosities table is the Broken Von Zikmund Pocketwatch, which the table calls Gilded Brass Pocket Watch (pp. 153–161)
 - [ ] Relics count in the warband rating at their price, as step seven says (p. 152), where the Relics page says they do not (p. 159)
 - [ ] Barrow Lord and Barrow Champion: as Skeletons, they roll on the Skeleton & Thrall Injury Table, as printed, though they earn experience as no Thrall does (p. 145)
+- [ ] The Find: Battle → Reinforcements opens from the 2nd round for both warbands, where only the Attacker's arrive then and the Defender's start in the 3rd round; which warband is the Attacker is decided by a roll-off the app does not take (p. 45)
 
 ### Open upstream
 

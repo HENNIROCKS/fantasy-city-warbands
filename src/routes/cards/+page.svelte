@@ -1251,7 +1251,7 @@
 						{#each scenarios.list as scenario (scenario.id)}
 							{@const on = picked?.scenario.id === scenario.id}
 							<button type="button" class="choice" aria-pressed={on} onclick={() => setBattle(setScenario(system.game, battle, on ? null : scenario.id))}>
-								<span class="inline-block w-6 font-semibold">{scenario.roll}</span>{scenario.name}
+								<span class="inline-block w-6 font-semibold">{scenario.roll}</span>{scenario.name}{#if scenario.reroll}{' '}<span class="text-zinc-400">({scenario.reroll})</span>{/if}
 							</button>
 						{/each}
 					</div>
