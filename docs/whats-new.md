@@ -15,6 +15,10 @@ a cost, a rule, a new button. What is still to come is on the
   - The Find: the battle ends at 4 marks (was 3 escaped fighters), and the warband holding more treasure scores a mark at the end of each round. The Attacker’s reinforcements arrive from the 2nd round, the Defender’s from the 3rd (both were the 3rd). Delayed Arrival turns a 3 on the reinforcement roll into No Sight, No Sound (was reinforcements from the 6th round). On Fire rolls from the 3rd round (was every round).
   - Street of Death: the Ambusher’s warband is divided into 3 battle groups (was 2).
   - Ruined Halls is a new scenario, a fight for four halls that the fighters search. On the scenario table the Find is now a 5 (was 6); a 6 sends you on to a second dice: 1–3 is Street of Death (was 5), 4–6 is Ruined Halls.
+  - Selling wargear brings half its cost rounded up (was down).
+  - The Trinkets on the Curiosities table are renumbered and revalued: 12 Broken Von Zikmund Pocketwatch for 2d6 silver (was 16, 3d6x5), 13 Bronze Saint Statuette for 3d6 (was 12, 2d6), 14 Amber Pendant for d6x5 (was 13, 3d6), 15 Pewter Tankard with Silver Lid for 2d6x5 (was 14, d6x5), 16 Silver Locket for 3d6x5 (was 15, 2d6x5).
+  - Into the Catacombs: Stagnant Water comes on a score of 3 (was 2), Dead End on 4–5 (was 3–5). A Treasure Horde is now A Treasure Hoard.
+  - The Long Bow and the Short Bow are now the Longbow and the Shortbow.
 - **Necropolis**
   - A victory condition’s rules fold under Before the battle and During the battle, and the rules in every explanation stand between lines instead of in boxes.
 - **Wyrdcry**

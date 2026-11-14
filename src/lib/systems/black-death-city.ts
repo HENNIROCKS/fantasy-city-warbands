@@ -72,10 +72,10 @@ export const game: GameSystem = {
 		{ keyword: 'beast', label: 'Beasts', limit: { min: 0, max: 3 } }
 	],
 	costLabel: 'Silver',
-	/* Wargear sold from the stash brings half its cost, rounded down as the
-	   sentence has it – the box beneath says rounded up (p. 152). A relic sells
-	   for its price; a curiosity's is rolled at the table. */
-	salePrice: (cost) => Math.floor(cost / 2),
+	/* Wargear sold from the stash brings half its cost, rounded up, as the
+	   sentence and the box beneath have it (p. 152). A relic sells for its
+	   price; a curiosity's is rolled at the table. */
+	salePrice: (cost) => Math.ceil(cost / 2),
 	/* Fighters leave the roster in the downtime as "Retire Fighters" (p. 151). */
 	dismissLabel: 'Retire',
 	/* Damage carries the critical damage behind a slash, as Wyrdcry's does: `1/d6`. */

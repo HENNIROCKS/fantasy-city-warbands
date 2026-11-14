@@ -160,7 +160,7 @@
 		{
 			"roll": "62–64",
 			"group": "61–66",
-			"name": "A Treasure Horde",
+			"name": "A Treasure Hoard",
 			"text": "You find a latched trapdoor hidden beneath the debris of a ruined house. After breaking the lock, you discover a large stash of silver coins in the compartment below. For each non-Beast fighter in the scouting party, you find d6x5 silver.",
 			"do": [
 				{
@@ -231,10 +231,10 @@
 						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–3", "do": [{ "injury_roll": true }] }, { "on": "4+", "do": [{ "experience": 10 }] }] } }]
 					},
 					{
-						"label": "2 – Stagnant Water",
+						"label": "3 – Stagnant Water",
 						"do": [{ "party": { "dice": "d6", "results": [{ "on": "1–3", "do": [{ "blackRot": 1 }] }, { "on": "4+", "do": [] }] } }]
 					},
-					{ "label": "3–5 – Dead End", "do": [] },
+					{ "label": "4–5 – Dead End", "do": [] },
 					{ "label": "6–9 – Lesser Tomb", "do": [{ "gold": "d6x5" }, { "table": "curiosities" }] },
 					{ "label": "10+ – Grand Tomb", "do": [{ "gold": "2d6x5" }, { "table": "relics" }] }
 				]
