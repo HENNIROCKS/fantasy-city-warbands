@@ -7,6 +7,7 @@ a cost, a rule, a new button. What is still to come is on the
 ## 14 Nov 2026
 
 - **Black Death City**
+  - The app follows the Playtest v1.11 (was v1.10).
   - A scenario’s rules fold under Before the battle, During the battle and Campaign, and the rules in every explanation stand between lines instead of in boxes.
   - Scenarios score victory marks. A Deadly Encounter: the battle ends at 6 marks (was 8 points), Hold the Centre scores from the 2nd round, Draw Blood (was Death Marks), and the twists Encircle and Eager for Blood (were Outflank and Delayed Arrival).
   - Glimmers in the Dark: the battle ends at 4 marks (was 3 escaped fighters), and the warband holding more treasure scores a mark at the end of each round. Cursed Coin deals 1 damage (was d3).

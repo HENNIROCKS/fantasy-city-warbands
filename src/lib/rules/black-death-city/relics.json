@@ -1,5 +1,5 @@
 {
-	"note": "The Relics Table (d66) and its relics (Playtest v1.10, pp. 159–166), named and numbered as their entries print them: the table lists Talisman of Protection at 46 and no 21–22. A relic counts in the warband rating at its price, as step seven has it (p. 152). `who`: leaders – a Leader or Champion; ranged – a fighter with a ranged weapon on its lists; casters – a Wizard or Priest; a wargear id – a fighter that may take that piece.",
+	"note": "The Relics Table (d66) and its relics (Playtest v1.11, pp. 163–170), named and numbered as their entries print them: the table lists Talisman of Protection at 46 and no 21–22. A relic counts in the warband rating at its price, as step seven has it (p. 156). `who`: leaders – a Leader or Champion; ranged – a fighter with a ranged weapon on its lists; casters – a Wizard or Priest; a wargear id – a fighter that may take that piece.",
 	"table": [
 		{ "roll": "11–12", "wargear": "saint-tricksters-charm" },
 		{ "roll": "13–14", "wargear": "enchanted-coin-purse" },

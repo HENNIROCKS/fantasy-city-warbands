@@ -1,5 +1,5 @@
 {
-	"note": "The Curiosities Table (d66) and its items (Playtest v1.10, pp. 153–158). A curiosity's value is rolled when it is sold; it counts for nothing in the warband rating. Stash items are never carried.",
+	"note": "The Curiosities Table (d66) and its items (Playtest v1.11, pp. 157–162). A curiosity's value is rolled when it is sold; it counts for nothing in the warband rating. Stash items are never carried.",
 	"table": [
 		{ "roll": "11", "wargear": "blackened-silver-spoon" },
 		{ "roll": "12", "wargear": "broken-von-zikmund-pocketwatch" },

@@ -1,5 +1,5 @@
 {
-	"note": "Underdog Bonus Table (Playtest v1.10, p. 136). A 1 brings no bonus: On Your Own...",
+	"note": "Underdog Bonus Table (Playtest v1.11, p. 140). A 1 brings no bonus: On Your Own...",
 	"bonuses": [
 		{ "id": "whispers-and-spies", "roll": "2", "name": "Whispers and Spies", "text": "You hear rumours of your enemy's location and move to encircle them.\n\nYou can re-roll reinforcement rolls for friendly fighters this battle." },
 		{ "id": "a-poison-package", "roll": "3", "name": "A Poison Package", "text": "Vials of poison are delivered to your warband from an unknown sender.\n\nYou receive d3 Vials of Poison that you can immediately equip to friendly fighters (any you do not equip are placed in your stash)." },

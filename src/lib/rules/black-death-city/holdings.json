@@ -1,5 +1,5 @@
 {
-	"note": "The Holdings Table (d66) and its holdings (Playtest v1.10, pp. 138–142). `income` and `ransack` are rolled at the table; `turns` is what a holding becomes after the income on the roll named; `gives` comes with each income.",
+	"note": "The Holdings Table (d66) and its holdings (Playtest v1.11, pp. 142–146). `income` and `ransack` are rolled at the table; `turns` is what a holding becomes after the income on the roll named; `gives` comes with each income.",
 	"max": 5,
 	"stronghold": {
 		"levels": [

@@ -141,10 +141,10 @@ Fraktionen, ihre Kämpfer und Waffen folgen den 1.0-Daten und Fraktionsseiten
 des Site-Repos, von Hand übertragen; ebenso Thief und Beastman, die beiden
 übrigen der zehn offiziellen Hired Swords unter `rules/wyrdcry/hired-swords/`.
 
-**Black Death City** ist von Hand aus dem Playtest v1.10 übertragen
-(`_works/Rulebooks/Black Death City Playtest v1.10.pdf` mit Spickzettel und
-Roster-Bögen hinten; die High-Res-Fassung daneben hat dieselben Seiten ohne
-sie). Das Kampagnenkapitel (S. 133–166) ist gebaut: Aftermath, Explore the
+**Black Death City** ist von Hand aus dem Playtest v1.11 übertragen
+(`_works/Rulebooks/Black Death City Playtest v1.11 (High Res).pdf` mit
+Spickzettel und Roster-Bögen hinten; `Black Death City Playtest v1.11.pdf`
+daneben hat dieselben Seiten ohne sie). Das Kampagnenkapitel (S. 137–170) ist gebaut: Aftermath, Explore the
 City, Holdings, Funde und Downtime. Was die App dort nicht führt, trägt in
 `encounters.json` und den Daten `byHand`.
 Werte **an der PDF-Seite ablesen, nicht am extrahierten Text** – die

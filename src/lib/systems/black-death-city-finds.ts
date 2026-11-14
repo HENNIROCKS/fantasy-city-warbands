@@ -1,6 +1,6 @@
 /**
  * What a Black Death City warband finds in its campaign rather than buys
- * (Playtest v1.10, pp. 153–166): the curiosities, the relics, and the
+ * (Playtest v1.11, pp. 157–170): the curiosities, the relics, and the
  * Legendary Blades of the faction's own table, each blade named and shaped by
  * its two rolled properties. Every faction gets them as wargear never bought,
  * only found; who may carry a piece follows its entry. A stash item is never
@@ -29,9 +29,9 @@ export interface FoundRow {
 	used?: { bonus: Record<string, number> };
 	foundOnly: true;
 	singleUse?: true;
-	/** A relic sells for its full price, where wargear sells for half (p. 152). */
+	/** A relic sells for its full price, where wargear sells for half (p. 156). */
 	sale?: number;
-	/** A curiosity sells for the roll its entry prints, such as `2d6x5` (p. 152). */
+	/** A curiosity sells for the roll its entry prints, such as `2d6x5` (p. 156). */
 	saleRoll?: string;
 	/** Rules a Legendary Blade's properties give it besides its traits. */
 	special?: Rule[];

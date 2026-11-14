@@ -1,5 +1,5 @@
 {
-	"note": "Explore the City (Playtest v1.10, pp. 147–150): the exploration table (d66) and the finds it leads to. An action is `gold` – a number or dice such as `d6x5` –, `table` – a roll on the Curiosities or Relics table or one of `tables` below –, `blackRot` and `experience` – levels or points a fighter gains, below 0 taken away –, `injury_roll`, `wargear`, `holding` – rolled again on a holding of `except` –, `recruit`, `remove`, or `party`: what falls on each fighter of the scouting party that carries one of `keywords` and none of `except`, by the d6 each rolls, or all alike without `dice`. `byHand` marks what the app does not keep.",
+	"note": "Explore the City (Playtest v1.11, pp. 151–154): the exploration table (d66) and the finds it leads to. An action is `gold` – a number or dice such as `d6x5` –, `table` – a roll on the Curiosities or Relics table or one of `tables` below –, `blackRot` and `experience` – levels or points a fighter gains, below 0 taken away –, `injury_roll`, `wargear`, `holding` – rolled again on a holding of `except` –, `recruit`, `remove`, or `party`: what falls on each fighter of the scouting party that carries one of `keywords` and none of `except`, by the d6 each rolls, or all alike without `dice`. `byHand` marks what the app does not keep.",
 	"tables": [
 		{
 			"id": "hallowed-ground",

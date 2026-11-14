@@ -1,6 +1,6 @@
 /**
  * A campaign's holdings and stronghold in the aftermath, as Black Death City
- * has them (Playtest v1.10, pp. 137–143, 151–152): who takes which holding
+ * has them (Playtest v1.11, pp. 141–147, 155–156): who takes which holding
  * after the battle, the stronghold's level and upgrade, the income of the
  * stronghold and each holding with the treasure claimed, what is ransacked or
  * turns into another holding, and the downtime's leeching and what the

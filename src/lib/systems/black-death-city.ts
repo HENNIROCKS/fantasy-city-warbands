@@ -1,6 +1,6 @@
 /**
  * Black Death City, from the ruleset under `src/lib/rules/black-death-city/`,
- * transcribed from the Black Death City Playtest v1.10. Every folder under
+ * transcribed from the Black Death City Playtest v1.11. Every folder under
  * `factions/` is one faction.
  */
 
@@ -22,7 +22,7 @@ export const game: GameSystem = {
 	id: 'black-death-city',
 	name: 'Black Death City',
 	logo: 'logo-bdc.svg',
-	edition: 'Playtest v1.10',
+	edition: 'Playtest v1.11',
 	author: 'Sam Pearson',
 	site: 'https://www.blackdeathcity.com/',
 	currency: 'silver',
@@ -39,10 +39,10 @@ export const game: GameSystem = {
 		{ key: 'life', label: 'Life', format: 'plain' }
 	],
 	health: 'life',
-	/* The fields of the playtest's roster sheet (pp. 136–141 of the high-res
-	   file): damage and its critical apart, the weapons' traits, Black Rot to
-	   tick, the origin, and the holdings and canal leeches to fill in by hand
-	   until the app keeps a campaign. */
+	/* The fields of the playtest's roster sheet (the six pages after the Reminder
+	   Sheet at the back of the PDF): damage and its critical apart, the weapons'
+	   traits, Black Rot to tick, the origin, and the holdings and canal leeches
+	   to fill in by hand until the app keeps a campaign. */
 	roster: {
 		title: 'Black Death City Warband Roster',
 		stats: ['Mv', 'Bl', 'Bw', 'Ar', 'In', 'Wl', 'Lf'],
@@ -73,10 +73,10 @@ export const game: GameSystem = {
 	],
 	costLabel: 'Silver',
 	/* Wargear sold from the stash brings half its cost, rounded up, as the
-	   sentence and the box beneath have it (p. 152). A relic sells for its
+	   sentence and the box beneath have it (p. 156). A relic sells for its
 	   price; a curiosity's is rolled at the table. */
 	salePrice: (cost) => Math.ceil(cost / 2),
-	/* Fighters leave the roster in the downtime as "Retire Fighters" (p. 151). */
+	/* Fighters leave the roster in the downtime as "Retire Fighters" (p. 155). */
 	dismissLabel: 'Retire',
 	/* Damage carries the critical damage behind a slash, as Wyrdcry's does: `1/d6`. */
 	weaponStats: [
@@ -89,13 +89,13 @@ export const game: GameSystem = {
 	carry,
 	weaponAdjustments: adjust,
 	/* Experience, Black Rot and the warband rating. The campaign chapter
-	   (pp. 133–166) is built as the aftermath: injuries, experience and ranks,
+	   (pp. 137–170) is built as the aftermath: injuries, experience and ranks,
 	   exploring the city, holdings and income, and its downtime. */
 	campaign: {
 		warband: [],
 		fighter: [
 			{ key: 'experience', label: 'Experience' },
-			/* Beasts, Demons and the Undead are immune to it (p. 144). */
+			/* Beasts, Demons and the Undead are immune to it (p. 148). */
 			{ key: BLACK_ROT, label: 'Black Rot', excluded: ['beast', 'demon', 'undead'] }
 		],
 		start: (fighter, faction) => starts.get(`${faction.id}/${fighter.id}`) ?? null,
@@ -114,7 +114,7 @@ export const game: GameSystem = {
 		   the warband take a Flee test: on a 1 it flees and the battle ends (p. 18). */
 		flee: { label: 'Flee test', breaks: (down) => down >= 5, roll: 'roll a dice', goOn: '2+', end: '1' }
 	},
-	/* Steps 2 to 4 of the aftermath sequence: injuries, experience, then the search party's exploration (pp. 144–150). */
+	/* Steps 2 to 4 of the aftermath sequence: injuries, experience, then the search party's exploration (pp. 148–154). */
 	aftermath: {
 		experience: {
 			counter: 'experience',
@@ -134,19 +134,19 @@ export const game: GameSystem = {
 		},
 		modifiers: [],
 		marked: null,
-		/* Thralls and Beasts never earn experience (p. 146). */
+		/* Thralls and Beasts never earn experience (p. 150). */
 		excluded: ['thrall', 'beast'],
 		gainLevels: (fighter) => fighter,
 		explore: blackDeathCityExplore(exploreRules)
 	},
 	injuries,
-	/* Holdings and the stronghold: steps 1, 5 and 6 of the aftermath (pp. 137–143, 151–152). */
+	/* Holdings and the stronghold: steps 1, 5 and 6 of the aftermath (pp. 141–147, 155–156). */
 	holdings: {
 		label: 'Holdings',
 		max: holdingData.max,
 		dice: 'D66',
 		table: holdingData.holdings.map((h) => ({ ...h, rules: h.rules ?? [] })) as Holding[],
-		/* A ransacked holding becomes a Ruined Hovel; each treasure claimed brings d3x5 (p. 152). */
+		/* A ransacked holding becomes a Ruined Hovel; each treasure claimed brings d3x5 (p. 156). */
 		ruined: 'ruined-hovel',
 		treasure: { label: 'Treasure claimed', roll: 'd3x5 each' },
 		stronghold: (warband, faction, battles = warband.history?.length ?? 0) => {
@@ -166,9 +166,9 @@ export const game: GameSystem = {
 			note: 'Use a Jar of Canal Leeches on a fighter and roll a dice: on a 4+, it loses a level of Black Rot. Each fighter can be leeched once.'
 		}
 	},
-	/* An advancement roll for each rank gained, spent on the back of the card (p. 146). */
+	/* An advancement roll for each rank gained, spent on the back of the card (p. 150). */
 	advancement: blackDeathCityAdvancement({ stats: () => game.stats, skills: (faction) => skillTables.get(faction.id) ?? [] }),
-	/* Death of a Leader: a Champion assumes command until a new Leader is recruited (p. 145). */
+	/* Death of a Leader: a Champion assumes command until a new Leader is recruited (p. 149). */
 	succession: {
 		keyword: 'champion',
 		none: 'No leader and no Champion to assume command: recruit a Leader or a Champion before any other fighter.',
@@ -180,7 +180,7 @@ export const game: GameSystem = {
 	/* The warband with the lesser rating is the underdog, a roll-off settling
 	   equal ratings; the rounds and the scenarios ask for it (pp. 17–18). In a
 	   campaign, every 100 behind rolls once on the Underdog Bonus table, 5
-	   times at most (p. 136). */
+	   times at most (p. 140). */
 	underdog: {
 		gap: 1,
 		bonusGap: 100,
@@ -192,7 +192,7 @@ export const game: GameSystem = {
 		ties: true,
 		text: 'The warband with the lesser rating. It has priority when the priority roll is a tie, makes its flee test first when both warbands must, and resolves its rules before the battle first. Some scenarios name it as well.'
 	},
-	/* Every battle is fought to one of six scenarios, each with its own twists (pp. 35–48). */
+	/* Every battle is fought to one of seven scenarios, each with its own twists (pp. 35–50). */
 	scenarios: { roll: scenarios.roll, list: scenarios.scenarios as Scenario[], reinforcements: scenarios.reinforcements, reserve: scenarios.reserve }
 };
 
@@ -276,7 +276,7 @@ interface RawChoice extends Omit<FighterChoice, 'source' | 'prompt' | 'options'>
 	lore?: string;
 }
 
-/** A skill table (p. 51 and each faction's skills page): who may pick from it, as printed, and its skills. */
+/** A skill table (p. 53 and each faction's skills page): who may pick from it, as printed, and its skills. */
 interface RawSkillTable extends SkillTable {
 	who: string;
 }
@@ -447,7 +447,7 @@ function startOf(text: string, where: string): StartRoll | null {
 }
 
 /**
- * The warband rating (p. 50): what every fighter on the roster cost with its
+ * The warband rating (p. 52): what every fighter on the roster cost with its
  * wargear, and their experience. The stash and the silver left do not count.
  */
 function rating(warband: Warband): number {
@@ -504,7 +504,7 @@ function build(
 	const tables = new Map([...veteranSkills, ...skills].map((t) => [t.id, t]));
 	skillTables.set(meta.id, [...tables.values()]);
 	const lore = new Map(lores.map((l) => [l.id, l]));
-	/* Skills fall under No Duplicates (p. 51); signature spells do not. An id
+	/* Skills fall under No Duplicates (p. 53); signature spells do not. An id
 	   the faction's tables or lores do not hold is a slip in the data, and so
 	   is an option two of a fighter's choices offer, since its picks are one list. */
 	const choicesOf = (f: RawFighter): FighterChoice[] => {

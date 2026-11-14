@@ -1,6 +1,6 @@
 /**
  * Black Death City's Explore the City, step 4 of the aftermath (Playtest
- * v1.10, pp. 147–150): the exploration table from `encounters.json`, the
+ * v1.11, pp. 151–154): the exploration table from `encounters.json`, the
  * Curiosities and Relics tables from the finds, and the exploration re-rolls the
  * warband's rules grant. What the app keeps – silver, a piece into the stash,
  * a roll on a table, a holding, a recruit, what falls on each fighter of the
@@ -162,7 +162,7 @@ export function blackDeathCityExplore(rulesOf: (warband: Warband, party: string[
 		label: 'Explore the City',
 		encounters: (data.encounters as RawEncounter[]).map(encounterOf),
 		tables,
-		/* "1 Leader or Champion, 1-3 Henchmen, 0-1 Beast"; no other fighter, Brutes among them, can join (p. 147). */
+		/* "1 Leader or Champion, 1-3 Henchmen, 0-1 Beast"; no other fighter, Brutes among them, can join (p. 151). */
 		party: {
 			size: 5,
 			excluded: ['brute'],

@@ -1,6 +1,6 @@
 /**
- * Black Death City's advancement, step 3 of the aftermath (Playtest v1.10,
- * p. 146): each rank a fighter reaches beyond the one it was recruited at
+ * Black Death City's advancement, step 3 of the aftermath (Playtest v1.11,
+ * p. 150): each rank a fighter reaches beyond the one it was recruited at
  * brings an advancement roll, spent on the back of its card. The d6 is tapped
  * first, then only what it gives can be picked: Initiative or Willpower, Move,
  * Life, Blade or Bow, or – Fated – a skill, a signature spell or any of those.

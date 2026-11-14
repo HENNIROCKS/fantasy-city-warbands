@@ -1,6 +1,6 @@
 /**
- * Black Death City's injuries, step 2 of the aftermath (Playtest v1.10,
- * pp. 144–145): a fighter taken out of action rolls a D66 on the Injury
+ * Black Death City's injuries, step 2 of the aftermath (Playtest v1.11,
+ * pp. 148–149): a fighter taken out of action rolls a D66 on the Injury
  * Table, a Beast, Skeleton, Thrall or Demon a D6 on its own table instead – the
  * first of them its keywords name, so a Rotling, Beast and Demon, rolls as a
  * Beast. An [Injury] is kept, temporary or permanent as rolled for it; a
@@ -137,7 +137,7 @@ function table(_instance: FighterInstance, fighter: Fighter): InjuryTable {
 }
 
 export const injuries: Injuries = {
-	/* Black Rot spares Beasts, Demons and the Undead and kills at its fourth level (p. 144). */
+	/* Black Rot spares Beasts, Demons and the Undead and kills at its fourth level (p. 148). */
 	counter: (_instance, fighter, key, total) =>
 		key === BLACK_ROT ? { counts: !immuneToBlackRot(fighter), dies: total >= data.blackRot.kills } : { counts: true, dies: false },
 	table,

@@ -140,7 +140,7 @@ are still to come.
 
 | Game | Rules the data follows |
 | --- | --- |
-| Black Death City | Playtest v1.10 |
+| Black Death City | Playtest v1.11 |
 | Necropolis | Rulebook v0.9 |
 | Wyrdcry | 1.0 – Rulebook 1.0.1, Campaign Book 1.0 and the factions at wyrdcry.net, its playtest factions included |
 
@@ -230,7 +230,7 @@ first and publishes it to GitHub Pages.
 ## Where the rules come from
 
 - **Black Death City** – transcribed by hand from the Black Death City
-  Playtest v1.10 by Sam Pearson. Where the playtest contradicts itself, the
+  Playtest v1.11 by Sam Pearson. Where the playtest contradicts itself, the
   fighter's own scroll wins over the fighter list.
 - **Necropolis** – transcribed by hand from the Necropolis Rulebook v0.9 by
   Peter Vigors, a draft with placeholders and examples that do not add up
