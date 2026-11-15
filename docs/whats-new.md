@@ -11,6 +11,8 @@ a cost, a rule, a new button. What is still to come is on the
   - A model with only a ranged weapon fights with it in melee and no longer shows an Improvised Weapon.
   - Familiars, Small Beasts, Large Beasts, Flying Beasts and Gigantic Horrors cannot take a Wardart or a Throwing Axe.
   - Strike down the Rival: the leader closer to the centre is measured to the base.
+- **Wyrdcry**
+  - Troll: Vomit reaches 2" (was 1"), deals 4/7 damage (was 3/6) and has Piercing 2 (was no rule).
 
 ## 14 Nov 2026
 
