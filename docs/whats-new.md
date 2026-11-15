@@ -4,6 +4,14 @@ What changed in the app, newest first. Only what you notice at the table –
 a cost, a rule, a new button. What is still to come is on the
 [roadmap](https://github.com/HENNIROCKS/fantasy-city-warbands/blob/main/ROADMAP.md).
 
+## 15 Nov 2026
+
+- **Necropolis**
+  - A leader with a one-handed and a two-handed weapon can carry a shield; it counts while the leader holds the one-handed weapon.
+  - A model with only a ranged weapon fights with it in melee and no longer shows an Improvised Weapon.
+  - Familiars, Small Beasts, Large Beasts, Flying Beasts and Gigantic Horrors cannot take a Wardart or a Throwing Axe.
+  - Strike down the Rival: the leader closer to the centre is measured to the base.
+
 ## 14 Nov 2026
 
 - **Black Death City**

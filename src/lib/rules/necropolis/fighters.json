@@ -96,6 +96,7 @@
 		"profile": { "ap": 2, "move": 4, "violence": 9, "ranged": null, "hp": 6 },
 		"wargear_lists": ["Miscellaneous Equipment"],
 		"wargear_also": ["claws-and-fangs"],
+		"wargear_except": ["wardart", "throwing-axe-or-mallet"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Familiar can only take claws and fangs as a weapon. Familiar cannot wear armour or carry a shield." },
 			{ "name": "Unique", "text": "Each gathering may only take 1 familiar." },
@@ -129,6 +130,7 @@
 		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
 		"wargear_lists": ["Miscellaneous Equipment"],
 		"wargear_also": ["claws-and-fangs", "light-armour"],
+		"wargear_except": ["wardart", "throwing-axe-or-mallet"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Small beast can only take claws and fangs as a weapon. Small beast cannot carry a shield or wear heavy armour." },
 			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword and −2 HP." }
@@ -145,7 +147,7 @@
 		"profile": { "ap": 2, "move": 3, "violence": 7, "ranged": null, "hp": 15 },
 		"wargear_lists": ["Armour", "Miscellaneous Equipment"],
 		"wargear_also": ["claws-and-fangs", "large-claws"],
-		"wargear_except": ["shield", "great-shield"],
+		"wargear_except": ["shield", "great-shield", "wardart", "throwing-axe-or-mallet"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Large Beast can only take Claws and Fangs or Large Claws as a weapon. Large Beast cannot carry a Shield." },
 			{ "name": "Unique", "text": "Each gathering may only take 1 Large Beast." }
@@ -161,6 +163,7 @@
 		"affinities": ["blood", "bone", "plasm"],
 		"profile": { "ap": 3, "move": 3, "violence": 7, "ranged": 7, "hp": 25 },
 		"wargear_lists": ["Colossal Melee Weapons", "Colossal Ranged Weapons", "Armour", "Miscellaneous Equipment"],
+		"wargear_except": ["wardart", "throwing-axe-or-mallet"],
 		"rules": [
 			{ "name": "Plasm", "text": "If this model chooses the Plasm keyword it gains the fly keyword, −2 HP and cannot wear heavy armour." },
 			{ "name": "Colossal", "text": "This model can only take weapons from the Colossal Weapons list." },
@@ -179,6 +182,7 @@
 		"profile": { "ap": 2, "move": 4, "violence": 7, "ranged": null, "hp": 10 },
 		"wargear_lists": ["Miscellaneous Equipment"],
 		"wargear_also": ["claws-and-fangs"],
+		"wargear_except": ["wardart", "throwing-axe-or-mallet"],
 		"rules": [
 			{ "name": "Restrictions", "text": "Flying beast can only take claws and fangs as a weapon. Flying Beast cannot wear armour or carry a shield." }
 		]

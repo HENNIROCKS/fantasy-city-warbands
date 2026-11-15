@@ -44,7 +44,7 @@
 			"sections": [
 				{ "phase": "before", "name": "Objectives", "text": "Players take turns in placing 3 mana tokens of any kind each. Each token must be at least 3\" from a board edge and 3\" from any other token. If this is not possible due to terrain, place them as far away as possible from each other.\nAll mana in this scenario is swelling with unknowable power, each time a model picks up a mana token roll a d10. On a 1-2 the model suffers 1 damage, on a 3-10 the model restores 1HP." },
 				{ "phase": "before", "name": "Deployment", "text": "Follow the normal rules for deployment." },
-				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering who causes their opponent's leader to be shattered wins and the game ends at the end of the current turn. If neither have been shattered at the end of 5 turns the gathering with their leader closer to the centre of the board wins." }
+				{ "phase": "during", "name": "Victory Conditions", "text": "The gathering who causes their opponent's leader to be shattered wins and the game ends at the end of the current turn. If neither have been shattered at the end of 5 turns the gathering with their leader closer to the centre of the board wins, measured to the base." }
 			]
 		},
 		{

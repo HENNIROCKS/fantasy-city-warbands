@@ -146,12 +146,14 @@ export interface GameSystem {
 	 */
 	weaponAdjustments?: (weapon: Wargear, count: number, carried: Wargear[], faction: Faction) => WeaponAdjustment[];
 	/**
-	 * The profile a fighter fights with that carries no melee weapon, as
+	 * The profile a fighter fights with that carries no weapon in hand, as
 	 * Wyrdcry's Unarmed, and the keywords of fighters that never do – a BEAST
 	 * fights with what is on its profile. A fighter with a keyword of `instead`
 	 * fights with that profile in its place, as Necropolis' colossal models do.
+	 * `armed` says which piece counts as a weapon in hand; a melee weapon where
+	 * missing.
 	 */
-	unarmed?: { weapon: Wargear; except: string[]; instead?: { keyword: string; weapon: Wargear }[] };
+	unarmed?: { weapon: Wargear; except: string[]; instead?: { keyword: string; weapon: Wargear }[]; armed?: (w: Wargear) => boolean };
 	/**
 	 * What keeps a fighter from carrying its wargear, one entry per piece it may
 	 * not have, in the order it carries them. Each piece is held against those

@@ -41,8 +41,11 @@ function wargearOf({ special, slot: _slot, ...w }: RawWargear): Wargear {
 
 const piece = (id: string) => wargearOf(rows.get(id) ?? fail(`Necropolis wargear ${id} does not exist`));
 
-/* A model with no melee weapon fights with an Improvised Weapon; a colossal
-   one with the Colossal Improvised Weapon (pp. 36, 38). */
+/* A model with no weapon fights with an Improvised Weapon; a colossal one with
+   the Colossal Improvised Weapon (pp. 36, 38). A ranged weapon is used in melee
+   as it is, and so is no weapon of Miscellaneous Equipment, whose Wardart and
+   Throwing Axe are thrown once. */
+const MISC = 'Miscellaneous Equipment';
 const IMPROVISED = 'improvised-weapon';
 const COLOSSAL_IMPROVISED = 'colossal-improvised-weapon';
 
@@ -130,6 +133,7 @@ export const game: GameSystem = {
 	unarmed: {
 		weapon: piece(IMPROVISED),
 		except: [],
+		armed: (w) => w.kind === 'melee' || (w.kind === 'ranged' && w.group !== MISC),
 		instead: [{ keyword: 'colossal', weapon: piece(COLOSSAL_IMPROVISED) }]
 	},
 	carry: (fighter, _faction, wargear) => {
@@ -147,8 +151,9 @@ export const game: GameSystem = {
 
 /*
  * What a model may carry (pp. 36, 40, 41): 2 weapons for a leader and 1 for a
- * minion, 1 type of armour, 1 shield, which goes with no weapon that takes 2
- * hands, and 1 piece of Miscellaneous Equipment, a Wardart or a Throwing Axe
+ * minion, 1 type of armour, 1 shield, which a model uses only while it holds a
+ * weapon that takes 1 hand (a leader switches at the start of its activation),
+ * and 1 piece of Miscellaneous Equipment, a Wardart or a Throwing Axe
  * included. A Plasm leader, Husk or Gigantic Horror wears no heavy armour
  * (pp. 29, 32, 35).
  */
@@ -160,7 +165,13 @@ function slotOf(w: RawWargear): Slot {
 
 const twoHanded = (w: RawWargear) => slotOf(w) === 'weapon' && w.profile?.hands === '2';
 
-const SHIELD_MESSAGE = 'A shield can only be used if the model isn’t using a weapon that requires 2 hands';
+const SHIELD_MESSAGE = 'A shield can only be used with a weapon that requires 1 hand';
+
+/** Whether the weapons held leave no hand for a shield: there are some, and each takes 2. */
+const noHandFree = (held: RawWargear[]) => {
+	const weapons = held.filter((h) => slotOf(h) === 'weapon');
+	return weapons.length > 0 && weapons.every(twoHanded);
+};
 
 /** Why the model cannot take `w` beside what it already holds, or null when it can. */
 function refuse(held: RawWargear[], w: RawWargear, weapons: number): { message: string; short: string } | null {
@@ -175,8 +186,8 @@ function refuse(held: RawWargear[], w: RawWargear, weapons: number): { message: 
 					? { message: 'A model may only have 1 shield', short: 'Already carrying a shield' }
 					: { message: 'Each model may only have 1 piece of Miscellaneous Equipment', short: 'Already has one' };
 	}
-	if (slot === 'shield' && held.some(twoHanded)) return { message: SHIELD_MESSAGE, short: 'Not with a 2h weapon' };
-	if (twoHanded(w) && held.some((h) => slotOf(h) === 'shield')) return { message: SHIELD_MESSAGE, short: 'Not with a shield' };
+	if (slot === 'shield' && noHandFree(held)) return { message: SHIELD_MESSAGE, short: 'Not with a 2h weapon' };
+	if (twoHanded(w) && held.some((h) => slotOf(h) === 'shield') && noHandFree([...held, w])) return { message: SHIELD_MESSAGE, short: 'Not with a shield' };
 	return null;
 }
 
