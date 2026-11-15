@@ -12,6 +12,7 @@ a cost, a rule, a new button. What is still to come is on the
   - Familiars, Small Beasts, Large Beasts, Flying Beasts and Gigantic Horrors cannot take a Wardart or a Throwing Axe.
   - Strike down the Rival: the leader closer to the centre is measured to the base.
 - **Wyrdcry**
+  - A weapon figure that a rule or a level changes, such as Attacks with Dual Wielding or Damage with Weapon Master, is red, and tapping it says how it adds up.
   - Troll: Vomit reaches 2" (was 1"), deals 4/7 damage (was 3/6) and has Piercing 2 (was no rule).
 
 ## 14 Nov 2026

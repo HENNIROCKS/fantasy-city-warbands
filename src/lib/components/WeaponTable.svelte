@@ -31,7 +31,18 @@
 				<div class="col name" use:fitText><span data-fit>{weapon.name}</span></div>
 			{/if}
 			{#each weapon.values as value, v (v)}
-				<div class="col">{value}</div>
+				{@const explained = weapon.explained?.[v]}
+				{#if explained}
+					<button
+						class="col explained"
+						onclick={() => explain(explained)}
+						aria-label="{columns[v]} {value}, how it adds up"
+					>
+						<span>{value}</span>
+					</button>
+				{:else}
+					<div class="col">{value}</div>
+				{/if}
 			{/each}
 		</div>
 	{/each}
@@ -106,6 +117,22 @@
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.14em;
 		cursor: pointer;
+	}
+
+	/* A figure a rule or a level changed opens how it adds up, as a characteristic
+	   does on the table above. Type, size and alignment come from `.col`. */
+	.explained {
+		appearance: none;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+
+	.explained span {
+		color: var(--card-link);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.14em;
 	}
 
 	/* A name long enough to leave the cell is set smaller rather than wrapped, down

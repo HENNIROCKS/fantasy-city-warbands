@@ -78,7 +78,8 @@ are still to come.
   you write your own – its profile, its cost – in Wyrdcry beside its renown –
   its weapons and rules; a Wyrdcry fighter without a
   melee weapon fights Unarmed, as the table then says. A weapon's Attacks
-  count in Wyrdcry's Dual Wielding, and a Black Death City Polearm beside a
+  count in Wyrdcry's Dual Wielding, and a figure that a rule or a level changes
+  is tapped to say how it adds up; a Black Death City Polearm beside a
   Held Item shows the Unwieldy it gains. In Wyrdcry a
   characteristic counts in the fighter's pick, its renown, its injuries and its
   armour, and tapped it says how it adds up and what a situation can still

@@ -15,7 +15,7 @@
 - [x] 📚 Wyrdcry 1.0: the Rulebook 1.0.1, the Campaign Book and the six official factions, with the author's answers; where the app reads the rules its own way, in DEVIATIONS.md
 - [x] 📚 Wyrdcry homebrew: Clan Pestilens, the Greenskin Marauders, the Shadow Warriors and six hired swords
 - [x] 📚 Black Death City Playtest v1.11: the four factions with their wargear, Origins and carrying limits, starting experience and the warband rating, special rules, skills and signature spells, the Misbegotten's mutations, the six scenarios with their twists; older saved warbands carried over
-- [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos or else initials, fluff and notes on the back, derived values explained when tapped; Black Death City's armour, shields and Heavy Plating counted into the figures, a Polearm beside a Held Item Unwieldy
+- [x] 🃏 Fighters as cards in the Warband Deck's design: a warband card, a colour per warband, photos or else initials, fluff and notes on the back, derived values explained when tapped, a weapon figure that a rule or a level changes too; Black Death City's armour, shields and Heavy Plating counted into the figures, a Polearm beside a Held Item Unwieldy
 - [x] ⚔️ Track a battle on the cards: damage, states, rounds with undo, the result into the battle history or Cancel battle; Wyrdcry's morale, poison, wounds, the fifth round and single-use items; Black Death City's bloodied fighters, flee test, prepared spells, underdog, scenario, twist and both warbands' points
 - [x] 📈 Wyrdcry's campaign: the aftermath with renown, favour, income and the battle history, injuries, renown spent on characteristics and heroic talents, a new leader, Underdogs, the loot tables, magic items and Explore District
 - [x] 📈 Wyrdcry between battles: the stash, the Trading Post with its rarity roll, hired swords for one battle, corrections by hand
@@ -46,4 +46,3 @@ Nothing promised, nothing planned.
 - 🎨 Keep the screen awake, or make it easy to jump back to where you were – both just soften the screen going dark
 - 📄 Photos in the JSON export beside the warband, their crop kept, the file's version unchanged
 - 📦 Ready-to-go warbands for each game, to start playing at once and tweak later
-- 🎨 Dual-wielding the same weapon shows its Attacks number in red, as altered stats do, and tapping it explains why, as armour and items do

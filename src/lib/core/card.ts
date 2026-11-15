@@ -55,6 +55,27 @@ export interface StatLayer {
 }
 
 /**
+ * How a level moved a weapon's figure, as the explanation names it: `+1
+ * critical` from `2/3` to `2/4`, `-1"` from `2"` to `1"`. Null where the two
+ * do not read as numbers.
+ */
+function moved(from: string, to: string): string | null {
+	const signed = (d: number) => (d > 0 ? `+${d}` : String(d));
+	const pair = (v: string) => v.match(/^(\d+)\/(\d+)$/);
+	const [a, b] = [pair(from), pair(to)];
+	if (a && b) {
+		const parts = [
+			[Number(b[1]) - Number(a[1]), 'hit'],
+			[Number(b[2]) - Number(a[2]), 'critical']
+		] as const;
+		const changed = parts.filter(([d]) => d).map(([d, name]) => `${signed(d)} ${name}`);
+		return changed.length ? changed.join(', ') : null;
+	}
+	const [x, y] = [from.match(/^(\d+)("?)$/), to.match(/^(\d+)("?)$/)];
+	return x && y && x[2] === y[2] && x[1] !== y[1] ? `${signed(Number(y[1]) - Number(x[1]))}${y[2]}` : null;
+}
+
+/**
  * The layers with the game's floor kept: where they take a characteristic
  * below it, a layer of its own makes up the difference, so the explanation
  * still adds up. A floor layer already among them is worked out anew, and a
@@ -112,6 +133,8 @@ export interface CardWeapon {
 	name: string;
 	/** In the order of the game's `weaponStats`. */
 	values: string[];
+	/** Where a rule or a level changes a figure, how it adds up; in the order of `values`. */
+	explained?: (CardExplanation | undefined)[];
 	/** Set where the weapon has rules. */
 	explanation?: CardExplanation;
 }
@@ -277,12 +300,27 @@ export function fighterCard(
 			const adjusted = game.weaponAdjustments?.(wargear, count, carried.map((c) => c.wargear), faction) ?? [];
 			/* A level spent on this weapon, such as a heroic talent's point of critical damage, or an injury's cut to its reach. */
 			const raised = changed.filter((w) => w.wargear === wargear.id);
-			const values = game.weaponStats.map((s) => {
-				const own = raised.find((w) => w.stat === s.key)?.value;
-				const value = own ?? wargear.profile?.[s.key] ?? '–';
-				const amount = adjusted.filter((a) => a.stat === s.key).reduce((sum, a) => sum + a.amount, 0);
-				return amount && /^\d+$/.test(value) ? String(Number(value) + amount) : value;
+			const figures = game.weaponStats.map((s): { value: string; explanation?: CardExplanation } => {
+				const level = raised.find((w) => w.stat === s.key);
+				const base = wargear.profile?.[s.key] ?? '–';
+				const value = level?.value ?? base;
+				const changes = adjusted.filter((a) => a.stat === s.key && a.amount);
+				const amount = changes.reduce((sum, a) => sum + a.amount, 0);
+				const shown = amount && /^\d+$/.test(value) ? String(Number(value) + amount) : value;
+				if (shown === base) return { value: shown };
+				/* A figure that is a sum says what it adds up from; one a level sets, such as `2/4`, says what it moved by. */
+				if (/^\d+$/.test(base) && /^\d+$/.test(value)) {
+					const layers: StatLayer[] = [
+						{ kind: 'base', source: 'Profile', amount: Number(base) },
+						...(level ? [{ kind: 'permanent' as const, source: level.source, amount: Number(value) - Number(base) }] : []),
+						...changes.map((a) => ({ kind: 'equipment' as const, source: a.rule.name, amount: a.amount }))
+					];
+					return { value: shown, explanation: { title: s.label, result: shown, layers } };
+				}
+				const facts = [{ label: 'Profile', value: base }, ...(level ? [{ label: level.source, value: moved(base, value) ?? value }] : [])];
+				return { value: shown, explanation: { title: s.label, result: shown, facts } };
 			});
+			const values = figures.map((f) => f.value);
 			/* A rule a single-use piece gave the weapon, and one a piece took off it for the battle, which keeps its line and says so. */
 			const own = [...(wargear.rules ?? []), ...adjusted.map((a) => a.rule)];
 			const gained = uses
@@ -308,6 +346,7 @@ export function fighterCard(
 			return {
 				name,
 				values,
+				explained: figures.map((f) => f.explanation),
 				explanation: rules.length
 					? { title: name, facts: game.weaponStats.map((s, i) => ({ label: s.label, value: values[i] })), rules }
 					: undefined
